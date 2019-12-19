@@ -32,13 +32,13 @@ end
 technic.alloy_furnace_can_insert = function(pos, node, stack, direction)
 	local meta = minetest.get_meta(pos)
 	local inv = meta:get_inventory()
-
-	-- reject second stack of item that is already present
-	local incoming_name = stack:get_name()
-	for _,inv_stack in pairs(inv:get_list("src")) do
-		if not inv_stack:is_empty() and inv_stack:get_name() == incoming_name then
-			-- item_fits() didn't work here
-			return inv_stack:get_free_space() >= stack:get_count()
+	if meta:get_int("splitstacks") == 0 then
+		-- reject second stack of item that is already present
+		local incoming_name = stack:get_name()
+		for _,inv_stack in pairs(inv:get_list("src")) do
+			if not inv_stack:is_empty() and inv_stack:get_name() == incoming_name then
+				return false
+			end
 		end
 	end
 
