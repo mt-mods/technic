@@ -18,6 +18,7 @@ function technic.alloy_furnace_insert_object(pos, node, stack, direction)
 	local stack_max = stack:get_stack_max()
 	local overflow = count_existing_of_incoming_type + count_incoming - stack_max
 	if 0 < overflow then
+		if meta:get_int("splitstacks") == 0 then return stack end
 		local return_stack = stack:peek_item(overflow)
 		local add_stack = stack:peek_item(stack_max - count_existing_of_incoming_type)
 		inv:add_item("src", add_stack)
