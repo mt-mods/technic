@@ -1,7 +1,7 @@
 
 local S = technic.getter
 
-technic.alloy_furnace_insert_object = function(pos, node, stack, direction)
+function technic.alloy_furnace_insert_object(pos, node, stack, direction)
 	local meta = minetest.get_meta(pos)
 	local inv = meta:get_inventory()
 	local incoming_name = stack:get_name()
@@ -29,13 +29,13 @@ technic.alloy_furnace_insert_object = function(pos, node, stack, direction)
 	end
 end
 
-technic.alloy_furnace_can_insert = function(pos, node, stack, direction)
+function technic.alloy_furnace_can_insert(pos, node, stack, direction)
 	local meta = minetest.get_meta(pos)
 	local inv = meta:get_inventory()
 	if meta:get_int("splitstacks") == 0 then
 		-- reject second stack of item that is already present
 		local incoming_name = stack:get_name()
-		for _,inv_stack in pairs(inv:get_list("src")) do
+		for _, inv_stack in pairs(inv:get_list("src")) do
 			if not inv_stack:is_empty() and inv_stack:get_name() == incoming_name then
 				return false
 			end
