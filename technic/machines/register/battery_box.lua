@@ -369,7 +369,7 @@ function technic.register_battery_box(data)
 							return
 						end
 						local inv = meta:get_inventory()
-						digilines.receptor_send(pos, digilines.rules.default, channel, {
+						digilines.receptor_send(pos, technic.digiline.rules, channel, {
 							demand = meta:get_int(tier.."_EU_demand"),
 							supply = meta:get_int(tier.."_EU_supply"),
 							input  = meta:get_int(tier.."_EU_input"),

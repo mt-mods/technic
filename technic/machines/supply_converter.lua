@@ -81,7 +81,7 @@ local digiline_def = {
 			end
 			msg = msg:lower()
 			if msg == "get" then
-				digilines.receptor_send(pos, digilines.rules.default, channel, {
+				digilines.receptor_send(pos, technic.digiline.rules, channel, {
 					enabled      = meta:get_int("enabled"),
 					power        = meta:get_int("power"),
 					mesecon_mode = meta:get_int("mesecon_mode")

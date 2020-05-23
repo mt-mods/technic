@@ -203,7 +203,7 @@ local digiline_def = {
 				return
 			end
 			if msg.command == "get" then
-				digilines.receptor_send(pos, digilines.rules.default, channel, {
+				digilines.receptor_send(pos, technic.digiline.rules, channel, {
 					enabled = meta:get_int("enabled"),
 					range   = meta:get_int("range"),
 					shape   = meta:get_int("shape")

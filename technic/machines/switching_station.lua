@@ -79,7 +79,7 @@ minetest.register_node("technic:switching_station",{
 				if channel ~= meta:get_string("channel") then
 					return
 				end
-				digilines.receptor_send(pos, digilines.rules.default, channel, {
+				digilines.receptor_send(pos, technic.digiline.rules, channel, {
 					supply = meta:get_int("supply"),
 					demand = meta:get_int("demand")
 				})
@@ -367,7 +367,7 @@ technic.switching_station_run = function(pos)
 		if PR_eu_supply ~= meta:get_int("supply") or
 				RE_eu_demand ~= meta:get_int("demand") then
 			local channel = meta:get_string("channel")
-			digilines.receptor_send(pos, digilines.rules.default, channel, {
+			digilines.receptor_send(pos, technic.digiline.rules, channel, {
 				supply = PR_eu_supply,
 				demand = RE_eu_demand
 			})
