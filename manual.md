@@ -1134,6 +1134,13 @@ In particular, one cannot expect to power a quarry by burning the coal
 that it digs up.
 
 Given sufficient power, the quarry digs at a rate of one block per second.
+This is rather tedious to wait for.  Unfortunately, leaving the quarry
+unattended normally means that the Minetest server won't keep the machine
+running: it needs a player nearby.  This can be resolved by using a world
+anchor.  The digging is still quite slow, and independently of whether a
+world anchor is used the digging can be speeded up by placing multiple
+quarry machines with overlapping digging areas.  Four can be placed to
+dig identical areas, one on each side of the square cross section.
 This is rather tedious to wait for.
 
 The quarry can be toggled on and off with a mesecons signal.
