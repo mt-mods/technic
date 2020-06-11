@@ -293,17 +293,17 @@ minetest.register_node("technic:quarry", {
 	end,
 	mesecons = {
 		effector = {
-	    action_on = function(pos)
+			action_on = function(pos)
 				local meta = minetest.get_meta(pos)
 				meta:set_int("enabled", 1)
 				set_quarry_status(pos)
-	    end,
+			end,
 			action_off = function(pos)
 				local meta = minetest.get_meta(pos)
 				meta:set_int("enabled", 0)
 				set_quarry_status(pos)
 			end
-	  }
+		}
 	}
 })
 
