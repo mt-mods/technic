@@ -1141,7 +1141,6 @@ anchor.  The digging is still quite slow, and independently of whether a
 world anchor is used the digging can be speeded up by placing multiple
 quarry machines with overlapping digging areas.  Four can be placed to
 dig identical areas, one on each side of the square cross section.
-This is rather tedious to wait for.
 
 The quarry can be toggled on and off with a mesecons signal.
 
