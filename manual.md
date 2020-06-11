@@ -1125,16 +1125,7 @@ capture the output without sorting, but is liable to overflow.
 
 If the quarry encounters something that cannot be dug, such as a liquid,
 a locked chest, or a protected area, it will skip past that and attempt
-to continue digging.  However, anything remaining in the quarry area
-after the machine has attempted to dig there will prevent the machine
-from digging anything directly below it, all the way to the bottom
-of the quarry.  An undiggable block therefore casts a shadow of undug
-blocks below it.  If liquid is encountered, it is quite likely to flow
-across the entire cross section of the quarry, preventing all digging.
-The depth at which the quarry is currently attempting to dig is reported
-in its interaction form, and can be manually reset to the top of the
-quarry, which is useful to do if an undiggable obstruction has been
-manually removed.
+to continue digging.
 
 The quarry consumes 10 kEU per block dug, which is quite a lot of energy.
 With most of what is dug being mere stone, it is usually not economically
@@ -1143,13 +1134,9 @@ In particular, one cannot expect to power a quarry by burning the coal
 that it digs up.
 
 Given sufficient power, the quarry digs at a rate of one block per second.
-This is rather tedious to wait for.  Unfortunately, leaving the quarry
-unattended normally means that the Minetest server won't keep the machine
-running: it needs a player nearby.  This can be resolved by using a world
-anchor.  The digging is still quite slow, and independently of whether a
-world anchor is used the digging can be speeded up by placing multiple
-quarry machines with overlapping digging areas.  Four can be placed to
-dig identical areas, one on each side of the square cross section.
+This is rather tedious to wait for.
+
+The quarry can be toggled on and off with a mesecons signal.
 
 ### forcefield emitter ###
 
