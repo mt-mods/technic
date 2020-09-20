@@ -1,6 +1,9 @@
--- 
+--
 -- Power network specific functions and data should live here
--- 
+--
+
+technic.networks = {}
+technic.cables = {}
 
 function technic.remove_network(network_id)
 	local cables = technic.cables
@@ -50,9 +53,9 @@ function technic.touch_node(tier, pos, timeout)
 	node_timeout[tier][minetest.hash_node_position(pos)] = timeout or 2
 end
 
--- 
+--
 -- Technic power network administrative functions
--- 
+--
 
 technic.powerctrl_state = true
 
@@ -68,3 +71,29 @@ minetest.register_chatcommand("powerctrl", {
 		end
 	end
 })
+
+--
+-- Metadata cleanup LBM, removes old metadata values from nodes
+--
+--luacheck: ignore 511
+if false then
+	minetest.register_lbm({
+		name = "technic:metadata-cleanup",
+		nodenames = {
+			"group:technic_machine",
+			"group:technic_all_tiers",
+		},
+		action = function(pos, node)
+			-- Delete all listed metadata key/value pairs from technic machines
+			local keys = {
+				"LV_EU_timeout", "MV_EU_timeout", "HV_EU_timeout",
+				"LV_network", "MV_network", "HV_network",
+			}
+			local meta = minetest.get_meta(pos)
+			for _,key in ipairs(keys) do
+				-- Value of `""` will delete the key.
+				meta:set_string(key, "")
+			end
+		end,
+	})
+end
