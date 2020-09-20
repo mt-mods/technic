@@ -14,6 +14,8 @@ technic.digilines = {
 	}
 }
 
+dofile(path.."/network.lua")
+
 dofile(path.."/register/init.lua")
 
 -- Tiers
