@@ -1,7 +1,5 @@
 -- See also technic/doc/api.md
 
-technic.networks = {}
-technic.cables = {}
 technic.redundant_warn = {}
 
 local overload_reset_time = tonumber(minetest.settings:get("technic.overload_reset_time") or "20")

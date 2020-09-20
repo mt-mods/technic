@@ -1,6 +1,10 @@
 unused_args = false
 max_line_length = 999
 
+exclude_files = {
+	"**/spec/**",
+}
+
 globals = {
     "technic", "technic_cnc", "minetest", "wrench"
 }
