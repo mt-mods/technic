@@ -76,7 +76,7 @@ local function clear_networks(pos)
 					elseif technic.machines[tier][node.name] == "SPECIAL" and
 							(pos.x ~= sw_pos.x or pos.y ~= sw_pos.y or pos.z ~= sw_pos.z) and
 							from_below then
-						table.insert(network.SP_nodes,pos)
+						network.SP_nodes[pos_hash] = pos
 					elseif technic.machines[tier][node.name] == technic.battery then
 						table.insert(network.BA_nodes,pos)
 					end
