@@ -288,6 +288,9 @@ local function run_nodes(list, run_stage)
 	end
 end
 
+local mesecons_path = minetest.get_modpath("mesecons")
+local digilines_path = minetest.get_modpath("digilines")
+
 function technic.network_run(network_id)
 	--
 	-- !!! !!! !!! !!! !!! !!! !!! !!! !!! !!! !!!
@@ -298,26 +301,20 @@ function technic.network_run(network_id)
 	--
 	if not technic.powerctrl_state then return end
 
-	local pos = technic.network2sw_pos(network_id)
-	local t0 = minetest.get_us_time()
-	local meta = minetest.get_meta(pos)
-	local meta1
-	local pos1 = technic.network2pos(network_id)
-
-	local tier = ""
-	local PR_nodes
-	local BA_nodes
-	local RE_nodes
-
-	local network_id = poshash(pos1)
 	-- Check if network is overloaded / conflicts with another network
 	if technic.is_overloaded(network_id) then
 		-- TODO: Overload check should happen before technic.network_run is called, overloaded network should not generate any events
 		return
 	end
 
-	local name = minetest.get_node(pos1).name
-	local tier = technic.get_cable_tier(name)
+	local pos = technic.network2sw_pos(network_id)
+	local t0 = minetest.get_us_time()
+
+	local PR_nodes
+	local BA_nodes
+	local RE_nodes
+
+	local tier = technic.sw_pos2tier(pos)
 	if tier then
 		PR_nodes, BA_nodes, RE_nodes = get_network(network_id, tier)
 		if technic.is_overloaded(network_id) then return end
@@ -344,7 +341,7 @@ function technic.network_run(network_id)
 	local BA_charge_max = 0
 
 	for n, pos1 in pairs(BA_nodes) do
-		meta1 = minetest.get_meta(pos1)
+		local meta1 = minetest.get_meta(pos1)
 		local charge = meta1:get_int("internal_EU_charge")
 		local charge_max = meta1:get_int("internal_EU_charge_max")
 
@@ -360,7 +357,7 @@ function technic.network_run(network_id)
 	local charge_distributed = math.floor(charge_total / battery_count)
 
 	for n, pos1 in pairs(BA_nodes) do
-		meta1 = minetest.get_meta(pos1)
+		local meta1 = minetest.get_meta(pos1)
 
 		if (meta1:get_int(eu_demand_str) ~= 0) then
 			meta1:set_int("internal_EU_charge", charge_distributed)
@@ -370,7 +367,7 @@ function technic.network_run(network_id)
 	-- Get all the power from the PR nodes
 	local PR_eu_supply = 0 -- Total power
 	for _, pos1 in pairs(PR_nodes) do
-		meta1 = minetest.get_meta(pos1)
+		local meta1 = minetest.get_meta(pos1)
 		PR_eu_supply = PR_eu_supply + meta1:get_int(eu_supply_str)
 	end
 	--dprint("Total PR supply:"..PR_eu_supply)
@@ -378,7 +375,7 @@ function technic.network_run(network_id)
 	-- Get all the demand from the RE nodes
 	local RE_eu_demand = 0
 	for _, pos1 in pairs(RE_nodes) do
-		meta1 = minetest.get_meta(pos1)
+		local meta1 = minetest.get_meta(pos1)
 		RE_eu_demand = RE_eu_demand + meta1:get_int(eu_demand_str)
 	end
 	--dprint("Total RE demand:"..RE_eu_demand)
@@ -386,7 +383,7 @@ function technic.network_run(network_id)
 	-- Get all the power from the BA nodes
 	local BA_eu_supply = 0
 	for _, pos1 in pairs(BA_nodes) do
-		meta1 = minetest.get_meta(pos1)
+		local meta1 = minetest.get_meta(pos1)
 		BA_eu_supply = BA_eu_supply + meta1:get_int(eu_supply_str)
 	end
 	--dprint("Total BA supply:"..BA_eu_supply)
@@ -394,7 +391,7 @@ function technic.network_run(network_id)
 	-- Get all the demand from the BA nodes
 	local BA_eu_demand = 0
 	for _, pos1 in pairs(BA_nodes) do
-		meta1 = minetest.get_meta(pos1)
+		local meta1 = minetest.get_meta(pos1)
 		BA_eu_demand = BA_eu_demand + meta1:get_int(eu_demand_str)
 	end
 	--dprint("Total BA demand:"..BA_eu_demand)
@@ -402,6 +399,8 @@ function technic.network_run(network_id)
 	technic.network_infotext(network_id, S("@1. Supply: @2 Demand: @3",
 			S("Switching Station"), technic.EU_string(PR_eu_supply),
 			technic.EU_string(RE_eu_demand)))
+
+	local meta = minetest.get_meta(pos)
 
 	-- If mesecon signal and power supply or demand changed then
 	-- send them via digilines.
@@ -427,7 +426,7 @@ function technic.network_run(network_id)
 	if PR_eu_supply >= RE_eu_demand then
 	--dprint("PR_eu_supply"..PR_eu_supply.." >= RE_eu_demand"..RE_eu_demand)
 		for _, pos1 in pairs(RE_nodes) do
-			meta1 = minetest.get_meta(pos1)
+			local meta1 = minetest.get_meta(pos1)
 			local eu_demand = meta1:get_int(eu_demand_str)
 			meta1:set_int(eu_input_str, eu_demand)
 		end
@@ -439,7 +438,7 @@ function technic.network_run(network_id)
 			charge_factor = PR_eu_supply / BA_eu_demand
 		end
 		for n, pos1 in pairs(BA_nodes) do
-			meta1 = minetest.get_meta(pos1)
+			local meta1 = minetest.get_meta(pos1)
 			local eu_demand = meta1:get_int(eu_demand_str)
 			meta1:set_int(eu_input_str, math.floor(eu_demand * charge_factor))
 			--dprint("Charging battery:"..math.floor(eu_demand*charge_factor))
@@ -457,7 +456,7 @@ function technic.network_run(network_id)
 	if PR_eu_supply + BA_eu_supply >= RE_eu_demand then
 		--dprint("PR_eu_supply "..PR_eu_supply.."+BA_eu_supply "..BA_eu_supply.." >= RE_eu_demand"..RE_eu_demand)
 		for _, pos1 in pairs(RE_nodes) do
-			meta1  = minetest.get_meta(pos1)
+			local meta1  = minetest.get_meta(pos1)
 			local eu_demand = meta1:get_int(eu_demand_str)
 			meta1:set_int(eu_input_str, eu_demand)
 		end
@@ -468,7 +467,7 @@ function technic.network_run(network_id)
 			charge_factor = (PR_eu_supply - RE_eu_demand) / BA_eu_supply
 		end
 		for n,pos1 in pairs(BA_nodes) do
-			meta1 = minetest.get_meta(pos1)
+			local meta1 = minetest.get_meta(pos1)
 			local eu_supply = meta1:get_int(eu_supply_str)
 			meta1:set_int(eu_input_str, math.floor(eu_supply * charge_factor))
 			--dprint("Discharging battery:"..math.floor(eu_supply*charge_factor))
@@ -488,12 +487,12 @@ function technic.network_run(network_id)
 		charge_factor = PR_eu_supply / BA_eu_demand
 	end
 	for n, pos1 in pairs(BA_nodes) do
-		meta1 = minetest.get_meta(pos1)
+		local meta1 = minetest.get_meta(pos1)
 		local eu_demand = meta1:get_int(eu_demand_str)
 		meta1:set_int(eu_input_str, math.floor(eu_demand * charge_factor))
 	end
 	for n, pos1 in pairs(RE_nodes) do
-		meta1 = minetest.get_meta(pos1)
+		local meta1 = minetest.get_meta(pos1)
 		meta1:set_int(eu_input_str, 0)
 	end
 
