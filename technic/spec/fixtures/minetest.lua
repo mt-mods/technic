@@ -70,4 +70,6 @@ _G.minetest.register_on_placenode = noop
 _G.minetest.register_on_dignode = noop
 _G.minetest.item_drop = noop
 
+_G.minetest.get_modpath = function(...) return "./unit_test_modpath" end
+
 _G.minetest.get_pointed_thing_position = dummy_coords

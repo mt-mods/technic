@@ -1,7 +1,6 @@
 -- See also technic/doc/api.md
 
 local mesecons_path = minetest.get_modpath("mesecons")
-local digilines_path = minetest.get_modpath("digilines")
 
 local S = technic.getter
 
