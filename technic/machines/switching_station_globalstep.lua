@@ -86,12 +86,13 @@ minetest.register_globalstep(function(dtime)
 
 	for network_id, switch in pairs(switches) do
 		local pos = technic.network2sw_pos(network_id)
+		local network = technic.networks[network_id]
 		local diff = now - switch.time
 
 		minetest.get_voxel_manip(pos, pos)
 		local node = minetest.get_node(pos)
 
-		if node.name ~= "technic:switching_station" then
+		if network == nil or node.name ~= "technic:switching_station" then
 			-- station vanished
 			switches[network_id] = nil
 
@@ -102,13 +103,11 @@ minetest.register_globalstep(function(dtime)
 			if switch.skip < 1 then
 
 				local start = minetest.get_us_time()
-				technic.switching_station_run(pos)
+				technic.network_run(network_id)
 				local switch_diff = minetest.get_us_time() - start
 
-				local meta = minetest.get_meta(pos)
-
 				-- set lag in microseconds into the "lag" meta field
-				meta:set_int("lag", switch_diff)
+				network.lag = switch_diff
 
 				-- overload detection
 				if switch_diff > 250000 then

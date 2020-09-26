@@ -1,6 +1,13 @@
 local function noop(...) end
 local function dummy_coords(...) return { x = 123, y = 123, z = 123 } end
 
+_G.world = { nodes = {} }
+local world = _G.world
+_G.world.set_node = function(pos, node)
+	local hash = minetest.hash_node_position(pos)
+	world.nodes[hash] = node
+end
+
 _G.core = {}
 _G.minetest = _G.core
 
@@ -64,12 +71,26 @@ _G.minetest.register_lbm = noop
 _G.minetest.register_abm = noop
 _G.minetest.register_chatcommand = noop
 _G.minetest.chat_send_player = noop
+_G.minetest.register_alias = noop
 _G.minetest.register_craftitem = noop
 _G.minetest.register_craft = noop
+_G.minetest.register_node = noop
 _G.minetest.register_on_placenode = noop
 _G.minetest.register_on_dignode = noop
 _G.minetest.item_drop = noop
 
+_G.minetest.get_node = function(pos)
+	local hash = minetest.hash_node_position(pos)
+	return world.nodes[hash] or {name="IGNORE",param2=0}
+end
+
 _G.minetest.get_modpath = function(...) return "./unit_test_modpath" end
 
 _G.minetest.get_pointed_thing_position = dummy_coords
+
+--
+-- Minetest default noop table
+--
+local default = { __index = function(...) return function(...)end end }
+_G.default = {}
+setmetatable(_G.default, default)
