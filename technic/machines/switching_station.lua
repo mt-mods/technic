@@ -92,11 +92,19 @@ minetest.register_node("technic:switching_station",{
 				if channel ~= meta:get_string("channel") then
 					return
 				end
-				digilines.receptor_send(pos, technic.digilines.rules, channel, {
-					supply = meta:get_int("supply"),
-					demand = meta:get_int("demand"),
-					lag = meta:get_int("lag")
-				})
+				local network_id = technic.sw_pos2network(pos)
+				local network = network_id and technic.networks[network_id]
+				if network then
+					digilines.receptor_send(pos, technic.digilines.rules, channel, {
+						supply = network.supply,
+						demand = network.demand,
+						lag = network.lag
+					})
+				else
+					digilines.receptor_send(pos, technic.digilines.rules, channel, {
+						error = "No network",
+					})
+				end
 			end
 		},
 	},
@@ -105,14 +113,6 @@ minetest.register_node("technic:switching_station",{
 -----------------------------------------------
 -- The action code for the switching station --
 -----------------------------------------------
-
-function technic.switching_station_run(pos)
-	local network_id = technic.sw_pos2network(pos)
-	if network_id then
-		return technic.network_run(network_id)
-	end
-	--print(string.format("technic.switching_station_run(%s) failed, no network available", minetest.pos_to_string(pos)))
-end
 
 -- Timeout ABM
 -- Timeout for a node in case it was disconnected from the network
@@ -168,9 +168,6 @@ minetest.register_abm({
 				local remaining = technic.reset_overloaded(network_id)
 				if remaining > 0 then
 					infotext = S("%s Network Overloaded, Restart in %dms"):format(S("Switching Station"), remaining / 1000)
-					-- Set switching station supply value to zero to clean up power monitor supply info
-					-- TODO: This should be saved with network and removed from metadata
-					meta:set_int("supply",0)
 				else
 					infotext = S("%s Restarting Network"):format(S("Switching Station"))
 				end
@@ -187,8 +184,3 @@ minetest.register_abm({
 		end
 	end,
 })
-
-for tier, machines in pairs(technic.machines) do
-	-- SPECIAL will not be traversed
-	technic.register_machine(tier, "technic:switching_station", "SPECIAL")
-end

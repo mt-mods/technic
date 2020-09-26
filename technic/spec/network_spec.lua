@@ -37,6 +37,17 @@ describe("Power network helper", function()
 			assert.same(net_id, technic.sw_pos2network(sw_pos) )
 		end)
 
+		it("returns nil tier for empty position", function()
+			assert.is_nil(technic.sw_pos2tier({x=9999,y=9999,z=9999}))
+		end)
+
+		it("returns correct tier for switching station position", function()
+			-- World is defined in fixtures/network.lua
+			assert.same("LV", technic.sw_pos2tier({x=100,y=101,z=100}))
+			assert.same("MV", technic.sw_pos2tier({x=100,y=201,z=100}))
+			assert.same("HV", technic.sw_pos2tier({x=100,y=301,z=100}))
+		end)
+
 	end)
 
 	--[[ TODO:
