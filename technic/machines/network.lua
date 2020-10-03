@@ -173,12 +173,10 @@ end
 local function add_cable_node(nodes, pos, network_id, queue)
 	local node_id = poshash(pos)
 	technic.cables[node_id] = network_id
-	if nodes[node_id] then
-		return false
+	if not nodes[node_id] then
+		nodes[node_id] = pos
+		queue[#queue + 1] = pos
 	end
-	nodes[node_id] = pos
-	-- Also add cables to queue
-	queue[#queue + 1] = pos
 end
 
 -- Generic function to add found connected nodes to the right classification array
@@ -251,6 +249,7 @@ function technic.add_network_branch(queue, sw_pos, network)
 	local all_nodes = network.all_nodes -- Hash table
 	local network_id = network.id
 	local tier = network.tier
+	local machines = technic.machines[tier]
 	while next(queue) do
 		local to_visit = {}
 		for _, pos in ipairs(queue) do
@@ -259,7 +258,7 @@ function technic.add_network_branch(queue, sw_pos, network)
 				return
 			end
 			traverse_network(PR_nodes, RE_nodes, BA_nodes, all_nodes, pos,
-					technic.machines[tier], tier, sw_pos, network_id, to_visit)
+					machines, tier, sw_pos, network_id, to_visit)
 		end
 		queue = to_visit
 	end
@@ -283,10 +282,6 @@ function technic.build_network(network_id)
 	local queue = {}
 	add_cable_node(network.all_nodes, technic.network2pos(network_id), network_id, queue)
 	technic.add_network_branch(queue, sw_pos, network)
-	-- Flatten hashes to optimize iterations
-	--network.PR_nodes = flatten(network.PR_nodes) -- Already processed as indexed array
-	--network.BA_nodes = flatten(network.BA_nodes) -- Already processed as indexed array
-	--network.RE_nodes = flatten(network.RE_nodes) -- Already processed as indexed array
 	network.battery_count = #network.BA_nodes
 	-- Add newly built network to cache array
 	technic.networks[network_id] = network

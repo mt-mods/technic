@@ -58,7 +58,8 @@ _G.core.register_on_joinplayer = noop
 _G.core.register_on_leaveplayer = noop
 
 fixture("minetest/game/misc")
-fixture("minetest/misc_helpers")
+fixture("minetest/common/misc_helpers")
+fixture("minetest/common/vector")
 
 _G.minetest.registered_nodes = {
 	testnode1 = {},
