@@ -39,40 +39,47 @@ local function check_connections(pos)
 	return connections
 end
 
-local function connect_networks(pos, positions)
-	-- TODO: Allow connecting networks:
-	-- If neighbor branch does not belong to any network attach it to this network
-	-- If neighbor branch belongs to another network check which one has least #all_nodes and rebuild that
-	for _,connected_pos in pairs(positions) do
-		local net = technic.pos2network(connected_pos)
-		if net and technic.networks[net] then
-			-- Not a dead end, so the whole network needs to be recalculated
-			technic.remove_network(net)
-		end
-	end
-end
-
 local function place_network_node(pos, node)
 	local positions = check_connections(pos)
 	if #positions < 1 then return end
 	local dead_end = #positions == 1
 
-	-- Dead end placed, add it to the network
-	-- Get the network
-	local network_id = technic.pos2network(positions[1])
-	if not network_id then
+	-- Get the network if there's any
+	local network_id
+	for _,connect_pos in ipairs(positions) do
+		network_id = technic.pos2network(connect_pos)
+		if network_id then break end
+	end
+	local network = technic.networks[network_id]
+	if not network then
 		-- We're evidently not on a network, nothing to add ourselves to
 		return
 	end
-	local network = technic.networks[network_id]
-	local tier = network.tier
 
 	if not dead_end then
-		return connect_networks(pos, positions)
+		-- TODO: Allow connecting networks:
+		-- If neighbor branch belongs to another network check which one has least #all_nodes and rebuild that branch
+		local removed = 0
+		for _,connect_pos in ipairs(positions) do
+			local net = technic.pos2network(connect_pos)
+			if net and net ~= network_id then
+				-- Remove network if position belongs to another network
+				technic.remove_network(network_id)
+				removed = removed + 1
+			end
+		end
+		-- Do not build whole network here if something was cleaned up, instead allow switch ABM to take care of it
+		if removed > 0 then return end
+		-- Nodes around do not belong to another network but missing branches must be added as whole
+		local sw_pos = technic.network2sw_pos(network_id)
+		technic.add_network_branch({pos}, sw_pos, network)
+		return
 	end
 
+	-- Dead end placed, add it to the network
 	-- Actually add it to the (cached) network
-	-- This is similar to check_node_subp
+	-- TODO: This should use check_node_subp or add_network_branch
+	local tier = network.tier
 	local pos_hash = minetest.hash_node_position(pos)
 	technic.cables[pos_hash] = network_id
 	pos.visited = 1
@@ -95,40 +102,23 @@ end
 local function remove_network_node(pos)
 	-- Get the network
 	local network_id = technic.pos2network(pos)
-	if not network_id then
-		-- We're evidently not on a network, nothing to add ourselves to
-		return
-	end
+	if not network_id then return end
 
 	local positions = check_connections(pos)
 	if #positions < 1 then return end
 	local dead_end = #positions == 1
 
-	if not dead_end then
+	if dead_end then
+		-- Dead end machine or cable removed, remove it from the network
+		technic.remove_network_node(network_id, pos)
+	else
 		-- TODO: Check branches around and switching stations for branches:
 		--   remove branches that do not have switching station.
 		--   remove branches not connected to another branch.
 		--   do not rebuild networks here, leave that for ABM to reduce unnecessary cache building.
-		-- For now remove network like how it was done before:
+		--   To do all this network must be aware of individual branches, might not be worth it...
+		-- For now remove whole network and let ABM rebuild it
 		technic.remove_network(network_id)
-		return
-	end
-
-	-- Dead end removed, remove it from the network
-	local network = technic.networks[network_id]
-	technic.cables[minetest.hash_node_position(pos)] = nil
-	-- TODO: Looping over all keys in network is not right way to do this, should fix to use known machine types.
-	-- Better to add network function that knows what to remove, something like technic.remove_node(network_id, pos)
-	for tblname,table in pairs(network) do
-		if type(table) == "table" then
-			for machinenum,machine in pairs(table) do
-				if machine.x == pos.x
-				and machine.y == pos.y
-				and machine.z == pos.z then
-					table[machinenum] = nil
-				end
-			end
-		end
 	end
 end
 

@@ -44,20 +44,26 @@ function technic.remove_network(network_id)
 		end
 	end
 	technic.networks[network_id] = nil
-	--print(string.format("NET DESTRUCT %s (%.17g)", minetest.pos_to_string(technic.network2pos(network_id)), network_id))
+	--print(string.format("technic.remove_network(%.17g) at %s", network_id, minetest.pos_to_string(technic.network2pos(network_id))))
 end
 
 -- Remove machine or cable from network
-local network_node_tables = {"PR_nodes","BA_nodes","RE_nodes","SP_nodes","all_nodes"}
+local network_node_arrays = {"PR_nodes","BA_nodes","RE_nodes","SP_nodes"}
 function technic.remove_network_node(network_id, pos)
 	local network = technic.networks[network_id]
 	if not network then return end
-	technic.cables[poshash(pos)] = nil
-	for _,tblname in ipairs(network_node_tables) do
-		local table = network[tblname]
-		for id,mpos in pairs(table) do
+	-- Clear hash tables, cannot use table.remove
+	local node_id = poshash(pos)
+	technic.cables[node_id] = nil
+	network.all_nodes[node_id] = nil
+	-- Clear indexed arrays, do NOT leave holes
+	for _,tblname in ipairs(network_node_arrays) do
+		local tbl = network[tblname]
+		for i=#tbl,1,-1 do
+			local mpos = tbl[i]
 			if mpos.x == pos.x and mpos.y == pos.y and mpos.z == pos.z then
-				table[id] = nil
+				table.remove(tbl, i)
+				break
 			end
 		end
 	end
@@ -164,9 +170,11 @@ local function attach_network_machine(network_id, pos)
 end
 
 -- Add a machine node to the LV/MV/HV network
-local function add_network_node(nodes, pos, network_id)
-	technic.cables[poshash(pos)] = network_id
+local function add_network_node(nodes, pos, network_id, all_nodes)
 	table.insert(nodes, pos)
+	local node_id = poshash(pos)
+	technic.cables[node_id] = network_id
+	all_nodes[node_id] = pos
 end
 
 -- Add a wire node to the LV/MV/HV network
@@ -192,17 +200,17 @@ local function check_node_subp(PR_nodes, RE_nodes, BA_nodes, all_nodes, pos, mac
 
 		if     machines[name] == technic.producer then
 			attach_network_machine(network_id, pos)
-			add_network_node(PR_nodes, pos, network_id)
+			add_network_node(PR_nodes, pos, network_id, all_nodes)
 		elseif machines[name] == technic.receiver then
 			attach_network_machine(network_id, pos)
-			add_network_node(RE_nodes, pos, network_id)
+			add_network_node(RE_nodes, pos, network_id, all_nodes)
 		elseif machines[name] == technic.producer_receiver then
 			--attach_network_machine(network_id, pos)
-			add_network_node(PR_nodes, pos, network_id)
-			add_network_node(RE_nodes, pos, network_id)
+			add_network_node(PR_nodes, pos, network_id, all_nodes)
+			add_network_node(RE_nodes, pos, network_id, all_nodes)
 		elseif machines[name] == technic.battery then
 			attach_network_machine(network_id, pos)
-			add_network_node(BA_nodes, pos, network_id)
+			add_network_node(BA_nodes, pos, network_id, all_nodes)
 		end
 
 		technic.touch_node(tier, pos, 2) -- Touch node
@@ -219,7 +227,9 @@ local function traverse_network(PR_nodes, RE_nodes, BA_nodes, all_nodes, pos, ma
 		{x=pos.x,   y=pos.y,   z=pos.z+1},
 		{x=pos.x,   y=pos.y,   z=pos.z-1}}
 	for i, cur_pos in pairs(positions) do
-		check_node_subp(PR_nodes, RE_nodes, BA_nodes, all_nodes, cur_pos, machines, tier, sw_pos, i == 3, network_id, queue)
+		if not all_nodes[poshash(cur_pos)] then
+			check_node_subp(PR_nodes, RE_nodes, BA_nodes, all_nodes, cur_pos, machines, tier, sw_pos, i == 3, network_id, queue)
+		end
 	end
 end
 
@@ -242,6 +252,7 @@ local function get_network(network_id, tier)
 end
 
 function technic.add_network_branch(queue, sw_pos, network)
+	--print(string.format("technic.add_network_branch(%s, %s, %.17g)",queue,minetest.pos_to_string(sw_pos),network.id))
 	-- Adds whole branch to network, queue positions can be used to bypass sub branches
 	local PR_nodes = network.PR_nodes -- Indexed array
 	local BA_nodes = network.BA_nodes -- Indexed array
@@ -265,12 +276,12 @@ function technic.add_network_branch(queue, sw_pos, network)
 end
 
 function technic.build_network(network_id)
-	print(string.format("NET CONSTRUCT %s (%.17g)", minetest.pos_to_string(technic.network2pos(network_id)), network_id))
+	--print(string.format("technic.build_network(%.17g) at %s", network_id, minetest.pos_to_string(technic.network2pos(network_id))))
 	technic.remove_network(network_id)
 	local sw_pos = technic.network2sw_pos(network_id)
 	local tier = technic.sw_pos2tier(sw_pos)
 	if not tier then
-		print(string.format("Cannot build network, cannot get tier for switching station at %s", minetest.pos_to_string(sw_pos)))
+		--print(string.format("Cannot build network, cannot get tier for switching station at %s", minetest.pos_to_string(sw_pos)))
 		return
 	end
 	local network = {
