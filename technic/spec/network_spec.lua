@@ -92,13 +92,16 @@ describe("Power network helper", function()
 			assert.equals(9, count(technic.cables))
 		end)
 
+		it("removes network", function()
+			technic.remove_network(net_id)
+			assert.is_nil(technic.networks[net_id])
+			-- TODO: Verify that there's no lefover positions in technic.cables
+		end)
+
 	end)
 
 	--[[ TODO:
-	technic.remove_network(network_id)
-	technic.pos2network(pos)
-	technic.network2pos(network_id)
-	technic.network2sw_pos(network_id)
+	technic.remove_network_node
 	--]]
 
 	describe("Power network timeout functions technic.touch_node and technic.get_timeout", function()
