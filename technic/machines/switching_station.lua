@@ -173,7 +173,7 @@ minetest.register_abm({
 				end
 				technic.network_infotext(network_id, infotext)
 			else
-				-- Network exists and is not overloaded, reactivate for 4 seconds
+				-- Network exists and is not overloaded, reactivate network
 				technic.activate_network(network_id)
 				infotext = technic.network_infotext(network_id)
 			end

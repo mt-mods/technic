@@ -4,7 +4,9 @@
 local S = technic.getter
 
 local switch_max_range = tonumber(minetest.settings:get("technic.switch_max_range") or "256")
+local off_delay_seconds = tonumber(minetest.settings:get("technic.switch.off_delay_seconds") or "1800")
 
+technic.active_networks = {}
 technic.networks = {}
 technic.cables = {}
 
@@ -18,10 +20,12 @@ function technic.create_network(sw_pos)
 end
 
 function technic.activate_network(network_id, timeout)
-	assert(network_id)
+	-- timeout is optional ttl for network in seconds, if not specified use default
 	local network = technic.networks[network_id]
-	if network and (timeout or network.timeout < 4) then
-		network.timeout = timeout or 4
+	if network then
+		-- timeout is absolute time in microseconds
+		network.timeout = minetest.get_us_time() + ((timeout or off_delay_seconds) * 1000 * 1000)
+		technic.active_networks[network_id] = network
 	end
 end
 
@@ -44,6 +48,7 @@ function technic.remove_network(network_id)
 		end
 	end
 	technic.networks[network_id] = nil
+	technic.active_networks[network_id] = nil
 	--print(string.format("technic.remove_network(%.17g) at %s", network_id, minetest.pos_to_string(technic.network2pos(network_id))))
 end
 
@@ -285,9 +290,14 @@ function technic.build_network(network_id)
 		return
 	end
 	local network = {
+		-- Basic network data and lookup table for attached nodes (no switching stations)
 		id = network_id, tier = tier, all_nodes = {},
+		-- Indexed arrays for iteration by machine type
 		SP_nodes = {}, PR_nodes = {}, RE_nodes = {}, BA_nodes = {},
-		supply = 0, demand = 0, timeout = 4, battery_charge = 0, battery_charge_max = 0,
+		-- Power generation, usage and capacity related variables
+		supply = 0, demand = 0, battery_charge = 0, battery_charge_max = 0,
+		-- Network activation and excution control
+		timeout = 0, skip = 0,
 	}
 	-- Add first cable (one that is holding network id) and build network
 	local queue = {}
