@@ -28,3 +28,6 @@ dofile(path.."/power_monitor.lua")
 dofile(path.."/supply_converter.lua")
 
 dofile(path.."/other/init.lua")
+
+-- https://github.com/mt-mods/technic/issues/100
+dofile(path.."/compat/digtron.lua")
