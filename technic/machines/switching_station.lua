@@ -114,39 +114,57 @@ minetest.register_node("technic:switching_station",{
 -- The action code for the switching station --
 -----------------------------------------------
 
+-- Lookup table for machine tiers
+local machine_tiers = {}
+minetest.register_on_mods_loaded(function()
+	for tier, machines in pairs(technic.machines) do
+		for name,_ in pairs(machines) do
+			if not machine_tiers[name] then machine_tiers[name] = {} end
+			table.insert(machine_tiers[name], tier)
+		end
+	end
+end)
+
 -- Timeout ABM
 -- Timeout for a node in case it was disconnected from the network
 -- A node must be touched by the station continuously in order to function
-local function switching_station_timeout_count(pos, tier)
-	local timeout = technic.get_timeout(tier, pos)
-	if timeout <= 0 then
-		local meta = minetest.get_meta(pos)
-		meta:set_int(tier.."_EU_input", 0) -- Not needed anymore <-- actually, it is for supply converter
-		return true
-	else
-		technic.touch_node(tier, pos, timeout - 1)
-		return false
-	end
-end
+-- TODO: If possible replace this with something that does not need ABM, preferably without any timers
 minetest.register_abm({
 	label = "Machines: timeout check",
 	nodenames = {"group:technic_machine"},
 	interval   = 1,
 	chance     = 1,
 	action = function(pos, node, active_object_count, active_object_count_wider)
-		for tier, machines in pairs(technic.machines) do
-			if machines[node.name] and switching_station_timeout_count(pos, tier) then
-				local nodedef = minetest.registered_nodes[node.name]
-				if nodedef and nodedef.technic_disabled_machine_name then
-					node.name = nodedef.technic_disabled_machine_name
-					minetest.swap_node(pos, node)
-				elseif nodedef and nodedef.technic_on_disable then
-					nodedef.technic_on_disable(pos, node)
-				end
-				if nodedef then
-					local meta = minetest.get_meta(pos)
-					meta:set_string("infotext", S("%s Has No Network"):format(nodedef.description))
-				end
+		local tiers = machine_tiers[node.name]
+		if not tiers then
+			-- This should not happen ever, machines without at least single tier should not exist. Consider removing check?
+			return
+		end
+		-- Check for machine timeouts for all tiers
+		local timed_out = true
+		for _, tier in ipairs(tiers) do
+			local timeout = technic.get_timeout(tier, pos)
+			if timeout <= 0 then
+				local meta = minetest.get_meta(pos)
+				meta:set_int(tier.."_EU_input", 0) -- Not needed anymore <-- actually, it is for supply converter <-- Actually supply converter could handle this alone too
+			else
+				technic.touch_node(tier, pos, timeout - 1)
+				timed_out = false
+				break
+			end
+		end
+		-- If all tiers for machine timed out take action
+		if timed_out then
+			local nodedef = minetest.registered_nodes[node.name]
+			if nodedef and nodedef.technic_disabled_machine_name then
+				node.name = nodedef.technic_disabled_machine_name
+				minetest.swap_node(pos, node)
+			elseif nodedef and nodedef.technic_on_disable then
+				nodedef.technic_on_disable(pos, node)
+			end
+			if nodedef then
+				local meta = minetest.get_meta(pos)
+				meta:set_string("infotext", S("%s Has No Network"):format(nodedef.description))
 			end
 		end
 	end,
