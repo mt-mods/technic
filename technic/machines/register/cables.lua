@@ -11,17 +11,17 @@ function technic.get_cable_tier(name)
 	return cable_tier[name]
 end
 
-local function check_connections(pos)
+local function get_neighbors(pos, tier)
 	-- Build a table of all machines
 	-- TODO: Move this to network.lua
 	-- TODO: Build table for current tier only, we do not want to test other tiers.
-	-- Make sure that multi tier machines work (currently supply converter).
-	local machines = {}
-	for tier,list in pairs(technic.machines) do
-		for k,v in pairs(list) do
-			machines[k] = v
-		end
-	end
+	-- TODO: Consider adding only single position for given network
+	-- TEST: Make sure that multi tier machines work (currently supply converter)
+	--   these should not be a problem but can return multiple tiers, currently
+	--   machines collector below only handles single tier.
+	-- TODO: technic.get_cable_tier works only with cables, should get tier of any network node here.
+	-- This is to convert this function into general neighbor lookup tool, not just from cable PoV.
+	local machines = technic.machines[tier]
 	local connections = {}
 	local positions = {
 		{x=pos.x+1, y=pos.y,   z=pos.z},
@@ -29,84 +29,75 @@ local function check_connections(pos)
 		{x=pos.x,   y=pos.y+1, z=pos.z},
 		{x=pos.x,   y=pos.y-1, z=pos.z},
 		{x=pos.x,   y=pos.y,   z=pos.z+1},
-		{x=pos.x,   y=pos.y,   z=pos.z-1}}
-	for _,connected_pos in pairs(positions) do
+		{x=pos.x,   y=pos.y,   z=pos.z-1},
+	}
+	for _,connected_pos in ipairs(positions) do
 		local name = minetest.get_node(connected_pos).name
-		if machines[name] or technic.get_cable_tier(name) then
-			table.insert(connections,connected_pos)
+		if machines[name] or tier == technic.get_cable_tier(name) then
+			table.insert(connections,{
+				pos = connected_pos,
+				network = technic.networks[technic.pos2network(connected_pos)],
+			})
 		end
 	end
 	return connections
 end
 
-local function place_network_node(pos, node)
-	local positions = check_connections(pos)
-	if #positions < 1 then return end
-	local dead_end = #positions == 1
-
-	-- Get the network if there's any
-	local network_id
-	for _,connect_pos in ipairs(positions) do
-		network_id = technic.pos2network(connect_pos)
-		if network_id then break end
+local function place_network_node(pos, tier)
+	-- Get connections and primary network if there's any
+	local connections = get_neighbors(pos, tier)
+	if #connections < 1 then
+		return
 	end
-	local network = technic.networks[network_id]
+
+	-- Get first network from connections, this will be our primary network
+	local network
+	for _,connection in ipairs(connections) do
+		if connection.network then
+			network = connection.network
+			break
+		end
+	end
+
 	if not network then
 		-- We're evidently not on a network, nothing to add ourselves to
 		return
 	end
 
-	if not dead_end then
-		-- TODO: Allow connecting networks:
-		-- If neighbor branch belongs to another network check which one has least #all_nodes and rebuild that branch
-		local removed = 0
-		for _,connect_pos in ipairs(positions) do
-			local net = technic.pos2network(connect_pos)
-			if net and net ~= network_id then
-				-- Remove network if position belongs to another network
-				technic.remove_network(network_id)
-				removed = removed + 1
-			end
-		end
-		-- Do not build whole network here if something was cleaned up, instead allow switch ABM to take care of it
-		if removed > 0 then return end
-		-- Nodes around do not belong to another network but missing branches must be added as whole
-		local sw_pos = technic.network2sw_pos(network_id)
-		technic.add_network_branch({pos}, sw_pos, network)
+	-- Attach to primary network, this must be done before building branches from this position
+	technic.add_network_node(pos, network)
+	if #connections == 1 then
+		-- Only single connected position and we are already attached to it
 		return
 	end
 
-	-- Dead end placed, add it to the network
-	-- Actually add it to the (cached) network
-	-- TODO: This should use check_node_subp or add_network_branch
-	local tier = network.tier
-	local pos_hash = minetest.hash_node_position(pos)
-	technic.cables[pos_hash] = network_id
-	pos.visited = 1
-	if technic.is_tier_cable(name, tier) then
-		network.all_nodes[pos_hash] = pos
-	elseif technic.machines[tier][node.name] then
-		if     technic.machines[tier][node.name] == technic.producer then
-			table.insert(network.PR_nodes,pos)
-		elseif technic.machines[tier][node.name] == technic.receiver then
-			table.insert(network.RE_nodes,pos)
-		elseif technic.machines[tier][node.name] == technic.producer_receiver then
-			table.insert(network.PR_nodes,pos)
-			table.insert(network.RE_nodes,pos)
-		elseif technic.machines[tier][node.name] == technic.battery then
-			table.insert(network.BA_nodes,pos)
+	-- Check if there's any neighbors that do not belong to chosen primary network and handle those
+	local removed = 0
+	for _,connection in ipairs(connections) do
+		if connection.network then
+			if connection.network.id ~= network.id then
+				-- Remove network if position belongs to another network
+				-- FIXME: Network requires rebuild but avoid doing it here if possible.
+				technic.remove_network(connection.network.id)
+				connection.network = nil
+				removed = removed + 1
+			end
+		else
+			-- There's node that does not belong to any network, attach whole branch
+			technic.add_network_branch({connection.pos}, network)
 		end
 	end
+
 end
 
-local function remove_network_node(pos)
+local function remove_network_node(pos, tier)
 	-- Get the network
 	local network_id = technic.pos2network(pos)
 	if not network_id then return end
 
-	local positions = check_connections(pos)
-	if #positions < 1 then return end
-	local dead_end = #positions == 1
+	local connections = get_neighbors(pos, tier)
+	if #connections < 1 then return end
+	local dead_end = #connections == 1
 
 	if dead_end then
 		-- Dead end machine or cable removed, remove it from the network
@@ -179,8 +170,8 @@ function technic.register_cable(tier, size, description, prefix, override_cable,
 		node_box = node_box,
 		connects_to = {"group:technic_"..ltier.."_cable",
 			"group:technic_"..ltier, "group:technic_all_tiers"},
-		on_construct = function(pos) place_network_node(pos, node_name) end,
-		on_destruct = remove_network_node,
+		on_construct = function(pos) place_network_node(pos, tier) end,
+		on_destruct = function(pos) remove_network_node(pos, tier) end,
 	}, override_cable))
 
 	local xyz = {
@@ -206,6 +197,7 @@ function technic.register_cable(tier, size, description, prefix, override_cable,
 			return "-"..p
 		end
 	end
+	-- TODO: Does this really need 6 different nodes? Use single node for cable plate if possible.
 	for p, i in pairs(xyz) do
 		local def = {
 			description = S("%s Cable Plate"):format(tier),
@@ -219,8 +211,8 @@ function technic.register_cable(tier, size, description, prefix, override_cable,
 			node_box = table.copy(node_box),
 			connects_to = {"group:technic_"..ltier.."_cable",
 				"group:technic_"..ltier, "group:technic_all_tiers"},
-			on_construct = function(pos) place_network_node(pos, node_name.."_plate_"..i) end,
-			on_destruct = remove_network_node,
+			on_construct = function(pos) place_network_node(pos, tier) end,
+			on_destruct = function(pos) remove_network_node(pos, tier) end,
 		}
 		def.node_box.fixed = {
 			{-size, -size, -size, size, size, size},
@@ -301,18 +293,20 @@ function technic.register_cable(tier, size, description, prefix, override_cable,
 	})
 end
 
+-- TODO: Instead of universal callback either require machines to call place_network_node or patch all nodedefs
 minetest.register_on_placenode(function(pos, node)
 	for tier, machine_list in pairs(technic.machines) do
 		if machine_list[node.name] ~= nil then
-			return place_network_node(pos, node)
+			return place_network_node(pos, tier)
 		end
 	end
 end)
 
+-- TODO: Instead of universal callback either require machines to call remove_network_node or patch all nodedefs
 minetest.register_on_dignode(function(pos, node)
 	for tier, machine_list in pairs(technic.machines) do
 		if machine_list[node.name] ~= nil then
-			return remove_network_node(pos)
+			return remove_network_node(pos, tier)
 		end
 	end
 end)

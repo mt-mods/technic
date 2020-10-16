@@ -25,6 +25,17 @@ function sourcefile(name)
 	dofile(source_path(name) .. ".lua")
 end
 
+function timeit(count, func, ...)
+	local socket = require 'socket'
+	local t1 = socket.gettime() * 1000
+	for i=0,count do
+		func(...)
+	end
+	local diff = (socket.gettime() * 1000) - t1
+	local info = debug.getinfo(func,'S')
+	print(string.format("\nTimeit: %s:%d took %d ticks", info.short_src, info.linedefined, diff))
+end
+
 function count(t)
 	if type(t) == "table" or type(t) == "userdata" then
 		local c = 0
