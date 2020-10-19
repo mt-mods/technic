@@ -154,7 +154,7 @@ local function make_constructor(mark, length)
 						..";6,"..(i - 1)..";1,1;]"
 			end
 			formspec = formspec .. "list[current_player;main;0,5;8,4;]"
-			if 1 == mark then formspec = formspec .. "listring[]"
+			if 1 == mark then formspec = formspec .. "listring[]" end
 			meta:set_string("formspec", formspec)
 			meta:set_string("infotext", S("Constructor Mk%d"):format(mark))
 			local inv = meta:get_inventory()
