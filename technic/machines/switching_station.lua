@@ -604,8 +604,8 @@ end
 minetest.register_abm({
 	label = "Machines: timeout check",
 	nodenames = {"group:technic_machine"},
-	interval   = 1.9,
-	chance     = 3,
+	interval   = 1,
+	chance     = 1,
 	action = function(pos, node, active_object_count, active_object_count_wider)
 		for tier, machines in pairs(technic.machines) do
 			if machines[node.name] and switching_station_timeout_count(pos, tier) then
