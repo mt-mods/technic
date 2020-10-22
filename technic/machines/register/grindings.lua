@@ -51,29 +51,23 @@ local default_extract = dye and "dye:brown 2"
 -- https://en.wikipedia.org/wiki/Catechu ancient brown dye from the wood of acacia trees
 local acacia_extract = dye and "dye:brown 8"
 
-register_tree_grinding("Common Tree",	"group:tree", 						 "group:wood",			default_extract)
-register_tree_grinding("Common Tree",	"default:tree",                      "default:wood",        default_extract)
-register_tree_grinding("Common Tree",	"default:aspen_tree",                "default:aspen_wood",  default_extract)
-register_tree_grinding("Common Tree",	"default:jungletree",                "default:junglewood",  default_extract)
-register_tree_grinding("Common Tree",	"default:pine_tree",                 "default:pine_wood",   default_extract)
-register_tree_grinding("Rubber Tree",	"moretrees:rubber_tree_trunk",  	 rubber_tree_planks, 	"technic:raw_latex")
-register_tree_grinding("Rubber Tree", 	"moretrees:rubber_tree_trunk_empty", nil,                   "technic:raw_latex")
+-- technic recipes don't support groups yet :/
+--register_tree_grinding("Common Tree", "group:tree", "group:wood", default_extract)
+
+register_tree_grinding("Acacia", "default:acacia_tree", "default:acacia_wood", acacia_extract)
+register_tree_grinding("Common Tree", "default:tree", "default:wood", default_extract)
+register_tree_grinding("Common Tree", "default:aspen_tree", "default:aspen_wood", default_extract)
+register_tree_grinding("Common Tree", "default:jungletree", "default:junglewood", default_extract)
+register_tree_grinding("Common Tree", "default:pine_tree", "default:pine_wood", default_extract)
+register_tree_grinding("Rubber Tree", "moretrees:rubber_tree_trunk", rubber_tree_planks, "technic:raw_latex")
+register_tree_grinding("Rubber Tree", "moretrees:rubber_tree_trunk_empty", nil, "technic:raw_latex")
 
 if moretrees then
-	register_tree_grinding("Common Tree",	"moretrees:beech_tree_trunk",		"moretrees:beech_tree_planks",		default_extract)
-	register_tree_grinding("Common Tree",	"moretrees:apple_tree_trunk",		"moretrees:apple_tree_planks",		default_extract)
-	register_tree_grinding("Common Tree",	"moretrees:oak_tree_trunk",			"moretrees:oak_tree_planks",		default_extract)
-	register_tree_grinding("Common Tree",	"moretrees:giant_sequoia_trunk",	"moretrees:giant_sequoia_planks",	default_extract)
-	register_tree_grinding("Common Tree",	"moretrees:birch_tree_trunk",		"moretrees:birch_tree_planks",		default_extract)
-	register_tree_grinding("Common Tree",	"moretrees:palm_tree_trunk",		"moretrees:palm_tree_planks",		default_extract)
-	register_tree_grinding("Common Tree",	"moretrees:date_palm_tree_trunk",	"moretrees:date_palm_tree_planks",	default_extract)
-	register_tree_grinding("Common Tree",	"moretrees:spruce_tree_trunk",		"moretrees:spruce_tree_planks",		default_extract)
-	register_tree_grinding("Common Tree",	"moretrees:ceder_tree_trunk",		"moretrees:ceder_tree_planks",		default_extract)
-	register_tree_grinding("Common Tree",	"moretrees:poplar_tree_trunk",		"moretrees:poplar_tree_planks",		default_extract)
-	register_tree_grinding("Common Tree",	"moretrees:wollow_tree_trunk",		"moretrees:wollow_tree_planks",		default_extract)
-	register_tree_grinding("Common Tree",	"moretrees:douglas_fir_trunk",		"moretrees:douglas_fir_planks",		default_extract)
-
-	register_tree_grinding("Acacia", 		"moretrees:acacia_trunk", 			"moretrees:acacia_planks", 			acacia_extract)
-else
-	register_tree_grinding("Acacia", 		"default:acacia_tree", 				"default:acacia_wood", 				acacia_extract)
+	local trees = {
+		"beech", "apple_tree", "oak", "sequoia", "birch", "palm",
+		"date_palm", "spruce", "cedar", "poplar", "willow", "fir"
+	}
+	for _,tree in pairs(trees) do
+		register_tree_grinding("Common Tree", "moretrees:"..tree.."_trunk", "moretrees:"..tree.."_planks", default_extract)
+	end
 end

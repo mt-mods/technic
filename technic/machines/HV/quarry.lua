@@ -82,7 +82,11 @@ local function set_quarry_status(pos)
 		else
 			local rel_y = meta:get_int("dig_level") - pos.y
 			status = S("Digging %d m "..(rel_y > 0 and "above" or "below").." machine"):format(math.abs(rel_y))
-			meta:set_string("infotext", S(meta:get_int("HV_EU_input") >= quarry_demand and "%s Active" or "%s Unpowered"):format(machine_name))
+			if meta:get_int("HV_EU_input") >= quarry_demand then
+				meta:set_string("infotext", S("%s Active"):format(machine_name))
+			else
+				meta:set_string("infotext", S("%s Unpowered"):format(machine_name))
+			end
 			meta:set_int("HV_EU_demand", quarry_demand)
 		end
 	else
