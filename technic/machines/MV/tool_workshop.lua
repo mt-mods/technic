@@ -60,9 +60,9 @@ local run = function(pos, node)
 			repairable = true
 		end
 	end
-	technic.handle_machine_pipeworks(pos, tube_upgrade, function (pos, x_velocity, z_velocity)
+	technic.handle_machine_pipeworks(pos, tube_upgrade, function(pos2, x_velocity, z_velocity)
 		if not repairable then
-			technic.send_items(pos, x_velocity, z_velocity, "src")
+			technic.send_items(pos2, x_velocity, z_velocity, "src")
 		end
 	end)
 	if not repairable then

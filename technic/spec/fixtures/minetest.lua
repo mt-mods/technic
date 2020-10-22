@@ -7,6 +7,17 @@ _G.world.set_node = function(pos, node)
 	local hash = minetest.hash_node_position(pos)
 	world.nodes[hash] = node
 end
+_G.world.add_layout = function(layout, offset)
+	for _, node in ipairs(layout) do
+		local pos = node[1]
+		if offset then
+			pos.x = pos.x + offset.x
+			pos.y = pos.y + offset.y
+			pos.z = pos.z + offset.z
+		end
+		_G.world.set_node(pos, {name=node[2], param2=0})
+	end
+end
 
 _G.core = {}
 _G.minetest = _G.core
@@ -79,6 +90,12 @@ _G.minetest.register_node = noop
 _G.minetest.register_on_placenode = noop
 _G.minetest.register_on_dignode = noop
 _G.minetest.item_drop = noop
+
+_G.minetest.get_us_time = function()
+	local socket = require 'socket'
+	-- FIXME: Returns the time in seconds, relative to the origin of the universe.
+	return socket.gettime() * 1000 * 1000
+end
 
 _G.minetest.get_node = function(pos)
 	local hash = minetest.hash_node_position(pos)

@@ -225,11 +225,11 @@ function technic.register_battery_box(data)
 		if data.tube then
 			local inv = meta:get_inventory()
 			technic.handle_machine_pipeworks(pos, tube_upgrade,
-			function(pos, x_velocity, z_velocity)
+			function(pos2, x_velocity, z_velocity)
 				if tool_full and not inv:is_empty("src") then
-					technic.send_items(pos, x_velocity, z_velocity, "src")
+					technic.send_items(pos2, x_velocity, z_velocity, "src")
 				elseif tool_empty and not inv:is_empty("dst") then
-					technic.send_items(pos, x_velocity, z_velocity, "dst")
+					technic.send_items(pos2, x_velocity, z_velocity, "dst")
 				end
 			end)
 		end
@@ -303,9 +303,9 @@ function technic.register_battery_box(data)
 			drop = "technic:"..ltier.."_battery_box0",
 			on_construct = function(pos)
 				local meta = minetest.get_meta(pos)
-				local EU_upgrade, tube_upgrade = 0, 0
+				local EU_upgrade = 0
 				if data.upgrade then
-					EU_upgrade, tube_upgrade = technic.handle_machine_upgrades(meta)
+					EU_upgrade = technic.handle_machine_upgrades(meta)
 				end
 				local max_charge = data.max_charge * (1 + EU_upgrade / 10)
 				local charge = meta:get_int("internal_EU_charge")
@@ -344,9 +344,9 @@ function technic.register_battery_box(data)
 					meta = minetest.get_meta(pos)
 					if not pipeworks.may_configure(pos, sender) then return end
 					fs_helpers.on_receive_fields(pos, fields)
-					local EU_upgrade, tube_upgrade = 0, 0
+					local EU_upgrade = 0
 					if data.upgrade then
-						EU_upgrade, tube_upgrade = technic.handle_machine_upgrades(meta)
+						EU_upgrade = technic.handle_machine_upgrades(meta)
 					end
 					local max_charge = data.max_charge * (1 + EU_upgrade / 10)
 					local charge = meta:get_int("internal_EU_charge")

@@ -164,25 +164,18 @@ technic.is_overloaded = is_overloaded
 -- Functions to traverse the electrical network
 --
 
-local function attach_network_machine(network_id, pos)
-	local pos_hash = poshash(pos)
-	local net_id_old = cables[pos_hash]
-	if net_id_old == nil then
-		cables[pos_hash] = network_id
-	elseif net_id_old ~= network_id then
+-- Add a machine node to the LV/MV/HV network
+local function add_network_machine(nodes, pos, network_id, all_nodes, no_overload)
+	local node_id = poshash(pos)
+	local net_id_old = cables[node_id]
+	if not no_overload and net_id_old and net_id_old ~= network_id then
 		-- do not allow running pos from multiple networks, also disable switch
 		overload_network(network_id, pos)
 		overload_network(net_id_old, pos)
-		cables[pos_hash] = network_id
 		local meta = minetest.get_meta(pos)
 		meta:set_string("infotext",S("Network Overloaded"))
 	end
-end
-
--- Add a machine node to the LV/MV/HV network
-local function add_network_machine(nodes, pos, network_id, all_nodes)
 	table.insert(nodes, pos)
-	local node_id = poshash(pos)
 	cables[node_id] = network_id
 	all_nodes[node_id] = pos
 end
@@ -193,33 +186,27 @@ local function add_cable_node(nodes, pos, network_id, queue)
 	cables[node_id] = network_id
 	if not nodes[node_id] then
 		nodes[node_id] = pos
-		queue[#queue + 1] = pos
+		table.insert(queue, pos)
 	end
 end
 
 -- Generic function to add found connected nodes to the right classification array
 local function add_network_node(PR_nodes, RE_nodes, BA_nodes, all_nodes, pos, machines, tier, network_id, queue)
-
 	technic.get_or_load_node(pos)
 	local name = minetest.get_node(pos).name
 
 	if technic.is_tier_cable(name, tier) then
 		add_cable_node(all_nodes, pos, network_id, queue)
 	elseif machines[name] then
-		--dprint(name.." is a "..machines[name])
 
 		if     machines[name] == technic.producer then
-			attach_network_machine(network_id, pos)
 			add_network_machine(PR_nodes, pos, network_id, all_nodes)
 		elseif machines[name] == technic.receiver then
-			attach_network_machine(network_id, pos)
 			add_network_machine(RE_nodes, pos, network_id, all_nodes)
 		elseif machines[name] == technic.producer_receiver then
-			--attach_network_machine(network_id, pos)
-			add_network_machine(PR_nodes, pos, network_id, all_nodes)
-			add_network_machine(RE_nodes, pos, network_id, all_nodes)
+			add_network_machine(PR_nodes, pos, network_id, all_nodes, true)
+			table.insert(RE_nodes, pos)
 		elseif machines[name] == technic.battery then
-			attach_network_machine(network_id, pos)
 			add_network_machine(BA_nodes, pos, network_id, all_nodes)
 		end
 

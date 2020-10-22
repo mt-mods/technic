@@ -205,7 +205,7 @@ function technic.register_generator(data)
 			local timer = minetest.get_node_timer(pos)
 			timer:start(1)
 		end,
-		on_timer = function(pos, node)
+		on_timer = function(pos)
 			-- Connected back?
 			if technic.get_timeout(tier, pos) > 0 then return false end
 

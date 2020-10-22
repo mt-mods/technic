@@ -163,7 +163,7 @@ local function form_handler(pos, formname, fields, sender)
 	local inv        = meta:get_inventory()
 	local inputstack = inv:get_stack("src", 1)
 	local inputname  = inputstack:get_name()
-	local multiplier = 0
+	local multiplier
 	local size       = meta:get_int("size")
 	if size < 1 then size = 1 end
 
