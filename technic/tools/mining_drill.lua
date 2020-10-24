@@ -242,18 +242,12 @@ end
 local function mining_drill_mk2_setmode(user,itemstack)
 	local player_name=user:get_player_name()
 	local item=itemstack:to_table()
-	local mode = nil
-	local meta=minetest.deserialize(item["metadata"])
-	if meta==nil then
-		meta={}
-		mode=0
-	end
+	local meta=minetest.deserialize(item["metadata"]) or {}
 	if meta["mode"]==nil then
 		minetest.chat_send_player(player_name, S("Use while sneaking to change Mining Drill Mk%d modes."):format(2))
 		meta["mode"]=0
-		mode=0
 	end
-	mode=(meta["mode"])
+	local mode=meta["mode"]
 	mode=mode+1
 	if mode>=5 then mode=1 end
 	minetest.chat_send_player(player_name, S("Mining Drill Mk%d Mode %d"):format(2, mode)..": "..mining_drill_mode_text[mode][1])
@@ -266,17 +260,12 @@ end
 local function mining_drill_mk3_setmode(user,itemstack)
 	local player_name=user:get_player_name()
 	local item=itemstack:to_table()
-	local meta=minetest.deserialize(item["metadata"])
-	if meta==nil then
-		meta={}
-		mode=0
-	end
+	local meta=minetest.deserialize(item["metadata"]) or {}
 	if meta["mode"]==nil then
 		minetest.chat_send_player(player_name, S("Use while sneaking to change Mining Drill Mk%d modes."):format(3))
 		meta["mode"]=0
-		mode=0
 	end
-	mode=(meta["mode"])
+	local mode=meta["mode"]
 	mode=mode+1
 	if mode>=6 then mode=1 end
 	minetest.chat_send_player(player_name, S("Mining Drill Mk%d Mode %d"):format(3, mode)..": "..mining_drill_mode_text[mode][1])

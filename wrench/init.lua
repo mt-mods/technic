@@ -33,7 +33,7 @@ local function get_pickup_name(name)
 end
 
 local function restore(pos, placer, itemstack)
-	local name = itemstack:get_name()
+	local itemname = itemstack:get_name()
 	local node = minetest.get_node(pos)
 	local meta = minetest.get_meta(pos)
 	local inv = meta:get_inventory()
@@ -43,7 +43,7 @@ local function restore(pos, placer, itemstack)
 	if not data then
 		minetest.remove_node(pos)
 		minetest.log("error", placer:get_player_name().." wanted to place "..
-				name.." at "..minetest.pos_to_string(pos)..
+				itemname.." at "..minetest.pos_to_string(pos)..
 				", but it had no data.")
 		minetest.log("verbose", "itemstack: "..itemstack:to_string())
 		return true
@@ -120,13 +120,13 @@ minetest.register_tool("wrench:wrench", {
 			minetest.record_protection_violation(pos, player_name)
 			return
 		end
-		local name = minetest.get_node(pos).name
-		local def = wrench.registered_nodes[name]
+		local nname = minetest.get_node(pos).name
+		local def = wrench.registered_nodes[nname]
 		if not def then
 			return
 		end
 
-		local stack = ItemStack(get_pickup_name(name))
+		local stack = ItemStack(get_pickup_name(nname))
 		local player_inv = placer:get_inventory()
 		if not player_inv:room_for_item("main", stack) then
 			return
@@ -144,15 +144,15 @@ minetest.register_tool("wrench:wrench", {
 		end
 
 		local metadata = {}
-		metadata.name = name
+		metadata.name = nname
 		metadata.version = LATEST_SERIALIZATION_VERSION
 
 		local inv = meta:get_inventory()
 		local lists = {}
 		for _, listname in pairs(def.lists or {}) do
 			local list = inv:get_list(listname)
-			for i, stack in pairs(list) do
-				list[i] = stack:to_string()
+			for i, s in pairs(list) do
+				list[i] = s:to_string()
 			end
 			lists[listname] = list
 		end
