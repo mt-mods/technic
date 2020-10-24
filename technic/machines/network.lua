@@ -50,7 +50,6 @@ function technic.remove_network(network_id)
 	end
 	networks[network_id] = nil
 	technic.active_networks[network_id] = nil
-	--print(string.format("technic.remove_network(%.17g) at %s", network_id, minetest.pos_to_string(technic.network2pos(network_id))))
 end
 
 -- Remove machine or cable from network
@@ -62,16 +61,26 @@ function technic.remove_network_node(network_id, pos)
 	local node_id = poshash(pos)
 	cables[node_id] = nil
 	network.all_nodes[node_id] = nil
+	-- TODO: All following things can be skipped if node is not machine
+	--   check here if it is or is not cable
+	--   or add separate function to remove cables and move responsibility to caller
 	-- Clear indexed arrays, do NOT leave holes
+	local machine_removed = false
 	for _,tblname in ipairs(network_node_arrays) do
 		local tbl = network[tblname]
 		for i=#tbl,1,-1 do
 			local mpos = tbl[i]
 			if mpos.x == pos.x and mpos.y == pos.y and mpos.z == pos.z then
 				table.remove(tbl, i)
+				machine_removed = true
 				break
 			end
 		end
+	end
+	if machine_removed then
+		-- Machine can still be in world, just not connected to any network. If so then disable it.
+		local node = minetest.get_node(pos)
+		technic.disable_machine(pos, node)
 	end
 end
 
@@ -123,9 +132,27 @@ local function touch_node(tier, pos, timeout)
 		-- this should get built up during registration
 		node_timeout[tier] = {}
 	end
-	node_timeout[tier][poshash(pos)] = timeout or 2
+	node_timeout[tier][poshash(pos)] = timeout or 5
 end
 technic.touch_node = touch_node
+
+function technic.disable_machine(pos, node)
+	local nodedef = minetest.registered_nodes[node.name]
+	if nodedef and nodedef.technic_disabled_machine_name then
+		node.name = nodedef.technic_disabled_machine_name
+		minetest.swap_node(pos, node)
+	elseif nodedef and nodedef.technic_on_disable then
+		nodedef.technic_on_disable(pos, node)
+	end
+	if nodedef then
+		local meta = minetest.get_meta(pos)
+		meta:set_string("infotext", S("%s Has No Network"):format(nodedef.description))
+	end
+	local node_id = poshash(pos)
+	for _,nodes in pairs(node_timeout) do
+		nodes[node_id] = nil
+	end
+end
 
 --
 -- Network overloading (incomplete cheat mitigation)
@@ -165,26 +192,28 @@ technic.is_overloaded = is_overloaded
 --
 
 -- Add a machine node to the LV/MV/HV network
-local function add_network_machine(nodes, pos, network_id, all_nodes, no_overload)
+local function add_network_machine(nodes, pos, network_id, all_nodes, multitier)
 	local node_id = poshash(pos)
 	local net_id_old = cables[node_id]
-	if not no_overload and net_id_old and net_id_old ~= network_id then
-		-- do not allow running pos from multiple networks, also disable switch
-		overload_network(network_id, pos)
-		overload_network(net_id_old, pos)
+	if net_id_old == nil then
+		-- Add machine to network only if it is not already added
+		table.insert(nodes, pos)
+		cables[node_id] = network_id
+		all_nodes[node_id] = pos
+	elseif not multitier and net_id_old ~= network_id then
+		-- Do not allow running from multiple networks, trigger overload
+		overload_network(network_id)
+		overload_network(net_id_old)
 		local meta = minetest.get_meta(pos)
 		meta:set_string("infotext",S("Network Overloaded"))
 	end
-	table.insert(nodes, pos)
-	cables[node_id] = network_id
-	all_nodes[node_id] = pos
 end
 
 -- Add a wire node to the LV/MV/HV network
 local function add_cable_node(nodes, pos, network_id, queue)
 	local node_id = poshash(pos)
-	cables[node_id] = network_id
-	if not nodes[node_id] then
+	if not cables[node_id] then
+		cables[node_id] = network_id
 		nodes[node_id] = pos
 		table.insert(queue, pos)
 	end
@@ -198,7 +227,6 @@ local function add_network_node(PR_nodes, RE_nodes, BA_nodes, all_nodes, pos, ma
 	if technic.is_tier_cable(name, tier) then
 		add_cable_node(all_nodes, pos, network_id, queue)
 	elseif machines[name] then
-
 		if     machines[name] == technic.producer then
 			add_network_machine(PR_nodes, pos, network_id, all_nodes)
 		elseif machines[name] == technic.receiver then
@@ -209,14 +237,12 @@ local function add_network_node(PR_nodes, RE_nodes, BA_nodes, all_nodes, pos, ma
 		elseif machines[name] == technic.battery then
 			add_network_machine(BA_nodes, pos, network_id, all_nodes)
 		end
-
-		touch_node(tier, pos, 2) -- Touch node
 	end
 end
 
 -- Generic function to add single nodes to the right classification array of existing network
 function technic.add_network_node(pos, network)
-	return add_network_node(
+	add_network_node(
 		network.PR_nodes,
 		network.RE_nodes,
 		network.BA_nodes,
@@ -247,7 +273,7 @@ end
 
 local function touch_nodes(list, tier)
 	for _, pos in ipairs(list) do
-		touch_node(tier, pos, 2) -- Touch node
+		touch_node(tier, pos) -- Touch node
 	end
 end
 
@@ -288,12 +314,10 @@ function technic.add_network_branch(queue, network)
 end
 
 function technic.build_network(network_id)
-	--print(string.format("technic.build_network(%.17g) at %s", network_id, minetest.pos_to_string(technic.network2pos(network_id))))
 	technic.remove_network(network_id)
 	local sw_pos = technic.network2sw_pos(network_id)
 	local tier = technic.sw_pos2tier(sw_pos)
 	if not tier then
-		--print(string.format("Cannot build network, cannot get tier for switching station at %s", minetest.pos_to_string(sw_pos)))
 		return
 	end
 	local network = {
@@ -349,7 +373,7 @@ function technic.network_run(network_id)
 
 	-- Check if network is overloaded / conflicts with another network
 	if technic.is_overloaded(network_id) then
-		-- TODO: Overload check should happen before technic.network_run is called, overloaded network should not generate any events
+		-- TODO: Overload check should happen before technic.network_run is called
 		return
 	end
 
@@ -493,7 +517,7 @@ function technic.network_run(network_id)
 		local t1 = minetest.get_us_time()
 		local diff = t1 - t0
 		if diff > 50000 then
-			minetest.log("warning", "[technic] [+supply] switching station abm took " .. diff .. " us at " .. minetest.pos_to_string(pos))
+			minetest.log("warning", "[technic] [+supply] technic_run took " .. diff .. " us at " .. minetest.pos_to_string(pos))
 		end
 
 		return
@@ -522,7 +546,7 @@ function technic.network_run(network_id)
 		local t1 = minetest.get_us_time()
 		local diff = t1 - t0
 		if diff > 50000 then
-			minetest.log("warning", "[technic] [-supply] switching station abm took " .. diff .. " us at " .. minetest.pos_to_string(pos))
+			minetest.log("warning", "[technic] [-supply] technic_run took " .. diff .. " us at " .. minetest.pos_to_string(pos))
 		end
 
 		return
@@ -546,7 +570,7 @@ function technic.network_run(network_id)
 	local t1 = minetest.get_us_time()
 	local diff = t1 - t0
 	if diff > 50000 then
-		minetest.log("warning", "[technic] switching station abm took " .. diff .. " us at " .. minetest.pos_to_string(pos))
+		minetest.log("warning", "[technic] technic_run took " .. diff .. " us at " .. minetest.pos_to_string(pos))
 	end
 
 end

@@ -13,11 +13,9 @@ end
 
 local function get_neighbors(pos, tier)
 	-- TODO: Move this to network.lua
-	-- TEST: Make sure that multi tier machines work (currently supply converter)
-	--   these should not be a problem but can return multiple tiers, currently
-	--   machines collector below only handles single tier.
 	local tier_machines = technic.machines[tier]
-	local network = technic.networks[technic.pos2network(pos)]
+	local is_cable = technic.is_tier_cable(minetest.get_node(pos).name, tier)
+	local network = is_cable and technic.networks[technic.pos2network(pos)]
 	local cables = {}
 	local machines = {}
 	local positions = {
@@ -32,7 +30,7 @@ local function get_neighbors(pos, tier)
 		local name = minetest.get_node(connected_pos).name
 		if tier_machines[name] then
 			table.insert(machines, connected_pos)
-		elseif tier == technic.get_cable_tier(name) then
+		elseif technic.is_tier_cable(name, tier) then
 			local cable_network = technic.networks[technic.pos2network(connected_pos)]
 			table.insert(cables,{
 				pos = connected_pos,
@@ -55,6 +53,13 @@ local function place_network_node(pos, tier, name)
 	-- Attach to primary network, this must be done before building branches from this position
 	technic.add_network_node(pos, network)
 	if not technic.is_tier_cable(name, tier) then
+		-- Check connected cables for foreign networks
+		for _, connection in ipairs(cables) do
+			if connection.network and connection.network.id ~= network.id then
+				technic.overload_network(connection.network.id)
+				technic.overload_network(network.id)
+			end
+		end
 		-- Machine added, skip all network building
 		return
 	end
@@ -97,15 +102,19 @@ local function remove_network_node(pos, tier, name)
 		-- TEST: this should have test in building_spec.lua for multiple connections
 		if technic.is_tier_cable(name, tier) then
 			for _,machine_pos in ipairs(machines) do
-				technic.remove_network_node(network.id, machine_pos)
+				local net, _, _ = get_neighbors(machine_pos, tier)
+				if not net then
+					-- Remove machine from network if it does not have other connected cables
+					technic.remove_network_node(network.id, machine_pos)
+				end
 			end
 		end
 	else
 		-- TODO: Check branches around and switching stations for branches:
-		--   remove branches that do not have switching station.
-		--   remove branches not connected to another branch.
-		--   do not rebuild networks here, leave that for ABM to reduce unnecessary cache building.
-		--   To do all this network must be aware of individual branches, might not be worth it...
+		--   remove branches that do not have switching station. Switching stations not tracked but could be easily tracked.
+		--   remove branches not connected to another branch. Individual branches not tracked, requires simple AI heuristics.
+		--   move branches that have switching station to new networks without checking or loading actual nodes in world.
+		--   To do all this network must be aware of individual branches and switching stations, might not be worth it...
 		-- For now remove whole network and let ABM rebuild it
 		technic.remove_network(network.id)
 	end
