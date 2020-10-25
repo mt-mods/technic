@@ -17,7 +17,11 @@ minetest.register_craft({
 
 local function start_network(pos)
 	local tier = technic.sw_pos2tier(pos)
-	if not tier then return end
+	if not tier then
+		local meta = minetest.get_meta(pos)
+		meta:set_string("infotext", S("%s Has No Network"):format(S("Switching Station")))
+		return
+	end
 	local network_id = technic.sw_pos2network(pos) or technic.create_network(pos)
 	technic.activate_network(network_id)
 end
@@ -48,20 +52,12 @@ minetest.register_node("technic:switching_station",{
 		meta:set_string("formspec", "field[channel;Channel;${channel}]")
 		start_network(pos)
 	end,
-	after_dig_node = function(pos)
+	on_destruct = function(pos)
 		-- Remove network when switching station is removed, if
 		-- there's another switching station network will be rebuilt.
 		local network_id = technic.sw_pos2network(pos)
-		local network = network_id and technic.networks[network_id]
-		if network then
-			if #network.SP_nodes <= 1 then
-				-- Last switching station, network collapses
-				technic.remove_network(network_id)
-			else
-				-- Remove switching station from network
-				network.SP_nodes[minetest.hash_node_position(pos)] = nil
-				network.all_nodes[minetest.hash_node_position(pos)] = nil
-			end
+		if technic.networks[network_id] then
+			technic.remove_network(network_id)
 		end
 	end,
 	on_receive_fields = function(pos, formname, fields, sender)
@@ -114,8 +110,9 @@ minetest.register_node("technic:switching_station",{
 -- The action code for the switching station --
 -----------------------------------------------
 
--- Lookup table for machine tiers
+-- Lookup table for machine tiers, export for external use
 local machine_tiers = {}
+technic.machine_tiers = machine_tiers
 minetest.register_on_mods_loaded(function()
 	for tier, machines in pairs(technic.machines) do
 		for name,_ in pairs(machines) do

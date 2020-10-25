@@ -53,7 +53,7 @@ function technic.remove_network(network_id)
 end
 
 -- Remove machine or cable from network
-local network_node_arrays = {"PR_nodes","BA_nodes","RE_nodes","SP_nodes"}
+local network_node_arrays = {"PR_nodes","BA_nodes","RE_nodes"}
 function technic.remove_network_node(network_id, pos)
 	local network = networks[network_id]
 	if not network then return end
@@ -200,12 +200,13 @@ technic.is_overloaded = is_overloaded
 local function add_network_machine(nodes, pos, network_id, all_nodes, multitier)
 	local node_id = poshash(pos)
 	local net_id_old = cables[node_id]
-	if net_id_old == nil then
+	if net_id_old == nil or (multitier and net_id_old ~= network_id and all_nodes[node_id] == nil) then
 		-- Add machine to network only if it is not already added
 		table.insert(nodes, pos)
+		-- FIXME: Machines connecting to multiple networks should have way to store multiple network ids
 		cables[node_id] = network_id
 		all_nodes[node_id] = pos
-	elseif not multitier and net_id_old ~= network_id then
+	elseif net_id_old ~= network_id then
 		-- Do not allow running from multiple networks, trigger overload
 		overload_network(network_id)
 		overload_network(net_id_old)
@@ -329,7 +330,7 @@ function technic.build_network(network_id)
 		-- Basic network data and lookup table for attached nodes (no switching stations)
 		id = network_id, tier = tier, all_nodes = {},
 		-- Indexed arrays for iteration by machine type
-		SP_nodes = {}, PR_nodes = {}, RE_nodes = {}, BA_nodes = {},
+		PR_nodes = {}, RE_nodes = {}, BA_nodes = {},
 		-- Power generation, usage and capacity related variables
 		supply = 0, demand = 0, battery_charge = 0, battery_charge_max = 0,
 		-- Network activation and excution control

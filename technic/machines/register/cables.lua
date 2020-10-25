@@ -11,10 +11,17 @@ function technic.get_cable_tier(name)
 	return cable_tier[name]
 end
 
+local function match_cable_tier_filter(name, tier)
+	-- Helper for get_neighbors to check for specific or any tier cable
+	if tier then
+		return cable_tier[name] == tier
+	end
+	return cable_tier[name] ~= nil
+end
 local function get_neighbors(pos, tier)
 	-- TODO: Move this to network.lua
-	local tier_machines = technic.machines[tier]
-	local is_cable = technic.is_tier_cable(minetest.get_node(pos).name, tier)
+	local tier_machines = tier and technic.machines[tier]
+	local is_cable = match_cable_tier_filter(minetest.get_node(pos).name, tier)
 	local network = is_cable and technic.networks[technic.pos2network(pos)]
 	local cables = {}
 	local machines = {}
@@ -28,9 +35,9 @@ local function get_neighbors(pos, tier)
 	}
 	for _,connected_pos in ipairs(positions) do
 		local name = minetest.get_node(connected_pos).name
-		if tier_machines[name] then
+		if tier_machines and tier_machines[name] then
 			table.insert(machines, connected_pos)
-		elseif technic.is_tier_cable(name, tier) then
+		elseif match_cable_tier_filter(name, tier) then
 			local cable_network = technic.networks[technic.pos2network(connected_pos)]
 			table.insert(cables,{
 				pos = connected_pos,
@@ -53,11 +60,26 @@ local function place_network_node(pos, tier, name)
 	-- Attach to primary network, this must be done before building branches from this position
 	technic.add_network_node(pos, network)
 	if not technic.is_tier_cable(name, tier) then
-		-- Check connected cables for foreign networks
-		for _, connection in ipairs(cables) do
-			if connection.network and connection.network.id ~= network.id then
-				technic.overload_network(connection.network.id)
-				technic.overload_network(network.id)
+		if technic.machines[tier][name] == technic.producer_receiver then
+			-- FIXME: Multi tier machine like supply converter should also attach to other networks around pos.
+			--      Preferably also with connection rules defined for machine.
+			--      nodedef.connect_sides could be used to generate these rules.
+			--		For now, assume that all multi network machines belong to technic.producer_receiver group:
+			-- Get cables and networks around PR_RE machine
+			local _, machine_cables, _ = get_neighbors(pos)
+			for _,connection in ipairs(machine_cables) do
+				if connection.network and connection.network ~= network then
+					-- Attach PR_RE machine to secondary networks (last added is primary until above note is resolved)
+					technic.add_network_node(pos, connection.network)
+				end
+			end
+		else
+			-- Check connected cables for foreign networks, overload if machine was connected to multiple networks
+			for _, connection in ipairs(cables) do
+				if connection.network and connection.network.id ~= network.id then
+					technic.overload_network(connection.network.id)
+					technic.overload_network(network.id)
+				end
 			end
 		end
 		-- Machine added, skip all network building
@@ -76,6 +98,7 @@ local function place_network_node(pos, tier, name)
 				-- Remove network if position belongs to another network
 				-- FIXME: Network requires partial rebuild but avoid doing it here if possible.
 				-- This might cause problems when merging two active networks into one
+				technic.remove_network(network.id)
 				technic.remove_network(connection.network.id)
 				connection.network = nil
 			end
