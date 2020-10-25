@@ -59,7 +59,7 @@ minetest.register_node("technic:power_monitor",{
 		"technic_power_monitor_front.png"
 	},
 	paramtype2 = "facedir",
-	groups = {snappy=2, choppy=2, oddly_breakable_by_hand=2, technic_all_tiers=1, technic_machine=1},
+	groups = {snappy=2, choppy=2, oddly_breakable_by_hand=2, technic_all_tiers=1},
 	connect_sides = {"bottom", "back"},
 	sounds = default.node_sound_wood_defaults(),
 	on_construct = function(pos)

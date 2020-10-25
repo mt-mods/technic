@@ -118,6 +118,11 @@ function technic.network_infotext(network_id, text)
 end
 
 local node_timeout = {}
+local default_timeout = 2
+
+function technic.set_default_timeout(timeout)
+	default_timeout = timeout or 2
+end
 
 function technic.get_timeout(tier, pos)
 	if node_timeout[tier] == nil then
@@ -132,7 +137,7 @@ local function touch_node(tier, pos, timeout)
 		-- this should get built up during registration
 		node_timeout[tier] = {}
 	end
-	node_timeout[tier][poshash(pos)] = timeout or 5
+	node_timeout[tier][poshash(pos)] = timeout or default_timeout
 end
 technic.touch_node = touch_node
 
