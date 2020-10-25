@@ -55,7 +55,7 @@ minetest.register_globalstep(function(dtime)
 
 		if node.name ~= "technic:switching_station" then
 			-- station vanished
-			technic.active_networks[network_id] = nil
+			technic.remove_network(network_id)
 
 		elseif network.timeout > now then
 			-- station active

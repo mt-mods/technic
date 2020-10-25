@@ -72,7 +72,6 @@ describe("Power network helper", function()
 		it("builds network", function()
 			local net = technic.networks[net_id]
 			-- Network table is valid
-			assert.is_indexed(net.SP_nodes)
 			assert.is_indexed(net.PR_nodes)
 			assert.is_indexed(net.RE_nodes)
 			assert.is_indexed(net.BA_nodes)
@@ -83,7 +82,6 @@ describe("Power network helper", function()
 		it("does not add duplicates to network", function()
 			local net = technic.networks[net_id]
 			-- Local network table is still valid
-			assert.equals(0, count(net.SP_nodes))
 			assert.equals(1, count(net.PR_nodes))
 			assert.equals(0, count(net.RE_nodes))
 			assert.equals(0, count(net.BA_nodes))

@@ -184,6 +184,35 @@ describe("Power network building", function()
 
 	end)
 
+	describe("cable building between networks", function()
+
+		world.add_layout({
+			{{x=100,y=830,z=100}, "technic:hv_cable"},
+			{{x=100,y=831,z=100}, "technic:switching_station"},
+			--{{x=101,y=830,z=100}, "technic:hv_cable"}, -- This cable is built
+			--{{x=101,y=831,z=100}, "technic:hv_cable"}, -- TODO: Add this cable as test case?
+			{{x=102,y=830,z=100}, "technic:hv_cable"},
+			{{x=102,y=831,z=100}, "technic:switching_station"},
+		})
+		-- Build network
+		local net = get_network_fixture({x=100,y=831,z=100})
+		local net2 = get_network_fixture({x=102,y=831,z=100})
+		local build_pos = {x=101,y=830,z=100}
+
+		it("does not crash", function()
+			assert.equals(1, count(net.all_nodes))
+			assert.equals(1, count(net2.all_nodes))
+			world.set_node(build_pos, {name="technic:hv_cable", param2=0})
+			technic.network_node_on_placenode(build_pos, "HV", "technic:hv_cable")
+		end)
+
+		it("removes network", function()
+			assert.is_nil(technic.networks[net.id])
+			assert.is_nil(technic.networks[net2.id])
+		end)
+
+	end)
+
 	describe("cable cutting", function()
 
 		world.add_layout({
