@@ -17,6 +17,7 @@ end
 
 -- the interval between technic_run calls
 local technic_run_interval = 1.0
+local set_default_timeout = technic.set_default_timeout
 
 -- iterate over all collected switching stations and execute the technic_run function
 local timer = 0
@@ -41,6 +42,7 @@ minetest.register_globalstep(function(dtime)
 		-- normal run_interval
 		technic_run_interval = 1.0
 	end
+	set_default_timeout(math.ceil(technic_run_interval) + 1)
 
 	local now = minetest.get_us_time()
 

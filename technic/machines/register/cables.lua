@@ -98,8 +98,6 @@ local function remove_network_node(pos, tier, name)
 		-- Dead end cable removed, remove it from the network
 		technic.remove_network_node(network.id, pos)
 		-- Remove neighbor machines from network if cable was removed
-		-- FIXME: this is not compatible with machines that have multiple connections to network
-		-- TEST: this should have test in building_spec.lua for multiple connections
 		if technic.is_tier_cable(name, tier) then
 			for _,machine_pos in ipairs(machines) do
 				local net, _, _ = get_neighbors(machine_pos, tier)
