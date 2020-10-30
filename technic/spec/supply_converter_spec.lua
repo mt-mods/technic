@@ -41,8 +41,10 @@ describe("Supply converter", function()
 			{{x=101,y=821,z=100}, "technic:supply_converter"},
 			{{x=102,y=820,z=100}, "technic:hv_cable"},
 			-- {{x=102,y=821,z=100}, "technic:supply_converter"}, -- This machine is built
-			{{x=102,y=821,z= 99}, "technic:hv_cable"}, -- This should not be added to network
-			{{x=102,y=821,z=101}, "technic:hv_cable"}, -- This should not be added to network
+			{{x=102,y=822,z=100}, "technic:mv_cable"},            -- Supply network for placed SC
+			{{x=102,y=823,z=100}, "technic:switching_station"},   -- Supply network for placed SC
+			{{x=102,y=821,z= 99}, "technic:hv_cable"},            -- This should not be added to network
+			{{x=102,y=821,z=101}, "technic:hv_cable"},            -- This should not be added to network
 			{{x=103,y=820,z=100}, "technic:hv_cable"},
 			-- Second network for overload test
 			{{x=100,y=820,z=102}, "technic:hv_cable"},
@@ -50,8 +52,9 @@ describe("Supply converter", function()
 			-- {{x=100,y=820,z=101}, "technic:supply_converter"}, -- This machine is built, it should overload
 		})
 		-- Build network
-		local net = get_network_fixture({x=100,y=821,z=100})
-		local net2 = get_network_fixture({x=100,y=821,z=102})
+		local net = get_network_fixture({x=100,y=821,z=100}) -- Output network for SC
+		local net2 = get_network_fixture({x=102,y=823,z=100}) -- Input network for SC
+		local net3 = get_network_fixture({x=100,y=821,z=102}) -- Overload test network (tests currently disabled)
 		local build_pos = {x=102,y=821,z=100}
 		local build_pos2 = {x=100,y=820,z=101}
 
@@ -59,6 +62,9 @@ describe("Supply converter", function()
 			assert.equals(1, #net.PR_nodes)
 			assert.equals(1, #net.RE_nodes)
 			assert.equals(5, count(net.all_nodes))
+			assert.equals(0, #net2.PR_nodes)
+			assert.equals(0, #net2.RE_nodes)
+			assert.equals(1, count(net2.all_nodes))
 			world.set_node(build_pos, {name="technic:supply_converter",param2=0})
 			technic.network_node_on_placenode(build_pos, {"HV"}, "technic:supply_converter")
 		end)
@@ -68,6 +74,9 @@ describe("Supply converter", function()
 			assert.equals(6, count(net.all_nodes))
 			assert.equals(2, #net.PR_nodes)
 			assert.equals(2, #net.RE_nodes)
+			assert.equals(2, count(net2.all_nodes))
+			assert.equals(1, #net2.PR_nodes)
+			assert.equals(1, #net2.RE_nodes)
 			assert.is_nil(technic.is_overloaded(net.id))
 			assert.is_nil(technic.is_overloaded(net2.id))
 		end)
@@ -91,7 +100,8 @@ describe("Supply converter", function()
 			world.set_node(build_pos2, {name="technic:supply_converter",param2=0})
 			technic.network_node_on_placenode(build_pos2, {"HV"}, "technic:supply_converter")
 			assert.not_nil(technic.is_overloaded(net.id))
-			assert.not_nil(technic.is_overloaded(net2.id))
+			assert.is_nil(technic.is_overloaded(net2.id))
+			assert.not_nil(technic.is_overloaded(net3.id))
 		end)
 
 	end)
