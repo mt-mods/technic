@@ -7,6 +7,11 @@ _G.world.set_node = function(pos, node)
 	local hash = minetest.hash_node_position(pos)
 	world.nodes[hash] = node
 end
+_G.world.clear = function() _G.world.nodes = {} end
+_G.world.layout = function(layout, offset)
+	_G.world.clear()
+	_G.world.add_layout(layout, offset)
+end
 _G.world.add_layout = function(layout, offset)
 	for _, node in ipairs(layout) do
 		local pos = node[1]
@@ -89,6 +94,7 @@ _G.minetest.register_craft = noop
 _G.minetest.register_node = noop
 _G.minetest.register_on_placenode = noop
 _G.minetest.register_on_dignode = noop
+_G.minetest.register_on_mods_loaded = noop
 _G.minetest.item_drop = noop
 
 _G.minetest.get_us_time = function()
