@@ -9,17 +9,23 @@ technic.battery  = "BA"
 technic.machines    = {}
 technic.power_tools = {}
 technic.networks = {}
-
+technic.machine_tiers = {}
 
 function technic.register_tier(tier, description)
 	technic.machines[tier] = {}
 end
 
 function technic.register_machine(tier, nodename, machine_type)
+	-- Lookup table to get compatible node names and machine type by tier
 	if not technic.machines[tier] then
 		return
 	end
 	technic.machines[tier][nodename] = machine_type
+	-- Lookup table to get compatible tiers by node name
+	if not technic.machine_tiers[nodename] then
+		technic.machine_tiers[nodename] = {}
+	end
+	table.insert(technic.machine_tiers[nodename], tier)
 end
 
 function technic.register_power_tool(craftitem, max_charge)
