@@ -110,18 +110,6 @@ minetest.register_node("technic:switching_station",{
 -- The action code for the switching station --
 -----------------------------------------------
 
--- Lookup table for machine tiers, export for external use
-local machine_tiers = {}
-technic.machine_tiers = machine_tiers
-minetest.register_on_mods_loaded(function()
-	for tier, machines in pairs(technic.machines) do
-		for name,_ in pairs(machines) do
-			if not machine_tiers[name] then machine_tiers[name] = {} end
-			table.insert(machine_tiers[name], tier)
-		end
-	end
-end)
-
 -- Timeout ABM
 -- Timeout for a node in case it was disconnected from the network
 -- A node must be touched by the station continuously in order to function
@@ -132,7 +120,7 @@ minetest.register_abm({
 	chance     = 1,
 	action = function(pos, node, active_object_count, active_object_count_wider)
 		-- Check for machine timeouts for all tiers
-		local tiers = machine_tiers[node.name]
+		local tiers = technic.machine_tiers[node.name]
 		local timed_out = true
 		for _, tier in ipairs(tiers) do
 			local timeout = technic.get_timeout(tier, pos)
