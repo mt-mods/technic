@@ -122,8 +122,10 @@ local function remove_network_node(pos, tiers, name)
 	if not match_cable_tier_filter(name, tiers) then
 		-- Machine removed, skip cable checks to prevent unnecessary network cleanups
 		for _,connection in ipairs(cables) do
-			-- Remove machine from all networks around it
-			technic.remove_network_node(connection.network.id, pos)
+			if connection.network then
+				-- Remove machine from all networks around it
+				technic.remove_network_node(connection.network.id, pos)
+			end
 		end
 		return
 	end

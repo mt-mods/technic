@@ -336,6 +336,7 @@ describe("Power network building", function()
 		end)
 
 		it("does not remove other nodes from network", function()
+			assert.equals(2, #net.PR_nodes)
 			assert.equals(6, count(net.all_nodes))
 		end)
 

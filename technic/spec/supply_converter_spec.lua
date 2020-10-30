@@ -104,6 +104,7 @@ describe("Supply converter", function()
 			{{x=101,y=990,z=100}, "technic:hv_cable"},
 			{{x=102,y=990,z=100}, "technic:hv_cable"},
 			{{x=102,y=991,z=100}, "technic:supply_converter"}, -- This machine is digged
+			{{x=102,y=991,z=101}, "technic:hv_cable"},
 		})
 		-- Build network
 		local net = get_network_fixture({x=100,y=991,z=100})
