@@ -206,7 +206,8 @@ local function add_network_machine(nodes, pos, network_id, all_nodes, multitier)
 		-- FIXME: Machines connecting to multiple networks should have way to store multiple network ids
 		cables[node_id] = network_id
 		all_nodes[node_id] = pos
-	elseif net_id_old ~= network_id then
+		return true
+	elseif not multitier and net_id_old ~= network_id then
 		-- Do not allow running from multiple networks, trigger overload
 		overload_network(network_id)
 		overload_network(net_id_old)
@@ -238,8 +239,9 @@ local function add_network_node(PR_nodes, RE_nodes, BA_nodes, all_nodes, pos, ma
 		elseif machines[name] == technic.receiver then
 			add_network_machine(RE_nodes, pos, network_id, all_nodes)
 		elseif machines[name] == technic.producer_receiver then
-			add_network_machine(PR_nodes, pos, network_id, all_nodes, true)
-			table.insert(RE_nodes, pos)
+			if add_network_machine(PR_nodes, pos, network_id, all_nodes, true) then
+				table.insert(RE_nodes, pos)
+			end
 		elseif machines[name] == technic.battery then
 			add_network_machine(BA_nodes, pos, network_id, all_nodes)
 		end
