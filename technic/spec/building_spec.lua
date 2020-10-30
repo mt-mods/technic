@@ -35,7 +35,7 @@ describe("Power network building", function()
 
 	describe("cable building", function()
 
-		world.add_layout({
+		world.layout({
 			{{x=100,y=800,z=100}, "technic:hv_cable"},
 			{{x=100,y=801,z=100}, "technic:switching_station"},
 			{{x=101,y=800,z=100}, "technic:hv_cable"},
@@ -53,7 +53,7 @@ describe("Power network building", function()
 			assert.equals(1, #net.PR_nodes)
 			assert.equals(3, count(net.all_nodes))
 			world.set_node(build_pos, {name="technic:hv_cable", param2=0})
-			technic.network_node_on_placenode(build_pos, "HV", "technic:hv_cable")
+			technic.network_node_on_placenode(build_pos, {"HV"}, "technic:hv_cable")
 		end)
 
 		it("is added to network", function()
@@ -73,7 +73,7 @@ describe("Power network building", function()
 
 	describe("cable building to machine", function()
 
-		world.add_layout({
+		world.layout({
 			{{x=100,y=810,z=100}, "technic:hv_cable"},
 			{{x=100,y=811,z=100}, "technic:switching_station"},
 			{{x=101,y=810,z=100}, "technic:hv_cable"},
@@ -93,7 +93,7 @@ describe("Power network building", function()
 			assert.equals(1, #net.PR_nodes)
 			assert.equals(4, count(net.all_nodes))
 			world.set_node(build_pos, {name="technic:hv_cable", param2=0})
-			technic.network_node_on_placenode(build_pos, "HV", "technic:hv_cable")
+			technic.network_node_on_placenode(build_pos, {"HV"}, "technic:hv_cable")
 		end)
 
 		it("is added to network", function()
@@ -115,7 +115,7 @@ describe("Power network building", function()
 
 		it("does not duplicate already added machine", function()
 			world.set_node(build_pos2, {name="technic:hv_cable", param2=0})
-			technic.network_node_on_placenode(build_pos2, "HV", "technic:hv_cable")
+			technic.network_node_on_placenode(build_pos2, {"HV"}, "technic:hv_cable")
 			assert.equals(2, #net.PR_nodes)
 			assert.equals(7, count(net.all_nodes))
 		end)
@@ -124,7 +124,7 @@ describe("Power network building", function()
 
 	describe("machine building", function()
 
-		world.add_layout({
+		world.layout({
 			{{x=100,y=820,z=100}, "technic:hv_cable"},
 			{{x=100,y=821,z=100}, "technic:switching_station"},
 			{{x=101,y=820,z=100}, "technic:hv_cable"},
@@ -150,7 +150,7 @@ describe("Power network building", function()
 			assert.equals(2, #net.PR_nodes)
 			assert.equals(6, count(net.all_nodes))
 			world.set_node(build_pos, {name="technic:hv_generator",param2=0})
-			technic.network_node_on_placenode(build_pos, "HV", "technic:hv_generator")
+			technic.network_node_on_placenode(build_pos, {"HV"}, "technic:hv_generator")
 		end)
 
 		it("is added to network without duplicates", function()
@@ -177,7 +177,7 @@ describe("Power network building", function()
 
 		it("overloads network", function()
 			world.set_node(build_pos2, {name="technic:hv_generator",param2=0})
-			technic.network_node_on_placenode(build_pos2, "HV", "technic:hv_generator")
+			technic.network_node_on_placenode(build_pos2, {"HV"}, "technic:hv_generator")
 			assert.not_nil(technic.is_overloaded(net.id))
 			assert.not_nil(technic.is_overloaded(net2.id))
 		end)
@@ -186,7 +186,7 @@ describe("Power network building", function()
 
 	describe("cable building between networks", function()
 
-		world.add_layout({
+		world.layout({
 			{{x=100,y=830,z=100}, "technic:hv_cable"},
 			{{x=100,y=831,z=100}, "technic:switching_station"},
 			--{{x=101,y=830,z=100}, "technic:hv_cable"}, -- This cable is built
@@ -203,7 +203,7 @@ describe("Power network building", function()
 			assert.equals(1, count(net.all_nodes))
 			assert.equals(1, count(net2.all_nodes))
 			world.set_node(build_pos, {name="technic:hv_cable", param2=0})
-			technic.network_node_on_placenode(build_pos, "HV", "technic:hv_cable")
+			technic.network_node_on_placenode(build_pos, {"HV"}, "technic:hv_cable")
 		end)
 
 		it("removes network", function()
@@ -215,7 +215,7 @@ describe("Power network building", function()
 
 	describe("cable cutting", function()
 
-		world.add_layout({
+		world.layout({
 			{{x=100,y=900,z=100}, "technic:hv_cable"},
 			{{x=100,y=901,z=100}, "technic:switching_station"},
 			{{x=101,y=900,z=100}, "technic:hv_cable"},
@@ -232,7 +232,7 @@ describe("Power network building", function()
 			assert.equals(2, #net.PR_nodes)
 			assert.equals(6, count(net.all_nodes))
 			world.set_node(build_pos, {name="air",param2=0})
-			technic.network_node_on_dignode(build_pos, "HV", "technic:hv_cable")
+			technic.network_node_on_dignode(build_pos, {"HV"}, "technic:hv_cable")
 		end)
 
 		--[[ NOTE: Whole network is currently removed when cutting cables
@@ -260,7 +260,7 @@ describe("Power network building", function()
 
 	describe("cable digging below machine", function()
 
-		world.add_layout({
+		world.layout({
 			{{x=100,y=910,z=100}, "technic:hv_cable"},
 			{{x=100,y=911,z=100}, "technic:switching_station"},
 			{{x=101,y=910,z=100}, "technic:hv_cable"},
@@ -281,7 +281,7 @@ describe("Power network building", function()
 			assert.equals(2, #net.PR_nodes)
 			assert.equals(8, count(net.all_nodes))
 			world.set_node(build_pos, {name="air",param2=0})
-			technic.network_node_on_dignode(build_pos, "HV", "technic:hv_cable")
+			technic.network_node_on_dignode(build_pos, {"HV"}, "technic:hv_cable")
 		end)
 
 		it("is removed from network", function()
@@ -300,7 +300,7 @@ describe("Power network building", function()
 
 		it("keeps connected machines in network", function()
 			world.set_node(build_pos2, {name="air",param2=0})
-			technic.network_node_on_dignode(build_pos2, "HV", "technic:hv_cable")
+			technic.network_node_on_dignode(build_pos2, {"HV"}, "technic:hv_cable")
 			assert.same({x=101,y=911,z=100}, net.all_nodes[minetest.hash_node_position({x=101,y=911,z=100})])
 			assert.equals(1, #net.PR_nodes)
 			assert.equals(5, count(net.all_nodes))
@@ -310,7 +310,7 @@ describe("Power network building", function()
 
 	describe("machine digging", function()
 
-		world.add_layout({
+		world.layout({
 			{{x=100,y=920,z=100}, "technic:hv_cable"},
 			{{x=100,y=921,z=100}, "technic:switching_station"},
 			{{x=101,y=920,z=100}, "technic:hv_cable"},
@@ -328,7 +328,7 @@ describe("Power network building", function()
 			assert.equals(3, #net.PR_nodes)
 			assert.equals(7, count(net.all_nodes))
 			world.set_node(build_pos, {name="air",param2=0})
-			technic.network_node_on_dignode(build_pos, "HV", "technic:hv_generator")
+			technic.network_node_on_dignode(build_pos, {"HV"}, "technic:hv_generator")
 		end)
 
 		it("is removed from network", function()
