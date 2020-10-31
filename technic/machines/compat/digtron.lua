@@ -15,6 +15,11 @@ local function power_connector_compat()
 			meta:set_string("HV_network", sw_pos and minetest.pos_to_string(sw_pos) or "")
 			return digtron_technic_run(pos, node)
 		end,
+		technic_on_disable = function(pos, node)
+			local meta = minetest.get_meta(pos)
+			meta:set_string("HV_network", "")
+			meta:set_string("HV_EU_input", "")
+		end,
 	})
 end
 
