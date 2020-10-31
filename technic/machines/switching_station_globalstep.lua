@@ -1,23 +1,6 @@
 
 local has_monitoring_mod = minetest.get_modpath("monitoring")
 
-local switches = {} -- pos_hash -> { time = time_us }
-
-local function get_switch_data(pos)
-	local hash = minetest.hash_node_position(pos)
-	local switch = switches[hash]
-
-	if not switch then
-		switch = {
-			time = 0,
-			skip = 0
-		}
-		switches[hash] = switch
-	end
-
-	return switch
-end
-
 local active_switching_stations_metric, switching_stations_usage_metric
 
 if has_monitoring_mod then
@@ -32,21 +15,9 @@ if has_monitoring_mod then
 	)
 end
 
--- collect all active switching stations
-minetest.register_abm({
-	nodenames = {"technic:switching_station"},
-	label = "Switching Station",
-	interval   = 1,
-	chance     = 1,
-	action = function(pos)
-		local switch = get_switch_data(pos)
-		switch.time = minetest.get_us_time()
-	end
-})
-
-
 -- the interval between technic_run calls
 local technic_run_interval = 1.0
+local set_default_timeout = technic.set_default_timeout
 
 -- iterate over all collected switching stations and execute the technic_run function
 local timer = 0
@@ -71,91 +42,78 @@ minetest.register_globalstep(function(dtime)
 		-- normal run_interval
 		technic_run_interval = 1.0
 	end
+	set_default_timeout(math.ceil(technic_run_interval) + 1)
 
 	local now = minetest.get_us_time()
 
-	local off_delay_seconds = tonumber(minetest.settings:get("technic.switch.off_delay_seconds") or "1800")
-	local off_delay_micros = off_delay_seconds*1000*1000
-
 	local active_switches = 0
 
-	for hash, switch in pairs(switches) do
-		local pos = minetest.get_position_from_hash(hash)
-		local diff = now - switch.time
+	for network_id, network in pairs(technic.active_networks) do
+		local pos = technic.network2sw_pos(network_id)
 
-		minetest.get_voxel_manip(pos, pos)
-		local node = minetest.get_node(pos)
+		local node = technic.get_or_load_node(pos) or minetest.get_node(pos)
 
 		if node.name ~= "technic:switching_station" then
 			-- station vanished
-			switches[hash] = nil
+			technic.remove_network(network_id)
 
-		elseif diff < off_delay_micros then
+		elseif network.timeout > now then
 			-- station active
 			active_switches = active_switches + 1
 
-			if switch.skip < 1 then
+			if network.skip > 0 then
+				network.skip = network.skip - 1
+			else
 
 				local start = minetest.get_us_time()
-				technic.switching_station_run(pos)
+				technic.network_run(network_id)
 				local switch_diff = minetest.get_us_time() - start
 
-
-				local meta = minetest.get_meta(pos)
-
 				-- set lag in microseconds into the "lag" meta field
-				meta:set_int("lag", switch_diff)
+				network.lag = switch_diff
 
 				-- overload detection
 				if switch_diff > 250000 then
-					switch.skip = 30
+					network.skip = 30
 				elseif switch_diff > 150000 then
-					switch.skip = 20
+					network.skip = 20
 				elseif switch_diff > 75000 then
-					switch.skip = 10
+					network.skip = 10
 				elseif switch_diff > 50000 then
-					switch.skip = 2
+					network.skip = 2
 				end
 
-				if switch.skip > 0 then
+				if network.skip > 0 then
 					-- calculate efficiency in percent and display it
-					local efficiency = math.floor(1/switch.skip*100)
-					meta:set_string("infotext", "Polyfuse triggered, current efficiency: " ..
+					local efficiency = math.floor(1/network.skip*100)
+					technic.network_infotext(network_id, "Polyfuse triggered, current efficiency: " ..
 						efficiency .. "% generated lag : " .. math.floor(switch_diff/1000) .. " ms")
 
-					-- remove laggy switching station from active index
+					-- remove laggy network from active index
 					-- it will be reactivated when a player is near it
-					-- laggy switching stations won't work well in unloaded areas this way
-					switches[hash] = nil
+					technic.active_networks[network_id] = nil
 				end
-
-			else
-				switch.skip = math.max(switch.skip - 1, 0)
 			end
-
 
 		else
 			-- station timed out
-			switches[hash] = nil
+			technic.active_networks[network_id] = nil
 
 		end
 	end
 
-	local time_usage = minetest.get_us_time() - now
-
 	if has_monitoring_mod then
+		local time_usage = minetest.get_us_time() - now
 		active_switching_stations_metric.set(active_switches)
 		switching_stations_usage_metric.inc(time_usage)
 	end
 
-
 end)
 
-
 minetest.register_chatcommand("technic_flush_switch_cache", {
-	description = "removes all loaded switching stations from the cache",
+	description = "removes all loaded networks from the cache",
 	privs = { server = true },
 	func = function()
-		switches = {}
+		technic.active_networks = {}
 	end
 })

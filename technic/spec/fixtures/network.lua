@@ -1,6 +1,9 @@
-local path = technic.modpath.."/machines"
 
-technic.digilines = {
+_G.technic = {}
+_G.technic.S = string.format
+_G.technic.getter = function(...) return "" end
+_G.technic.get_or_load_node = minetest.get_node
+_G.technic.digilines = {
 	rules = {
 		-- digilines.rules.default
 		{x= 1,y= 0,z= 0},{x=-1,y= 0,z= 0}, -- along x beside
@@ -14,22 +17,7 @@ technic.digilines = {
 	}
 }
 
-dofile(path.."/network.lua")
-
-dofile(path.."/register/init.lua")
-
--- Tiers
-dofile(path.."/LV/init.lua")
-dofile(path.."/MV/init.lua")
-dofile(path.."/HV/init.lua")
-
-dofile(path.."/switching_station.lua")
-dofile(path.."/switching_station_globalstep.lua")
-
-dofile(path.."/power_monitor.lua")
-dofile(path.."/supply_converter.lua")
-
-dofile(path.."/other/init.lua")
-
--- https://github.com/mt-mods/technic/issues/100
-dofile(path.."/compat/digtron.lua")
+sourcefile("register")
+technic.register_tier("LV", "Busted LV")
+technic.register_tier("MV", "Busted MV")
+technic.register_tier("HV", "Busted HV")

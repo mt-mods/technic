@@ -143,6 +143,10 @@ local run = function(pos, node, run_stage)
 
 	if from and to then
 		local input = meta:get_int(from.."_EU_input")
+		if (technic.get_timeout(from, pos) <= 0) or (technic.get_timeout(to, pos) <= 0) then
+			-- Supply converter timed out, either RE or PR network is not running anymore
+			input = 0
+		end
 		meta:set_int(from.."_EU_demand", demand)
 		meta:set_int(from.."_EU_supply", 0)
 		meta:set_int(to.."_EU_demand", 0)

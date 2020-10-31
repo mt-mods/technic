@@ -13,6 +13,7 @@ local function get_cable(pos)
 end
 
 -- return the position of connected cable or nil
+-- TODO: Make it support every possible orientation
 local function get_connected_cable_network(pos)
 	local param2 = minetest.get_node(pos).param2
 	-- should probably also work sideways or upside down but for now it wont
@@ -26,18 +27,16 @@ local function get_connected_cable_network(pos)
 	-- Behind?
 	checkpos = vector.add(minetest.facedir_to_dir(param2),pos)
 	network_id = get_cable(checkpos) and technic.pos2network(checkpos)
-	if network_id then
-		return network_id
-	end
+	return network_id
 end
 
 -- return the position of the associated switching station or nil
-local function get_swpos(pos)
+local function get_network(pos)
 	local network_id = get_connected_cable_network(pos)
 	local network = network_id and technic.networks[network_id]
 	local swpos = network and technic.network2sw_pos(network_id)
 	local is_powermonitor = swpos and minetest.get_node(swpos).name == "technic:switching_station"
-	return (is_powermonitor and network.all_nodes[network_id]) and swpos
+	return (is_powermonitor and network.all_nodes[network_id]) and network
 end
 
 minetest.register_craft({
@@ -60,7 +59,7 @@ minetest.register_node("technic:power_monitor",{
 		"technic_power_monitor_front.png"
 	},
 	paramtype2 = "facedir",
-	groups = {snappy=2, choppy=2, oddly_breakable_by_hand=2, technic_all_tiers=1, technic_machine=1},
+	groups = {snappy=2, choppy=2, oddly_breakable_by_hand=2, technic_all_tiers=1},
 	connect_sides = {"bottom", "back"},
 	sounds = default.node_sound_wood_defaults(),
 	on_construct = function(pos)
@@ -97,19 +96,16 @@ minetest.register_node("technic:power_monitor",{
 					return
 				end
 
-				local sw_pos = get_swpos(pos)
-				if not sw_pos then
-					return
-				end
+				local network = get_network(pos)
+				if not network then return end
 
-				local sw_meta = minetest.get_meta(sw_pos)
 				digilines.receptor_send(pos, technic.digilines.rules, channel, {
-					supply = sw_meta:get_int("supply"),
-					demand = sw_meta:get_int("demand"),
-					lag = sw_meta:get_int("lag"),
-					battery_count = sw_meta:get_int("battery_count"),
-					battery_charge = sw_meta:get_int("battery_charge"),
-					battery_charge_max = sw_meta:get_int("battery_charge_max"),
+					supply = network.supply,
+					demand = network.demand,
+					lag = network.lag,
+					battery_count = network.battery_count,
+					battery_charge = network.battery_charge,
+					battery_charge_max = network.battery_charge_max,
 				})
 			end
 		},
@@ -123,14 +119,10 @@ minetest.register_abm({
 	chance     = 1,
 	action = function(pos, node, active_object_count, active_object_count_wider)
 		local meta = minetest.get_meta(pos)
-		local sw_pos = get_swpos(pos)
-		if sw_pos then
-			local sw_meta = minetest.get_meta(sw_pos)
-			local supply = sw_meta:get_int("supply")
-			local demand = sw_meta:get_int("demand")
-			meta:set_string("infotext",
-					S("Power Monitor. Supply: @1 Demand: @2",
-					technic.EU_string(supply), technic.EU_string(demand)))
+		local network = get_network(pos)
+		if network then
+			meta:set_string("infotext", S("Power Monitor. Supply: @1 Demand: @2",
+					technic.EU_string(network.supply), technic.EU_string(network.demand)))
 		else
 			meta:set_string("infotext",S("Power Monitor Has No Network"))
 		end
