@@ -282,8 +282,8 @@ function technic.register_cable(tier, size, description, prefix, override_cable,
 					fine_pointed = vector.subtract(fine_pointed, pointed_thing.above)
 					fine_pointed[changed] = nil
 					local ps = {}
-					for p, _ in pairs(fine_pointed) do
-						ps[#ps+1] = p
+					for p2, _ in pairs(fine_pointed) do
+						ps[#ps+1] = p2
 					end
 					local bigger = (math.abs(fine_pointed[ps[1]]) > math.abs(fine_pointed[ps[2]]) and ps[1]) or ps[2]
 					if math.abs(fine_pointed[bigger]) < 0.3 then
