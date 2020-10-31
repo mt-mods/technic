@@ -1,5 +1,10 @@
 unused_args = false
 
+-- Exclude regression tests / unit tests
+exclude_files = {
+	"**/spec/**",
+}
+
 globals = {
     "technic", "technic_cnc", "minetest", "wrench"
 }
