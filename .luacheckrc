@@ -33,11 +33,6 @@ read_globals = {
     "monitoring", "drawers"
 }
 
--- Remove after network update
-files["technic/machines/register/cables.lua"].ignore = { "name", "from_below", "p" }
-files["technic/machines/switching_station.lua"].ignore = { "pos1", "tier", "poshash" }
-files["technic/machines/switching_station.lua"].max_line_length = false
-
 -- Remove after chests update
 files["technic_chests/register.lua"].ignore = { "fs_helpers", "name", "locked_after_place" }
 files["technic_chests/register.lua"].max_line_length = false
