@@ -10,7 +10,7 @@ local texture_button_pressed = "technic_multimeter_button_pressed.png"
 local bgcolor = "#FFC00F"
 local bgcolor_lcd = "#4B8E66"
 local bghiglight_lcd = "#5CAA77"
-local bgcolor_button = "#626E41"
+--local bgcolor_button = "#626E41"
 
 minetest.register_craft({
 	output = 'technic:multimeter',
@@ -22,11 +22,14 @@ minetest.register_craft({
 })
 
 -- Base58
---local alpha = {1,2,3,4,5,6,7,8,9,"A","B","C","D","E","F","G","H","J","K","L","M","N","P","Q","R","S","T","U","V","W","X","Y","Z",
---               "a","b","c","d","e","f","g","h","i","j","k","m","n","o","p","q","r","s","t","u","v","w","x","y","z"}
+--local alpha = {1,2,3,4,5,6,7,8,9,"A","B","C","D","E","F","G","H","J","K",
+--               "L","M","N","P","Q","R","S","T","U","V","W","X","Y","Z",
+--               "a","b","c","d","e","f","g","h","i","j","k","m","n","o",
+--               "p","q","r","s","t","u","v","w","x","y","z"}
 -- Base36
-local alpha = {0,1,2,3,4,5,6,7,8,9,"A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"}
-function base36(num)
+local alpha = {0,1,2,3,4,5,6,7,8,9,"A","B","C","D","E","F","G","H","I","J","K",
+               "L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"}
+local function base36(num)
 	if type(num) ~= "number" then return end
 	if num < 36 then return alpha[num + 1] end
 	local result = ""
@@ -71,7 +74,7 @@ local function formspec(data)
 		"style_type[label;font=mono,bold;font_size=*2]" ..
 		("background9[0,0;8,10;%s;false;4]"):format(texture_bg9) ..
 		("image[0.3,0.3;5.75,1;%s]"):format(texture_logo) ..
-		("label[0.6,1.5;Network %s]"):format(base36(data.network_id)) ..
+		("label[0.6,1.5;Network %s]"):format(base36(data.network_id) or "N/A") ..
 		("image_button_exit[0.1,9.1;2.6,0.8;%s;wp;Waypoint;false;false;%s]"):format(texture_button, texture_button_pressed) ..
 		("image_button[2.7,9.1;2.6,0.8;%s;up;Update;false;false;%s]"):format(texture_button, texture_button_pressed) ..
 		("image_button_exit[5.3,9.1;2.6,0.8;%s;exit;Exit;false;false;%s]"):format(texture_button, texture_button_pressed) ..
@@ -132,18 +135,18 @@ minetest.register_tool("technic:multimeter", {
 	wear_represents = "technic_RE_charge",
 	on_refill = technic.refill_RE_charge,
 	on_use = function(itemstack, player, pointed_thing)
-		if pointed_thing.type ~= "node" or not is_valid_node(pointed_thing.under) then
+		local pos = minetest.get_pointed_thing_position(pointed_thing, false)
+		if not pos or pointed_thing.type ~= "node" or not is_valid_node(pos) then
 			return itemstack
 		end
 		local meta = minetest.deserialize(itemstack:get_metadata())
 		if meta and meta.charge and meta.charge >= power_usage then
-			local pos = minetest.get_pointed_thing_position(pointed_thing, false)
 			if not technic.creative_mode then
 				meta.charge = meta.charge - power_usage
 				technic.set_RE_wear(itemstack, meta.charge, max_charge)
 				itemstack:set_metadata(minetest.serialize(meta))
 			end
-			multimeter_inspect(player, pointed_thing.under)
+			multimeter_inspect(player, pos)
 		end
 		return itemstack
 	end,
