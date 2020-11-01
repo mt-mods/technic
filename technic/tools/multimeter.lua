@@ -115,6 +115,9 @@ local function multimeter_inspect(player, pos)
 			table.insert(rows, { "Consumers", #RE, "count" })
 			table.insert(rows, { "Batteries", #BA, "count" })
 		end
+	else
+		table.insert(rows, { "Ref. point", "N/A", "coord" })
+		table.insert(rows, { "Activated", "no", "active" })
 	end
 	minetest.show_formspec(player:get_player_name(), "technic:multimeter", formspec(data))
 end
