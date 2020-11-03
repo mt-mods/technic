@@ -69,7 +69,7 @@ minetest.register_chatcommand("technic_get_active_networks", {
 	description = "list all active networks with additional network data",
 	privs = { [technic.config:get("admin_priv")] = true },
 	func = function(name, minlag)
-		local minlag = tonumber(minlag) or 0
+		minlag = tonumber(minlag) or 0
 		local activecount = 0
 		local network_info = {}
 		local netcount = 0
