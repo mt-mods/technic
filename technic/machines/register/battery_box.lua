@@ -189,14 +189,8 @@ function technic.register_battery_box(data)
 			"listring[current_player;main]"
 	end
 
-	local run = function(pos, node)
-		local below = minetest.get_node({x=pos.x, y=pos.y-1, z=pos.z})
-		local meta           = minetest.get_meta(pos)
-
-		if not technic.is_tier_cable(below.name, tier) then
-			meta:set_string("infotext", S("%s Battery Box Has No Network"):format(tier))
-			return
-		end
+	local run = function(pos, node, _, network)
+		local meta  = minetest.get_meta(pos)
 
 		local eu_input       = meta:get_int(tier.."_EU_input")
 		local current_charge = meta:get_int("internal_EU_charge")
