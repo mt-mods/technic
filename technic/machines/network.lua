@@ -352,16 +352,24 @@ end
 --
 -- Execute technic power network
 --
+local node_technic_run = {}
+minetest.register_on_mods_loaded(function()
+	for name, _ in pairs(technic.machine_tiers) do
+		if type(minetest.registered_nodes[name].technic_run) == "function" then
+			node_technic_run[name] = minetest.registered_nodes[name].technic_run
+		end
+	end
+end)
 
-local function run_nodes(list, run_stage)
+local function run_nodes(list, vm, run_stage)
 	for _, pos in ipairs(list) do
-		technic.get_or_load_node(pos)
 		local node = minetest.get_node_or_nil(pos)
-		if node and node.name then
-			local nodedef = minetest.registered_nodes[node.name]
-			if nodedef and nodedef.technic_run then
-				nodedef.technic_run(pos, node, run_stage)
-			end
+		if not node then
+			vm:read_from_map(pos, pos)
+			node = minetest.get_node_or_nil(pos)
+		end
+		if node and node.name and node_technic_run[node.name] then
+			node_technic_run[node.name](pos, node, run_stage)
 		end
 	end
 end
@@ -404,9 +412,10 @@ function technic.network_run(network_id)
 		return
 	end
 
-	run_nodes(PR_nodes, technic.producer)
-	run_nodes(RE_nodes, technic.receiver)
-	run_nodes(BA_nodes, technic.battery)
+	local vm = VoxelManip()
+	run_nodes(PR_nodes, vm, technic.producer)
+	run_nodes(RE_nodes, vm, technic.receiver)
+	run_nodes(BA_nodes, vm, technic.battery)
 
 	-- Strings for the meta data
 	local eu_demand_str    = tier.."_EU_demand"
