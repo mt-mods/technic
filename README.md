@@ -114,13 +114,28 @@ Recommended mods that build on the `technic mod`:
 * https://github.com/mt-mods/jumpdrive
 * https://github.com/OgelGames/powerbanks
 
-# Settings
+# Settings (worldpath/technic.conf)
 
-* **technic.quarry.maxdepth** max depth of the quarry (default: 100)
-* **technic.quarry.time_limit** max cpu time in μs allowed per quarry step (default: 5000)
-* **technic.switch_max_range** max cable length (default: 256)
-* **technic.switch.off_delay_seconds** switching station off delay (default: 1800 seconds)
-* **technic.radiation.enable_throttling** enable lag- and per-second-trottling of radiation damage
+* **enable_mining_drill**
+* **enable_mining_laser**
+* **enable_flashlight**
+* **enable_wind_mill**
+* **enable_frames**
+* **enable_corium_griefing**
+*	**enable_radiation_protection**
+* **enable_radiation_throttling** enable lag- and per-second-trottling of radiation damage
+* **enable_entity_radiation_damage**
+* **enable_longterm_radiation_damage**
+* **enable_nuclear_reactor_digiline_selfdestruct**
+*	**admin_priv** Privileges required to use administrative chat commands like cache flushing and enabling/disabling machines globally.
+* **quarry_max_depth** max depth of the quarry.
+* **quarry_time_limit** max cpu time in μs allowed per quarry step.
+* **quarry_dig_above_nodes** begin digging this many nodes above quarry node.
+*	**network_overload_reset_time** After network conflict wait this many seconds before attempting to activate conflicting networks again.
+* **switch_max_range** max cable length.
+* **switch_off_delay_seconds** switching station off delay.
+
+See defaults for settings here: [technic/config.lua](https://github.com/mt-mods/technic/blob/master/technic/config.lua)
 
 # Chat commands
 
