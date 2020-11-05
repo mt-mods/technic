@@ -150,7 +150,7 @@ minetest.register_chatcommand("technic_clear_network_data", {
 -- Metadata cleanup LBM, removes old metadata values from nodes
 --
 minetest.register_lbm({
-	name = "technic-metadata-cleanup",
+	name = "technic:metadata_cleanup",
 	nodenames = {
 		"group:technic_machine",
 		"group:technic_all_tiers",
