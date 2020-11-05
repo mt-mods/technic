@@ -178,11 +178,12 @@ local function override_table(target, source)
 	return target
 end
 
-function technic.register_cable(tier, size, description, prefix, override_cable, override_cable_plate)
+function technic.register_cable(tier, size, description, prefix, override_cable, override_cable_plate, modname)
+	modname = modname or minetest.get_current_modname()
 	prefix = prefix or ""
 	override_cable_plate = override_cable_plate or override_cable
 	local ltier = string.lower(tier)
-	local node_name = "technic:"..ltier..prefix.."_cable"
+	local node_name = modname .. ":"..ltier..prefix.."_cable"
 	cable_tier[node_name] = tier
 
 	local groups = {snappy=2, choppy=2, oddly_breakable_by_hand=2,
