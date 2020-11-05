@@ -116,24 +116,26 @@ Recommended mods that build on the `technic mod`:
 
 # Settings (worldpath/technic.conf)
 
-* **enable_mining_drill**
-* **enable_mining_laser**
-* **enable_flashlight**
-* **enable_wind_mill**
-* **enable_frames**
-* **enable_corium_griefing**
-*	**enable_radiation_protection**
-* **enable_radiation_throttling** enable lag- and per-second-trottling of radiation damage
-* **enable_entity_radiation_damage**
-* **enable_longterm_radiation_damage**
-* **enable_nuclear_reactor_digiline_selfdestruct**
-*	**admin_priv** Privileges required to use administrative chat commands like cache flushing and enabling/disabling machines globally.
-* **quarry_max_depth** max depth of the quarry.
-* **quarry_time_limit** max cpu time in μs allowed per quarry step.
-* **quarry_dig_above_nodes** begin digging this many nodes above quarry node.
-*	**network_overload_reset_time** After network conflict wait this many seconds before attempting to activate conflicting networks again.
-* **switch_max_range** max cable length.
-* **switch_off_delay_seconds** switching station off delay.
+| Configuration key                            | Description
+|----------------------------------------------|-----------------------------------------------------------------------------------------------------------------------|
+| enable_mining_drill                          |                                                                                                                       |
+| enable_mining_laser                          |                                                                                                                       |
+| enable_flashlight                            |                                                                                                                       |
+| enable_wind_mill                             |                                                                                                                       |
+| enable_frames                                |                                                                                                                       |
+| enable_corium_griefing                       |                                                                                                                       |
+| enable_radiation_protection                  |                                                                                                                       |
+| enable_radiation_throttling                  | enable lag- and per-second-trottling of radiation damage                                                              |
+| enable_entity_radiation_damage               |                                                                                                                       |
+| enable_longterm_radiation_damage             |                                                                                                                       |
+| enable_nuclear_reactor_digiline_selfdestruct |                                                                                                                       |
+| admin_priv                                   | Privileges required to use administrative chat commands like cache flushing and enabling/disabling machines globally. |
+| quarry_max_depth                             | max depth of the quarry.                                                                                              |
+| quarry_time_limit                            | max cpu time in μs allowed per quarry step.                                                                           |
+| quarry_dig_above_nodes                       | begin digging this many nodes above quarry node.                                                                      |
+| network_overload_reset_time                  | After network conflict wait this many seconds before attempting to activate conflicting networks again.               |
+| switch_max_range                             | max cable length.                                                                                                     |
+| switch_off_delay_seconds                     | switching station off delay.                                                                                          |
 
 See defaults for settings here: [technic/config.lua](https://github.com/mt-mods/technic/blob/master/technic/config.lua)
 
