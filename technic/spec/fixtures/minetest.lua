@@ -109,6 +109,7 @@ _G.minetest.get_node = function(pos)
 end
 
 _G.minetest.get_modpath = function(...) return "./unit_test_modpath" end
+_G.minetest.get_current_modname = function() return "technic" end
 
 _G.minetest.get_pointed_thing_position = dummy_coords
 
