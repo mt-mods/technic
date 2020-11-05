@@ -3,9 +3,9 @@ local S = technic.getter
 
 local has_digilines = minetest.get_modpath("digilines")
 
-local quarry_dig_above_nodes = tonumber(minetest.settings:get("technic.quarry.dig_above_nodes") or "3")
-local quarry_max_depth = tonumber(minetest.settings:get("technic.quarry.maxdepth") or "100")
-local quarry_time_limit = tonumber(minetest.settings:get("technic.quarry.time_limit") or "5000")
+local quarry_dig_above_nodes = tonumber(technic.config:get("quarry_dig_above_nodes"))
+local quarry_max_depth = tonumber(technic.config:get("quarry_max_depth"))
+local quarry_time_limit = tonumber(technic.config:get("quarry_time_limit"))
 
 local quarry_demand = 10000
 local quarry_eject_dir = vector.new(0, 1, 0)

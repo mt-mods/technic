@@ -346,7 +346,7 @@ local function dmg_object(pos, object, strength)
 	end
 end
 
-local enable_radiation_throttling = minetest.settings:get_bool("technic.radiation.enable_throttling")
+local enable_radiation_throttling = technic.config:get_bool("enable_radiation_throttling")
 
 -- max lag tracker
 local last_max_lag = 0

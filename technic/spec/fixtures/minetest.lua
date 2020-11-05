@@ -37,7 +37,9 @@ _G.Settings = function(fname)
 		get_bool = function(self, key, default)
 			return
 		end,
-		set = function(...)end,
+		set = function(self, key, value)
+			self._data[key] = value
+		end,
 		set_bool = function(...)end,
 		write = function(...)end,
 		remove = function(self, key)
@@ -60,10 +62,12 @@ _G.Settings = function(fname)
 		end,
 	}
 	-- Not even nearly perfect config parser but should be good enough for now
-	file = assert(io.open(fname, "r"))
-	for line in file:lines() do
-		for key, value in string.gmatch(line, "([^= ]+) *= *(.-)$") do
-			settings._data[key] = value
+	file = io.open(fname, "r")
+	if file then
+		for line in file:lines() do
+			for key, value in string.gmatch(line, "([^= ]+) *= *(.-)$") do
+				settings._data[key] = value
+			end
 		end
 	end
 	return settings
@@ -108,7 +112,8 @@ _G.minetest.get_node = function(pos)
 	return world.nodes[hash] or {name="IGNORE",param2=0}
 end
 
-_G.minetest.get_modpath = function(...) return "./unit_test_modpath" end
+_G.minetest.get_worldpath = function(...) return "./spec/fixtures" end
+_G.minetest.get_modpath = function(...) return "./spec/fixtures" end
 _G.minetest.get_current_modname = function() return "technic" end
 
 _G.minetest.get_pointed_thing_position = dummy_coords
