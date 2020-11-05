@@ -4,7 +4,7 @@ local S = technic.getter
 function technic.register_solar_array(data)
 	local tier = data.tier
 	local ltier = string.lower(tier)
-
+	data.modname = data.modname or minetest.get_current_modname()
 	local run = function(pos, node)
 		-- The action here is to make the solar array produce power
 		-- Power is dependent on the light level and the height above ground
@@ -39,7 +39,7 @@ function technic.register_solar_array(data)
 		end
 	end
 
-	minetest.register_node("technic:solar_array_"..ltier, {
+	minetest.register_node(data.modname .. ":solar_array_"..ltier, {
 		tiles = {"technic_"..ltier.."_solar_array_top.png",  "technic_"..ltier.."_solar_array_bottom.png",
 			 "technic_"..ltier.."_solar_array_side.png", "technic_"..ltier.."_solar_array_side.png",
 			 "technic_"..ltier.."_solar_array_side.png", "technic_"..ltier.."_solar_array_side.png"},
@@ -61,6 +61,6 @@ function technic.register_solar_array(data)
 		technic_run = run,
 	})
 
-	technic.register_machine(tier, "technic:solar_array_"..ltier, technic.producer)
+	technic.register_machine(tier, data.modname .. ":solar_array_"..ltier, technic.producer)
 end
 
