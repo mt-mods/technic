@@ -50,6 +50,9 @@ minetest.register_node("technic:switching_station",{
 		meta:set_string("infotext", S("Switching Station"))
 		meta:set_string("formspec", "field[channel;Channel;${channel}]")
 		start_network(pos)
+
+		-- start nodetimer
+		minetest.get_node_timer(pos):start(1.0)
 	end,
 	on_destruct = function(pos)
 		-- Remove network when switching station is removed, if
@@ -71,7 +74,41 @@ minetest.register_node("technic:switching_station",{
 		local meta = minetest.get_meta(pos)
 		meta:set_string("channel", fields.channel)
 	end,
+
+	-- nodetimer for network activation
+	on_timer = function(pos)
+		local network_id = technic.sw_pos2network(pos)
+		-- Check if network is overloaded / conflicts with another network
+		if network_id then
+			local infotext
+			local meta = minetest.get_meta(pos)
+			if technic.is_overloaded(network_id) then
+				local remaining = technic.reset_overloaded(network_id)
+				if remaining > 0 then
+					infotext = S("%s Network Overloaded, Restart in %dms"):format(S("Switching Station"), remaining / 1000)
+				else
+					infotext = S("%s Restarting Network"):format(S("Switching Station"))
+				end
+				technic.network_infotext(network_id, infotext)
+			else
+				-- Network exists and is not overloaded, reactivate network
+				technic.activate_network(network_id)
+				infotext = technic.network_infotext(network_id)
+			end
+			meta:set_string("infotext", infotext)
+		else
+			-- Network does not exist yet, attempt to create new network here
+			start_network(pos)
+		end
+
+		-- restart the nodetimer again
+		return true
+	end,
+
+	-- mesecons
 	mesecons = mesecon_def,
+
+	-- digiline
 	digiline = {
 		receptor = {
 			rules = technic.digilines.rules,
@@ -135,39 +172,6 @@ minetest.register_abm({
 		-- If all tiers for machine timed out take action
 		if timed_out then
 			technic.disable_machine(pos, node)
-		end
-	end,
-})
-
---Re-enable network of switching station if necessary, similar to the timeout above
-minetest.register_abm({
-	label = "Machines: re-enable check",
-	nodenames = {"technic:switching_station"},
-	interval   = 1,
-	chance     = 1,
-	action = function(pos, node, active_object_count, active_object_count_wider)
-		local network_id = technic.sw_pos2network(pos)
-		-- Check if network is overloaded / conflicts with another network
-		if network_id then
-			local infotext
-			local meta = minetest.get_meta(pos)
-			if technic.is_overloaded(network_id) then
-				local remaining = technic.reset_overloaded(network_id)
-				if remaining > 0 then
-					infotext = S("%s Network Overloaded, Restart in %dms"):format(S("Switching Station"), remaining / 1000)
-				else
-					infotext = S("%s Restarting Network"):format(S("Switching Station"))
-				end
-				technic.network_infotext(network_id, infotext)
-			else
-				-- Network exists and is not overloaded, reactivate network
-				technic.activate_network(network_id)
-				infotext = technic.network_infotext(network_id)
-			end
-			meta:set_string("infotext", infotext)
-		else
-			-- Network does not exist yet, attempt to create new network here
-			start_network(pos)
 		end
 	end,
 })
