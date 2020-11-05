@@ -149,32 +149,35 @@ minetest.register_chatcommand("technic_clear_network_data", {
 --
 -- Metadata cleanup LBM, removes old metadata values from nodes
 --
---luacheck: ignore 511
-if false then
-	minetest.register_lbm({
-		name = "technic:metadata-cleanup",
-		nodenames = {
-			"group:technic_machine",
-			"group:technic_all_tiers",
-			"technic:switching_station",
-			"technic:power_monitor",
-		},
-		action = function(pos, node)
-			-- Delete all listed metadata key/value pairs from technic machines
-			local keys = {
-				"LV_EU_timeout", "MV_EU_timeout", "HV_EU_timeout",
-				"LV_network", "MV_network", "HV_network",
-				"active_pos", "supply", "demand",
-				"battery_count", "battery_charge", "battery_charge_max",
-			}
-			local meta = minetest.get_meta(pos)
-			for _,key in ipairs(keys) do
-				-- Value of `""` will delete the key.
-				meta:set_string(key, "")
+minetest.register_lbm({
+	name = "technic:metadata-cleanup",
+	nodenames = {
+		"group:technic_machine",
+		"group:technic_all_tiers",
+		"technic:switching_station",
+		"technic:power_monitor",
+	},
+	action = function(pos, node)
+		-- Delete all listed metadata key/value pairs from technic machines
+		local keys = {
+			"LV_EU_timeout", "MV_EU_timeout", "HV_EU_timeout",
+			"LV_network", "MV_network", "HV_network",
+			"active_pos", "supply", "demand",
+			"battery_count", "battery_charge", "battery_charge_max",
+		}
+		local meta = minetest.get_meta(pos)
+		for _,key in ipairs(keys) do
+			-- Value of `""` will delete the key.
+			meta:set_string(key, "")
+		end
+		if node.name == "technic:switching_station" then
+			meta:set_string("active", "")
+
+			-- start nodetimer if not already started
+			local timer = minetest.get_node_timer(pos)
+			if not timer:is_started() then
+				timer:start(1.0)
 			end
-			if node.name == "technic:switching_station" then
-				meta:set_string("active", "")
-			end
-		end,
-	})
-end
+		end
+	end,
+})
