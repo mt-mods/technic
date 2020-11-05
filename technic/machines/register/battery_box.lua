@@ -188,7 +188,7 @@ function technic.register_battery_box(data)
 			"listring[context;upgrade2]"..
 			"listring[current_player;main]"
 	end
-
+	data.modname = data.modname or minetest.get_current_modname()
 	local run = function(pos, node)
 		local below = minetest.get_node({x=pos.x, y=pos.y-1, z=pos.z})
 		local meta           = minetest.get_meta(pos)
@@ -248,7 +248,7 @@ function technic.register_battery_box(data)
 		charge_count = math.max(charge_count, 0)
 		local last_count = meta:get_float("last_side_shown")
 		if charge_count ~= last_count then
-			technic.swap_node(pos,"technic:"..ltier.."_battery_box"..charge_count)
+			technic.swap_node(pos,data.modname .. ":"..ltier.."_battery_box"..charge_count)
 			meta:set_float("last_side_shown", charge_count)
 		end
 
@@ -286,7 +286,7 @@ function technic.register_battery_box(data)
 			side_tex = "technic_"..ltier.."_battery_box_side.png^technic_power_meter"..i..".png"
 		end
 
-		minetest.register_node("technic:"..ltier.."_battery_box"..i, {
+		minetest.register_node(data.modname .. ":"..ltier.."_battery_box"..i, {
 			description = S("%s Battery Box"):format(tier),
 			tiles = {
 				top_tex,
@@ -300,7 +300,7 @@ function technic.register_battery_box(data)
 			tube = data.tube and tube or nil,
 			paramtype2 = "facedir",
 			sounds = default.node_sound_wood_defaults(),
-			drop = "technic:"..ltier.."_battery_box0",
+			drop = data.modname .. ":"..ltier.."_battery_box0",
 			on_construct = function(pos)
 				local meta = minetest.get_meta(pos)
 				local EU_upgrade = 0
@@ -390,7 +390,7 @@ function technic.register_battery_box(data)
 	-- Register as a battery type
 	-- Battery type machines function as power reservoirs and can both receive and give back power
 	for i = 0, 8 do
-		technic.register_machine(tier, "technic:"..ltier.."_battery_box"..i, technic.battery)
+		technic.register_machine(tier, data.modname .. ":"..ltier.."_battery_box"..i, technic.battery)
 	end
 
 end -- End registration
