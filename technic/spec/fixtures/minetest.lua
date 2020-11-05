@@ -114,6 +114,7 @@ end
 
 _G.minetest.get_worldpath = function(...) return "./spec/fixtures" end
 _G.minetest.get_modpath = function(...) return "./spec/fixtures" end
+_G.minetest.get_current_modname = function() return "technic" end
 
 _G.minetest.get_pointed_thing_position = dummy_coords
 
