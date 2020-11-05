@@ -23,7 +23,7 @@ local set_default_timeout = technic.set_default_timeout
 local timer = 0
 minetest.register_globalstep(function(dtime)
 	timer = timer + dtime
-	if timer < technic_run_interval then
+	if timer < technic_run_interval or not technic.powerctrl_state then
 		return
 	end
 	timer = 0
@@ -57,17 +57,16 @@ minetest.register_globalstep(function(dtime)
 			-- station vanished
 			technic.remove_network(network_id)
 
-		elseif network.timeout > now then
+		elseif network.timeout > now and not technic.is_overloaded(network_id) then
 			-- station active
 			active_switches = active_switches + 1
 
 			if network.skip > 0 then
 				network.skip = network.skip - 1
 			else
-
 				local start = minetest.get_us_time()
 				technic.network_run(network_id)
-				local switch_diff = minetest.get_us_time() - start
+				local switch_diff = network.average_lag(minetest.get_us_time() - start)
 
 				-- set lag in microseconds into the "lag" meta field
 				network.lag = switch_diff

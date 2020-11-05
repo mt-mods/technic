@@ -17,6 +17,7 @@ _G.technic.digilines = {
 	}
 }
 
+sourcefile("config")
 sourcefile("register")
 technic.register_tier("LV", "Busted LV")
 technic.register_tier("MV", "Busted MV")

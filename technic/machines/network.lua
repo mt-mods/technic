@@ -3,8 +3,8 @@
 --
 local S = technic.getter
 
-local switch_max_range = tonumber(minetest.settings:get("technic.switch_max_range") or "256")
-local off_delay_seconds = tonumber(minetest.settings:get("technic.switch.off_delay_seconds") or "1800")
+local switch_max_range = tonumber(technic.config:get("switch_max_range"))
+local off_delay_seconds = tonumber(technic.config:get("switch_off_delay_seconds"))
 
 technic.active_networks = {}
 local networks = {}
@@ -162,7 +162,7 @@ end
 --
 -- Network overloading (incomplete cheat mitigation)
 --
-local overload_reset_time = tonumber(minetest.settings:get("technic.overload_reset_time") or "20")
+local overload_reset_time = tonumber(technic.config:get("network_overload_reset_time"))
 local overloaded_networks = {}
 
 local function overload_network(network_id)
@@ -321,6 +321,20 @@ function technic.add_network_branch(queue, network)
 	end
 end
 
+-- Moving average function generator
+local function sma(period)
+	local values = {}
+	local index = 1
+	local sum = 0
+	return function(n)
+		-- Add new value and return average
+		sum = sum - (values[index] or 0) + n
+		values[index] = n
+		index = index ~= period and index + 1 or 1
+		return sum / #values
+	end
+end
+
 function technic.build_network(network_id)
 	technic.remove_network(network_id)
 	local sw_pos = technic.network2sw_pos(network_id)
@@ -336,7 +350,7 @@ function technic.build_network(network_id)
 		-- Power generation, usage and capacity related variables
 		supply = 0, demand = 0, battery_charge = 0, battery_charge_max = 0,
 		-- Network activation and excution control
-		timeout = 0, skip = 0,
+		timeout = 0, skip = 0, lag = 0, average_lag = sma(5)
 	}
 	-- Add first cable (one that is holding network id) and build network
 	local queue = {}
@@ -377,13 +391,6 @@ function technic.network_run(network_id)
 	-- contain a lot of switching station specific stuff which
 	-- should be removed and/or refactored.
 	--
-	if not technic.powerctrl_state then return end
-
-	-- Check if network is overloaded / conflicts with another network
-	if technic.is_overloaded(network_id) then
-		-- TODO: Overload check should happen before technic.network_run is called
-		return
-	end
 
 	local pos = technic.network2sw_pos(network_id)
 	local t0 = minetest.get_us_time()
@@ -581,56 +588,4 @@ function technic.network_run(network_id)
 		minetest.log("warning", "[technic] technic_run took " .. diff .. " us at " .. minetest.pos_to_string(pos))
 	end
 
-end
-
---
--- Technic power network administrative functions
---
-
-technic.powerctrl_state = true
-
-minetest.register_chatcommand("powerctrl", {
-	params = "state",
-	description = "Enables or disables technic's switching station ABM",
-	privs = { basic_privs = true },
-	func = function(name, state)
-		if state == "on" then
-			technic.powerctrl_state = true
-		else
-			technic.powerctrl_state = false
-		end
-	end
-})
-
---
--- Metadata cleanup LBM, removes old metadata values from nodes
---
---luacheck: ignore 511
-if false then
-	minetest.register_lbm({
-		name = "technic:metadata-cleanup",
-		nodenames = {
-			"group:technic_machine",
-			"group:technic_all_tiers",
-			"technic:switching_station",
-			"technic:power_monitor",
-		},
-		action = function(pos, node)
-			-- Delete all listed metadata key/value pairs from technic machines
-			local keys = {
-				"LV_EU_timeout", "MV_EU_timeout", "HV_EU_timeout",
-				"LV_network", "MV_network", "HV_network",
-				"active_pos", "supply", "demand",
-				"battery_count", "battery_charge", "battery_charge_max",
-			}
-			local meta = minetest.get_meta(pos)
-			for _,key in ipairs(keys) do
-				-- Value of `""` will delete the key.
-				meta:set_string(key, "")
-			end
-			if node.name == "technic:switching_station" then
-				meta:set_string("active", "")
-			end
-		end,
-	})
 end
