@@ -14,6 +14,9 @@ technic.digilines = {
 	}
 }
 
+-- https://github.com/mt-mods/technic/issues/100
+dofile(path.."/compat/digtron.lua")
+
 dofile(path.."/network.lua")
 
 dofile(path.."/register/init.lua")
@@ -30,9 +33,6 @@ dofile(path.."/power_monitor.lua")
 dofile(path.."/supply_converter.lua")
 
 dofile(path.."/other/init.lua")
-
--- https://github.com/mt-mods/technic/issues/100
-dofile(path.."/compat/digtron.lua")
 
 --
 -- Technic power network administrative functions
