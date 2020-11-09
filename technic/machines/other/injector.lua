@@ -67,7 +67,7 @@ local function set_injector_formspec(meta)
 		(is_stack and
 			"button[0,1;2,1;mode_item;"..S("Stackwise").."]" or
 			"button[0,1;2,1;mode_stack;"..S("Itemwise").."]")..
-		"list[current_name;main;0,2;8,2;]"..
+		"list[context;main;0,2;8,2;]"..
 		"list[current_player;main;0,5;8,4;]"..
 		"listring[]"..
 		fs_helpers.cycling_button(

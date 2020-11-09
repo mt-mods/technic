@@ -33,7 +33,7 @@ minetest.register_craft({
 local function make_reactor_formspec(meta)
 	local f = "size[8,9]"..
 	"label[0,0;"..S("Nuclear Reactor Rod Compartment").."]"..
-	"list[current_name;src;2,1;3,2;]"..
+	"list[context;src;2,1;3,2;]"..
 	"list[current_player;main;0,5;8,4;]"..
 	"listring[]"..
 	"button[5.5,1.5;2,1;start;Start]"..
