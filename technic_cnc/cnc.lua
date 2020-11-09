@@ -131,14 +131,14 @@ local cnc_formspec =
 	"image_button[6,4;1,1;technic_cnc_element_edge.png;element_edge; ]"..
 
 	"label[0, 5.5;"..S("In:").."]"..
-	"list[current_name;src;0.5,5.5;1,1;]"..
+	"list[context;src;0.5,5.5;1,1;]"..
 	"label[4, 5.5;"..S("Out:").."]"..
-	"list[current_name;dst;5,5.5;4,1;]"..
+	"list[context;dst;5,5.5;4,1;]"..
 
 	"list[current_player;main;0,7;8,4;]"..
-	"listring[current_name;dst]"..
+	"listring[context;dst]"..
 	"listring[current_player;main]"..
-	"listring[current_name;src]"..
+	"listring[context;src]"..
 	"listring[current_player;main]"
 
 -- The form handler is declared here because we need it in both the inactive and active modes

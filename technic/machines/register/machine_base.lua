@@ -51,22 +51,22 @@ function technic.register_base_machine(data)
 
 	local formspec =
 		"size[8,9;]"..
-		"list[current_name;src;"..(4-input_size)..",1;"..input_size..",1;]"..
-		"list[current_name;dst;5,1;2,2;]"..
+		"list[context;src;"..(4-input_size)..",1;"..input_size..",1;]"..
+		"list[context;dst;5,1;2,2;]"..
 		"list[current_player;main;0,5;8,4;]"..
 		"label[0,0;"..machine_desc:format(tier).."]"..
-		"listring[current_name;dst]"..
+		"listring[context;dst]"..
 		"listring[current_player;main]"..
-		"listring[current_name;src]"..
+		"listring[context;src]"..
 		"listring[current_player;main]"
 	if data.upgrade then
 		formspec = formspec..
-			"list[current_name;upgrade1;1,3;1,1;]"..
-			"list[current_name;upgrade2;2,3;1,1;]"..
+			"list[context;upgrade1;1,3;1,1;]"..
+			"list[context;upgrade2;2,3;1,1;]"..
 			"label[1,4;"..S("Upgrade Slots").."]"..
-			"listring[current_name;upgrade1]"..
+			"listring[context;upgrade1]"..
 			"listring[current_player;main]"..
-			"listring[current_name;upgrade2]"..
+			"listring[context;upgrade2]"..
 			"listring[current_player;main]"
 	end
 
