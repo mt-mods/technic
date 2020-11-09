@@ -119,6 +119,10 @@ minetest.register_abm({
 	interval   = 1,
 	chance     = 1,
 	action = function(pos, node, active_object_count, active_object_count_wider)
+		if not technic.machine_tiers[node.name] then
+			-- https://github.com/mt-mods/technic/issues/123
+			return
+		end
 		-- Check for machine timeouts for all tiers
 		local tiers = technic.machine_tiers[node.name]
 		local timed_out = true
