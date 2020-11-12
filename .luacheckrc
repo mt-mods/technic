@@ -10,29 +10,27 @@ globals = {
 }
 
 read_globals = {
+	-- Lua
     string = {fields = {"split", "trim"}},
     table = {fields = {"copy", "getn"}},
-
-    "intllib", "VoxelArea",
-    "default", "stairsplus",
-
+	
+	-- Minetest
     "PseudoRandom", "ItemStack",
-    "mg", "tubelib", "vector",
-
-    "moretrees", "bucket",
-    "unified_inventory", "digilines",
-
-    "pipeworks", "screwdriver",
-    "VoxelManip", "unifieddyes",
-
-    "Settings", "mesecon",
-    "digiline_remote",
-
-    "protector", "isprotect",
-    "homedecor_expect_infinite_stacks",
-    "monitoring", "drawers"
+	"VoxelArea", "VoxelManip",
+	"Settings", "vector",
+	
+	-- Mods
+    "default", "stairsplus",
+	"screwdriver", "bucket",
+	"digilines", "pipeworks",
+	"mesecon", "moretrees",
+    "unified_inventory", "protector",
+    "unifieddyes", "digiline_remote",
+    "monitoring", "drawers", "mg",
+	
+	-- Only used in technic/machines/MV/lighting.lua (disabled)
+	"isprotect", "homedecor_expect_infinite_stacks",
+	
+	-- TODO: Remove after translation update
+	"intllib"
 }
-
--- Remove after chests update
-files["technic_chests/register.lua"].ignore = { "fs_helpers", "name", "locked_after_place" }
-files["technic_chests/register.lua"].max_line_length = false
