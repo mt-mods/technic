@@ -3,7 +3,6 @@ local S = rawget(_G, "intllib") and intllib.Getter() or function(s) return s end
 --local S = minetest.get_translator("technic_chests")
 
 local has_pipeworks = minetest.get_modpath("pipeworks")
-local has_digilines = minetest.get_modpath("digilines")
 
 local function get_pipeworks_fs(x, y, meta)
 	-- Use a container to reposition the pipeworks button.
@@ -143,7 +142,7 @@ function technic.chests.update_formspec(pos, data, edit_infotext)
 		local offset = data.quickmove and (data.formspec.padding * 2 + 3) or data.formspec.padding
 		formspec = formspec..get_pipeworks_fs(offset, data.height + 1, meta)
 	end
-	if data.color or (data.digilines and has_digilines) then
+	if data.color or data.digilines then
 		local offset = data.quickmove and (data.formspec.padding * 3 + 11) or (data.formspec.padding * 2 + 8)
 		if data.color then
 			formspec = formspec..get_color_fs(offset, data.height + 1.2, meta)
@@ -194,20 +193,20 @@ function technic.chests.get_receive_fields(data)
 		if data.quickmove then
 			if fields.all_to_chest then
 				local moved_items = technic.chests.move_inv(player_inv, chest_inv)
-				if has_digilines and meta:get_int("send_put") == 1 then
+				if data.digilines and meta:get_int("send_put") == 1 then
 					technic.chests.send_digiline_message(pos, "put", player, moved_items)
 				end
 				technic.chests.log_inv_change(pos, player:get_player_name(), "put", "stuff")
 			elseif fields.all_to_inv then
 				local moved_items = technic.chests.move_inv(chest_inv, player_inv)
-				if has_digilines and meta:get_int("send_take") == 1 then
+				if data.digilines and meta:get_int("send_take") == 1 then
 					technic.chests.send_digiline_message(pos, "take", player, moved_items)
 				end
 				technic.chests.log_inv_change(pos, player:get_player_name(), "take", "stuff")
 			elseif fields.existing_to_chest then
 				local items = technic.chests.get_inv_items(chest_inv)
 				local moved_items = technic.chests.move_inv(player_inv, chest_inv, items)
-				if has_digilines and meta:get_int("send_put") == 1 then
+				if data.digilines and meta:get_int("send_put") == 1 then
 					technic.chests.send_digiline_message(pos, "put", player, moved_items)
 				end
 				technic.chests.log_inv_change(pos, player:get_player_name(), "put", "stuff")
@@ -228,7 +227,7 @@ function technic.chests.get_receive_fields(data)
 				end
 			end
 		end
-		if data.digilines and has_digilines then
+		if data.digilines then
 			if fields.save_channel and fields.channel then
 				meta:set_string("channel", fields.channel)
 			end
