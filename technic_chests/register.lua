@@ -51,6 +51,9 @@ end
 function technic.chests.register_chest(name, data)
 	local lname = name:lower()
 	name = S(name)
+	if data.digilines and not has_digilines then
+		data.digilines = nil
+	end
 	if data.locked then
 		data.node_name = "technic:"..lname.."_locked_chest"
 		data.description = S("%s Locked Chest"):format(name)
@@ -91,7 +94,7 @@ function technic.chests.register_chest(name, data)
 		tube = {
 			insert_object = function(pos, node, stack)
 				local meta = minetest.get_meta(pos)
-				if data.digilines and has_digilines and meta:get_int("send_inject") then
+				if data.digilines and meta:get_int("send_inject") then
 					technic.chests.send_digiline_message(pos, "inject", nil, {stack:to_table()})
 				end
 				technic.chests.log_inv_change(pos, "pipeworks tube", "put", stack:get_name())
@@ -103,7 +106,7 @@ function technic.chests.register_chest(name, data)
 					stack = stack:peek_item(1)
 				end
 				local can_insert = meta:get_inventory():room_for_item("main", stack)
-				if not can_insert and data.digilines and has_digilines and meta:get_int("send_overflow") then
+				if not can_insert and data.digilines and meta:get_int("send_overflow") then
 					technic.chests.send_digiline_message(pos, "overflow", nil, {stack:to_table()})
 				end
 				return can_insert
@@ -111,7 +114,7 @@ function technic.chests.register_chest(name, data)
 			remove_items = function(pos, node, stack)
 				local meta = minetest.get_meta(pos)
 				local removed = meta:get_inventory():remove_item("main", stack)
-				if data.digilines and has_digilines and meta:get_int("send_pull") then
+				if data.digilines and meta:get_int("send_pull") then
 					technic.chests.send_digiline_message(pos, "pull", nil, {removed:to_table()})
 				end
 				technic.chests.log_inv_change(pos, "pipeworks tube", "take", stack:get_name())
@@ -143,7 +146,7 @@ function technic.chests.register_chest(name, data)
 				local inv = meta:get_inventory()
 				local stack = inv:get_stack("main", from_index)
 				local moved_items = technic.chests.move_inv(inv, player:get_inventory(), stack:get_name())
-				if data.digilines and has_digilines and meta:get_int("send_take") == 1 then
+				if data.digilines and meta:get_int("send_take") == 1 then
 					technic.chests.send_digiline_message(pos, "take", player, moved_items)
 				end
 				technic.chests.log_inv_change(pos, player:get_player_name(), "take", "stuff")
@@ -159,7 +162,7 @@ function technic.chests.register_chest(name, data)
 				local meta = minetest.get_meta(pos)
 				local inv = meta:get_inventory()
 				local moved_items = technic.chests.move_inv(player:get_inventory(), inv, stack:get_name())
-				if data.digilines and has_digilines and meta:get_int("send_put") == 1 then
+				if data.digilines and meta:get_int("send_put") == 1 then
 					technic.chests.send_digiline_message(pos, "put", player, moved_items)
 				end
 				technic.chests.log_inv_change(pos, player:get_player_name(), "put", "stuff")
@@ -177,13 +180,13 @@ function technic.chests.register_chest(name, data)
 			technic.chests.log_inv_change(pos, player:get_player_name(), "move", "stuff")
 		end,
 		on_metadata_inventory_put = function(pos, listname, index, stack, player)
-			if data.digilines and has_digilines and minetest.get_meta(pos):get_int("send_put") == 1 then
+			if data.digilines and minetest.get_meta(pos):get_int("send_put") == 1 then
 				technic.chests.send_digiline_message(pos, "put", player, {stack:to_table()})
 			end
 			technic.chests.log_inv_change(pos, player:get_player_name(), "put", stack:get_name())
 		end,
 		on_metadata_inventory_take = function(pos, listname, index, stack, player)
-			if data.digilines and has_digilines and minetest.get_meta(pos):get_int("send_take") == 1 then
+			if data.digilines and minetest.get_meta(pos):get_int("send_take") == 1 then
 				technic.chests.send_digiline_message(pos, "take", player, {stack:to_table()})
 			end
 			technic.chests.log_inv_change(pos, player:get_player_name(), "take", stack:get_name())
@@ -219,7 +222,7 @@ function technic.chests.register_chest(name, data)
 			return secret, "a locked chest", owner
 		end
 	end
-	if data.digilines and has_digilines then
+	if data.digilines then
 		def.digiline = {
 			receptor = {},
 			effector = {
