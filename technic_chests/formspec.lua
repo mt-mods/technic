@@ -171,24 +171,9 @@ function technic.chests.get_receive_fields(data)
 		if not technic.chests.change_allowed(pos, player, data.locked, data.protected) then
 			return
 		end
-		if has_pipeworks then
-			pipeworks.fs_helpers.on_receive_fields(pos, fields)
-		end
-		if data.sort then
-			if fields.sort then
-				technic.chests.sort_inv(chest_inv, meta:get_int("sort_mode"))
-			end
-			if fields.sort_mode then
-				local value = meta:get_int("sort_mode") + 1
-				if value < 0 or value > 3 then
-					value = 0
-				end
-				meta:set_int("sort_mode", value)
-			end
-		end
-		if data.autosort and fields.autosort then
-			local value = meta:get_int("autosort") == 1 and 0 or 1
-			meta:set_int("autosort", value)
+		if data.sort and fields.sort then
+			technic.chests.sort_inv(chest_inv, meta:get_int("sort_mode"))
+			return
 		end
 		if data.quickmove then
 			if fields.all_to_chest then
@@ -197,12 +182,14 @@ function technic.chests.get_receive_fields(data)
 					technic.chests.send_digiline_message(pos, "put", player, moved_items)
 				end
 				technic.chests.log_inv_change(pos, player:get_player_name(), "put", "stuff")
+				return
 			elseif fields.all_to_inv then
 				local moved_items = technic.chests.move_inv(chest_inv, player_inv)
 				if data.digilines and meta:get_int("send_take") == 1 then
 					technic.chests.send_digiline_message(pos, "take", player, moved_items)
 				end
 				technic.chests.log_inv_change(pos, player:get_player_name(), "take", "stuff")
+				return
 			elseif fields.existing_to_chest then
 				local items = technic.chests.get_inv_items(chest_inv)
 				local moved_items = technic.chests.move_inv(player_inv, chest_inv, items)
@@ -210,7 +197,25 @@ function technic.chests.get_receive_fields(data)
 					technic.chests.send_digiline_message(pos, "put", player, moved_items)
 				end
 				technic.chests.log_inv_change(pos, player:get_player_name(), "put", "stuff")
+				return
 			end
+		end
+		if not technic.chests.change_allowed(pos, player, data.locked, true) then
+			return  -- Protect settings from being changed, even for open chests
+		end
+		if has_pipeworks then
+			pipeworks.fs_helpers.on_receive_fields(pos, fields)
+		end
+		if data.sort and fields.sort_mode then
+			local value = meta:get_int("sort_mode") + 1
+			if value < 0 or value > 3 then
+				value = 0
+			end
+			meta:set_int("sort_mode", value)
+		end
+		if data.autosort and fields.autosort then
+			local value = meta:get_int("autosort") == 1 and 0 or 1
+			meta:set_int("autosort", value)
 		end
 		if data.color then
 			for i = 1, 16 do
