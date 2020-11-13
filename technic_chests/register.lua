@@ -111,9 +111,10 @@ function technic.chests.register_chest(name, data)
 				end
 				return can_insert
 			end,
-			remove_items = function(pos, node, stack)
+			remove_items = function(pos, node, stack, dir, count)
 				local meta = minetest.get_meta(pos)
-				local removed = meta:get_inventory():remove_item("main", stack)
+				local item = stack:take_item(count)  -- pipeworks doesn't set the stack count the same as count :/
+				local removed = meta:get_inventory():remove_item("main", item)
 				if data.digilines and meta:get_int("send_pull") then
 					technic.chests.send_digiline_message(pos, "pull", nil, {removed:to_table()})
 				end
