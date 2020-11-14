@@ -13,37 +13,35 @@ end
 
 local function register_crafts(name, material, base_open, base_locked, base_protected)
 	name = name:lower()
-	if minetest.registered_items[material] then
-		if minetest.registered_items[base_open] then
-			minetest.register_craft({
-				output = "technic:"..name.."_chest",
-				recipe = {
-					{material, material, material},
-					{material, base_open, material},
-					{material, material, material},
-				}
-			})
-		end
-		if minetest.registered_items[base_locked] then
-			minetest.register_craft({
-				output = "technic:"..name.."_locked_chest",
-				recipe = {
-					{material, material, material},
-					{material, base_locked, material},
-					{material, material, material},
-				}
-			})
-		end
-		if minetest.registered_items[base_protected] then
-			minetest.register_craft({
-				output = "technic:"..name.."_protected_chest",
-				recipe = {
-					{material, material, material},
-					{material, base_protected, material},
-					{material, material, material},
-				}
-			})
-		end
+	if minetest.registered_items[base_open] then
+		minetest.register_craft({
+			output = "technic:"..name.."_chest",
+			recipe = {
+				{material, material, material},
+				{material, base_open, material},
+				{material, material, material},
+			}
+		})
+	end
+	if minetest.registered_items[base_locked] then
+		minetest.register_craft({
+			output = "technic:"..name.."_locked_chest",
+			recipe = {
+				{material, material, material},
+				{material, base_locked, material},
+				{material, material, material},
+			}
+		})
+	end
+	if minetest.registered_items[base_protected] then
+		minetest.register_craft({
+			output = "technic:"..name.."_protected_chest",
+			recipe = {
+				{material, material, material},
+				{material, base_protected, material},
+				{material, material, material},
+			}
+		})
 	end
 	minetest.register_craft({
 		output = "technic:"..name.."_locked_chest",
