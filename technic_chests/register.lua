@@ -94,7 +94,7 @@ function technic.chests.register_chest(name, data)
 		tube = {
 			insert_object = function(pos, node, stack)
 				local meta = minetest.get_meta(pos)
-				if data.digilines and meta:get_int("send_inject") then
+				if data.digilines and meta:get_int("send_inject") == 1 then
 					technic.chests.send_digiline_message(pos, "inject", nil, {stack:to_table()})
 				end
 				technic.chests.log_inv_change(pos, "pipeworks tube", "put", stack:get_name())
@@ -106,7 +106,7 @@ function technic.chests.register_chest(name, data)
 					stack = stack:peek_item(1)
 				end
 				local can_insert = meta:get_inventory():room_for_item("main", stack)
-				if not can_insert and data.digilines and meta:get_int("send_overflow") then
+				if not can_insert and data.digilines and meta:get_int("send_overflow") == 1 then
 					technic.chests.send_digiline_message(pos, "overflow", nil, {stack:to_table()})
 				end
 				return can_insert
@@ -115,7 +115,7 @@ function technic.chests.register_chest(name, data)
 				local meta = minetest.get_meta(pos)
 				local item = stack:take_item(count)  -- pipeworks doesn't set the stack count the same as count :/
 				local removed = meta:get_inventory():remove_item("main", item)
-				if data.digilines and meta:get_int("send_pull") then
+				if data.digilines and meta:get_int("send_pull") == 1 then
 					technic.chests.send_digiline_message(pos, "pull", nil, {removed:to_table()})
 				end
 				technic.chests.log_inv_change(pos, "pipeworks tube", "take", stack:get_name())
