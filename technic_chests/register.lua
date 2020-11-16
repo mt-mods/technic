@@ -210,7 +210,7 @@ function technic.chests.register_chest(name, data)
 			local meta = minetest.get_meta(pos)
 			local owner = meta:get_string("owner")
 			local player_name = player:get_player_name()
-			if owner ~= name then
+			if owner ~= player_name then
 				minetest.record_protection_violation(pos, player_name)
 				minetest.chat_send_player(player_name, "You do not own this chest.")
 				return nil
