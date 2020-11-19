@@ -227,7 +227,7 @@ function technic.chests.get_receive_fields(data)
 						node.name = data.node_name
 					end
 					minetest.swap_node(pos, node)
-					meta:set_string("color", i)
+					meta:set_int("color", i)
 					break
 				end
 			end
