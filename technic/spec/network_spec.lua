@@ -5,9 +5,9 @@ dofile("spec/test_helpers.lua")
 --]]
 
 -- Load fixtures required by tests
-fixture("minetest")
-fixture("minetest/player")
-fixture("minetest/protection")
+fixture("mineunit/core")
+fixture("mineunit/player")
+fixture("mineunit/protection")
 
 fixture("pipeworks")
 fixture("network")
