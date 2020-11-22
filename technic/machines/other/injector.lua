@@ -17,7 +17,8 @@ local base_formspec = "size[8,9;]"..
 	"list[current_player;main;0,5;8,4;]"..
 	"listring[]"
 
-local function set_injector_formspec(meta)
+local function set_injector_formspec(pos)
+	local meta = minetest.get_meta(pos)
 	local formspec = base_formspec..
 		fs_helpers.cycling_button(
 			meta,
@@ -28,15 +29,15 @@ local function set_injector_formspec(meta)
 				pipeworks.button_on
 			}
 		)..pipeworks.button_label
-	if meta:get_int("stackwise") == 1 then
-		formspec = formspec.."button[0,1;4,1;itemwise;"..S("Stackwise").."]"
+	if meta:get_string("mode") == "whole stacks" then
+		formspec = formspec.."button[0,1;4,1;mode_item;"..S("Stackwise").."]"
 	else
-		formspec = formspec.."button[0,1;4,1;stackwise;"..S("Itemwise").."]"
+		formspec = formspec.."button[0,1;4,1;mode_stack;"..S("Itemwise").."]"
 	end
-	if meta:get_int("disabled") == 1 then
-		formspec = formspec.."button[4,1;4,1;enable;"..S("Disabled").."]"
-	else
+	if minetest.get_node_timer(pos):is_started() then
 		formspec = formspec.."button[4,1;4,1;disable;"..S("Enabled").."]"
+	else
+		formspec = formspec.."button[4,1;4,1;enable;"..S("Disabled").."]"
 	end
 	meta:set_string("formspec", formspec)
 end
@@ -70,9 +71,10 @@ minetest.register_node("technic:injector", {
 	on_construct = function(pos)
 		local meta = minetest.get_meta(pos)
 		meta:set_string("infotext", S("Self-Contained Injector"))
+		meta:set_string("mode", "single items")
 		meta:get_inventory():set_size("main", 16)
-		set_injector_formspec(meta)
 		minetest.get_node_timer(pos):start(1)
+		set_injector_formspec(pos)
 	end,
 	can_dig = function(pos, player)
 		return minetest.get_meta(pos):get_inventory():is_empty("main")
@@ -82,25 +84,20 @@ minetest.register_node("technic:injector", {
 			return
 		end
 		local meta = minetest.get_meta(pos)
-		if fields.stackwise then
-			meta:set_int("stackwise", 1)
-		elseif fields.itemwise then
-			meta:set_int("stackwise", 0)
+		if fields.mode_item then
+			meta:set_string("mode", "single items")
+		elseif fields.mode_stack then
+			meta:set_string("mode", "whole stacks")
 		elseif fields.disable then
-			meta:set_int("disabled", 1)
 			minetest.get_node_timer(pos):stop()
 		elseif fields.enable then
-			meta:set_int("disabled", 0)
 			minetest.get_node_timer(pos):start(1)
 		end
 		fs_helpers.on_receive_fields(pos, fields)
-		set_injector_formspec(meta)
+		set_injector_formspec(pos)
 	end,
 	on_timer = function(pos, elapsed)
 		local meta = minetest.get_meta(pos)
-		if meta:get_int("disabled") == 1 then
-			return false
-		end
 		local node = minetest.get_node(pos)
 		local dir = param2_to_under[math.floor(node.param2 / 4)]
 		local node_under = minetest.get_node(vector.add(pos, dir))
@@ -110,7 +107,7 @@ minetest.register_node("technic:injector", {
 			if not list then
 				return true
 			end
-			local stackwise = meta:get_int("stackwise") == 1
+			local stackwise = meta:get_string("mode") == "whole stacks"
 			for i,stack in ipairs(list) do
 				if not stack:is_empty() then
 					if stackwise then
@@ -154,12 +151,7 @@ minetest.register_lbm({
 	nodenames = {"technic:injector"},
 	run_at_every_load = false,
 	action = function(pos, node)
-		local meta = minetest.get_meta(pos)
-		if meta:get_string("mode") == "whole stacks" then
-			meta:set_int("stackwise", 1)
-		end
-		meta:set_string("mode", "")
-		set_injector_formspec(meta)
 		minetest.get_node_timer(pos):start(1)
+		set_injector_formspec(pos)
 	end
 })
