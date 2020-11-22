@@ -11,65 +11,14 @@ local param2_to_under = {
 	[4] = {x= 1,y= 0,z= 0}, [5] = {x= 0,y= 1,z= 0}
 }
 
-local function inject_items(pos, dir)
-		local meta=minetest.get_meta(pos)
-		local inv = meta:get_inventory()
-		local mode=meta:get_string("mode")
-		if mode=="single items" then
-			local i=0
-			for _,stack in ipairs(inv:get_list("main")) do
-			i=i+1
-				if stack then
-				local item0=stack:to_table()
-				if item0 then
-					item0["count"] = 1
-					technic.tube_inject_item(pos, pos, dir, item0)
-					stack:take_item(1)
-					inv:set_stack("main", i, stack)
-					return
-					end
-				end
-			end
-		end
-		if mode=="whole stacks" then
-			local i=0
-			for _,stack in ipairs(inv:get_list("main")) do
-			i=i+1
-				if stack then
-				local item0=stack:to_table()
-				if item0 then
-					technic.tube_inject_item(pos, pos, dir, item0)
-					stack:clear()
-					inv:set_stack("main", i, stack)
-					return
-					end
-				end
-			end
-		end
-
-end
-
-minetest.register_craft({
-	output = 'technic:injector 1',
-	recipe = {
-		{'', 'technic:control_logic_unit',''},
-		{'', 'default:chest',''},
-		{'', 'pipeworks:tube_1',''},
-	}
-})
+local base_formspec = "size[8,9;]"..
+	"label[0,0;"..S("Self-Contained Injector").."]"..
+	"list[context;main;0,2;8,2;]"..
+	"list[current_player;main;0,5;8,4;]"..
+	"listring[]"
 
 local function set_injector_formspec(meta)
-	local is_stack = meta:get_string("mode") == "whole stacks"
-	meta:set_string("formspec",
-		"size[8,9;]"..
-		"item_image[0,0;1,1;technic:injector]"..
-		"label[1,0;"..S("Self-Contained Injector").."]"..
-		(is_stack and
-			"button[0,1;2,1;mode_item;"..S("Stackwise").."]" or
-			"button[0,1;2,1;mode_stack;"..S("Itemwise").."]")..
-		"list[context;main;0,2;8,2;]"..
-		"list[current_player;main;0,5;8,4;]"..
-		"listring[]"..
+	local formspec = base_formspec..
 		fs_helpers.cycling_button(
 			meta,
 			pipeworks.button_base,
@@ -79,7 +28,17 @@ local function set_injector_formspec(meta)
 				pipeworks.button_on
 			}
 		)..pipeworks.button_label
-	)
+	if meta:get_int("stackwise") == 1 then
+		formspec = formspec.."button[0,1;4,1;itemwise;"..S("Stackwise").."]"
+	else
+		formspec = formspec.."button[0,1;4,1;stackwise;"..S("Itemwise").."]"
+	end
+	if meta:get_int("disabled") == 1 then
+		formspec = formspec.."button[4,1;4,1;enable;"..S("Disabled").."]"
+	else
+		formspec = formspec.."button[4,1;4,1;disable;"..S("Enabled").."]"
+	end
+	meta:set_string("formspec", formspec)
 end
 
 minetest.register_node("technic:injector", {
@@ -97,11 +56,10 @@ minetest.register_node("technic:injector", {
 	tube = {
 		can_insert = function(pos, node, stack, direction)
 			local meta = minetest.get_meta(pos)
-			local inv = meta:get_inventory()
 			if meta:get_int("splitstacks") == 1 then
 				stack = stack:peek_item(1)
 			end
-			return inv:room_for_item("main", stack)
+			return meta:get_inventory():room_for_item("main", stack)
 		end,
 		insert_object = function(pos, node, stack, direction)
 			return minetest.get_meta(pos):get_inventory():add_item("main", stack)
@@ -112,27 +70,67 @@ minetest.register_node("technic:injector", {
 	on_construct = function(pos)
 		local meta = minetest.get_meta(pos)
 		meta:set_string("infotext", S("Self-Contained Injector"))
-		local inv = meta:get_inventory()
-		inv:set_size("main", 8*2)
-		meta:set_string("mode","single items")
+		meta:get_inventory():set_size("main", 16)
 		set_injector_formspec(meta)
+		minetest.get_node_timer(pos):start(1)
 	end,
-	can_dig = function(pos,player)
-		local meta = minetest.get_meta(pos);
-		local inv = meta:get_inventory()
-		return inv:is_empty("main")
+	can_dig = function(pos, player)
+		return minetest.get_meta(pos):get_inventory():is_empty("main")
 	end,
 	on_receive_fields = function(pos, formanme, fields, sender)
-		if fields.quit then return end
-		if not pipeworks.may_configure(pos, sender) then return end
-		local meta = minetest.get_meta(pos)
-		if fields.mode_item then meta:set_string("mode", "single items") end
-		if fields.mode_stack then meta:set_string("mode", "whole stacks") end
-		if fields["fs_helpers_cycling:0:splitstacks"]
-		  or fields["fs_helpers_cycling:1:splitstacks"] then
-			fs_helpers.on_receive_fields(pos, fields)
+		if fields.quit or not pipeworks.may_configure(pos, sender) then
+			return
 		end
+		local meta = minetest.get_meta(pos)
+		if fields.stackwise then
+			meta:set_int("stackwise", 1)
+		elseif fields.itemwise then
+			meta:set_int("stackwise", 0)
+		elseif fields.disable then
+			meta:set_int("disabled", 1)
+			minetest.get_node_timer(pos):stop()
+		elseif fields.enable then
+			meta:set_int("disabled", 0)
+			minetest.get_node_timer(pos):start(1)
+		end
+		fs_helpers.on_receive_fields(pos, fields)
 		set_injector_formspec(meta)
+	end,
+	on_timer = function(pos, elapsed)
+		local meta = minetest.get_meta(pos)
+		if meta:get_int("disabled") == 1 then
+			return false
+		end
+		local node = minetest.get_node(pos)
+		local dir = param2_to_under[math.floor(node.param2 / 4)]
+		local node_under = minetest.get_node(vector.add(pos, dir))
+		if minetest.get_item_group(node_under.name, "tubedevice") > 0 then
+			local inv = meta:get_inventory()
+			local list = inv:get_list("main")
+			if not list then
+				return true
+			end
+			local stackwise = meta:get_int("stackwise") == 1
+			for i,stack in ipairs(list) do
+				if not stack:is_empty() then
+					if stackwise then
+						technic.tube_inject_item(pos, pos, dir, stack:to_table())
+						stack:clear()
+					else
+						technic.tube_inject_item(pos, pos, dir, stack:take_item(1):to_table())
+					end
+					inv:set_stack("main", i, stack)
+					break
+				end
+			end
+		end
+		return true
+	end,
+	on_rotate = function(pos, node, user, mode, new_param2)
+		node.param2 = new_param2
+		minetest.swap_node(pos, node)
+		pipeworks.scan_for_tube_objects(pos)
+		return true
 	end,
 	allow_metadata_inventory_put = technic.machine_inventory_put,
 	allow_metadata_inventory_take = technic.machine_inventory_take,
@@ -141,17 +139,27 @@ minetest.register_node("technic:injector", {
 	after_dig_node = pipeworks.after_dig
 })
 
-minetest.register_abm({
-	label = "Machines: run injector",
+minetest.register_craft({
+	output = "technic:injector 1",
+	recipe = {
+		{"", "technic:control_logic_unit",""},
+		{"", "default:chest",""},
+		{"", "pipeworks:tube_1",""},
+	}
+})
+
+minetest.register_lbm({
+	label = "Old injector conversion",
+	name = "technic:old_injector_conversion",
 	nodenames = {"technic:injector"},
-	interval = 1,
-	chance = 1,
-	action = function(pos, node, active_object_count, active_object_count_wider)
-		local dir = param2_to_under[math.floor(node.param2/4)]
-		local pos1 = vector.add(pos, dir)
-		local node1 = minetest.get_node(pos1)
-		if minetest.get_item_group(node1.name, "tubedevice") > 0 then
-			inject_items(pos, dir)
+	run_at_every_load = false,
+	action = function(pos, node)
+		local meta = minetest.get_meta(pos)
+		if meta:get_string("mode") == "whole stacks" then
+			meta:set_int("stackwise", 1)
 		end
-	end,
+		meta:set_string("mode", "")
+		set_injector_formspec(meta)
+		minetest.get_node_timer(pos):start(1)
+	end
 })
