@@ -321,6 +321,18 @@ function technic.add_network_branch(queue, network)
 	end
 end
 
+-- Battery charge status updates for network
+local function update_battery(self, charge, max_charge, supply, demand)
+	self.battery_charge = self.battery_charge + charge
+	self.battery_charge_max = self.battery_charge_max + max_charge
+	self.battery_supply = self.battery_supply + supply
+	self.battery_demand = self.battery_demand + demand
+	if demand ~= 0 then
+		self.BA_count_active = self.BA_count_active + 1
+		self.BA_charge_active = self.BA_charge_active + charge
+	end
+end
+
 -- Moving average function generator
 local function sma(period)
 	local values = {}
@@ -349,6 +361,9 @@ function technic.build_network(network_id)
 		PR_nodes = {}, RE_nodes = {}, BA_nodes = {},
 		-- Power generation, usage and capacity related variables
 		supply = 0, demand = 0, battery_charge = 0, battery_charge_max = 0,
+		BA_count_active = 0, BA_charge_active = 0, battery_supply = 0, battery_demand = 0,
+		-- Battery status update function
+		update_battery = update_battery,
 		-- Network activation and excution control
 		timeout = 0, skip = 0, lag = 0, average_lag = sma(5)
 	}
@@ -375,7 +390,7 @@ minetest.register_on_mods_loaded(function()
 	end
 end)
 
-local function run_nodes(list, vm, run_stage)
+local function run_nodes(list, vm, run_stage, network)
 	for _, pos in ipairs(list) do
 		local node = minetest.get_node_or_nil(pos)
 		if not node then
@@ -383,7 +398,7 @@ local function run_nodes(list, vm, run_stage)
 			node = minetest.get_node_or_nil(pos)
 		end
 		if node and node.name and node_technic_run[node.name] then
-			node_technic_run[node.name](pos, node, run_stage)
+			node_technic_run[node.name](pos, node, run_stage, network)
 		end
 	end
 end
@@ -419,10 +434,18 @@ function technic.network_run(network_id)
 		return
 	end
 
+	-- Reset battery data for updates
+	network.battery_charge = 0
+	network.battery_charge_max = 0
+	network.battery_supply = 0
+	network.battery_demand = 0
+	network.BA_count_active = 0
+	network.BA_charge_active = 0
+
 	local vm = VoxelManip()
 	run_nodes(PR_nodes, vm, technic.producer)
 	run_nodes(RE_nodes, vm, technic.receiver)
-	run_nodes(BA_nodes, vm, technic.battery)
+	run_nodes(BA_nodes, vm, technic.battery, network)
 
 	-- Strings for the meta data
 	local eu_demand_str    = tier.."_EU_demand"
@@ -430,31 +453,9 @@ function technic.network_run(network_id)
 	local eu_supply_str    = tier.."_EU_supply"
 
 	-- Distribute charge equally across multiple batteries.
-	local charge_total = 0
-	local battery_count = 0
-
-	local BA_charge = 0
-	local BA_charge_max = 0
-
+	local charge_distributed = math.floor(network.BA_charge_active / network.BA_count_active)
 	for n, pos1 in pairs(BA_nodes) do
 		local meta1 = minetest.get_meta(pos1)
-		local charge = meta1:get_int("internal_EU_charge")
-		local charge_max = meta1:get_int("internal_EU_charge_max")
-
-		BA_charge = BA_charge + charge
-		BA_charge_max = BA_charge_max + charge_max
-
-		if (meta1:get_int(eu_demand_str) ~= 0) then
-			charge_total = charge_total + charge
-			battery_count = battery_count + 1
-		end
-	end
-
-	local charge_distributed = math.floor(charge_total / battery_count)
-
-	for n, pos1 in pairs(BA_nodes) do
-		local meta1 = minetest.get_meta(pos1)
-
 		if (meta1:get_int(eu_demand_str) ~= 0) then
 			meta1:set_int("internal_EU_charge", charge_distributed)
 		end
@@ -475,22 +476,6 @@ function technic.network_run(network_id)
 		RE_eu_demand = RE_eu_demand + meta1:get_int(eu_demand_str)
 	end
 	--dprint("Total RE demand:"..RE_eu_demand)
-
-	-- Get all the power from the BA nodes
-	local BA_eu_supply = 0
-	for _, pos1 in pairs(BA_nodes) do
-		local meta1 = minetest.get_meta(pos1)
-		BA_eu_supply = BA_eu_supply + meta1:get_int(eu_supply_str)
-	end
-	--dprint("Total BA supply:"..BA_eu_supply)
-
-	-- Get all the demand from the BA nodes
-	local BA_eu_demand = 0
-	for _, pos1 in pairs(BA_nodes) do
-		local meta1 = minetest.get_meta(pos1)
-		BA_eu_demand = BA_eu_demand + meta1:get_int(eu_demand_str)
-	end
-	--dprint("Total BA demand:"..BA_eu_demand)
 
 	technic.network_infotext(network_id, S("@1. Supply: @2 Demand: @3",
 			S("Switching Station"), technic.EU_string(PR_eu_supply),
@@ -514,10 +499,9 @@ function technic.network_run(network_id)
 	network.supply = PR_eu_supply
 	network.demand = RE_eu_demand
 	network.battery_count = #BA_nodes
-	network.battery_charge = BA_charge
-	network.battery_charge_max = BA_charge_max
 
 	-- If the PR supply is enough for the RE demand supply them all
+	local BA_eu_demand = network.battery_demand
 	if PR_eu_supply >= RE_eu_demand then
 	--dprint("PR_eu_supply"..PR_eu_supply.." >= RE_eu_demand"..RE_eu_demand)
 		for _, pos1 in pairs(RE_nodes) do
@@ -532,6 +516,7 @@ function technic.network_run(network_id)
 		if BA_eu_demand > 0 then
 			charge_factor = PR_eu_supply / BA_eu_demand
 		end
+		-- TODO: EU input for all batteries: math.floor(BA_eu_demand * charge_factor * #BA_nodes)
 		for n, pos1 in pairs(BA_nodes) do
 			local meta1 = minetest.get_meta(pos1)
 			local eu_demand = meta1:get_int(eu_demand_str)
@@ -548,6 +533,7 @@ function technic.network_run(network_id)
 	end
 
 	-- If the PR supply is not enough for the RE demand we will discharge the batteries too
+	local BA_eu_supply = network.battery_supply
 	if PR_eu_supply + BA_eu_supply >= RE_eu_demand then
 		--dprint("PR_eu_supply "..PR_eu_supply.."+BA_eu_supply "..BA_eu_supply.." >= RE_eu_demand"..RE_eu_demand)
 		for _, pos1 in pairs(RE_nodes) do
