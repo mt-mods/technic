@@ -315,10 +315,10 @@ local nuclear_reactor_receive_fields = function(pos, formname, fields, sender)
 	end
 	local meta = minetest.get_meta(pos)
 	local update_formspec = false
-	if fields.channel then
+	if fields.channel or fields.remote_channel then
 		-- TODO: Remove "remote_channel" and use de facto standard "channel"
 		meta:set_string("remote_channel", "")
-		meta:set_string("channel", fields.channel)
+		meta:set_string("channel", fields.channel or fields.remote_channel)
 	end
 	if fields.start then
 		local b = start_reactor(pos, meta)
