@@ -279,7 +279,7 @@ local function run(pos, node)
 		if has_digilines and meta:get_int("HV_EU_supply") == power_supply then
 			digilines.receptor_send(pos, technic.digilines.rules,
 				-- TODO: Remove "remote_channel" and use de facto standard "channel"
-				meta:get("channel") or meta:get_string("remote_channel"),
+				meta:get("remote_channel") or meta:get_string("channel"),
 				{
 					command = "fuel_used",
 					pos = pos
@@ -345,7 +345,7 @@ local digiline_def = function(pos, _, channel, msg)
 	local meta = minetest.get_meta(pos)
 	if meta:get_string("enable_digiline") ~= "true" or
 			-- TODO: Remove "remote_channel" and use de facto standard "channel"
-			channel ~= meta:get("channel") or meta:get_string("remote_channel") then
+			channel ~= meta:get("remote_channel") or meta:get_string("channel") then
 		return
 	end
 	-- Convert string messages to tables:
