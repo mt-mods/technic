@@ -321,6 +321,22 @@ function technic.add_network_branch(queue, network)
 	end
 end
 
+-- Producer supply updates for network
+local function update_producer(self, supply)
+	self.supply = self.supply + supply
+	if supply ~= 0 then
+		self.PR_count_active = self.PR_count_active + 1
+	end
+end
+
+-- Receiver demand updates for network
+local function update_receiver(self, demand)
+	self.demand = self.demand + demand
+	if demand ~= 0 then
+		self.RE_count_active = self.RE_count_active + 1
+	end
+end
+
 -- Battery charge status updates for network
 local function update_battery(self, charge, max_charge, supply, demand)
 	self.battery_charge = self.battery_charge + charge
@@ -362,7 +378,10 @@ function technic.build_network(network_id)
 		-- Power generation, usage and capacity related variables
 		supply = 0, demand = 0, battery_charge = 0, battery_charge_max = 0,
 		BA_count_active = 0, BA_charge_active = 0, battery_supply = 0, battery_demand = 0,
-		-- Battery status update function
+		PR_count_active = 0, RE_count_active = 0,
+		-- Status update functions
+		update_producer = update_producer,
+		update_receiver = update_receiver,
 		update_battery = update_battery,
 		-- Network activation and excution control
 		timeout = 0, skip = 0, lag = 0, average_lag = sma(5)
@@ -442,15 +461,35 @@ function technic.network_run(network_id)
 	network.BA_count_active = 0
 	network.BA_charge_active = 0
 
+	-- Reset network data
+	network.supply = 0
+	network.demand = 0
+
+	-- Set known values
+	network.battery_count = #BA_nodes
+
+	-- Run active nodes
 	local vm = VoxelManip()
-	run_nodes(PR_nodes, vm, technic.producer)
-	run_nodes(RE_nodes, vm, technic.receiver)
-	run_nodes(BA_nodes, vm, technic.battery, network)
+	run_nodes(PR_nodes, vm, technic.producer, network)
 
 	-- Strings for the meta data
 	local eu_demand_str    = tier.."_EU_demand"
 	local eu_input_str     = tier.."_EU_input"
 	local eu_supply_str    = tier.."_EU_supply"
+
+	-- Get all the power from the PR nodes
+	local PR_eu_supply = 0 -- Total power
+	for _, pos1 in pairs(PR_nodes) do
+		local meta1 = minetest.get_meta(pos1)
+		PR_eu_supply = PR_eu_supply + meta1:get_int(eu_supply_str)
+	end
+	--dprint("Total PR supply:"..PR_eu_supply)
+	if PR_eu_supply ~= 0 then
+		print("PR_eu_supply", PR_eu_supply)
+	end
+
+	run_nodes(RE_nodes, vm, technic.receiver, network)
+	run_nodes(BA_nodes, vm, technic.battery, network)
 
 	-- Distribute charge equally across multiple batteries.
 	local charge_distributed = math.floor(network.BA_charge_active / network.BA_count_active)
@@ -460,26 +499,6 @@ function technic.network_run(network_id)
 			meta1:set_int("internal_EU_charge", charge_distributed)
 		end
 	end
-
-	-- Get all the power from the PR nodes
-	local PR_eu_supply = 0 -- Total power
-	for _, pos1 in pairs(PR_nodes) do
-		local meta1 = minetest.get_meta(pos1)
-		PR_eu_supply = PR_eu_supply + meta1:get_int(eu_supply_str)
-	end
-	--dprint("Total PR supply:"..PR_eu_supply)
-
-	-- Get all the demand from the RE nodes
-	local RE_eu_demand = 0
-	for _, pos1 in pairs(RE_nodes) do
-		local meta1 = minetest.get_meta(pos1)
-		RE_eu_demand = RE_eu_demand + meta1:get_int(eu_demand_str)
-	end
-	--dprint("Total RE demand:"..RE_eu_demand)
-
-	technic.network_infotext(network_id, S("@1. Supply: @2 Demand: @3",
-			S("Switching Station"), technic.EU_string(PR_eu_supply),
-			technic.EU_string(RE_eu_demand)))
 
 	-- If mesecon signal and power supply or demand changed then
 	-- send them via digilines.
@@ -496,9 +515,12 @@ function technic.network_run(network_id)
 	end
 
 	-- Data that will be used by the power monitor
-	network.supply = PR_eu_supply
-	network.demand = RE_eu_demand
-	network.battery_count = #BA_nodes
+	local RE_eu_demand = network.demand
+	local PR_eu_supply = network.supply
+
+	technic.network_infotext(network_id, S("@1. Supply: @2 Demand: @3",
+			S("Switching Station"), technic.EU_string(PR_eu_supply),
+			technic.EU_string(RE_eu_demand)))
 
 	-- If the PR supply is enough for the RE demand supply them all
 	local BA_eu_demand = network.battery_demand

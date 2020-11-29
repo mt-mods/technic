@@ -5,7 +5,7 @@ function technic.register_solar_array(data)
 	local tier = data.tier
 	local ltier = string.lower(tier)
 
-	local run = function(pos, node)
+	local run = function(pos, node, run_state, network)
 		-- The action here is to make the solar array produce power
 		-- Power is dependent on the light level and the height above ground
 		-- There are many ways to cheat by using other light sources like lamps.
@@ -32,11 +32,13 @@ function technic.register_solar_array(data)
 			charge_to_give = math.min(charge_to_give, data.power * 50)
 			meta:set_string("infotext", S("@1 Active (@2)", machine_name,
 				technic.EU_string(charge_to_give)))
-			meta:set_int(tier.."_EU_supply", charge_to_give)
+			--meta:set_int(tier.."_EU_supply", charge_to_give)
+			network:update_producer(charge_to_give)
 		else
 			meta:set_string("infotext", S("%s Idle"):format(machine_name))
-			meta:set_int(tier.."_EU_supply", 0)
+			--meta:set_int(tier.."_EU_supply", 0)
 		end
+		meta:set_string(tier.."_EU_supply", "")
 	end
 
 	minetest.register_node("technic:solar_array_"..ltier, {
