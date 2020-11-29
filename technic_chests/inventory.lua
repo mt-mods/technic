@@ -10,33 +10,35 @@ local itemtypes = {
 function technic.chests.sort_inv(inv, mode)
 	local list = inv:get_list("main")
 	if not list then return end
-	local items = {}
-	for _,stack in pairs(list) do
-		if not stack:is_empty() then
-			local name = stack:get_name()
-			local wear = stack:get_wear()
-			local meta = stack:get_metadata()
-			local count = stack:get_count()
-			local def = minetest.registered_items[name]
-			local itemtype = (def and itemtypes[def.type]) and def.type or "none"
-			local key = string.format("%s %05d %s", name, wear, meta)
-			if not items[key] then
-				items[key] = {
-					stacks = {stack},
-					wear = wear,
-					count = count,
-					itemtype = itemtype,
-					key = key,
-				}
-			else
-				items[key].count = items[key].count + count
-				table.insert(items[key].stacks, stack)
+	local unique_items = {}
+	if mode ~= 4 then
+		local items = {}
+		for _,stack in pairs(list) do
+			if not stack:is_empty() then
+				local name = stack:get_name()
+				local wear = stack:get_wear()
+				local meta = stack:get_metadata()
+				local count = stack:get_count()
+				local def = minetest.registered_items[name]
+				local itemtype = (def and itemtypes[def.type]) and def.type or "none"
+				local key = string.format("%s %05d %s", name, wear, meta)
+				if not items[key] then
+					items[key] = {
+						stacks = {stack},
+						wear = wear,
+						count = count,
+						itemtype = itemtype,
+						key = key,
+					}
+				else
+					items[key].count = items[key].count + count
+					table.insert(items[key].stacks, stack)
+				end
 			end
 		end
-	end
-	local unique_items = {}
-	for k,v in pairs(items) do
-		table.insert(unique_items, v)
+		for k,v in pairs(items) do
+			table.insert(unique_items, v)
+		end
 	end
 	if mode == 1 then
 		-- Quantity
@@ -69,20 +71,33 @@ function technic.chests.sort_inv(inv, mode)
 		end)
 	elseif mode == 4 then
 		-- Natural
+		do -- Collect item stacks for sorting
+			local function name(stack)
+				return stack:get_meta():get("infotext")
+					or stack:get_description()
+					or stack:get_name()
+			end
+			local lookup = {}
+			for _,stack in pairs(list) do
+				local key = minetest.get_translated_string('', name(stack))
+				if not lookup[key] then
+					table.insert(unique_items, {
+						stacks = {stack},
+						key = key,
+					})
+					lookup[key] = #unique_items
+				else
+					table.insert(unique_items[lookup[key]].stacks, stack)
+				end
+			end
+		end
 		local function padnum(value)
 			local dec, n = string.match(value, "(%.?)0*(.+)")
 			return #dec > 0 and ("%.12f"):format(value) or ("%s%03d%s"):format(dec, #n, n)
 		end
-		local function name(item)
-			return item.stacks[1]:get_meta():get("infotext")
-				or item.stacks[1]:get_description()
-				or item.stacks[1]:get_name()
-		end
 		table.sort(unique_items, function(a, b)
-			local name_a = minetest.get_translated_string('', name(a))
-			local name_b = minetest.get_translated_string('', name(b))
-			local sort_a = ("%s%3d"):format(tostring(name_a):gsub("%.?%d+", padnum), #name_b)
-			local sort_b = ("%s%3d"):format(tostring(name_b):gsub("%.?%d+", padnum), #name_a)
+			local sort_a = ("%s%3d"):format(tostring(a.key):gsub("%.?%d+", padnum), #b.key)
+			local sort_b = ("%s%3d"):format(tostring(b.key):gsub("%.?%d+", padnum), #a.key)
 			return sort_a < sort_b
 		end)
 	else
