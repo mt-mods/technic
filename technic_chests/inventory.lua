@@ -67,6 +67,24 @@ function technic.chests.sort_inv(inv, mode)
 			end
 			return a.key < b.key
 		end)
+	elseif mode == 4 then
+		-- Natural
+		local function padnum(value)
+			local dec, n = string.match(value, "(%.?)0*(.+)")
+			return #dec > 0 and ("%.12f"):format(value) or ("%s%03d%s"):format(dec, #n, n)
+		end
+		local function name(item)
+			return item.stacks[1]:get_meta():get("infotext")
+				or item.stacks[1]:get_description()
+				or item.stacks[1]:get_name()
+		end
+		table.sort(unique_items, function(a, b)
+			local name_a = minetest.get_translated_string('', name(a))
+			local name_b = minetest.get_translated_string('', name(b))
+			local sort_a = ("%s%3d"):format(tostring(name_a):gsub("%.?%d+", padnum), #name_b)
+			local sort_b = ("%s%3d"):format(tostring(name_b):gsub("%.?%d+", padnum), #name_a)
+			return sort_a < sort_b
+		end)
 	else
 		-- Item
 		table.sort(unique_items, function(a, b)
