@@ -88,6 +88,8 @@ local function get_sort_fs(x, meta)
 		return fs.."button["..x..",0;2,1;sort_mode;"..S("Sort by Type").."]"
 	elseif mode == 3 then
 		return fs.."button["..x..",0;2,1;sort_mode;"..S("Sort by Wear").."]"
+	elseif mode == 4 then
+		return fs.."button["..x..",0;2,1;sort_mode;"..S("Natural sort").."]"
 	else
 		return fs.."button["..x..",0;2,1;sort_mode;"..S("Sort by Item").."]"
 	end
@@ -207,11 +209,8 @@ function technic.chests.get_receive_fields(data)
 			pipeworks.fs_helpers.on_receive_fields(pos, fields)
 		end
 		if data.sort and fields.sort_mode then
-			local value = meta:get_int("sort_mode") + 1
-			if value < 0 or value > 3 then
-				value = 0
-			end
-			meta:set_int("sort_mode", value)
+			local value = meta:get_int("sort_mode")
+			meta:set_int("sort_mode", (value + 1) % 5)
 		end
 		if data.autosort and fields.autosort then
 			local value = meta:get_int("autosort") == 1 and 0 or 1
