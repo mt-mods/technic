@@ -48,7 +48,7 @@ local function make_reactor_formspec(meta)
 	end
 	return f..
 		"button_exit[4.6,3.69;2,1;save;Save]"..
-		"field[1,4;4,1;channel;Digiline Remote Channel;${channel}]"
+		"field[1,4;4,1;channel;Digiline Channel;${channel}]"
 end
 
 local SS_OFF = 0
@@ -279,7 +279,7 @@ local function run(pos, node)
 		if has_digilines and meta:get_int("HV_EU_supply") == power_supply then
 			digilines.receptor_send(pos, technic.digilines.rules,
 				-- TODO: Remove "remote_channel" and use de facto standard "channel"
-				meta:get("remote_channel") or meta:get_string("channel"),
+				meta:get("channel") or meta:get_string("remote_channel"),
 				{
 					command = "fuel_used",
 					pos = pos
@@ -317,7 +317,7 @@ local nuclear_reactor_receive_fields = function(pos, formname, fields, sender)
 	local update_formspec = false
 	if fields.channel or fields.remote_channel then
 		-- TODO: Remove "remote_channel" and use de facto standard "channel"
-		meta:set_string("remote_channel", "")
+		meta:set_string("remote_channel", fields.channel or fields.remote_channel)
 		meta:set_string("channel", fields.channel or fields.remote_channel)
 	end
 	if fields.start then
@@ -345,7 +345,7 @@ local digiline_def = function(pos, _, channel, msg)
 	local meta = minetest.get_meta(pos)
 	if meta:get_string("enable_digiline") ~= "true" or
 			-- TODO: Remove "remote_channel" and use de facto standard "channel"
-			channel ~= meta:get("remote_channel") or meta:get_string("channel") then
+			channel ~= meta:get("channel") or meta:get_string("remote_channel") then
 		return
 	end
 	-- Convert string messages to tables:
