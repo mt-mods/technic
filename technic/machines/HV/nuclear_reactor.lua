@@ -48,7 +48,7 @@ local function make_reactor_formspec(meta)
 	end
 	return f..
 		"button_exit[4.6,3.69;2,1;save;Save]"..
-		"field[1,4;4,1;remote_channel;Digiline Remote Channel;${remote_channel}]"
+		"field[1,4;4,1;channel;Digiline Channel;${channel}]"
 end
 
 local SS_OFF = 0
@@ -277,10 +277,14 @@ local function run(pos, node)
 	local burn_time = meta:get_int("burn_time") or 0
 	if burn_time >= burn_ticks or burn_time == 0 then
 		if has_digilines and meta:get_int("HV_EU_supply") == power_supply then
-			digilines.receptor_send(pos, technic.digilines.rules, meta:get_string("remote_channel"), {
+			digilines.receptor_send(pos, technic.digilines.rules,
+				-- TODO: Remove "remote_channel" and use de facto standard "channel"
+				meta:get("channel") or meta:get_string("remote_channel"),
+				{
 					command = "fuel_used",
 					pos = pos
-			})
+				}
+			)
 		end
 		if meta:get_string("autostart") == "true" then
 			if start_reactor(pos, meta) then
@@ -311,8 +315,10 @@ local nuclear_reactor_receive_fields = function(pos, formname, fields, sender)
 	end
 	local meta = minetest.get_meta(pos)
 	local update_formspec = false
-	if fields.remote_channel then
-		meta:set_string("remote_channel", fields.remote_channel)
+	if fields.channel or fields.remote_channel then
+		-- TODO: Remove "remote_channel" and use de facto standard "channel"
+		meta:set_string("remote_channel", fields.channel or fields.remote_channel)
+		meta:set_string("channel", fields.channel or fields.remote_channel)
 	end
 	if fields.start then
 		local b = start_reactor(pos, meta)
@@ -338,7 +344,8 @@ end
 local digiline_def = function(pos, _, channel, msg)
 	local meta = minetest.get_meta(pos)
 	if meta:get_string("enable_digiline") ~= "true" or
-			channel ~= meta:get_string("remote_channel") then
+			-- TODO: Remove "remote_channel" and use de facto standard "channel"
+			channel ~= meta:get("channel") or meta:get_string("remote_channel") then
 		return
 	end
 	-- Convert string messages to tables:
@@ -421,10 +428,6 @@ minetest.register_node("technic:hv_nuclear_reactor_core", {
 		local meta = minetest.get_meta(pos)
 		meta:set_string("infotext", reactor_desc)
 		meta:set_string("formspec", make_reactor_formspec(meta))
-		if has_digilines then
-			meta:set_string("remote_channel",
-					"nuclear_reactor"..minetest.pos_to_string(pos))
-		end
 		local inv = meta:get_inventory()
 		inv:set_size("src", 6)
 	end,
