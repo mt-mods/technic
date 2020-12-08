@@ -22,6 +22,15 @@ function technic.create_network(sw_pos)
 	return network_id
 end
 
+local function pos_in_array(pos, array)
+	for _,pos2 in ipairs(array) do
+		if pos.x == pos2.x and pos.y == pos2.y and pos.z == pos2.z then
+			return true
+		end
+	end
+	return false
+end
+
 function technic.merge_networks(net1, net2)
 	-- TODO: Optimize for merging small network into larger by first checking network
 	-- node counts for both networks and keep network id with most nodes.
@@ -47,7 +56,9 @@ function technic.merge_networks(net1, net2)
 	if net1.queue and net2.queue then
 		-- FIXME: This should check for duplicates and already added nodes
 		for _,pos in ipairs(net1.queue) do
-			table.insert(net2.queue, pos)
+			if not pos_in_array(pos, net2.queue) then
+				table.insert(net2.queue, pos)
+			end
 		end
 	else
 		net2.queue = net1.queue or net2.queue
@@ -267,27 +278,45 @@ local function add_cable_node(nodes, pos, network_id, queue)
 		cables[node_id] = network_id
 		nodes[node_id] = pos
 		table.insert(queue, pos)
+	elseif cables[node_id] ~= network_id then
+		-- Conflicting network connected, merge networks if both are still in building stage
+		local net1 = networks[network_id]
+		local net2 = networks[cables[node_id]]
+		if net1 and net2 and net2.queue then
+			networks[network_id] = technic.merge_networks(net1, net2)
+			-- Current queue is detached and must be merged with new network queue
+			-- TODO: This could be done better without so many loops by only using queue attached to network object
+			if networks[network_id].queue then
+				for _,qpos in ipairs(networks[network_id].queue) do
+					if not pos_in_array(qpos, queue) then
+						table.insert(queue, qpos)
+					end
+				end
+			end
+			-- FIXME: This gets bit complicated, should remove this queue reset
+			networks[network_id].queue = queue
+		end
 	end
 end
 
 -- Generic function to add found connected nodes to the right classification array
-local function add_network_node(PR_nodes, RE_nodes, BA_nodes, all_nodes, pos, machines, tier, network_id, queue)
+local function add_network_node(network, pos, machines, queue)
 	technic.get_or_load_node(pos)
 	local name = minetest.get_node(pos).name
 
-	if technic.is_tier_cable(name, tier) then
-		add_cable_node(all_nodes, pos, network_id, queue)
+	if technic.is_tier_cable(name, network.tier) then
+		add_cable_node(network.all_nodes, pos, network.id, queue)
 	elseif machines[name] then
 		if     machines[name] == technic.producer then
-			add_network_machine(PR_nodes, pos, network_id, all_nodes)
+			add_network_machine(network.PR_nodes, pos, network.id, network.all_nodes)
 		elseif machines[name] == technic.receiver then
-			add_network_machine(RE_nodes, pos, network_id, all_nodes)
+			add_network_machine(network.RE_nodes, pos, network.id, network.all_nodes)
 		elseif machines[name] == technic.producer_receiver then
-			if add_network_machine(PR_nodes, pos, network_id, all_nodes, true) then
-				table.insert(RE_nodes, pos)
+			if add_network_machine(network.PR_nodes, pos, network.id, network.all_nodes, true) then
+				table.insert(network.RE_nodes, pos)
 			end
 		elseif machines[name] == technic.battery then
-			add_network_machine(BA_nodes, pos, network_id, all_nodes)
+			add_network_machine(network.BA_nodes, pos, network.id, network.all_nodes)
 		end
 	end
 end
@@ -295,20 +324,15 @@ end
 -- Generic function to add single nodes to the right classification array of existing network
 function technic.add_network_node(pos, network)
 	add_network_node(
-		network.PR_nodes,
-		network.RE_nodes,
-		network.BA_nodes,
-		network.all_nodes,
+		network,
 		pos,
 		technic.machines[network.tier],
-		network.tier,
-		network.id,
 		{}
 	)
 end
 
 -- Traverse a network given a list of machines and a cable type name
-local function traverse_network(PR_nodes, RE_nodes, BA_nodes, all_nodes, pos, machines, tier, network_id, queue)
+local function traverse_network(network, pos, machines, queue)
 	local positions = {
 		{x=pos.x+1, y=pos.y,   z=pos.z},
 		{x=pos.x-1, y=pos.y,   z=pos.z},
@@ -317,8 +341,8 @@ local function traverse_network(PR_nodes, RE_nodes, BA_nodes, all_nodes, pos, ma
 		{x=pos.x,   y=pos.y,   z=pos.z+1},
 		{x=pos.x,   y=pos.y,   z=pos.z-1}}
 	for i, cur_pos in pairs(positions) do
-		if not all_nodes[poshash(cur_pos)] then
-			add_network_node(PR_nodes, RE_nodes, BA_nodes, all_nodes, cur_pos, machines, tier, network_id, queue)
+		if not network.all_nodes[poshash(cur_pos)] then
+			add_network_node(network, cur_pos, machines, queue)
 		end
 	end
 end
@@ -342,20 +366,13 @@ end
 
 function technic.add_network_branch(queue, network)
 	-- Adds whole branch to network, queue positions can be used to bypass sub branches
-	local PR_nodes = network.PR_nodes -- Indexed array
-	local BA_nodes = network.BA_nodes -- Indexed array
-	local RE_nodes = network.RE_nodes -- Indexed array
-	local all_nodes = network.all_nodes -- Hash table
-	local network_id = network.id
-	local tier = network.tier
-	local machines = technic.machines[tier]
+	local machines = technic.machines[network.tier]
 	--print(string.format("technic.add_network_branch(%s, %s, %.17g)",queue,minetest.pos_to_string(sw_pos),network.id))
 	local t1 = minetest.get_us_time()
 	while next(queue) do
 		local to_visit = {}
 		for _, pos in ipairs(queue) do
-			traverse_network(PR_nodes, RE_nodes, BA_nodes, all_nodes, pos,
-					machines, tier, network_id, to_visit)
+			traverse_network(network, pos, machines, to_visit)
 		end
 		queue = to_visit
 		if minetest.get_us_time() - t1 > 10000 then
