@@ -134,7 +134,6 @@ Recommended mods that build on the `technic mod`:
 | quarry_time_limit                            | max cpu time in μs allowed per quarry step.                                                                           |
 | quarry_dig_above_nodes                       | begin digging this many nodes above quarry node.                                                                      |
 | network_overload_reset_time                  | After network conflict wait this many seconds before attempting to activate conflicting networks again.               |
-| switch_max_range                             | max cable length.                                                                                                     |
 | switch_off_delay_seconds                     | switching station off delay.                                                                                          |
 
 See defaults for settings here: [technic/config.lua](https://github.com/mt-mods/technic/blob/master/technic/config.lua)
@@ -143,6 +142,8 @@ See defaults for settings here: [technic/config.lua](https://github.com/mt-mods/
 
 * **/technic_flush_switch_cache** clears the switching station cache (stops all unloaded switches)
 * **/powerctrl [on|off]** enable/disable technic power distribution globally
+* **/technic_get_active_networks [minlag]** list all active networks with additional network data
+* **/technic_clear_network_data** removes all networks and network nodes from the cache
 
 # Contributors
 

@@ -14,7 +14,6 @@ local defaults = {
 	enable_entity_radiation_damage = "true",
 	enable_longterm_radiation_damage = "true",
 	enable_nuclear_reactor_digiline_selfdestruct = "false",
-	switch_max_range = "256",
 	switch_off_delay_seconds = "1800",
 	network_overload_reset_time = "20",
 	admin_priv = "basic_privs",
