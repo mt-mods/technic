@@ -3,8 +3,9 @@
 --
 local S = technic.getter
 
-local switch_max_range = tonumber(minetest.settings:get("technic.switch_max_range") or "256")
-local off_delay_seconds = tonumber(minetest.settings:get("technic.switch.off_delay_seconds") or "1800")
+local off_delay_seconds = tonumber(technic.config:get("switch_off_delay_seconds"))
+
+local network_node_arrays = {"PR_nodes","BA_nodes","RE_nodes"}
 
 technic.active_networks = {}
 local networks = {}
@@ -19,6 +20,52 @@ function technic.create_network(sw_pos)
 	local network_id = poshash({x=sw_pos.x,y=sw_pos.y-1,z=sw_pos.z})
 	technic.build_network(network_id)
 	return network_id
+end
+
+local function pos_in_array(pos, array)
+	for _,pos2 in ipairs(array) do
+		if pos.x == pos2.x and pos.y == pos2.y and pos.z == pos2.z then
+			return true
+		end
+	end
+	return false
+end
+
+function technic.merge_networks(net1, net2)
+	-- TODO: Optimize for merging small network into larger by first checking network
+	-- node counts for both networks and keep network id with most nodes.
+	assert(type(net1) == "table", "Invalid net1 for technic.merge_networks")
+	assert(type(net2) == "table", "Invalid net2 for technic.merge_networks")
+	assert(net1 ~= net2, "Deadlock recipe: net1 & net2 equals for technic.merge_networks")
+	-- Move data in cables table
+	for node_id,cable_net_id in pairs(cables) do
+		if cable_net_id == net2.id then
+			cables[node_id] = net1.id
+		end
+	end
+	-- Move data in machine tables
+	for _,tablename in ipairs(network_node_arrays) do
+		for _,pos in ipairs(net2[tablename]) do
+			table.insert(net1[tablename], pos)
+		end
+	end
+	-- Move data in all_nodes table
+	for node_id,pos in pairs(net2.all_nodes) do
+		net1.all_nodes[node_id] = pos
+	end
+	-- Merge queues for incomplete networks
+	if net1.queue and net2.queue then
+		for _,pos in ipairs(net2.queue) do
+			if not pos_in_array(pos, net1.queue) then
+				table.insert(net1.queue, pos)
+			end
+		end
+	else
+		net1.queue = net1.queue or net2.queue
+	end
+	-- Remove links to net2
+	networks[net2.id] = nil
+	technic.active_networks[net2.id] = nil
 end
 
 function technic.activate_network(network_id, timeout)
@@ -53,7 +100,6 @@ function technic.remove_network(network_id)
 end
 
 -- Remove machine or cable from network
-local network_node_arrays = {"PR_nodes","BA_nodes","RE_nodes"}
 function technic.remove_network_node(network_id, pos)
 	local network = networks[network_id]
 	if not network then return end
@@ -109,11 +155,18 @@ function technic.network2sw_pos(network_id)
 end
 
 function technic.network_infotext(network_id, text)
-	if networks[network_id] == nil then return end
-	if text then
-		networks[network_id].infotext = text
-	else
-		return networks[network_id].infotext
+	local network = networks[network_id]
+	if network then
+		if text then
+			network.infotext = text
+		elseif network.queue then
+			local count = #network.PR_nodes
+				+ #network.RE_nodes
+				+ #network.BA_nodes
+			return S("Building Network: %d Nodes"):format(count)
+		else
+			return network.infotext
+		end
 	end
 end
 
@@ -162,7 +215,7 @@ end
 --
 -- Network overloading (incomplete cheat mitigation)
 --
-local overload_reset_time = tonumber(minetest.settings:get("technic.overload_reset_time") or "20")
+local overload_reset_time = tonumber(technic.config:get("network_overload_reset_time"))
 local overloaded_networks = {}
 
 local function overload_network(network_id)
@@ -217,54 +270,52 @@ local function add_network_machine(nodes, pos, network_id, all_nodes, multitier)
 end
 
 -- Add a wire node to the LV/MV/HV network
-local function add_cable_node(nodes, pos, network_id, queue)
+local function add_cable_node(pos, network)
 	local node_id = poshash(pos)
 	if not cables[node_id] then
-		cables[node_id] = network_id
-		nodes[node_id] = pos
-		table.insert(queue, pos)
+		cables[node_id] = network.id
+		network.all_nodes[node_id] = pos
+		if network.queue then
+			table.insert(network.queue, pos)
+		end
+	elseif cables[node_id] ~= network.id then
+		-- Conflicting network connected, merge networks if both are still in building stage
+		local net2 = networks[cables[node_id]]
+		if net2 and net2.queue then
+			technic.merge_networks(network, net2)
+		end
 	end
 end
 
 -- Generic function to add found connected nodes to the right classification array
-local function add_network_node(PR_nodes, RE_nodes, BA_nodes, all_nodes, pos, machines, tier, network_id, queue)
+local function add_network_node(network, pos, machines)
 	technic.get_or_load_node(pos)
 	local name = minetest.get_node(pos).name
 
-	if technic.is_tier_cable(name, tier) then
-		add_cable_node(all_nodes, pos, network_id, queue)
+	if technic.is_tier_cable(name, network.tier) then
+		add_cable_node(pos, network)
 	elseif machines[name] then
 		if     machines[name] == technic.producer then
-			add_network_machine(PR_nodes, pos, network_id, all_nodes)
+			add_network_machine(network.PR_nodes, pos, network.id, network.all_nodes)
 		elseif machines[name] == technic.receiver then
-			add_network_machine(RE_nodes, pos, network_id, all_nodes)
+			add_network_machine(network.RE_nodes, pos, network.id, network.all_nodes)
 		elseif machines[name] == technic.producer_receiver then
-			if add_network_machine(PR_nodes, pos, network_id, all_nodes, true) then
-				table.insert(RE_nodes, pos)
+			if add_network_machine(network.PR_nodes, pos, network.id, network.all_nodes, true) then
+				table.insert(network.RE_nodes, pos)
 			end
 		elseif machines[name] == technic.battery then
-			add_network_machine(BA_nodes, pos, network_id, all_nodes)
+			add_network_machine(network.BA_nodes, pos, network.id, network.all_nodes)
 		end
 	end
 end
 
 -- Generic function to add single nodes to the right classification array of existing network
 function technic.add_network_node(pos, network)
-	add_network_node(
-		network.PR_nodes,
-		network.RE_nodes,
-		network.BA_nodes,
-		network.all_nodes,
-		pos,
-		technic.machines[network.tier],
-		network.tier,
-		network.id,
-		{}
-	)
+	add_network_node(network, pos, technic.machines[network.tier])
 end
 
 -- Traverse a network given a list of machines and a cable type name
-local function traverse_network(PR_nodes, RE_nodes, BA_nodes, all_nodes, pos, machines, tier, network_id, queue)
+local function traverse_network(network, pos, machines)
 	local positions = {
 		{x=pos.x+1, y=pos.y,   z=pos.z},
 		{x=pos.x-1, y=pos.y,   z=pos.z},
@@ -273,8 +324,8 @@ local function traverse_network(PR_nodes, RE_nodes, BA_nodes, all_nodes, pos, ma
 		{x=pos.x,   y=pos.y,   z=pos.z+1},
 		{x=pos.x,   y=pos.y,   z=pos.z-1}}
 	for i, cur_pos in pairs(positions) do
-		if not all_nodes[poshash(cur_pos)] then
-			add_network_node(PR_nodes, RE_nodes, BA_nodes, all_nodes, cur_pos, machines, tier, network_id, queue)
+		if not network.all_nodes[poshash(cur_pos)] then
+			add_network_node(network, cur_pos, machines)
 		end
 	end
 end
@@ -287,7 +338,7 @@ end
 
 local function get_network(network_id, tier)
 	local cached = networks[network_id]
-	if cached and cached.tier == tier then
+	if cached and not cached.queue and cached.tier == tier then
 		touch_nodes(cached.PR_nodes, tier)
 		touch_nodes(cached.BA_nodes, tier)
 		touch_nodes(cached.RE_nodes, tier)
@@ -298,70 +349,115 @@ end
 
 function technic.add_network_branch(queue, network)
 	-- Adds whole branch to network, queue positions can be used to bypass sub branches
-	local PR_nodes = network.PR_nodes -- Indexed array
-	local BA_nodes = network.BA_nodes -- Indexed array
-	local RE_nodes = network.RE_nodes -- Indexed array
-	local all_nodes = network.all_nodes -- Hash table
-	local network_id = network.id
-	local tier = network.tier
-	local machines = technic.machines[tier]
-	local sw_pos = technic.network2sw_pos(network_id)
+	local machines = technic.machines[network.tier]
 	--print(string.format("technic.add_network_branch(%s, %s, %.17g)",queue,minetest.pos_to_string(sw_pos),network.id))
+	local t1 = minetest.get_us_time()
 	while next(queue) do
 		local to_visit = {}
 		for _, pos in ipairs(queue) do
-			if vector.distance(pos, sw_pos) > switch_max_range then
-				-- max range exceeded
-				return
-			end
-			traverse_network(PR_nodes, RE_nodes, BA_nodes, all_nodes, pos,
-					machines, tier, network_id, to_visit)
+			network.queue = to_visit
+			traverse_network(network, pos, machines)
 		end
 		queue = to_visit
+		if minetest.get_us_time() - t1 > 10000 then
+			-- time limit exceeded
+			break
+		end
+	end
+	-- Set build queue for network if network build was not finished within time limits
+	network.queue = #queue > 0 and queue
+end
+
+-- Battery charge status updates for network
+local function update_battery(self, charge, max_charge, supply, demand)
+	self.battery_charge = self.battery_charge + charge
+	self.battery_charge_max = self.battery_charge_max + max_charge
+	self.battery_supply = self.battery_supply + supply
+	self.battery_demand = self.battery_demand + demand
+	if demand ~= 0 then
+		self.BA_count_active = self.BA_count_active + 1
+		self.BA_charge_active = self.BA_charge_active + charge
+	end
+end
+
+-- Moving average function generator
+local function sma(period)
+	local values = {}
+	local index = 1
+	local sum = 0
+	return function(n)
+		-- Add new value and return average
+		sum = sum - (values[index] or 0) + n
+		values[index] = n
+		index = index ~= period and index + 1 or 1
+		return sum / #values
 	end
 end
 
 function technic.build_network(network_id)
-	technic.remove_network(network_id)
-	local sw_pos = technic.network2sw_pos(network_id)
-	local tier = technic.sw_pos2tier(sw_pos)
-	if not tier then
-		return
+	local network = networks[network_id]
+	if network and not network.queue then
+		-- Network exists complete and cached
+		return network.PR_nodes, network.BA_nodes, network.RE_nodes
+	elseif not network then
+		-- Build new network if network does not exist
+		technic.remove_network(network_id)
+		local sw_pos = technic.network2sw_pos(network_id)
+		local tier = sw_pos and technic.sw_pos2tier(sw_pos)
+		if not tier then
+			-- Failed to get initial cable node for network
+			return
+		end
+		network = {
+			-- Build queue
+			queue = {},
+			-- Basic network data and lookup table for attached nodes (no switching stations)
+			id = network_id, tier = tier, all_nodes = {},
+			-- Indexed arrays for iteration by machine type
+			PR_nodes = {}, RE_nodes = {}, BA_nodes = {},
+			-- Power generation, usage and capacity related variables
+			supply = 0, demand = 0, battery_charge = 0, battery_charge_max = 0,
+			BA_count_active = 0, BA_charge_active = 0, battery_supply = 0, battery_demand = 0,
+			-- Battery status update function
+			update_battery = update_battery,
+			-- Network activation and excution control
+			timeout = 0, skip = 0, lag = 0, average_lag = sma(5)
+		}
+		-- Add first cable (one that is holding network id) and build network
+		add_cable_node(technic.network2pos(network_id), network)
 	end
-	local network = {
-		-- Basic network data and lookup table for attached nodes (no switching stations)
-		id = network_id, tier = tier, all_nodes = {},
-		-- Indexed arrays for iteration by machine type
-		PR_nodes = {}, RE_nodes = {}, BA_nodes = {},
-		-- Power generation, usage and capacity related variables
-		supply = 0, demand = 0, battery_charge = 0, battery_charge_max = 0,
-		-- Network activation and excution control
-		timeout = 0, skip = 0,
-	}
-	-- Add first cable (one that is holding network id) and build network
-	local queue = {}
-	add_cable_node(network.all_nodes, technic.network2pos(network_id), network_id, queue)
-	technic.add_network_branch(queue, network)
+	-- Continue building incomplete network
+	technic.add_network_branch(network.queue, network)
 	network.battery_count = #network.BA_nodes
 	-- Add newly built network to cache array
 	networks[network_id] = network
-	-- And return producers, batteries and receivers (should this simply return network?)
-	return network.PR_nodes, network.BA_nodes, network.RE_nodes
+	if not network.queue then
+		-- And return producers, batteries and receivers (should this simply return network?)
+		return network.PR_nodes, network.BA_nodes, network.RE_nodes
+	end
 end
 
 --
 -- Execute technic power network
 --
+local node_technic_run = {}
+minetest.register_on_mods_loaded(function()
+	for name, _ in pairs(technic.machine_tiers) do
+		if type(minetest.registered_nodes[name].technic_run) == "function" then
+			node_technic_run[name] = minetest.registered_nodes[name].technic_run
+		end
+	end
+end)
 
-local function run_nodes(list, run_stage)
+local function run_nodes(list, vm, run_stage, network)
 	for _, pos in ipairs(list) do
-		technic.get_or_load_node(pos)
 		local node = minetest.get_node_or_nil(pos)
-		if node and node.name then
-			local nodedef = minetest.registered_nodes[node.name]
-			if nodedef and nodedef.technic_run then
-				nodedef.technic_run(pos, node, run_stage)
-			end
+		if not node then
+			vm:read_from_map(pos, pos)
+			node = minetest.get_node_or_nil(pos)
+		end
+		if node and node.name and node_technic_run[node.name] then
+			node_technic_run[node.name](pos, node, run_stage, network)
 		end
 	end
 end
@@ -377,13 +473,6 @@ function technic.network_run(network_id)
 	-- contain a lot of switching station specific stuff which
 	-- should be removed and/or refactored.
 	--
-	if not technic.powerctrl_state then return end
-
-	-- Check if network is overloaded / conflicts with another network
-	if technic.is_overloaded(network_id) then
-		-- TODO: Overload check should happen before technic.network_run is called
-		return
-	end
 
 	local pos = technic.network2sw_pos(network_id)
 	local t0 = minetest.get_us_time()
@@ -396,7 +485,7 @@ function technic.network_run(network_id)
 	local network
 	if tier then
 		PR_nodes, BA_nodes, RE_nodes = get_network(network_id, tier)
-		if technic.is_overloaded(network_id) then return end
+		if not PR_nodes or technic.is_overloaded(network_id) then return end
 		network = networks[network_id]
 	else
 		--dprint("Not connected to a network")
@@ -404,9 +493,18 @@ function technic.network_run(network_id)
 		return
 	end
 
-	run_nodes(PR_nodes, technic.producer)
-	run_nodes(RE_nodes, technic.receiver)
-	run_nodes(BA_nodes, technic.battery)
+	-- Reset battery data for updates
+	network.battery_charge = 0
+	network.battery_charge_max = 0
+	network.battery_supply = 0
+	network.battery_demand = 0
+	network.BA_count_active = 0
+	network.BA_charge_active = 0
+
+	local vm = VoxelManip()
+	run_nodes(PR_nodes, vm, technic.producer)
+	run_nodes(RE_nodes, vm, technic.receiver)
+	run_nodes(BA_nodes, vm, technic.battery, network)
 
 	-- Strings for the meta data
 	local eu_demand_str    = tier.."_EU_demand"
@@ -414,31 +512,9 @@ function technic.network_run(network_id)
 	local eu_supply_str    = tier.."_EU_supply"
 
 	-- Distribute charge equally across multiple batteries.
-	local charge_total = 0
-	local battery_count = 0
-
-	local BA_charge = 0
-	local BA_charge_max = 0
-
+	local charge_distributed = math.floor(network.BA_charge_active / network.BA_count_active)
 	for n, pos1 in pairs(BA_nodes) do
 		local meta1 = minetest.get_meta(pos1)
-		local charge = meta1:get_int("internal_EU_charge")
-		local charge_max = meta1:get_int("internal_EU_charge_max")
-
-		BA_charge = BA_charge + charge
-		BA_charge_max = BA_charge_max + charge_max
-
-		if (meta1:get_int(eu_demand_str) ~= 0) then
-			charge_total = charge_total + charge
-			battery_count = battery_count + 1
-		end
-	end
-
-	local charge_distributed = math.floor(charge_total / battery_count)
-
-	for n, pos1 in pairs(BA_nodes) do
-		local meta1 = minetest.get_meta(pos1)
-
 		if (meta1:get_int(eu_demand_str) ~= 0) then
 			meta1:set_int("internal_EU_charge", charge_distributed)
 		end
@@ -459,22 +535,6 @@ function technic.network_run(network_id)
 		RE_eu_demand = RE_eu_demand + meta1:get_int(eu_demand_str)
 	end
 	--dprint("Total RE demand:"..RE_eu_demand)
-
-	-- Get all the power from the BA nodes
-	local BA_eu_supply = 0
-	for _, pos1 in pairs(BA_nodes) do
-		local meta1 = minetest.get_meta(pos1)
-		BA_eu_supply = BA_eu_supply + meta1:get_int(eu_supply_str)
-	end
-	--dprint("Total BA supply:"..BA_eu_supply)
-
-	-- Get all the demand from the BA nodes
-	local BA_eu_demand = 0
-	for _, pos1 in pairs(BA_nodes) do
-		local meta1 = minetest.get_meta(pos1)
-		BA_eu_demand = BA_eu_demand + meta1:get_int(eu_demand_str)
-	end
-	--dprint("Total BA demand:"..BA_eu_demand)
 
 	technic.network_infotext(network_id, S("@1. Supply: @2 Demand: @3",
 			S("Switching Station"), technic.EU_string(PR_eu_supply),
@@ -498,10 +558,9 @@ function technic.network_run(network_id)
 	network.supply = PR_eu_supply
 	network.demand = RE_eu_demand
 	network.battery_count = #BA_nodes
-	network.battery_charge = BA_charge
-	network.battery_charge_max = BA_charge_max
 
 	-- If the PR supply is enough for the RE demand supply them all
+	local BA_eu_demand = network.battery_demand
 	if PR_eu_supply >= RE_eu_demand then
 	--dprint("PR_eu_supply"..PR_eu_supply.." >= RE_eu_demand"..RE_eu_demand)
 		for _, pos1 in pairs(RE_nodes) do
@@ -516,6 +575,7 @@ function technic.network_run(network_id)
 		if BA_eu_demand > 0 then
 			charge_factor = PR_eu_supply / BA_eu_demand
 		end
+		-- TODO: EU input for all batteries: math.floor(BA_eu_demand * charge_factor * #BA_nodes)
 		for n, pos1 in pairs(BA_nodes) do
 			local meta1 = minetest.get_meta(pos1)
 			local eu_demand = meta1:get_int(eu_demand_str)
@@ -532,6 +592,7 @@ function technic.network_run(network_id)
 	end
 
 	-- If the PR supply is not enough for the RE demand we will discharge the batteries too
+	local BA_eu_supply = network.battery_supply
 	if PR_eu_supply + BA_eu_supply >= RE_eu_demand then
 		--dprint("PR_eu_supply "..PR_eu_supply.."+BA_eu_supply "..BA_eu_supply.." >= RE_eu_demand"..RE_eu_demand)
 		for _, pos1 in pairs(RE_nodes) do
@@ -581,56 +642,4 @@ function technic.network_run(network_id)
 		minetest.log("warning", "[technic] technic_run took " .. diff .. " us at " .. minetest.pos_to_string(pos))
 	end
 
-end
-
---
--- Technic power network administrative functions
---
-
-technic.powerctrl_state = true
-
-minetest.register_chatcommand("powerctrl", {
-	params = "state",
-	description = "Enables or disables technic's switching station ABM",
-	privs = { basic_privs = true },
-	func = function(name, state)
-		if state == "on" then
-			technic.powerctrl_state = true
-		else
-			technic.powerctrl_state = false
-		end
-	end
-})
-
---
--- Metadata cleanup LBM, removes old metadata values from nodes
---
---luacheck: ignore 511
-if false then
-	minetest.register_lbm({
-		name = "technic:metadata-cleanup",
-		nodenames = {
-			"group:technic_machine",
-			"group:technic_all_tiers",
-			"technic:switching_station",
-			"technic:power_monitor",
-		},
-		action = function(pos, node)
-			-- Delete all listed metadata key/value pairs from technic machines
-			local keys = {
-				"LV_EU_timeout", "MV_EU_timeout", "HV_EU_timeout",
-				"LV_network", "MV_network", "HV_network",
-				"active_pos", "supply", "demand",
-				"battery_count", "battery_charge", "battery_charge_max",
-			}
-			local meta = minetest.get_meta(pos)
-			for _,key in ipairs(keys) do
-				-- Value of `""` will delete the key.
-				meta:set_string(key, "")
-			end
-			if node.name == "technic:switching_station" then
-				meta:set_string("active", "")
-			end
-		end,
-	})
 end

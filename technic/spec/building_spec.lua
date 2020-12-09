@@ -1,13 +1,13 @@
-dofile("spec/test_helpers.lua")
+dofile("spec/fixtures/mineunit/init.lua")
 --[[
 	Technic network unit tests.
 	Execute busted at technic source directory.
 --]]
 
 -- Load fixtures required by tests
-fixture("minetest")
-fixture("minetest/player")
-fixture("minetest/protection")
+mineunit("core")
+mineunit("player")
+mineunit("protection")
 
 fixture("pipeworks")
 fixture("network")

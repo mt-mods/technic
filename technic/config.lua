@@ -10,9 +10,17 @@ local defaults = {
 	enable_frames = "false",
 	enable_corium_griefing = "true",
 	enable_radiation_protection = "true",
+	enable_radiation_throttling = "false",
 	enable_entity_radiation_damage = "true",
 	enable_longterm_radiation_damage = "true",
 	enable_nuclear_reactor_digiline_selfdestruct = "false",
+	switch_off_delay_seconds = "1800",
+	network_overload_reset_time = "20",
+	admin_priv = "basic_privs",
+	quarry_dig_above_nodes = "3",
+	quarry_max_depth = "100",
+	quarry_time_limit = "5000",
+	--constant_digit_count = nil,
 }
 
 for k, v in pairs(defaults) do

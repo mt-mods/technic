@@ -1,13 +1,13 @@
-dofile("spec/test_helpers.lua")
+dofile("spec/fixtures/mineunit/init.lua")
 --[[
 	Technic network unit tests.
 	Execute busted at technic source directory.
 --]]
 
 -- Load fixtures required by tests
-fixture("minetest")
-fixture("minetest/player")
-fixture("minetest/protection")
+mineunit("core")
+mineunit("player")
+mineunit("protection")
 
 fixture("pipeworks")
 fixture("network")
@@ -163,255 +163,202 @@ describe("Power network helper", function()
 
 end)
 
--- Clean up, left following here just for easy copy pasting stuff from previous proj
+describe("technic.merge_networks", function()
 
---[[
-describe("Metatool API protection", function()
+	describe("function behavior", function()
 
-	it("metatool.is_protected bypass privileges", function()
-		local value = metatool.is_protected(ProtectedPos(), Player(), "test_priv", true)
-		assert.equals(false, value)
-	end)
+		world.layout({
+			{{x=100,y=110,z=170}, "technic:hv_cable"},
+			{{x=101,y=110,z=170}, "technic:hv_cable"},
+			{{x=102,y=110,z=170}, "technic:hv_cable"},
+			{{x=103,y=110,z=170}, "technic:hv_cable"},
+			{{x=104,y=110,z=170}, "technic:hv_cable"},
+			{{x=100,y=111,z=170}, "technic:switching_station"},
+			{{x=101,y=111,z=170}, "technic:hv_generator"},
+			{{x=102,y=111,z=170}, "technic:hv_generator"},
 
-	it("metatool.is_protected no bypass privileges", function()
-		local value = metatool.is_protected(ProtectedPos(), Player(), "test_priv2", true)
-		assert.equals(true, value)
-	end)
+			{{x=100,y=120,z=180}, "technic:hv_cable"},
+			{{x=101,y=120,z=180}, "technic:hv_cable"},
+			{{x=102,y=120,z=180}, "technic:hv_cable"},
+			{{x=103,y=120,z=180}, "technic:hv_cable"},
+			{{x=104,y=120,z=180}, "technic:hv_cable"},
+			{{x=100,y=121,z=180}, "technic:switching_station"},
+			{{x=101,y=121,z=180}, "technic:hv_generator"},
+			{{x=102,y=121,z=180}, "technic:hv_generator"},
 
-	it("metatool.is_protected bypass privileges, unprotected", function()
-		local value = metatool.is_protected(UnprotectedPos(), Player(), "test_priv", true)
-		assert.equals(false, value)
-	end)
-
-	it("metatool.is_protected no bypass privileges, unprotected", function()
-		local value = metatool.is_protected(UnprotectedPos(), Player(), "test_priv2", true)
-		assert.equals(false, value)
-	end)
-
-end)
-
-describe("Metatool API tool namespace", function()
-
-	it("Create invalid namespace", function()
-		local tool = { ns = metatool.ns, name = 'invalid' }
-		local value = tool:ns("invalid", {
-			testkey = "testvalue"
+			{{x=110,y=130,z=190}, "technic:hv_cable"},
+			{{x=111,y=130,z=190}, "technic:hv_cable"},
+			{{x=112,y=130,z=190}, "technic:hv_cable"},
+			{{x=113,y=130,z=190}, "technic:hv_cable"},
+			{{x=114,y=130,z=190}, "technic:hv_cable"},
+			{{x=110,y=131,z=190}, "technic:switching_station"},
+			{{x=111,y=131,z=190}, "technic:hv_generator"},
+			{{x=112,y=131,z=190}, "technic:hv_generator"},
 		})
-		assert.is_nil(metatool:ns("testns"))
-	end)
 
-	it("Get nonexistent namespace", function()
-		assert.is_nil(metatool.ns("nonexistent"))
-	end)
+		local net1_id = technic.create_network({x=100,y=111,z=170})
+		local net2_id = technic.create_network({x=100,y=121,z=180})
+		local net3_id = technic.create_network({x=110,y=131,z=190})
+		assert.is_number(net1_id)
+		assert.is_number(net2_id)
+		assert.is_number(net3_id)
+		local net1 = technic.networks[net1_id]
+		local net2 = technic.networks[net2_id]
+		local net3 = technic.networks[net3_id]
+		assert.is_table(net1)
+		assert.is_table(net2)
+		assert.is_table(net3)
 
-	it("Create tool namespace", function()
-		-- FIXME: Hack to get fake tool available, replace with real tool
-		local tool = { ns = metatool.ns, name = 'mytool' }
-		metatool.tools["metatool:mytool"] = tool
-		-- Actual tests
-		local value = tool:ns({
-			testkey = "testvalue"
-		})
-		local expected = {
-			testkey = "testvalue"
-		}
-		assert.same(expected, metatool.ns("mytool"))
-	end)
+		it("merges networks", function()
+			-- Verify generated data before starting
+			assert.equals(2, #net1.PR_nodes)
+			assert.equals(7, count(net1.all_nodes))
+			assert.equals(2, #net2.PR_nodes)
+			assert.equals(7, count(net2.all_nodes))
+			-- Merge networks
+			technic.merge_networks(net1, net2)
+			-- Either one of merged networks disappeared
+			assert.is_nil(technic.networks[net1_id] and technic.networks[net2_id])
+			assert.is_table(technic.networks[net1_id] or technic.networks[net2_id])
+			-- Merged network exists
+			assert.is_table(technic.networks[net1_id])
+			-- Nodes have been moved to other network
+			assert.equals(4, #net1.PR_nodes)
+			assert.equals(14, count(net1.all_nodes))
+		end)
 
-end)
-
-describe("Metatool API tool registration", function()
-
-	it("Register tool default configuration", function()
-		-- Tool registration
-		local definition = {
-			description = 'UnitTestTool Description',
-			name = 'UnitTestTool',
-			texture = 'utt.png',
-			recipe = {{'air'},{'air'},{'air'}},
-			on_read_node = function(tooldef, player, pointed_thing, node, pos)
-				local data, group = tooldef:copy(node, pos, player)
-				return data, group, "on_read_node description"
-			end,
-			on_write_node = function(tooldef, data, group, player, pointed_thing, node, pos)
-				tooldef:paste(node, pos, player, data, group)
-			end,
-		}
-		local tool = metatool:register_tool('testtool0', definition)
-
-		assert.is_table(tool)
-		assert.equals("metatool:testtool0", tool.name)
-
-		assert.is_table(tool)
-		assert.equals(definition.description, tool.description)
-		assert.equals(definition.name, tool.nice_name)
-		assert.equals(definition.on_read_node, tool.on_read_node)
-		assert.equals(definition.on_write_node, tool.on_write_node)
-
-		-- Test configurable tool attributes
-		assert.is_nil(tool.privs)
-		assert.same({}, tool.settings)
-
-		-- Namespace creation
-		local mult = function(a,b) return a * b end
-		tool:ns({ k1 = "v1", fn = mult })
-
-		-- Retrieve namespace and and execute tests
-		local ns = metatool.ns("testtool0")
-		assert.same({ k1 = "v1", fn = mult }, ns)
-		assert.equals(8, ns.fn(2,4))
-	end)
-
-	it("Register tool with configuration", function()
-		-- Tool registration
-		local definition = {
-			description = 'UnitTestTool Description',
-			name = 'UnitTestTool',
-			texture = 'utt.png',
-			recipe = {{'air'},{'air'},{'air'}},
-			on_read_node = function(tooldef, player, pointed_thing, node, pos)
-				local data, group = tooldef:copy(node, pos, player)
-				return data, group, "on_read_node description"
-			end,
-			on_write_node = function(tooldef, data, group, player, pointed_thing, node, pos)
-				tooldef:paste(node, pos, player, data, group)
-			end,
-		}
-		local tool = metatool:register_tool('testtool2', definition)
-
-		assert.is_table(tool)
-		assert.equals("metatool:testtool2", tool.name)
-
-		assert.is_table(tool)
-		assert.equals(definition.description, tool.description)
-		assert.equals(definition.name, tool.nice_name)
-		assert.equals(definition.on_read_node, tool.on_read_node)
-		assert.equals(definition.on_write_node, tool.on_write_node)
-
-		-- Test configurable tool attributes
-		assert.equals("test_testtool2_privs", tool.privs)
-		local expected_settings = {
-			extra_config_key = "testtool2_extra_config_value",
-		}
-		assert.same(expected_settings, tool.settings)
-
-		-- Namespace creation
-		local sum = function(a,b) return a + b end
-		tool:ns({ k1 = "v1", fn = sum })
-
-		-- Retrieve namespace and and execute tests
-		local ns = metatool.ns("testtool2")
-		assert.same({ k1 = "v1", fn = sum }, ns)
-		assert.equals(9, ns.fn(2,7))
-	end)
-
-end)
-
-describe("Metatool API node registration", function()
-
-	it("Register node default configuration", function()
-		local tool = metatool.tool("testtool0")
-		assert.is_table(tool)
-		assert.equals("metatool:testtool0", tool.name)
-		assert.is_table(tool)
-
-		local definition = {
-			name = 'testnode1',
-			nodes = {
-				"testnode1",
-				"nonexistent1",
-				"testnode2",
-				"nonexistent2",
-			},
-			tooldef = {
-				group = 'test node',
-				protection_bypass_write = "default_bypass_write_priv",
-				copy = function(node, pos, player)
-					print("nodedef copy callback executed")
-				end,
-				paste = function(node, pos, player, data)
-					print("nodedef paste callback executed")
-				end,
-			}
-		}
-		tool:load_node_definition(definition)
-
-		assert.is_table(tool.nodes)
-		assert.is_table(tool.nodes.testnode1)
-		assert.is_table(tool.nodes.testnode2)
-		assert.is_nil(tool.nodes.nonexistent1)
-		assert.is_nil(tool.nodes.nonexistent2)
-
-		assert.is_function(tool.nodes.testnode1.before_read)
-		assert.is_function(tool.nodes.testnode2.before_write)
-
-		assert.equals(definition.tooldef.copy, tool.nodes.testnode1.copy)
-		assert.equals(definition.tooldef.paste, tool.nodes.testnode2.paste)
-		assert.equals("default_bypass_write_priv", definition.tooldef.protection_bypass_write)
-
-		local expected_settings = {
-			protection_bypass_write = "default_bypass_write_priv"
-		}
-		assert.same(expected_settings, tool.nodes.testnode1.settings)
-		assert.same(expected_settings, tool.nodes.testnode2.settings)
+		it("merges networks again", function()
+			local merged_net_id = technic.sw_pos2network({x=100,y=111,z=170})
+			local merged_net = technic.networks[merged_net_id]
+			-- Verify generated data before starting
+			assert.equals(2, #net3.PR_nodes)
+			assert.equals(7, count(net3.all_nodes))
+			assert.equals(4, #merged_net.PR_nodes)
+			assert.equals(14, count(merged_net.all_nodes))
+			-- Merge networks
+			technic.merge_networks(merged_net, net3)
+			-- Either one of merged networks disappeared
+			assert.is_nil(technic.networks[merged_net_id] and technic.networks[net3_id])
+			assert.is_table(technic.networks[merged_net_id] or technic.networks[net3_id])
+			-- Merged network exists
+			assert.is_table(technic.networks[merged_net_id])
+			-- Nodes have been moved to other network
+			assert.equals(6, #merged_net.PR_nodes)
+			assert.equals(21, count(merged_net.all_nodes))
+		end)
 
 	end)
 
-	it("Register node with configuration", function()
-		local tool = metatool.tool("testtool2")
-		assert.is_table(tool)
-		assert.equals("metatool:testtool2", tool.name)
-		assert.is_table(tool)
+	describe("network building behavior", function()
 
-		local definition = {
-			name = 'testnode2',
-			nodes = {
-				"testnode1",
-				"nonexistent1",
-				"testnode2",
-				"nonexistent2",
-			},
-			tooldef = {
-				group = 'test node',
-				protection_bypass_write = "default_bypass_write_priv",
-				copy = function(node, pos, player)
-					print("nodedef copy callback executed")
-				end,
-				paste = function(node, pos, player, data)
-					print("nodedef paste callback executed")
-				end,
-			}
+		-- Hijack `minetest.get_us_time` for this test set.
+		-- insulate(...) does not seem to work here and finally(...) can apparently
+		-- only be used inside it(...) so we go with strict_setup/strict_teardown.
+
+		local old_minetest_get_us_time = _G.minetest.get_us_time
+		strict_setup(function()
+			local fake_us_time = 0
+			local fake_us_time_increment = 1000 * 1000 * 10 -- 10 seconds
+			_G.minetest.get_us_time = function()
+				fake_us_time = fake_us_time + fake_us_time_increment
+				return fake_us_time
+			end
+		end)
+
+		strict_teardown(function()
+			_G.minetest.get_us_time = old_minetest_get_us_time
+		end)
+
+		local layout = {
+			{{x=180,y=10,z=190}, "technic:hv_cable"},
+			{{x=181,y=10,z=190}, "technic:hv_cable"},
+			{{x=182,y=10,z=190}, "technic:hv_cable"},
+			{{x=180,y=11,z=190}, "technic:switching_station"},
+			{{x=181,y=11,z=190}, "technic:hv_generator"},
+			{{x=182,y=11,z=190}, "technic:hv_generator"},
 		}
-		tool:load_node_definition(definition)
+		world.clear()
+		world.add_layout(layout)
+		world.add_layout(layout, {x=3,y=0,z=0})
+		world.add_layout(layout, {x=6,y=0,z=0})
 
-		assert.is_table(tool.nodes)
-		assert.is_table(tool.nodes.testnode1)
-		assert.is_table(tool.nodes.testnode2)
-		assert.is_nil(tool.nodes.nonexistent1)
-		assert.is_nil(tool.nodes.nonexistent2)
+		local net1_id
+		local net2_id
 
-		assert.is_function(tool.nodes.testnode1.before_read)
-		assert.is_function(tool.nodes.testnode2.before_write)
+		it("stops network building after first iteration", function()
+			net1_id = technic.create_network({x=180,y=11,z=190})
+			assert.is_number(net1_id)
+			local net1 = technic.networks[net1_id]
+			assert.is_table(net1)
 
-		assert.equals(definition.tooldef.copy, tool.nodes.testnode1.copy)
-		assert.equals(definition.tooldef.paste, tool.nodes.testnode2.paste)
-		assert.equals("testtool2_testnode2_bypass_write", tool.nodes.testnode1.protection_bypass_write)
-		assert.equals("testtool2_testnode2_bypass_write", tool.nodes.testnode2.protection_bypass_write)
-		assert.equals("testtool2_testnode2_bypass_info", tool.nodes.testnode1.protection_bypass_info)
-		assert.equals("testtool2_testnode2_bypass_info", tool.nodes.testnode2.protection_bypass_info)
-		assert.equals("testtool2_testnode2_bypass_read", tool.nodes.testnode1.protection_bypass_read)
-		assert.equals("testtool2_testnode2_bypass_read", tool.nodes.testnode2.protection_bypass_read)
+			-- Only first iteration passed, 2 cables (initial + iteration) added
+			assert.equals(0, #net1.PR_nodes)
+			assert.equals(2, count(net1.all_nodes))
+			-- And queue contains next cable
+			assert.is_table(net1.queue)
+			assert.equals(1, #net1.queue)
+			assert.same({x=181,y=10,z=190}, net1.queue[1])
+		end)
 
-		local expected_settings = {
-			protection_bypass_write = "testtool2_testnode2_bypass_write",
-			protection_bypass_info = "testtool2_testnode2_bypass_info",
-			protection_bypass_read = "testtool2_testnode2_bypass_read",
-		}
-		assert.same(expected_settings, tool.nodes.testnode1.settings)
-		assert.same(expected_settings, tool.nodes.testnode2.settings)
+		it("continues network building", function()
+			technic.build_network(net1_id)
+			local net1 = technic.networks[net1_id]
+			assert.is_table(net1)
+
+			-- Only first iteration passed, nodes around queue added: 1 cable and 1 generator
+			assert.equals(1, #net1.PR_nodes)
+			assert.equals(4, count(net1.all_nodes))
+			-- And queue contains next cable
+			assert.is_table(net1.queue)
+			assert.equals(1, #net1.queue)
+			assert.same({x=182,y=10,z=190}, net1.queue[1])
+		end)
+
+		it("merges with second network", function()
+			-- Execute 2 build iterations
+			net2_id = technic.create_network({x=183,y=11,z=190})
+			technic.build_network(net2_id)
+			assert.is_number(net2_id)
+
+			-- Networks merged
+			local net1 = technic.networks[net1_id]
+			assert.is_nil(net1)
+			local net2 = technic.networks[net2_id]
+			assert.is_table(net2)
+
+			-- Check that ned count is higher than last net1 node count
+			assert.is_true(#net2.PR_nodes > 1)
+			assert.is_true(count(net2.all_nodes) > 4)
+
+			-- No duplicates added
+			for k1,v1 in pairs(net2.PR_nodes) do for k2,v2 in pairs(net2.PR_nodes) do
+				assert.is_true(k1 == k2 or v1.x ~= v2.x or v1.y ~= v2.y or v1.z ~= v2.z)
+			end end
+		end)
+
+		it("finishes network build", function()
+			local net3_id = technic.create_network({x=186,y=11,z=190})
+			technic.build_network(net3_id)
+			technic.build_network(net3_id)
+
+			-- Networks merged
+			local net1 = technic.networks[net1_id]
+			assert.is_nil(net1)
+			local net2 = technic.networks[net2_id]
+			assert.is_nil(net2)
+			local net3 = technic.networks[net3_id]
+			assert.is_table(net3)
+
+			-- Check that network build is completed and all nodes added to network
+			assert.equals(6, #net3.PR_nodes)
+			assert.equals(15, count(net3.all_nodes))
+
+			-- No duplicates added
+			for k1,v1 in pairs(net3.PR_nodes) do for k2,v2 in pairs(net3.PR_nodes) do
+				assert.is_true(k1 == k2 or v1.x ~= v2.x or v1.y ~= v2.y or v1.z ~= v2.z)
+			end end
+		end)
 
 	end)
 
 end)
-
---]]
