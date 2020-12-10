@@ -15,6 +15,7 @@ dofile(path.."/tree_tap.lua")
 dofile(path.."/sonic_screwdriver.lua")
 dofile(path.."/prospector.lua")
 dofile(path.."/vacuum.lua")
+dofile(path.."/multimeter.lua")
 
 if minetest.get_modpath("screwdriver") then
 	-- compatibility alias
