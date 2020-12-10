@@ -1,5 +1,7 @@
 local S = technic.getter
 
+local remote_start_ttl = tonumber(technic.config:get("multimeter.remote_start_ttl"))
+
 local max_charge = 50000
 local power_usage = 100 -- Normal network reading uses this much energy
 local rs_charge_multiplier = 100 -- Remote start energy requirement multiplier
@@ -221,7 +223,7 @@ local function remote_start_net(player, pos)
 	if minetest.is_protected(pos, player:get_player_name()) then return "protected" end
 	-- All checks passed, start network
 	local network_id = technic.sw_pos2network(sw_pos) or technic.create_network(sw_pos)
-	technic.activate_network(network_id, 300)
+	technic.activate_network(network_id, remote_start_ttl)
 end
 
 local function async_itemstack_use_charge(itemstack, player, multiplier)
