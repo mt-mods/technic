@@ -37,7 +37,7 @@ local formspec_format_string = "formspec_version[3]" ..
 	("size[%s,10;]bgcolor[%s;both;]"):format(fmtf(form_width),bgcolor) ..
 	("style_type[*;textcolor=%s;font=mono]"):format(textcolor) ..
 	("style_type[label;textcolor=%s;font_size=*2;font=mono]"):format(textcolor) ..
-	("background9[0,0;%s,10;%s;false;4]"):format(form_width, texture_bg9) ..
+	("background9[0,0;%s,10;%s;false;3]"):format(form_width, texture_bg9) ..
 	("image[0.3,0.3;5.75,1;%s]"):format(texture_logo) ..
 	"label[0.6,1.5;Network %s]" ..
 	("field[%s,2.5;%s,0.8;net;Network ID:;%%s]"):format(fmtf(fs_x_pos(2)),fmtf(btn_width)) ..
@@ -47,7 +47,7 @@ local formspec_format_string = "formspec_version[3]" ..
 	create_button(3, "9.1", "0.8", "exit", "Exit", true) ..
 	("tableoptions[border=false;background=%s;highlight=%s;color=%s]"):format(bgcolor_lcd,bghiglight_lcd,textcolor) ..
 	"tablecolumns[indent;text,width=14;text,width=14;text,align=center]" ..
-	("table[0.1,3.4;%s,5.4;items;1,Property,Value 1,Value 2%%s]"):format(fmtf(form_width - 0.2))
+	("table[0.1,3.4;%s,5.4;items;1,Property,Value,Unit%%s]"):format(fmtf(form_width - 0.2))
 
 minetest.register_craft({
 	output = 'technic:multimeter',
@@ -97,14 +97,18 @@ local function async_itemstack_get(player, refstack)
 	return inv, invindex, invstack
 end
 
--- Base58
---local alpha = {1,2,3,4,5,6,7,8,9,"A","B","C","D","E","F","G","H","J","K",
---               "L","M","N","P","Q","R","S","T","U","V","W","X","Y","Z",
---               "a","b","c","d","e","f","g","h","i","j","k","m","n","o",
---               "p","q","r","s","t","u","v","w","x","y","z"}
+--[[ Base58
+local alpha = {
+	"1","2","3","4","5","6","7","8","9","A","B","C","D","E","F","G","H",
+	"J","K","L","M","N","P","Q","R","S","T","U","V","W","X","Y","Z",
+	"a","b","c","d","e","f","g","h","i","j","k","m","n","o",
+	"p","q","r","s","t","u","v","w","x","y","z"
+} --]]
 -- Base36
-local alpha = {0,1,2,3,4,5,6,7,8,9,"A","B","C","D","E","F","G","H","I","J","K",
-               "L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"}
+local alpha = {
+	"0","1","2","3","4","5","6","7","8","9","A","B","C","D","E","F","G","H",
+	"I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"
+}
 local function base36(num)
 	if type(num) ~= "number" then return end
 	if num < 36 then return alpha[num + 1] end
@@ -179,16 +183,16 @@ local function multimeter_inspect(itemstack, player, pos, fault)
 			table.insert(rows, { "Batteries", #BA, "count" })
 		end
 	else
-		table.insert(rows, { "FLUTE error", "read error", "Fault" })
+		table.insert(rows, { "Operation failed", "", "" })
 		if not id then
 			table.insert(rows, {})
-			table.insert(rows, { "FLUTE contact", "No network", "Fault" })
+			table.insert(rows, { "Bad contact", "No network", "Fault" })
 		end
 		if fault then table.insert(rows, {}) end
 		if fault == "battery" then
-			table.insert(rows, { "Recharge FLUTE", "Insufficient charge", "Fault" })
+			table.insert(rows, { "Recharge", "Insufficient charge", "Fault" })
 		elseif fault == "decode" then
-			table.insert(rows, { "FLUTE decoder", "Net ID decode", "Fault" })
+			table.insert(rows, { "Decoder error", "Net ID decode", "Fault" })
 		elseif fault == "switchload" then
 			table.insert(rows, { "Remote load error", "Load switching station", "Fault" })
 		elseif fault == "cableload" then
@@ -293,7 +297,7 @@ end
 technic.register_power_tool("technic:multimeter", max_charge)
 
 minetest.register_tool("technic:multimeter", {
-	description = S("Flute Multimeter"),
+	description = S("Multimeter"),
 	inventory_image = texture,
 	wield_image = texture,
 	stack_max = 1,
@@ -304,13 +308,13 @@ minetest.register_tool("technic:multimeter", {
 		local pos = minetest.get_pointed_thing_position(pointed_thing, false)
 		if pos and pointed_thing.type == "node" then
 			local name = check_node(pos)
-			if name and use_charge(itemstack) then
+			if name then
 				if name == "technic:switching_station" then
 					-- Switching station compatibility shim
 					pos.y = pos.y - 1
 				end
 				open_formspecs[player:get_player_name()] = nil
-				multimeter_inspect(itemstack, player, pos)
+				multimeter_inspect(itemstack, player, pos, not use_charge(itemstack) and "battery")
 			end
 		end
 		return itemstack
