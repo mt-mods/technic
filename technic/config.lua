@@ -1,31 +1,4 @@
 local config_file = minetest.get_worldpath() .. "/technic.conf"
-local config_obj = Settings(config_file)
-
-local Config = {}
-Config.__index = Config
-function Config:get_int(...)
-	local args = {...}
-	local value = tonumber(self:get(args[1]))
-	if not value then
-		if args[2] then
-			return args[2]
-		end
-		error("Invalid configuration value for key " .. args[1] .. " in " .. config_file .. ". Number expected.")
-	end
-	return value
-end
-local config_obj_mt = getmetatable(config_obj)
-for key,value in pairs(config_obj_mt) do
-	if type(value) == "function" then
-		Config[key] = function(self, ...) return value(config_obj, ...) end
-	else
-		Config[key] = value
-	end
-end
-setmetatable(Config, getmetatable(config_obj))
-
-technic.config = {}
-setmetatable(technic.config, Config)
 
 local defaults = {
 	-- Power tools enabled
@@ -62,6 +35,38 @@ local defaults = {
 	enable_longterm_radiation_damage = "true",
 	--constant_digit_count = nil,
 }
+
+--
+-- Create technic.config settings object and
+-- initialize configuration with default values.
+--
+
+local config_obj = Settings(config_file)
+local Config = {}
+Config.__index = Config
+
+function Config:get_int(...)
+	local args = {...}
+	local value = tonumber(self:get(args[1]))
+	if not value then
+		if args[2] then
+			return args[2]
+		end
+		error("Invalid configuration value for key " .. args[1] .. " in " .. config_file .. ". Number expected.")
+	end
+	return value
+end
+
+local config_obj_mt = getmetatable(config_obj)
+for key,value in pairs(config_obj_mt) do
+	if type(value) == "function" then
+		Config[key] = function(self, ...) return value(config_obj, ...) end
+	else
+		config_obj_mt[key] = value
+	end
+end
+setmetatable(Config, config_obj_mt)
+technic.config = setmetatable({}, Config)
 
 local conf_table = technic.config:to_table()
 for k, v in pairs(defaults) do
