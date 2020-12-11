@@ -17,8 +17,8 @@ else
 	minetest.register_craft({
 		output = 'technic:lv_extractor',
 		recipe = {
-			{'basic_materials:motor', 'technic:wrought_iron_ingot', 'basic_materials:motor'},
-			{'technic:wrought_iron_ingot', 'technic:machine_casing', 'technic:wrought_iron_ingot'},
+			{'basic_materials:motor', 'pipeworks:tube_1', 'basic_materials:motor'},
+			{'technic:carbon_steel_ingot', 'technic:machine_casing', 'technic:carbon_steel_ingot'},
 			{'', 'technic:lv_cable', ''},
 		}
 	})
