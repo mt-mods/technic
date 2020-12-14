@@ -1,6 +1,6 @@
 local S = technic.getter
 
-local remote_start_ttl = tonumber(technic.config:get("multimeter.remote_start_ttl"))
+local remote_start_ttl = technic.config:get_int("multimeter.remote_start_ttl")
 
 local max_charge = 50000
 local power_usage = 100 -- Normal network reading uses this much energy
