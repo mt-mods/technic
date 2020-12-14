@@ -42,31 +42,28 @@ local defaults = {
 --
 
 local config_obj = Settings(config_file)
-local Config = {}
-Config.__index = Config
 
-function Config:get_int(...)
-	local args = {...}
-	local value = tonumber(self:get(args[1]))
+technic.config = {}
+
+function technic.config:get_int(key)
+	local value = tonumber(self:get(key))
 	if not value then
-		if args[2] then
-			return args[2]
-		end
-		error("Invalid configuration value for key " .. args[1] .. " in " .. config_file .. ". Number expected.")
+		error("Invalid configuration value for key " .. key .. " in " .. config_file .. ". Number expected.")
 	end
 	return value
 end
 
-local config_obj_mt = getmetatable(config_obj)
-for key,value in pairs(config_obj_mt) do
-	if type(value) == "function" then
-		Config[key] = function(self, ...) return value(config_obj, ...) end
-	else
-		config_obj_mt[key] = value
-	end
-end
-setmetatable(Config, config_obj_mt)
-technic.config = setmetatable({}, Config)
+function technic.config:get(...) return config_obj:get(...) end
+function technic.config:get_bool(...) return config_obj:get_bool(...) end
+function technic.config:get_np_group(...) return config_obj:get_np_group(...) end
+function technic.config:get_flags(...) return config_obj:get_flags(...) end
+function technic.config:set(...) return config_obj:set(...) end
+function technic.config:set_bool(...) return config_obj:set_bool(...) end
+function technic.config:set_np_group(...) return config_obj:set_np_group(...) end
+function technic.config:remove(...) return config_obj:remove(...) end
+function technic.config:get_names(...) return config_obj:get_names(...) end
+function technic.config:write(...) return config_obj:write(...) end
+function technic.config:to_table(...) return config_obj:to_table(...) end
 
 local conf_table = technic.config:to_table()
 for k, v in pairs(defaults) do
