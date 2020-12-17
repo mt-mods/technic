@@ -28,6 +28,8 @@ if minetest.get_modpath("dye") then
 		{"flowers:tulip_black",               "dye:black 8"},
 		{"flowers:rose",                      "dye:red 4"},
 		{"flowers:viola",                     "dye:violet 4"},
+		{"farming:garlic",           					"dye:white 8"},
+		{"farming:garlic_clove",           		"dye:white 1"},
 		{"bushes:blackberry",                 unifieddyes and "unifieddyes:magenta_s50 4" or "dye:violet 4"},
 		{"bushes:blueberry",                  unifieddyes and "unifieddyes:magenta_s50 4" or "dye:magenta 4"},
 	}
