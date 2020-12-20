@@ -5,6 +5,8 @@ local function deploy_node(inv, slot_name, pos, node, machine_node)
 	if node.param2 > 3 then return end
 	if node.name ~= "air" then
 		if node.name == "ignore" or
+		   node.name == "default:chest_open" or
+		   node.name == "default:chest_locked_open" or
 		   node.name == "default:lava_source" or
 		   node.name == "default:lava_flowing" or
 		   node.name == "default:water_source" or
