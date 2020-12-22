@@ -20,6 +20,12 @@ if minetest.get_modpath("dye") then
 		{"default:dry_shrub",                 "dye:brown 4"},
 		{"default:junglegrass",               "dye:green 2"},
 		{"default:cactus",                    "dye:green 4"},
+		{"default:coral_green",               "dye:green 4"},
+		{"default:coral_pink",                "dye:pink 4"},
+		{"default:coral_cyan",                "dye:cyan 4"},
+		{"default:coral_brown",               "dye:brown 4"},
+		{"default:coral_orange",              "dye:orange 4"},
+		{"default:coral_skeleton",            "dye:white 8"},
 		{"flowers:chrysanthemum_green",       "dye:green 4"},
 		{"flowers:geranium",                  "dye:blue 4"},
 		{"flowers:dandelion_white",           "dye:white 4"},
@@ -44,11 +50,15 @@ if minetest.get_modpath("dye") then
 		table.insert(dye_recipes, {"farming:grapes", "dye:violet 4"})
 		table.insert(dye_recipes, {"farming:cocoa_beans", "dye:brown 4"})
 		-- Some extra recipes:
-		-- Himalayan rhubarb root can give yellow dye IRL
-		table.insert(dye_recipes, {"farming:rhubarb", "dye:yellow 4"})
 		table.insert(dye_recipes, {"farming:onion", "dye:yellow 4"})
 		table.insert(dye_recipes, {"farming:blueberries", "dye:blue 4"})
 		table.insert(dye_recipes, {"farming:raspberries", "dye:red 4"})
+		table.insert(dye_recipes, {"farming:blackberry", "dye:violet 4"})
+		-- Himalayan rhubarb root can give yellow dye IRL
+		table.insert(dye_recipes, {"farming:rhubarb", "dye:yellow 4"})
+		-- https://pubmed.ncbi.nlm.nih.gov/25401128
+		-- Biobleaching of industrial important dyes with peroxidase partially purified from garlic
+		table.insert(dye_recipes, {"farming:garlic", "dye:white 2"})
 	end
 
 	if minetest.get_modpath("ethereal") then

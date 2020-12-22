@@ -37,7 +37,7 @@ function technic.register_generator(data)
 	local generator_formspec =
 		"size[8,9;]"..
 		"label[0,0;"..S("Fuel-Fired %s Generator"):format(tier).."]"..
-		"list[current_name;src;3,1;1,1;]"..
+		"list[context;src;3,1;1,1;]"..
 		"image[4,1;1,1;default_furnace_fire_bg.png]"..
 		"list[current_player;main;0,5;8,4;]"..
 		"listring[]"
@@ -99,7 +99,7 @@ function technic.register_generator(data)
 		meta:set_string("formspec",
 			"size[8, 9]"..
 			"label[0, 0;"..minetest.formspec_escape(desc).."]"..
-			"list[current_name;src;3, 1;1, 1;]"..
+			"list[context;src;3, 1;1, 1;]"..
 			"image[4, 1;1, 1;default_furnace_fire_bg.png^[lowpart:"..
 			(percent)..":default_furnace_fire_fg.png]"..
 			"list[current_player;main;0, 5;8, 4;]"..
@@ -242,7 +242,7 @@ function technic.register_generator(data)
 			meta:set_string("formspec",
 				"size[8, 9]"..
 				"label[0, 0;"..minetest.formspec_escape(desc).."]"..
-				"list[current_name;src;3, 1;1, 1;]"..
+				"list[context;src;3, 1;1, 1;]"..
 				"image[4, 1;1, 1;default_furnace_fire_bg.png^[lowpart:"..
 				(percent)..":default_furnace_fire_fg.png]"..
 				"list[current_player;main;0, 5;8, 4;]"..
@@ -276,7 +276,7 @@ function technic.register_generator(data)
 			meta:set_string("formspec",
 				"size[8, 9]"..
 				"label[0, 0;"..minetest.formspec_escape(desc).."]"..
-				"list[current_name;src;3, 1;1, 1;]"..
+				"list[context;src;3, 1;1, 1;]"..
 				"image[4, 1;1, 1;default_furnace_fire_bg.png^[lowpart:"..
 				(percent)..":default_furnace_fire_fg.png]"..
 				"list[current_player;main;0, 5;8, 4;]"..

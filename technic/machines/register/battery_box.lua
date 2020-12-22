@@ -257,7 +257,7 @@ function technic.register_battery_box(data)
 		return batt_charge + charge_step, (tool_charge == 0)
 	end
 
-	local function run(pos, node)
+	local function run(pos, node, run_state, network)
 		local meta  = minetest.get_meta(pos)
 
 		local eu_input       = meta:get_int(tier.."_EU_input")
@@ -292,10 +292,12 @@ function technic.register_battery_box(data)
 		end
 
 		-- We allow batteries to charge on less than the demand
-		meta:set_int(tier.."_EU_demand",
-				math.min(data.charge_rate, max_charge - current_charge))
-		meta:set_int(tier.."_EU_supply",
-				math.min(data.discharge_rate, current_charge))
+		local supply = math.min(data.discharge_rate, current_charge)
+		local demand = math.min(data.charge_rate, max_charge - current_charge)
+		network:update_battery(current_charge, max_charge, supply, demand)
+
+		meta:set_int(tier.."_EU_demand", demand)
+		meta:set_int(tier.."_EU_supply", supply)
 		meta:set_int("internal_EU_charge", current_charge)
 		meta:set_int("internal_EU_charge_max", max_charge)
 

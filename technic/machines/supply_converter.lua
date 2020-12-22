@@ -185,9 +185,6 @@ minetest.register_node("technic:supply_converter", {
 	on_construct = function(pos)
 		local meta = minetest.get_meta(pos)
 		meta:set_string("infotext", S("Supply Converter"))
-		if digilines_path then
-			meta:set_string("channel", "supply_converter"..minetest.pos_to_string(pos))
-		end
 		meta:set_int("power", 10000)
 		meta:set_int("enabled", 1)
 		meta:set_int("mesecon_mode", 0)
