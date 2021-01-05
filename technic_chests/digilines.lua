@@ -55,8 +55,11 @@ function technic.chests.digiline_effector(pos, _, channel, msg)
 		digilines.receptor_send(pos, digilines.rules.default, set_channel, inv_table)
 
 	elseif msg.command == "get_stack" and type(msg.index) == "number" then
-		local stack = inv:get_stack("main", msg.index):to_table()
-		digilines.receptor_send(pos, digilines.rules.default, set_channel, stack)
+		local stack = inv:get_stack("main", msg.index)
+		local item = stack:to_table()
+		local def = minetest.registered_items[stack:get_name()]
+		item.groups = def and table.copy(def.groups) or {}
+		digilines.receptor_send(pos, digilines.rules.default, set_channel, item)
 
 	elseif msg.command == "contains_item" and (type(msg.item) == "string" or type(msg.item) == "table") then
 		local contains = inv:contains_item("main", msg.item)
