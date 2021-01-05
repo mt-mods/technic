@@ -57,9 +57,15 @@ function technic.chests.digiline_effector(pos, _, channel, msg)
 	elseif msg.command == "get_stack" and type(msg.index) == "number" then
 		local stack = inv:get_stack("main", msg.index)
 		local item = stack:to_table()
-		local def = minetest.registered_items[stack:get_name()]
-		item.groups = def and table.copy(def.groups) or {}
-		digilines.receptor_send(pos, digilines.rules.default, set_channel, item)
+		if item then
+			-- item available at that slot
+			local def = minetest.registered_items[stack:get_name()]
+			item.groups = def and table.copy(def.groups) or {}
+			digilines.receptor_send(pos, digilines.rules.default, set_channel, item)
+		else
+			-- nothing there, return nil
+			digilines.receptor_send(pos, digilines.rules.default, set_channel, nil)
+		end
 
 	elseif msg.command == "contains_item" and (type(msg.item) == "string" or type(msg.item) == "table") then
 		local contains = inv:contains_item("main", msg.item)
