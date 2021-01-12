@@ -345,7 +345,7 @@ local digiline_def = function(pos, _, channel, msg)
 	local meta = minetest.get_meta(pos)
 	if meta:get_string("enable_digiline") ~= "true" or
 			-- TODO: Remove "remote_channel" and use de facto standard "channel"
-			channel ~= meta:get("channel") or meta:get_string("remote_channel") then
+			channel ~= (meta:get("channel") or meta:get_string("remote_channel")) then
 		return
 	end
 	-- Convert string messages to tables:
