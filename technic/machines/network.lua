@@ -160,9 +160,8 @@ function technic.network_infotext(network_id, text)
 		if text then
 			network.infotext = text
 		elseif network.queue then
-			local count = #network.PR_nodes
-				+ #network.RE_nodes
-				+ #network.BA_nodes
+			local count = 0
+			for _ in pairs(network.all_nodes) do count = count + 1 end
 			return S("Building Network: %d Nodes"):format(count)
 		else
 			return network.infotext
