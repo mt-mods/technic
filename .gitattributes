@@ -2,5 +2,6 @@
 * text=auto
 
 # Release export attributes
+integration-test.sh export-ignore
 **/spec export-ignore
 **/.* export-ignore
