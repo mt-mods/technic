@@ -18,7 +18,7 @@ minetest.register_abm({
       maxexptime = 2,
       minsize = 1,
       maxsize = 2,
-      texture = "blueparticle.png",
+      texture = "technic_blueparticle.png",
       glow = 5
     })
   end
