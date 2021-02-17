@@ -15,6 +15,7 @@ jobs:
     - id: mineunit
       uses: mt-mods/mineunit-actions@master
       with:
+        working-directory: ./technic
         badge-label: Test coverage
     - uses: RubbaBoy/BYOB@v1.2.0
       with:
