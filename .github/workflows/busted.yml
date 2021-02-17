@@ -17,4 +17,14 @@ jobs:
       run: luarocks install --local busted
     - name: busted run
       working-directory: ./technic
-      run: $HOME/.luarocks/bin/busted
+      run: |
+        $HOME/.luarocks/bin/busted -c
+        (printf coverage=>>$GITHUB_ENV;tail -n 2 luacov.report.out | grep ^Total | grep -o '[0-9.]\+%$'>>$GITHUB_ENV)
+    - name: Test coverage badge
+      uses: RubbaBoy/BYOB@v1.2.0
+      with:
+        NAME: coverage
+        LABEL: 'Coverage'
+        STATUS: ${{ env.coverage }}
+        COLOR: 99CC09
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
