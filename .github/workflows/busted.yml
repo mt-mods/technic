@@ -11,22 +11,15 @@ jobs:
     - uses: actions/checkout@v2
       with:
         submodules: true
-    - name: apt
-      run: sudo apt-get install -y luarocks
-    - name: busted install
-      run: |
-        luarocks install --local busted
-        luarocks install --local cluacov
-    - name: busted run
-      working-directory: ./technic
-      run: |
-        $HOME/.luarocks/bin/busted -c
-        (printf coverage=>>$GITHUB_ENV;tail -n 2 luacov.report.out | grep ^Total | grep -o '[0-9.]\+%$'>>$GITHUB_ENV)
-    - name: Test coverage badge
-      uses: RubbaBoy/BYOB@v1.2.0
+
+    - id: mineunit
+      uses: mt-mods/mineunit-actions@master
       with:
-        NAME: coverage
-        LABEL: 'Test coverage'
-        STATUS: ${{ env.coverage }}
-        COLOR: 99CC09
+        badge-label: Test coverage
+    - uses: RubbaBoy/BYOB@v1.2.0
+      with:
+        NAME: "${{ steps.mineunit.outputs.badge-name }}"
+        LABEL: "${{ steps.mineunit.outputs.badge-label }}"
+        STATUS: "${{ steps.mineunit.outputs.badge-status }}"
+        COLOR: "${{ steps.mineunit.outputs.badge-color }}"
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
