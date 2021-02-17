@@ -26,7 +26,7 @@ jobs:
       uses: RubbaBoy/BYOB@v1.2.0
       with:
         NAME: coverage
-        LABEL: 'Coverage'
+        LABEL: 'Test coverage'
         STATUS: ${{ env.coverage }}
         COLOR: 99CC09
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
