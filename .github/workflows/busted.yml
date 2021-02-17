@@ -14,7 +14,9 @@ jobs:
     - name: apt
       run: sudo apt-get install -y luarocks
     - name: busted install
-      run: luarocks install --local busted
+      run: |
+        luarocks install --local busted
+        luarocks install --local cluacov
     - name: busted run
       working-directory: ./technic
       run: |

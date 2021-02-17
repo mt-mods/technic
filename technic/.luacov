@@ -1,0 +1,8 @@
+runreport = true
+deletestats = true
+
+exclude = {
+  "/share/lua/",
+  "spec/",
+  "/\.?luarocks/",
+}
