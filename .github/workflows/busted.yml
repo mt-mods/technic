@@ -11,10 +11,16 @@ jobs:
     - uses: actions/checkout@v2
       with:
         submodules: true
-    - name: apt
-      run: sudo apt-get install -y luarocks
-    - name: busted install
-      run: luarocks install --local busted
-    - name: busted run
-      working-directory: ./technic
-      run: $HOME/.luarocks/bin/busted
+
+    - id: mineunit
+      uses: mt-mods/mineunit-actions@master
+      with:
+        working-directory: ./technic
+        badge-label: Test coverage
+    - uses: RubbaBoy/BYOB@v1.2.0
+      with:
+        NAME: "${{ steps.mineunit.outputs.badge-name }}"
+        LABEL: "${{ steps.mineunit.outputs.badge-label }}"
+        STATUS: "${{ steps.mineunit.outputs.badge-status }}"
+        COLOR: "${{ steps.mineunit.outputs.badge-color }}"
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
