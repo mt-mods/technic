@@ -1,4 +1,4 @@
-dofile("spec/fixtures/mineunit/init.lua")
+dofile("spec/mineunit/init.lua")
 --[[
 	Technic network unit tests.
 	Execute busted at technic source directory.
