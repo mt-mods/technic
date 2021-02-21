@@ -84,26 +84,6 @@ function technic.send_items(pos, x_velocity, z_velocity, output_name)
 	end
 end
 
--- FIXME: This funtion is never used anywhere, what is it for?
-function technic.smelt_item(meta, result, speed)
-	local inv = meta:get_inventory()
-	meta:set_int("cook_time", meta:get_int("cook_time") + 1)
-	if meta:get_int("cook_time") < result.time / speed then
-		return
-	end
-	local afterfuel
-	result, afterfuel = minetest.get_craft_result({method = "cooking", width = 1, items = inv:get_list("src")})
-
-	if result and result.item then
-		meta:set_int("cook_time", 0)
-		-- check if there's room for output in "dst" list
-		if inv:room_for_item("dst", result.item) then
-			inv:set_stack("src", 1, afterfuel.items[1])
-			inv:add_item("dst", result.item)
-		end
-	end
-end
-
 function technic.handle_machine_pipeworks(pos, tube_upgrade, send_function)
 	if send_function == nil then
 		send_function = technic.send_items
