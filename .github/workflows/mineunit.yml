@@ -1,0 +1,49 @@
+name: mineunit
+
+on: [push, pull_request]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: true
+
+    - id: mineunit
+      uses: mt-mods/mineunit-actions@master
+      with:
+        working-directory: ./technic
+        badge-label: Test coverage
+
+    - uses: RubbaBoy/BYOB@v1.2.0
+      if: success() && github.event_name == 'push' && github.ref == 'refs/heads/master'
+      with:
+        NAME: "${{ steps.mineunit.outputs.badge-name }}"
+        LABEL: "${{ steps.mineunit.outputs.badge-label }}"
+        STATUS: "${{ steps.mineunit.outputs.badge-status }}"
+        COLOR: "${{ steps.mineunit.outputs.badge-color }}"
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - uses: KeisukeYamashita/create-comment@v1
+      if: success() && github.event_name == 'pull_request'
+      with:
+        check-only-first-line: true
+        comment: |
+          <details><summary><i>Click for detailed source code test coverage report</i></summary>
+          
+          ### Test coverage report for technic ${{ steps.mineunit.outputs.coverage-total }} in ${{ steps.mineunit.outputs.coverage-files }} files:
+          ```
+          File                                      Hits Missed Coverage
+          --------------------------------------------------------------
+          ${{ steps.mineunit.outputs.mineunit-report }}
+          ```
+          ### Raw test runner output for geeks:
+          ```
+          File                             Hits Missed Coverage
+          -----------------------------------------------------
+          ${{ steps.mineunit.outputs.mineunit-stdout }}
+          ```
+          </details>
