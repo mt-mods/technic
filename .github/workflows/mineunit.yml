@@ -42,8 +42,19 @@ jobs:
           ```
           ### Raw test runner output for geeks:
           ```
-          File                             Hits Missed Coverage
-          -----------------------------------------------------
+          ${{ steps.mineunit.outputs.mineunit-stdout }}
+          ```
+          </details>
+
+    - uses: KeisukeYamashita/create-comment@v1
+      if: failure() && github.event_name == 'pull_request'
+      with:
+        check-only-first-line: true
+        comment: |
+          <details><summary><i>Mineunit failed regression tests, click for details</i></summary>
+          
+          ### Regression test log for technic:
+          ```
           ${{ steps.mineunit.outputs.mineunit-stdout }}
           ```
           </details>
