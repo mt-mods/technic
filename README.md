@@ -5,7 +5,7 @@ A mod for [minetest](http://www.minetest.net)
 
 ![integration-test](https://github.com/mt-mods/technic/workflows/integration-test/badge.svg)
 ![luacheck](https://github.com/mt-mods/technic/workflows/luacheck/badge.svg)
-![busted](https://github.com/mt-mods/technic/workflows/busted/badge.svg)
+![mineunit](https://github.com/mt-mods/technic/workflows/mineunit/badge.svg)
 ![](https://byob.yarr.is/mt-mods/technic/coverage)
 
 [![License](https://img.shields.io/badge/license-LGPLv2.0%2B-purple.svg)](https://www.gnu.org/licenses/old-licenses/lgpl-2.0.en.html)
