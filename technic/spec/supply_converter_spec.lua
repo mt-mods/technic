@@ -144,4 +144,43 @@ describe("Supply converter", function()
 
 	end)
 
+	describe("formspec", function()
+
+		it("is protected", function()
+			local pos = {x=-10,y=-10,z=-10}
+			local Sam = Player("Sam", { interact = 1 })
+			local SX = Player("SX", { interact = 1 })
+			local def = minetest.registered_nodes["technic:supply_converter"]
+
+			-- Build supply converter to pos and protect it for Sam
+			world.set_node(pos, "technic:supply_converter")
+			def.on_construct(pos)
+			mineunit:protect(pos, "Sam")
+
+			-- Read current metadata for validation
+			local meta = minetest.get_meta(pos)
+			local power = meta:get_int("power")
+			local enabled = meta:get_int("enabled")
+
+			assert.equals(10000, power)
+			assert.equals(1, enabled)
+
+			-- SX is not owner and cannot edit, values should not change
+			def.on_receive_fields(pos, nil, { power = 1500, disable = 1}, SX)
+			assert.equals(power, meta:get_int("power"))
+			assert.equals(enabled, meta:get_int("enabled"))
+
+			-- If missing player data values should not change
+			def.on_receive_fields(pos, nil, { power = 1500, disable = 1}, nil)
+			assert.equals(power, meta:get_int("power"))
+			assert.equals(enabled, meta:get_int("enabled"))
+
+			-- Sam is owner and can edit, values should change
+			def.on_receive_fields(pos, nil, { power = 1500, disable = 1}, Sam)
+			assert.equals(1500, meta:get_int("power"))
+			assert.equals(0, meta:get_int("enabled"))
+		end)
+
+	end)
+
 end)
