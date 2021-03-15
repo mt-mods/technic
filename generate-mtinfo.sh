@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # prepare config
-CONFIG=$(pwd)/minetest.conf
+CONFIG=/tmp/technic_minetest.conf
 echo "mtinfo.autoshutdown = true" > ${CONFIG}
 
 # prepare dependent mods
