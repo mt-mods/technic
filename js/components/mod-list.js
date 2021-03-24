@@ -12,6 +12,7 @@ Vue.component("mod-list", {
 	},
 	template: `
 		<div>
+			<h3>Mod list</h3>
 			<ul>
 				<li v-for="modname in modlist">
 					<router-link :to="'/mods/' + modname + '/items'">

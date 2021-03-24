@@ -28,11 +28,24 @@ Vue.component("item-detail", {
 				<small class="text-muted">{{ item.name }}</small>
 				<span class="badge badge-secondary">{{ item.type }}</span>
 			</h3>
-			<span v-if="item.buildable_to" class="badge badge-success">Buildable-to</span>
-			<span v-if="item.diggable" class="badge badge-success">Diggable</span>
-			<span v-if="item.pointable" class="badge badge-success">Pointable</span>
-			<span v-if="item.airlike" class="badge badge-success">Airlike</span>
-			<span v-if="item.walkable" class="badge badge-success">Walkable</span>
+			<p>
+				Item features:
+				<span v-if="item.buildable_to" class="badge badge-success">Buildable-to</span>
+				<span v-if="item.diggable" class="badge badge-success">Diggable</span>
+				<span v-if="item.pointable" class="badge badge-success">Pointable</span>
+				<span v-if="item.airlike" class="badge badge-success">Airlike</span>
+				<span v-if="item.walkable" class="badge badge-success">Walkable</span>
+				<span v-if="item.cnc" class="badge badge-primary">CNC compatible</span>
+			</p>
+			<p>
+				Mod integrations:
+				<a v-if="item.circular_saw" class="btn btn-xs btn-secondary" href="#/moreblocks">
+					<i class="fa fa-th-large"></i> Circular-saw
+				</a>
+				<a v-if="item.cnc" class="btn btn-xs btn-secondary" href="#/cnc">
+					<i class="fa fa-th"></i> Technic CNC
+				</a>
+			</p>
 			<p>Stack-max: <span class="badge badge-primary">{{ item.stack_max }}</span></p>
 			<p v-if="item.light_source">Light-source: <span class="badge badge-primary">{{ item.light_source }}</span></p>
 			<p v-if="item.damage_per_second">Damage per second: <span class="badge badge-warning">{{ item.damage_per_second }}</span></p>

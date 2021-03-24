@@ -10,6 +10,12 @@ const router = new VueRouter({
 		path: "/mods",
 		component: { template: `<mod-list/>` }
 	},{
+		path: "/moreblocks",
+		component: { template: `<moreblocks-list/>` }
+	},{
+		path: "/cnc",
+		component: { template: `<cnc-list/>` }
+	},{
 		path: "/mods/:modname/items",
 		component: { template: `<item-list :modname="$route.params.modname"/>` }
 	},{

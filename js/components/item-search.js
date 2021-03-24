@@ -12,6 +12,7 @@ Vue.component("item-search", {
 	},
 	template: /*html*/`
 		<div>
+			<h3>Item search</h3>
 			<input class="form-control"
 				v-model="search_store.term"
 				type="text"
