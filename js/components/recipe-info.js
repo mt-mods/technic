@@ -42,7 +42,7 @@ Vue.component("recipe-info-smelting", {
 				<i class="fa fa-temperature-high"></i> Smelting/Cooking
 			</template>
 			<template v-slot:body>
-				<item-preview :item="item" size="64"/>
+				<item-preview :name="item.name" size="64"/>
 			</template>
 		</recipe-base-layout>
 	`
@@ -83,7 +83,7 @@ Vue.component("recipe-info-extracting", {
 			</template>
 			<template v-slot:body>
 				<div v-for="name in Object.keys(recipe.items)">
-					<item-preview :item="mtinfo.items[name]" size="64"/>
+					<item-preview :name="name" size="64"/>
 				</div>
 			</template>
 		</recipe-base-layout>
@@ -99,7 +99,7 @@ Vue.component("recipe-info-grinding", {
 			</template>
 			<template v-slot:body>
 				<div v-for="name in Object.keys(recipe.items)">
-					<item-preview :item="mtinfo.items[name]" size="64"/>
+					<item-preview :name="name" size="64"/>
 				</div>
 			</template>
 		</recipe-base-layout>
@@ -115,7 +115,7 @@ Vue.component("recipe-info-compressing", {
 			</template>
 			<template v-slot:body>
 				<div v-for="name in Object.keys(recipe.items)">
-					<item-preview :item="mtinfo.items[name]" size="64"/>
+					<item-preview :name="name" size="64"/>
 				</div>
 			</template>
 		</recipe-base-layout>
@@ -131,7 +131,7 @@ Vue.component("recipe-info-alloy", {
 			</template>
 			<template v-slot:body>
 				<div v-for="name in Object.keys(recipe.items)">
-					<item-preview :item="mtinfo.items[name]" size="64"/>
+					<item-preview :name="name" size="64"/>
 				</div>
 			</template>
 		</recipe-base-layout>
@@ -177,19 +177,19 @@ Vue.component("recipe-info-normal", {
 			<template v-slot:body>
 				<table class="inventory-table">
 					<tr>
-						<td><item-preview v-if="table[0][0]" :item="mtinfo.items[table[0][0]]" size="64"/></td>
-						<td><item-preview v-if="table[0][1]" :item="mtinfo.items[table[0][1]]" size="64"/></td>
-						<td><item-preview v-if="table[0][2]" :item="mtinfo.items[table[0][2]]" size="64"/></td>
+						<td><item-preview v-if="table[0][0]" :name="table[0][0]" size="64"/></td>
+						<td><item-preview v-if="table[0][1]" :name="table[0][1]" size="64"/></td>
+						<td><item-preview v-if="table[0][2]" :name="table[0][2]" size="64"/></td>
 					</tr>
 					<tr>
-						<td><item-preview v-if="table[1][0]" :item="mtinfo.items[table[1][0]]" size="64"/></td>
-						<td><item-preview v-if="table[1][1]" :item="mtinfo.items[table[1][1]]" size="64"/></td>
-						<td><item-preview v-if="table[1][2]" :item="mtinfo.items[table[1][2]]" size="64"/></td>
+						<td><item-preview v-if="table[1][0]" :name="table[1][0]" size="64"/></td>
+						<td><item-preview v-if="table[1][1]" :name="table[1][1]" size="64"/></td>
+						<td><item-preview v-if="table[1][2]" :name="table[1][2]" size="64"/></td>
 					</tr>
 					<tr>
-						<td><item-preview v-if="table[2][0]" :item="mtinfo.items[table[2][0]]" size="64"/></td>
-						<td><item-preview v-if="table[2][1]" :item="mtinfo.items[table[2][1]]" size="64"/></td>
-						<td><item-preview v-if="table[2][2]" :item="mtinfo.items[table[2][2]]" size="64"/></td>
+						<td><item-preview v-if="table[2][0]" :name="table[2][0]" size="64"/></td>
+						<td><item-preview v-if="table[2][1]" :name="table[2][1]" size="64"/></td>
+						<td><item-preview v-if="table[2][2]" :name="table[2][2]" size="64"/></td>
 					</tr>
 				</table>
 			</template>

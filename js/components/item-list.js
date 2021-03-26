@@ -45,7 +45,7 @@ Vue.component("item-list", {
 					<span class="badge badge-secondary">{{ item.type }}</span>
 				</td>
 				<td>
-					<item-preview :item="item" size="32"/>
+					<item-preview :name="item.name" size="32"/>
 				</td>
 				<td>
 					<router-link :to="'/items/' + item.name">

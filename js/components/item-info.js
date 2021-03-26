@@ -1,17 +1,17 @@
 
 Vue.component("item-info", {
-  props: ["name"],
+	props: ["name"],
 	computed: {
-		item: function(){
+		item: function () {
 			console.log("item", mtinfo.items[this.name]);
 			return mtinfo.items[this.name];
 		},
-		recipes: function(){
+		recipes: function () {
 			console.log("recipes", mtinfo.recipes[this.name]);
 			return mtinfo.recipes[this.name];
 		}
 	},
-  template: /*html*/`
+	template: /*html*/`
 		<div>
 			<div class="row">
 				<div class="col-md-3">
@@ -20,7 +20,7 @@ Vue.component("item-info", {
 							Preview
 						</div>
 						<div class="card-body">
-							<item-preview :item="item"/>
+							<item-preview :name="name"/>
 						</div>
 					</div>
 				</div>

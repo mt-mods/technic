@@ -1,25 +1,29 @@
 
-Vue.component("moreblocks-list", {
-	data: function(){
-		return {
-			page: +this.$route.query.page || 1
-		};
-	},
-	watch: {
-		$route: function(){
-			this.page = +this.$route.query.page || 1;
-		}
-	},
-	computed: {
-		list: function(){
-			return Object.keys(mtinfo.items)
-            .map(name => mtinfo.items[name])
-			.filter(item => item.circular_saw);
-		}
-	},
-	template:`
+Vue.component("group-info", {
+    props: ["name"],
+    data: function () {
+        return {
+            page: +this.$route.query.page || 1
+        };
+    },
+    watch: {
+        $route: function () {
+            this.page = +this.$route.query.page || 1;
+        }
+    },
+    computed: {
+        list: function () {
+            return Object.keys(mtinfo.items)
+                .map(name => mtinfo.items[name])
+                .filter(item => item.groups && item.groups[this.name]);
+        }
+    },
+    template: `
     <div>
-        <h3>Circular saw compatible nodes</h3>
+        <h3>
+            Group info
+            <small class="text-muted">{{ name }}</small>
+        </h3>
         <paged-table v-bind:list="list" v-bind:page="page">
             <template v-slot:header>
                 <th>Mod</th>

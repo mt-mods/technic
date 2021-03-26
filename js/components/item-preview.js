@@ -1,19 +1,22 @@
 
 Vue.component("item-preview", {
-  props: {
-		item: { type: "object" },
+	props: {
+		name: { type: "string" },
 		link: { type: "boolean", default: true },
 		size: { type: "number", default: 300 }
 	},
 	computed: {
-		previewType: function(){
-			if (!this.item){
+		item: function () {
+			return mtinfo.items[this.name];
+		},
+		previewType: function () {
+			if (!this.item) {
 				return "unknown";
 			}
-			if (this.item.inventory_image){
+			if (this.item.inventory_image) {
 				return "invimage";
 			}
-			switch (this.item.drawtype){
+			switch (this.item.drawtype) {
 				case "normal": return "normal";
 				case "glasslike": return "normal";
 				case "allfaces_optional": return "normal";
@@ -22,15 +25,27 @@ Vue.component("item-preview", {
 				default: return "invimage";
 			}
 		},
-		isGroup: function(){
-			return this.item && /^group:/.test(this.item.name);
+		isGroup: function () {
+			return /^group:/.test(this.name);
+		},
+		groupname: function(){
+			return this.name.split(":")[1];
+		},
+		link: function () {
+			if (this.isGroup) {
+				return `/groups/${this.groupname}`;
+			} else {
+				return `/items/${this.name}`;
+			}
 		}
 	},
-  template: /*html*/`
-	<router-link :to="'/items/' + item.name" :title="item.name">
-		<div v-if="isGroup || !item">
-			?
-		</div>
+	template: /*html*/`
+	<router-link :to="link" :title="name">
+		<item-preview-group
+			v-if="isGroup"
+			:group="groupname"
+			:size="size">
+		</item-preview-group>
 		<item-preview-inventoryimage
 			v-else-if="previewType == 'invimage'"
 			:item="item"
@@ -45,19 +60,28 @@ Vue.component("item-preview", {
   `
 });
 
-
+Vue.component("item-preview-group", {
+	props: ["group", "size"],
+	template: /*html*/`
+	<div class="text-center">
+		<span class="badge badge-success">
+			<i class="fas fa-layer-group"></i> {{ group }}
+		</span>
+	</div>
+`
+});
 
 Vue.component("item-preview-inventoryimage", {
-  props: ["item", "size"],
+	props: ["item", "size"],
 	computed: {
-		imgsrc: function(){
+		imgsrc: function () {
 			if (this.item.inventory_image)
 				return `textures/${mtinfo.stripimagetransforms(this.item.inventory_image)}`;
 			else
 				return "pics/unknown_node.png";
 		}
 	},
-  template: /*html*/`
+	template: /*html*/`
 		<img :src="imgsrc" :width="size" :height="size" style="image-rendering: crisp-edges;"/>
   `
 });
@@ -65,7 +89,7 @@ Vue.component("item-preview-inventoryimage", {
 Vue.component("cube-face", {
 	props: ["rotateX", "rotateY", "translateZ", "img", "size"],
 	computed: {
-		style: function(){
+		style: function () {
 			return {
 				position: "absolute",
 				width: this.size + "px",
@@ -84,8 +108,8 @@ Vue.component("cube-face", {
 });
 
 Vue.component("item-preview-normal", {
-  props: ["item", "size"],
-	data: function() {
+	props: ["item", "size"],
+	data: function () {
 		return {
 			front: [],
 			back: [],
@@ -95,14 +119,14 @@ Vue.component("item-preview-normal", {
 			bottom: []
 		};
 	},
-	created: function() {
+	created: function () {
 		this.prepareTextures();
 	},
 	watch: {
 		"item": "prepareTextures"
 	},
 	methods: {
-		prepareTextures: function() {
+		prepareTextures: function () {
 			this.front = [];
 			this.back = [];
 			this.left = [];
@@ -111,7 +135,7 @@ Vue.component("item-preview-normal", {
 			this.bottom = [];
 
 			let texture = "pics/unknown_node.png";
-			if (typeof(this.item.tiles) == "string"){
+			if (typeof (this.item.tiles) == "string") {
 				// one texture for all sides
 				// TODO: parse and apply transformations
 				texture = mtinfo.stripimagetransforms(this.item.tiles);
@@ -153,18 +177,18 @@ Vue.component("item-preview-normal", {
 			}
 		}
 	},
-  computed: {
-		translateZ: function(){
-			return (this.size/2) + "px";
+	computed: {
+		translateZ: function () {
+			return (this.size / 2) + "px";
 		},
-		scene_style: function(){
+		scene_style: function () {
 			return {
 				height: this.size + "px",
 				width: this.size + "px",
 				perspective: (this.size * 3) + "px"
 			};
 		},
-		cube_style: function(){
+		cube_style: function () {
 			return {
 				width: "100%",
 				height: "100%",
@@ -180,7 +204,7 @@ Vue.component("item-preview-normal", {
 			};
 		}
 	},
-  template: /*html*/`
+	template: /*html*/`
 		<div v-bind:style="scene_style">
 			<div v-bind:style="cube_style">
 				<cube-face v-for="t in front" rotateY="0deg" rotateX="0deg" :size="size" :translateZ="translateZ" :img="t"></cube-face>

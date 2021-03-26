@@ -1,23 +1,23 @@
 
 Vue.component("cnc-list", {
-	data: function(){
-		return {
-			page: +this.$route.query.page || 1
-		};
-	},
-	watch: {
-		$route: function(){
-			this.page = +this.$route.query.page || 1;
-		}
-	},
-	computed: {
-		list: function(){
-			return Object.keys(mtinfo.items)
-            .map(name => mtinfo.items[name])
-			.filter(item => item.cnc);
-		}
-	},
-	template:`
+    data: function () {
+        return {
+            page: +this.$route.query.page || 1
+        };
+    },
+    watch: {
+        $route: function () {
+            this.page = +this.$route.query.page || 1;
+        }
+    },
+    computed: {
+        list: function () {
+            return Object.keys(mtinfo.items)
+                .map(name => mtinfo.items[name])
+                .filter(item => item.cnc);
+        }
+    },
+    template: `
     <div>
         <h3>CNC compatible nodes</h3>
         <paged-table v-bind:list="list" v-bind:page="page">
@@ -33,7 +33,7 @@ Vue.component("cnc-list", {
                     <span class="badge badge-secondary">{{ item.type }}</span>
                 </td>
                 <td>
-                    <item-preview :item="item" size="32"/>
+                    <item-preview :name="item.name" size="32"/>
                 </td>
                 <td>
                     <router-link :to="'/items/' + item.name">

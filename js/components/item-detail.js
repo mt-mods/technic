@@ -50,13 +50,17 @@ Vue.component("item-detail", {
 			<p v-if="item.light_source">Light-source: <span class="badge badge-primary">{{ item.light_source }}</span></p>
 			<p v-if="item.damage_per_second">Damage per second: <span class="badge badge-warning">{{ item.damage_per_second }}</span></p>
 			<p v-if="item.drop">
-				Drops: <item-preview :item="mtinfo.items[item.drop]" size="32"/>
+				Drops: <item-preview :name="item.drop" size="32"/>
 			</p>
 			<p>Mod: <router-link :to="'/mods/' + item.mod_origin + '/items'">{{ item.mod_origin}}</router-link></p>
 			<p>Groups</p>
 			<ul v-if="item.groups">
 				<li v-for="group in Object.keys(item.groups)">
-					{{ group }} {{ item.groups[group] }}
+					<router-link :to="'/groups/' + group">
+						{{ group }}
+					</router-link>
+					
+					{{ item.groups[group] }}
 				</li>
 			</ul>
 			<p>ABMS</p>
