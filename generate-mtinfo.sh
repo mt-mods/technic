@@ -3,6 +3,7 @@
 # prepare config
 CONFIG=/tmp/technic_minetest.conf
 echo "mtinfo.autoshutdown = true" > ${CONFIG}
+echo "moreblocks.stairsplus_in_creative_inventory = false" >> ${CONFIG}
 
 # prepare dependent mods
 WORLDMODS_DIR=/tmp/technic_worldmods
