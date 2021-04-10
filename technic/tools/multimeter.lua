@@ -16,7 +16,8 @@ local bghiglight_lcd = "#5CAA77"
 local textcolor = "#101010"
 --local bgcolor_button = "#626E41"
 
-local form_width = 7
+local form_width = 8
+local form_height = 11.5
 local btn_count = 3
 local btn_spacing = 0.1
 local btn_width = (form_width - ((btn_count + 1) * btn_spacing)) / btn_count
@@ -24,32 +25,33 @@ local btn_width = (form_width - ((btn_count + 1) * btn_spacing)) / btn_count
 local open_formspecs = {}
 
 local formspec_escape = minetest.formspec_escape
-local function fmtf(n) return ("%0.3f"):format(n) end
+local function fmtf(n) return type(n) == "number" and ("%0.3f"):format(n) or n end
 local function fs_x_pos(i) return (btn_spacing * i) + (btn_width * (i - 1)) end
 local function create_button(index, y, h, name, label, exit, modifier)
 	local x = fs_x_pos(index)
 	local t1 = texture_button .. (modifier and formspec_escape(modifier) or "")
 	local t2 = texture_button_pressed .. (modifier and formspec_escape(modifier) or "")
-	local dimensions = ("%s,%s;%s,%s"):format(fmtf(x),y,fmtf(btn_width),h)
+	local dimensions = ("%s,%s;%s,%s"):format(fmtf(x),fmtf(y),fmtf(btn_width),h)
 	local properties = ("%s;%s;%s;false;false;%s"):format(t1, name, label, t2)
 	return ("image_button%s[%s;%s]"):format(exit and "_exit" or "", dimensions, properties)
 end
 
 local formspec_format_string = "formspec_version[3]" ..
-	("size[%s,10;]bgcolor[%s;both;]"):format(fmtf(form_width),bgcolor) ..
-	("style_type[*;textcolor=%s;font=mono]"):format(textcolor) ..
-	("style_type[label;textcolor=%s;font_size=*2;font=mono]"):format(textcolor) ..
-	("background9[0,0;%s,10;%s;false;3]"):format(form_width, texture_bg9) ..
+	("size[%s,%s;]bgcolor[%s;both;]"):format(fmtf(form_width), fmtf(form_height), bgcolor) ..
+	("style_type[*;textcolor=%s;font_size=*1]"):format(textcolor) ..
+	("style_type[table;textcolor=%s;font_size=*1;font=mono]"):format(textcolor) ..
+	("style_type[label;textcolor=%s;font_size=*2]"):format(textcolor) ..
+	("background9[0,0;%s,%s;%s;false;3]"):format(fmtf(form_width), fmtf(form_height), texture_bg9) ..
 	("image[0.3,0.3;5.75,1;%s]"):format(texture_logo) ..
 	"label[0.6,1.5;Network %s]" ..
 	("field[%s,2.5;%s,0.8;net;Network ID:;%%s]"):format(fmtf(fs_x_pos(2)),fmtf(btn_width)) ..
 	create_button(3, "2.5", "0.8", "rs", "Remote start", false, "^[colorize:#10E010:125") ..
-	create_button(1, "9.1", "0.8", "wp", "Waypoint", true) ..
-	create_button(2, "9.1", "0.8", "up", "Update", false) ..
-	create_button(3, "9.1", "0.8", "exit", "Exit", true) ..
+	create_button(1, form_height - 0.9, "0.8", "wp", "Waypoint", true) ..
+	create_button(2, form_height - 0.9, "0.8", "up", "Update", false) ..
+	create_button(3, form_height - 0.9, "0.8", "exit", "Exit", true) ..
 	("tableoptions[border=false;background=%s;highlight=%s;color=%s]"):format(bgcolor_lcd,bghiglight_lcd,textcolor) ..
-	"tablecolumns[indent;text,width=14;text,width=14;text,align=center]" ..
-	("table[0.1,3.4;%s,5.4;items;1,Property,Value,Unit%%s]"):format(fmtf(form_width - 0.2))
+	"tablecolumns[indent,width=0.2;text,width=13;text,width=13;text,align=center]" ..
+	("table[0.1,3.4;%s,%s;items;1,Property,Value,Unit%%s]"):format(fmtf(form_width - 0.2), fmtf(form_height - 4.4))
 
 minetest.register_craft({
 	output = 'technic:multimeter',
