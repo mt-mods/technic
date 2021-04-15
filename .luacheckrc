@@ -6,31 +6,32 @@ exclude_files = {
 }
 
 globals = {
-    "technic", "technic_cnc", "minetest", "wrench"
+	"technic", "technic_cnc", "minetest", "wrench"
 }
 
 read_globals = {
 	-- Lua
-    string = {fields = {"split", "trim"}},
-    table = {fields = {"copy", "getn"}},
-	
+	string = {fields = {"split", "trim"}},
+	table = {fields = {"copy", "getn"}},
+
 	-- Minetest
-    "PseudoRandom", "ItemStack",
+	"PseudoRandom", "ItemStack",
 	"VoxelArea", "VoxelManip",
 	"Settings", "vector",
-	
+
 	-- Mods
-    "default", "stairsplus",
+	"default", "stairsplus",
 	"screwdriver", "bucket",
 	"digilines", "pipeworks",
 	"mesecon", "moretrees",
-    "unified_inventory", "protector",
-    "unifieddyes", "digiline_remote",
-    "monitoring", "drawers", "mg",
-	
+	"unified_inventory", "protector",
+	"unifieddyes", "digiline_remote",
+	"monitoring", "drawers", "mg",
+	"craftguide", "i3",
+
 	-- Only used in technic/machines/MV/lighting.lua (disabled)
 	"isprotect", "homedecor_expect_infinite_stacks",
-	
+
 	-- TODO: Remove after translation update
 	"intllib"
 }
