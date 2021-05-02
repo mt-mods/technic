@@ -304,21 +304,21 @@ if minetest.get_modpath("ethereal") then
 	------------
 	technic_cnc.register_all("ethereal:glostone",
 			{cracky=1, not_in_creative_inventory=1, light_source=13},
-			{"glostone.png"},
+			{"ethereal_glostone.png"},
 			S("Glo Stone"))
 
 	-- Crystal block
 	----------------
 	technic_cnc.register_all("ethereal:crystal_block",
                 {snappy=2, choppy=2, oddly_breakable_by_hand=2, not_in_creative_inventory=1},
-                {"crystal_block.png"},
+                {"ethereal_crystal_block.png"},
                 S("Crystal"))
 
 	-- Misc. Wood types
 	-------------------
 	technic_cnc.register_all("ethereal:banana_wood",
                 {snappy=2, choppy=2, oddly_breakable_by_hand=2, not_in_creative_inventory=1},
-                {"banana_wood.png"},
+                {"ethereal_banana_wood.png"},
                 S("Banana Wood"))
 
 	technic_cnc.register_all("ethereal:birch_wood",
@@ -328,7 +328,7 @@ if minetest.get_modpath("ethereal") then
 
 	technic_cnc.register_all("ethereal:frost_wood",
                 {snappy=2, choppy=2, oddly_breakable_by_hand=2, not_in_creative_inventory=1},
-                {"frost_wood.png"},
+                {"ethereal_frost_wood.png"},
                 S("Frost Wood"))
 
 	technic_cnc.register_all("ethereal:palm_wood",
@@ -338,17 +338,17 @@ if minetest.get_modpath("ethereal") then
 
 	technic_cnc.register_all("ethereal:willow_wood",
                 {snappy=2, choppy=2, oddly_breakable_by_hand=2, not_in_creative_inventory=1},
-                {"willow_wood.png"},
+                {"ethereal_willow_wood.png"},
                 S("Willow Wood"))
 
 	technic_cnc.register_all("ethereal:yellow_wood",
                 {snappy=2, choppy=2, oddly_breakable_by_hand=2, not_in_creative_inventory=1},
-                {"yellow_wood.png"},
+                {"ethereal_yellow_wood.png"},
                 S("Healing Tree Wood"))
 
 	technic_cnc.register_all("ethereal:redwood_wood",
                 {snappy=2, choppy=2, oddly_breakable_by_hand=2, not_in_creative_inventory=1},
-                {"redwood_wood.png"},
+                {"ethereal_redwood_wood.png"},
                 S("Redwood"))
 end
 
