@@ -344,6 +344,51 @@ minetest.register_node("technic:quarry", {
 			return { quarry_eject_dir }
 		end
 	},
+	on_punch = function(pos, node, puncher)
+		local stack = puncher and puncher:get_wielded_item()
+		if not stack then
+			return
+		end
+		local itemname = stack and (not stack:is_empty() and stack:get_name())
+		if itemname and itemname ~= "default:stick" then
+			return
+		end
+		-- Continue to particle spawner with empty hand or default:stick
+		local meta = minetest.get_meta(pos)
+		local dir = minetest.facedir_to_dir(meta:get_int("quarry_dir") % 4)
+		local radius = meta:get_int("size")
+		local middle_pos = vector.add(pos, vector.multiply(dir, radius + 1))
+		local pos1 = vector.new(middle_pos.x - radius, pos.y + quarry_dig_above_nodes, middle_pos.z - radius)
+		local pos2 = vector.new(middle_pos.x + radius, pos.y + quarry_dig_above_nodes, middle_pos.z + radius)
+		-- Engine seems to copy definition anyway so skip additional table constructors
+		local particle = {
+			expirationtime = 5,
+			size = 24,
+			vertical = false,
+			texture = "cdb_clear.png^[opacity:215",
+			--texture = "technic_carbon_steel_block.png^default_tool_mesepick.png^[opacity:215",
+			playername = puncher:get_player_name(),
+			glow = 7
+		}
+		-- Individual particle parameters
+		local v0 = {x=0, y=0, z=0}
+		local a0 = {x=0, y=0, z=0}
+		local v1 = {x=0, y=-0.4, z=0}
+		local a1 = {x=0, y=-1.5, z=0}
+		for x=pos1.x,pos2.x do
+			for z=pos1.z,pos2.z do
+				particle.pos = vector.new(x, pos1.y, z)
+				particle.velocity = v0
+				particle.acceleration = a0
+				minetest.add_particle(particle)
+				if itemname == "default:stick" or x == pos1.x or z == pos1.z or x == pos2.x or z == pos2.z then
+					particle.velocity = v1
+					particle.acceleration = a1
+					minetest.add_particle(particle)
+				end
+			end
+		end
+	end,
 	on_construct = function(pos)
 		local meta = minetest.get_meta(pos)
 		meta:set_int("size", 4)
