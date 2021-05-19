@@ -122,6 +122,7 @@ local iclip_def = {
 	drawtype = "mesh",
 	mesh = "technic_insulator_clip.obj",
 	tiles = {"technic_insulator_clip.png"},
+	paramtype = "light",
 	is_ground_content = false,
 	groups = {choppy=1, snappy=1, oddly_breakable_by_hand=1 },
 	sounds = default.node_sound_stone_defaults(),
