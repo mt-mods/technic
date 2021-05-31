@@ -7,6 +7,9 @@ local itemtypes = {
 	none = 4
 }
 
+-- Not so good compatibility workaround for older than 5.3 servers
+local get_translated_string = minetest.get_translated_string or function(_, name) return name end
+
 function technic.chests.sort_inv(inv, mode)
 	local list = inv:get_list("main")
 	if not list then return end
@@ -79,7 +82,7 @@ function technic.chests.sort_inv(inv, mode)
 			end
 			local lookup = {}
 			for _,stack in pairs(list) do
-				local key = minetest.get_translated_string('', name(stack))
+				local key = get_translated_string('', name(stack))
 				if not lookup[key] then
 					table.insert(unique_items, {
 						stacks = {stack},
