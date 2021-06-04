@@ -67,7 +67,15 @@ end
 
 local function set_quarry_status(pos)
 	local meta = minetest.get_meta(pos)
-	local formspec = quarry_formspec.."field[4.3,2.4;2,1;size;"..S("Radius:")..";"..meta:get_int("size").."]"
+	local max_depth = meta:get_int("max_depth")
+	if max_depth == 0 then
+		-- max-depth not configured, use max-value from setting
+		max_depth = quarry_max_depth
+	end
+	local formspec = quarry_formspec..
+		"field[4.3,2.4;2,1;size;"..S("Radius:")..";"..meta:get_int("size").."]" ..
+		"field[6.3,2.4;2,1;max_depth;"..S("Max-Depth:")..";"..max_depth.."]"
+
 	local status = S("Digging not started")
 	if meta:get_int("enabled") == 1 then
 		formspec = formspec.."button[4,0.9;2,1;disable;"..S("Enabled").."]"
@@ -83,7 +91,7 @@ local function set_quarry_status(pos)
 			local rel_y = meta:get_int("dig_level") - pos.y
 			status = S("Digging %d m "..(rel_y > 0 and "above" or "below").." machine"):format(math.abs(rel_y))
 			if meta:get_int("HV_EU_input") >= quarry_demand then
-				meta:set_string("infotext", S("%s Active"):format(machine_name))
+				meta:set_string("infotext", S("%s Active"):format(machine_name) .. " " .. status)
 			else
 				meta:set_string("infotext", S("%s Unpowered"):format(machine_name))
 			end
@@ -112,6 +120,15 @@ local function quarry_receive_fields(pos, formname, fields, sender)
 			reset_quarry(pos)
 		end
 	end
+
+	if fields.max_depth then
+		-- apply max-depth config
+		local max_depth = tonumber(fields.max_depth)
+		if max_depth and max_depth > 0 and max_depth <= quarry_max_depth then
+			meta:set_int("max_depth", max_depth)
+		end
+	end
+
 	if fields.channel then
 		meta:set_string("channel", fields.channel)
 	end
@@ -177,12 +194,18 @@ local function find_ground(quarry_pos, quarry_dir, meta)
 end
 
 local function get_dig_pos(quarry_pos, quarry_dir, dig_pos, dig_index, dig_steps, meta)
+	local max_depth = meta:get_int("max_depth")
+	if max_depth <= 0 or max_depth > quarry_max_depth then
+		-- invalid max-depth config, use default
+		max_depth = quarry_max_depth
+	end
+
 	if dig_index > 0 and dig_index < dig_steps then
 		local facedir = (quarry_dir + quarry_dig_pattern[dig_index]) % 4
 		dig_pos = vector.add(dig_pos, minetest.facedir_to_dir(facedir))
 	elseif dig_index >= dig_steps then
 		local dig_level = meta:get_int("dig_level")
-		if (quarry_pos.y - dig_level) >= quarry_max_depth then
+		if (quarry_pos.y - dig_level) >= max_depth then
 			return nil, dig_index
 		end
 		local dir = minetest.facedir_to_dir(quarry_dir % 4)
@@ -276,6 +299,9 @@ local digiline_def = function(pos, _, channel, msg)
 		elseif smsg:sub(1,7) == "radius " then
 			msg.command = "radius"
 			msg.value = smsg:sub(8,-1)
+		elseif smsg:sub(1,10) == "max_depth " then
+			msg.command = "max_depth"
+			msg.value = smsg:sub(11,-1)
 		elseif smsg == "on" then
 			msg.command = "on"
 		elseif smsg == "off" then
@@ -293,6 +319,7 @@ local digiline_def = function(pos, _, channel, msg)
 		digilines.receptor_send(pos, technic.digilines.rules, channel, {
 			enabled = meta:get_int("enabled"),
 			radius = meta:get_int("size"),
+			max_depth = meta:get_int("max_depth"),
 			finished = meta:get_int("finished"),
 			dug_nodes = meta:get_int("dug"),
 			dig_level = meta:get_int("dig_level") - pos.y
@@ -303,6 +330,14 @@ local digiline_def = function(pos, _, channel, msg)
 			return
 		end
 		meta:set_int("size", size)
+		reset_quarry(pos)
+		set_quarry_status(pos)
+	elseif msg.command == "max_depth" then
+		local max_depth = tonumber(msg.value)
+		if not max_depth or max_depth < 0 or max_depth > quarry_max_depth or max_depth == meta:get_int("max_depth") then
+			return
+		end
+		meta:set_int("max_depth", max_depth)
 		reset_quarry(pos)
 		set_quarry_status(pos)
 	elseif msg.command == "on" then
