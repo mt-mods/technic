@@ -118,11 +118,13 @@ Some strings will automatically be converted to tables:
 - `"off"` :arrow_right: `{command = "off"}`
 - `"restart` :arrow_right: `{command = "restart"}`
 - `"radius "..value` :arrow_right: `{command = "radius", value = value}`
+- `"max_depth "..value` :arrow_right: `{command = "max_depth", value = value}`
 
 The commands:
-- `"get"`: The forcefield emitter sends back a table containing:
+- `"get"`: The quarry sends back a table containing:
   - `"enabled"`: `0` is off, `1` is on.
   - `"radius"`
+  - `"max_depth"`
   - `"finished"`
   - `"dug_nodes"`
   - `"dig_level"`: A negative value means above the quarry, a positive value means below.
