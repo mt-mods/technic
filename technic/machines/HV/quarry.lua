@@ -124,8 +124,9 @@ local function quarry_receive_fields(pos, formname, fields, sender)
 	if fields.max_depth then
 		-- apply max-depth config
 		local max_depth = tonumber(fields.max_depth)
-		if max_depth and max_depth > 0 and max_depth <= quarry_max_depth then
-			meta:set_int("max_depth", max_depth)
+		if max_depth and max_depth > 0 then
+			-- use value or upper bounds if it exceeds the current max-setting
+			meta:set_int("max_depth", math.min(max_depth, quarry_max_depth))
 		end
 	end
 
