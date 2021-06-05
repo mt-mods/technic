@@ -335,8 +335,13 @@ local digiline_def = function(pos, _, channel, msg)
 		set_quarry_status(pos)
 	elseif msg.command == "max_depth" then
 		local max_depth = tonumber(msg.value)
-		if not max_depth or max_depth < 0 or max_depth > quarry_max_depth or max_depth == meta:get_int("max_depth") then
+		if not max_depth or max_depth < 0 then
+			-- invalid or negative number
 			return
+		end
+		if max_depth > quarry_max_depth then
+			-- over the limit, set to max-setting
+			max_depth = quarry_max_depth
 		end
 		meta:set_int("max_depth", max_depth)
 		reset_quarry(pos)
