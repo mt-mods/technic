@@ -2,7 +2,8 @@
 
 # prepare config
 CONFIG=/tmp/technic_minetest.conf
-echo "mtinfo.autoshutdown = true" > ${CONFIG}
+echo "mtinfo.enabled = true" > ${CONFIG}
+echo "mtinfo.autoshutdown = true" >> ${CONFIG}
 echo "moreblocks.stairsplus_in_creative_inventory = false" >> ${CONFIG}
 
 # prepare dependent mods
@@ -18,7 +19,7 @@ cp . ${WORLDMODS_DIR}/technic -R
 docker run --rm -i \
 	--user root \
 	-v ${CONFIG}:/etc/minetest/minetest.conf:ro \
-  -v ${WORLDMODS_DIR}/:/root/.minetest/worlds/world/worldmods \
+	-v ${WORLDMODS_DIR}/:/root/.minetest/worlds/world/worldmods \
 	-v $(pwd)/output:/root/.minetest/worlds/world/mtinfo \
 	registry.gitlab.com/minetest/minetest/server:5.3.0
 
