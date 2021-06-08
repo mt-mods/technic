@@ -212,7 +212,7 @@ technic_cnc.register_all("technic:cast_iron_block",
                 {"technic_cast_iron_block.png"},
                 S("Cast Iron"))
 
-if technic_cnc.technic_modpath then
+if minetest.get_modpath("technic") then
 	steeltex = "technic_wrought_iron_block.png"
 	steelname = "Wrought Iron"
 
