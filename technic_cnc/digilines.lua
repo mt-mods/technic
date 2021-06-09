@@ -11,7 +11,7 @@ local def = {
 
 local function check_message(meta, channel, msg)
 	-- Digiline channel check
-	if channel ~= meta:get_string(channel) then
+	if channel ~= meta:get_string("channel") then
 		return false
 	end
 
@@ -50,8 +50,24 @@ function def.effector.action(pos, node, channel, msg)
 	-- Process message and execute required actions
 	if type(msg) == "string" then
 		msg = msg:lower()
-		if msg == "get" then
+		if msg == "programs" then
 			digilines.receptor_send(pos, rules, channel, technic_cnc.products)
+		elseif msg == "status" then
+			local inv = meta:get_inventory()
+			local srcstack = inv:get_stack("src", 1)
+			local status = {
+				enabled = technic_cnc.is_enabled(meta),
+				time = meta:get_int("src_time"),
+				size = meta:get_int("size"),
+				program = meta:get_string("program"),
+				user = meta:get_string("cnc_user"),
+				material = srcstack:to_table(),
+			}
+			digilines.receptor_send(pos, rules, channel, status)
+		elseif msg == "enable" then
+			technic_cnc.enable(meta)
+		elseif msg == "disable" then
+			technic_cnc.disable(meta)
 		end
 	else
 		-- Configure milling programs

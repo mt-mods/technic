@@ -54,7 +54,7 @@ local function list(name, x, y, w, h, text)
 		("listring[context;%s]listring[current_player;main]"):format(name)
 end
 
-local function formspec(nodename, def, meta)
+local function get_formspec(nodename, def, meta)
 	local width = def.width or 14
 	local height = def.height or 13
 	local fs = fs_prefix:format(width, height, S("Choose Milling Program:"))
@@ -92,7 +92,8 @@ local function formspec(nodename, def, meta)
 	x = (grid_size * 8) + margin
 	if def.digilines then
 		y = height - grid_size - margin + padding + 0.3
-		fs = fs .. ("field[%0.1f,%0.1f;%0.1f,%0.1f;channel;%s;]"):format(x, y, width - x - margin, 0.7, "Digiline channel")
+		local w = width - x - margin
+		fs = fs .. ("field[%0.1f,%0.1f;%0.1f,%0.1f;channel;%s;${channel}]"):format(x, y, w, 0.7, "Channel")
 	end
 
 	-- Some filler for empty unused space
@@ -105,4 +106,52 @@ local function formspec(nodename, def, meta)
 	return fs .. ("list[current_player;main;%0.1f,%0.1f;8,4;]"):format(margin, y)
 end
 
-return formspec
+local function on_receive_fields(pos, formname, fields, sender)
+	local meta = minetest.get_meta(pos)
+	local name = sender:get_player_name()
+
+	if meta:get_int("public") ~= 1 and minetest.is_protected(pos, name) then
+		return true
+	end
+
+	-- Program for half/full size
+	if fields.full then
+		meta:set_int("size", 1)
+		return true
+	elseif fields.half then
+		meta:set_int("size", 2)
+		return true
+	end
+
+	-- Resolve the node name and the number of items to make
+	local program_selected
+	local products = technic_cnc.products
+	local inv = meta:get_inventory()
+	for program, _ in pairs(fields) do
+		if products[program] then
+			technic_cnc.set_program(meta, program, meta:get_int("size"))
+			technic_cnc.enable(meta)
+			meta:set_string("cnc_user", name)
+			program_selected = true
+			break
+		end
+	end
+
+	if program_selected and not technic_cnc.use_technic then
+		local inputstack = inv:get_stack("src", 1)
+		if not inputstack:is_empty() then
+			technic_cnc.produce(meta, inv, inputstack)
+		end
+		return true
+	elseif fields.key_enter and fields.key_enter_field == "channel" and not minetest.is_protected(pos, name) then
+		meta:set_string("channel", fields.channel)
+		return true
+	end
+
+	return program_selected
+end
+
+return {
+	get_formspec = get_formspec,
+	on_receive_fields = on_receive_fields,
+}

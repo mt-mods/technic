@@ -179,18 +179,21 @@ function technic_cnc.register_cnc_machine(nodename, def)
 	end
 
 	-- Collect / generate basic variables for CNC machine
+	local get_formspec = def.get_formspec or technic_cnc.formspec.get_formspec
 	local nodename_active = nodename .. "_active"
 	local idle_infotext = S("%s Idle"):format(def.description)
 	local active_infotext = S("%s Active"):format(def.description)
 	local unpowered_infotext = S("%s Unpowered"):format(def.description)
 	local groups = { cracky = 2, technic_machine = 1, technic_lv = 1 }
 	-- It is possible to override these using def fields
+	local technic_run
+	local after_dig_node
 	local allow_metadata_inventory_put
 	local allow_metadata_inventory_take
 	local allow_metadata_inventory_move
 	local can_dig
 
-	if technic_cnc.use_technic and not def.technic_run then
+	if technic_cnc.use_technic then
 		-- Check and get EU demand for Technic CNC machine
 		assert(type(def.demand) == "number", "demand field must be set for Technic CNC")
 
@@ -206,7 +209,7 @@ function technic_cnc.register_cnc_machine(nodename, def)
 		end
 
 		-- Technic action code performing the transformation, use form handler for when not using technic
-		def.technic_run = function(pos, node)
+		technic_run = function(pos, node)
 			local meta = minetest.get_meta(pos)
 			if not technic_cnc.is_enabled(meta) then
 				update_machine(pos, meta, node.name, nodename, idle_infotext, 0)
@@ -258,6 +261,7 @@ function technic_cnc.register_cnc_machine(nodename, def)
 		allow_metadata_inventory_take = technic.machine_inventory_take
 		allow_metadata_inventory_move = technic.machine_inventory_move
 		can_dig = technic.machine_can_dig
+		after_dig_node = def.upgrade and technic.machine_after_dig_node or nil
 	else
 		allow_metadata_inventory_put = function(pos, listname, index, stack, player)
 			if minetest.is_protected(pos, player:get_player_name()) then
@@ -290,19 +294,18 @@ function technic_cnc.register_cnc_machine(nodename, def)
 		end
 	end
 
-	-- Pipeworks formspec wrapper
+	-- Pipeworks formspec wrapper and groups
 	local on_receive_fields = def.on_receive_fields
 	if technic_cnc.use_pipeworks and def.tube and def.on_receive_fields then
 		local pipeworks_on_receive_fields = pipeworks.fs_helpers.on_receive_fields
 		on_receive_fields = function(pos, formname, fields, sender)
-			if not pipeworks.may_configure(pos, sender) then
-				return
-			end
-			def.on_receive_fields(pos, formname, fields, sender)
-			if not fields.quit then
-				pipeworks_on_receive_fields(pos, fields)
-				local meta = minetest.get_meta(pos)
-				meta:set_string("formspec", def.formspec or technic_cnc.formspec(nodename, def, meta))
+			-- Checking return value of formspec handler is hack to selectively silence protection check messages
+			if not def.on_receive_fields(pos, formname, fields, sender) then
+				if not fields.quit and pipeworks.may_configure(pos, sender) then
+					pipeworks_on_receive_fields(pos, fields)
+					local meta = minetest.get_meta(pos)
+					meta:set_string("formspec", get_formspec(nodename, def, meta))
+				end
 			end
 		end
 		groups.tubedevice = 1
@@ -320,7 +323,7 @@ function technic_cnc.register_cnc_machine(nodename, def)
 		on_construct = function(pos)
 			local meta = minetest.get_meta(pos)
 			meta:set_string("infotext", def.description)
-			meta:set_string("formspec", def.formspec or technic_cnc.formspec(nodename, def, meta))
+			meta:set_string("formspec", get_formspec(nodename, def, meta))
 			local inv = meta:get_inventory()
 			inv:set_size("src", 1)
 			inv:set_size("dst", def.output_size)
@@ -330,6 +333,7 @@ function technic_cnc.register_cnc_machine(nodename, def)
 			end
 		end,
 		after_place = def.tube and pipeworks.after_place,
+		after_dig_node = def.after_dig_node or after_dig_node,
 		tube = def.tube,
 		digilines = def.digilines,
 		can_dig = def.can_dig or can_dig,
@@ -337,7 +341,7 @@ function technic_cnc.register_cnc_machine(nodename, def)
 		allow_metadata_inventory_take = def.allow_metadata_inventory_take or allow_metadata_inventory_take,
 		allow_metadata_inventory_move = def.allow_metadata_inventory_move or allow_metadata_inventory_move,
 		on_receive_fields = on_receive_fields,
-		technic_run = def.technic_run,
+		technic_run = def.technic_run or technic_run,
 	})
 
 	-- Active state CNC machine
@@ -351,6 +355,7 @@ function technic_cnc.register_cnc_machine(nodename, def)
 			paramtype2 = "facedir",
 			drop = nodename,
 			legacy_facedir_simple = true,
+			after_dig_node = def.after_dig_node or after_dig_node,
 			tube = def.tube,
 			digilines = def.digilines,
 			can_dig = def.can_dig or can_dig,
@@ -358,7 +363,7 @@ function technic_cnc.register_cnc_machine(nodename, def)
 			allow_metadata_inventory_take = def.allow_metadata_inventory_take or allow_metadata_inventory_take,
 			allow_metadata_inventory_move = def.allow_metadata_inventory_move or allow_metadata_inventory_move,
 			on_receive_fields = on_receive_fields,
-			technic_run = def.technic_run,
+			technic_run = def.technic_run or technic_run,
 			technic_disabled_machine_name = nodename,
 		})
 		technic.register_machine("LV", nodename, technic.receiver)

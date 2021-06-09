@@ -10,40 +10,6 @@ local programs = {}
 for key,_ in pairs(technic_cnc.onesize_products) do table.insert(programs, key) end
 table.sort(programs)
 
--- The form handler is declared here because we need it in both the inactive and active modes
--- in order to be able to change programs wile it is running.
-local function form_handler(pos, formname, fields, sender)
-	local meta = minetest.get_meta(pos)
-
-	-- Program for half/full size
-	if fields.full then
-		meta:set_int("size", 1)
-		return
-	elseif fields.half then
-		meta:set_int("size", 2)
-		return
-	end
-
-	-- Resolve the node name and the number of items to make
-	local products = technic_cnc.products
-	local inv = meta:get_inventory()
-	for program, _ in pairs(fields) do
-		if products[program] then
-			technic_cnc.set_program(meta, program, meta:get_int("size"))
-			technic_cnc.enable(meta)
-			meta:set_string("cnc_user", sender:get_player_name())
-			break
-		end
-	end
-
-	if not technic_cnc.use_technic then
-		local inputstack = inv:get_stack("src", 1)
-		if not inputstack:is_empty() then
-			technic_cnc.produce(meta, inv, inputstack)
-		end
-	end
-end
-
 --
 -- Register technic:cnc machine
 --
@@ -51,12 +17,9 @@ do
 	technic_cnc.register_cnc_machine("technic:cnc", {
 		description = technic_cnc.use_technic and S("LV CNC Machine") or S("CNC Machine"),
 		output_size = 4,
-		digilines = nil,
-		upgrade = nil,
-		tube = nil,
 		programs = programs,
 		demand = 450,
-		on_receive_fields = form_handler,
+		on_receive_fields = technic_cnc.formspec.on_receive_fields,
 		recipe = technic_cnc.use_technic and ({
 			{'default:glass',              'technic:diamond_drill_head', 'default:glass'},
 			{'technic:control_logic_unit', 'technic:machine_casing',     'basic_materials:motor'},
@@ -82,12 +45,12 @@ end
 --
 if technic_cnc.use_technic then
 	local tiles = {
-		"technic_cnc_top.png", "technic_cnc_bottom.png", "technic_cnc_side.png",
-		"technic_cnc_side.png", "technic_cnc_side.png", "technic_cnc_front.png"
+		"technic_cnc_mk2_top.png", "technic_cnc_bottom.png", "technic_cnc_mk2_side.png",
+		"technic_cnc_mk2_side.png", "technic_cnc_mk2_side.png", "technic_cnc_mk2_front.png"
 	}
 	local tiles_active = {
-		"technic_cnc_top_active.png", "technic_cnc_bottom.png", "technic_cnc_side.png",
-		"technic_cnc_side.png", "technic_cnc_side.png", "technic_cnc_front_active.png"
+		"technic_cnc_mk2_top_active.png", "technic_cnc_bottom.png", "technic_cnc_mk2_side.png",
+		"technic_cnc_mk2_side.png", "technic_cnc_mk2_side.png", "technic_cnc_mk2_front_active.png"
 	}
 	if technic_cnc.pipeworks then
 		tiles = technic_cnc.pipeworks.tube_entry_overlay(tiles)
@@ -101,7 +64,7 @@ if technic_cnc.use_technic then
 		tube = technic_cnc.pipeworks and technic_cnc.pipeworks.new_tube() or nil,
 		programs = programs,
 		demand = 900,
-		on_receive_fields = form_handler,
+		on_receive_fields = technic_cnc.formspec.on_receive_fields,
 		recipe = {
 			{'basic_materials:ic', 'technic:cnc',                 'basic_materials:ic'},
 			{'pipeworks:tube_1',   'technic:machine_casing',      'pipeworks:tube_1'},
