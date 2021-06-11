@@ -1,5 +1,5 @@
 
-local rules = technic.digilines.rules
+local rules = technic_cnc.use_technic and technic.digilines.rules or digilines.rules.default
 local def = {
 	receptor = {
 		rules = rules,

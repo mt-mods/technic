@@ -2,13 +2,12 @@ require("mineunit")
 
 mineunit("core")
 mineunit("player")
-mineunit("protection")
-
-fixture("default")
-fixture("basic_materials")
-fixture("pipeworks")
 
 describe("CNC API", function()
+
+	fixture("default")
+	fixture("basic_materials")
+	fixture("pipeworks")
 
 	sourcefile("init")
 

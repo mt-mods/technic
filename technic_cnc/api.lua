@@ -169,12 +169,14 @@ end
 
 function technic_cnc.register_cnc_machine(nodename, def)
 	-- Basic sanity check for registration, prefer failing early
-	assert(type(nodename) == "string" and #nodename > 0, "Invalid nodename argument")
-	assert(type(def.output_size) == "number", "output_size field should be number")
+	assert(type(nodename) == "string" and #nodename > 0, "nodename should be non empty string")
 	assert(type(def.description) == "string", "description field should be string")
-	assert(({["nil"]=1,["function"]=1})[type(def.get_formspec)], "get_formspec should be function")
-	assert(({["nil"]=1,["function"]=1})[type(def.on_receive_fields)], "on_receive_fields should be function")
-	assert(({["nil"]=1,table=1})[type(def.tube)], "tube field should be unset, boolean or table")
+	assert(({["nil"]=1,number=1})[type(def.input_size)], "input_size field should be number if set")
+	assert(({["nil"]=1,number=1})[type(def.output_size)], "output_size field should be number if set")
+	assert(({["nil"]=1,["function"]=1})[type(def.get_formspec)], "get_formspec should be function if set")
+	assert(({["nil"]=1,["function"]=1})[type(def.on_receive_fields)], "on_receive_fields should be function if set")
+	assert(({["nil"]=1,["function"]=1})[type(def.technic_run)], "technic_run should be function if set")
+	assert(({["nil"]=1,table=1})[type(def.tube)], "tube field should be table if set")
 
 	-- Register recipe if recipe given
 	if def.recipe then
@@ -223,6 +225,16 @@ function technic_cnc.register_cnc_machine(nodename, def)
 		-- Technic action code performing the transformation, use form handler for when not using technic
 		technic_run = function(pos, node)
 			local meta = minetest.get_meta(pos)
+
+			local demand = def.demand
+			if def.upgrade then
+				local EU_upgrade, tube_upgrade = technic.handle_machine_upgrades(meta)
+				if EU_upgrade and EU_upgrade > 0 then
+					demand = math.max(0, demand - EU_upgrade * demand * 0.2)
+				end
+				technic.handle_machine_pipeworks(pos, tube_upgrade)
+			end
+
 			if not technic_cnc.is_enabled(meta) then
 				update_machine(pos, meta, node.name, nodename, idle_infotext, 0)
 				return
@@ -236,14 +248,6 @@ function technic_cnc.register_cnc_machine(nodename, def)
 			end
 
 			local eu_input = meta:get_int("LV_EU_input")
-			local demand = def.demand
-			if def.upgrade then
-				local EU_upgrade, tube_upgrade = technic.handle_machine_upgrades(meta)
-				if EU_upgrade and EU_upgrade > 0 then
-					demand = math.max(0, demand - EU_upgrade * demand * 0.2)
-				end
-				technic.handle_machine_pipeworks(pos, tube_upgrade)
-			end
 			if eu_input < demand then
 				update_machine(pos, meta, node.name, nodename, unpowered_infotext, demand)
 				return
@@ -313,11 +317,12 @@ function technic_cnc.register_cnc_machine(nodename, def)
 	end
 
 	-- Pipeworks formspec wrapper and groups
-	if technic_cnc.use_pipeworks and def.tube and def.on_receive_fields then
+	if technic_cnc.use_pipeworks and def.tube then
 		local pipeworks_on_receive_fields = pipeworks.fs_helpers.on_receive_fields
+		local wrapped_on_receive_fields = on_receive_fields
 		on_receive_fields = function(pos, formname, fields, sender)
 			-- Checking return value of formspec handler is hack to selectively silence protection check messages
-			if not def.on_receive_fields(pos, formname, fields, sender) and not fields.quit then
+			if not wrapped_on_receive_fields(pos, formname, fields, sender) and not fields.quit then
 				-- TODO: This causes invalid protection messages if paging buttons used on public machine
 				if pipeworks.may_configure(pos, sender) then
 					pipeworks_on_receive_fields(pos, fields)

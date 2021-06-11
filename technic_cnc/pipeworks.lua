@@ -19,6 +19,7 @@ local function new_tube()
 			return inv:room_for_item("src", stack)
 		end,
 		connect_sides = {left=1, right=1, back=1, bottom=1},
+		input_inventory = {"dst"},
 	}
 end
 
