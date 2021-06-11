@@ -19,7 +19,6 @@ do
 		output_size = 4,
 		programs = programs,
 		demand = 450,
-		on_receive_fields = technic_cnc.formspec.on_receive_fields,
 		recipe = technic_cnc.use_technic and ({
 			{'default:glass',              'technic:diamond_drill_head', 'default:glass'},
 			{'technic:control_logic_unit', 'technic:machine_casing',     'basic_materials:motor'},
@@ -43,7 +42,7 @@ end
 --
 -- Register technic:cnc_mk2 machine
 --
-if technic_cnc.use_technic then
+if technic_cnc.use_technic or technic_cnc.use_pipeworks or technic_cnc.use_digilines then
 	local tiles = {
 		"technic_cnc_mk2_top.png", "technic_cnc_bottom.png", "technic_cnc_mk2_side.png",
 		"technic_cnc_mk2_side.png", "technic_cnc_mk2_side.png", "technic_cnc_mk2_front.png"
@@ -64,7 +63,6 @@ if technic_cnc.use_technic then
 		tube = technic_cnc.pipeworks and technic_cnc.pipeworks.new_tube() or nil,
 		programs = programs,
 		demand = 900,
-		on_receive_fields = technic_cnc.formspec.on_receive_fields,
 		recipe = {
 			{'basic_materials:ic', 'technic:cnc',                 'basic_materials:ic'},
 			{'pipeworks:tube_1',   'technic:machine_casing',      'pipeworks:tube_1'},

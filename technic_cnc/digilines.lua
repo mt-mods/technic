@@ -25,14 +25,14 @@ local function check_message(meta, channel, msg)
 
 	-- Verify that size is either nil or number between 1-2
 	if msg.size ~= nil and (type(msg.size) ~= "number" or msg.size < 1 or msg.size > 2) then
-		return false
+		msg.size = nil
 	end
 
 	-- Verify program if provided
 	if msg.program ~= nil then
 		-- If program is set it must be string and available
 		if type(msg.program) ~= "string" or not technic_cnc.products[msg.program] then
-			return false
+			msg.program = nil
 		end
 	end
 
@@ -61,7 +61,10 @@ function def.effector.action(pos, node, channel, msg)
 				size = meta:get_int("size"),
 				program = meta:get_string("program"),
 				user = meta:get_string("cnc_user"),
-				material = srcstack:to_table(),
+				material = {
+					name = srcstack:get_name(),
+					count = srcstack:get_count(),
+				}
 			}
 			digilines.receptor_send(pos, rules, channel, status)
 		elseif msg == "enable" then
@@ -77,9 +80,9 @@ function def.effector.action(pos, node, channel, msg)
 			meta:set_int("size", msg.size)
 		end
 		-- Enable / disable CNC machine
-		if msg.enabled == true or msg.enable then
+		if msg.enabled == true then
 			technic_cnc.enable(meta)
-		elseif msg.enabled == false or msg.disable then
+		elseif msg.enabled == false then
 			technic_cnc.disable(meta)
 		end
 	end

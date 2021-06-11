@@ -11,6 +11,7 @@ local fs_slimhalf = "label[0.5,3.6;"..S("Slim Elements half / normal height:")..
 	"image_button[0.5,4;1,0.5;technic_cnc_full.png;full; ]"..
 	"image_button[0.5,4.5;1,0.5;technic_cnc_half.png;half; ]"
 
+-- TODO: These should be defined in programs.lua and provide API to register more
 local slimhalf_buttons = {
 	"element_straight",
 	"element_end",
@@ -21,24 +22,26 @@ local slimhalf_buttons = {
 
 -- Create button grid that returns paging information (leftover button count).
 -- WIP: Starting index could be easily added if needed to provide full paging.
-local function image_button_grid(x, y, width, height, items)
+local function image_button_grid(x_start, y_start, width, height, items)
 	local result = ""
 	local count = 0
-	local x_start = x
-	local y_start = y
-	local x_max = x_start + width - grid_size
-	local y_max = height and y_start + height - grid_size
+	local row = 0
+	local column = 0
+	local max_row = math.floor(height / grid_size + 0.1)
+	local max_column = math.floor(math.min(#items, math.floor(width / grid_size) * max_row) / max_row + 0.1)
 	for _,name in ipairs(items) do
-		result = result .. ("image_button[%0.1f,%0.1f;1,1;technic_cnc_%s.png;%s;]"):format(x,y,name,name)
+		local x = x_start + column * grid_size
+		local y = y_start + row * grid_size
+		result = result .. ("image_button[%0.1f,%0.1f;1,1;technic_cnc_%s.png;%s;]"):format(x, y, name,name)
 		count = count + 1
-		if x >= x_max then
-			x = x_start
-			y = y + grid_size
+		if column + 1 < max_column then
+			column = column + 1
 		else
-			x = x + grid_size
-		end
-		if y_max and y >= y_max then
-			return result, #items - count
+			column = 0
+			row = row + 1
+			if row >= max_row then
+				return result, #items - count
+			end
 		end
 	end
 	return result, #items - count
@@ -51,66 +54,76 @@ end
 local function list(name, x, y, w, h, text)
 	return (text and label(x, y - 0.5, text) or "") ..
 		("list[context;%s;%0.1f,%0.1f;%d,%d;]"):format(name, x, y, w, h) ..
-		("listring[context;%s]listring[current_player;main]"):format(name)
+		("listring[current_player;main]listring[context;%s]"):format(name)
 end
 
 local function get_formspec(nodename, def, meta)
-	local width = def.width or 14
-	local height = def.height or 13
+	local width = grid_size * 11 + margin * 2
+	local height = 13
 	local fs = fs_prefix:format(width, height, S("Choose Milling Program:"))
 
 	-- Programming buttons
 	local x = margin
 	local y = 1
-	fs = fs .. image_button_grid(x, y, width - 2, nil, def.programs)
+	local buttons1, leftover1 = image_button_grid(x, y, width - margin * 2, grid_size * 2, def.programs)
 
 	-- Slim / half / normal
 	x = margin + grid_size
 	y = 4
-	fs = fs .. fs_slimhalf .. image_button_grid(x, y, width - 4, nil, slimhalf_buttons)
+	local buttons2, leftover2 = image_button_grid(x, y, width - grid_size - margin * 2, grid_size, slimhalf_buttons)
+	fs = fs .. buttons1 .. fs_slimhalf .. buttons2
 
-	-- Input / output inventories
-	x = grid_size * 2 + x
-	y = 6
-	fs = fs .. list("src", margin, y, 1, 1, S("In:")) .. list("dst", x, y, def.output_size, 1, S("Out:"))
-
-	-- Upgrades
-	if def.upgrade then
-		x = x + (grid_size * def.output_size) + grid_size
-		fs = fs .. list("upgrade1", x, y, 1, 1, S("Upgrade Slots"))
-		x = x + grid_size
-		fs = fs .. list("upgrade2", x, y, 1, 1)
-	end
-
-	-- Stack splitting toggle
-	if meta and def.tube and technic_cnc.pipeworks then
-		y = height - (grid_size * 4.5) - margin
-		fs = fs .. technic_cnc.pipeworks.cycling_button(meta, "splitstacks", margin, y)
-	end
-
-	-- Digilines channel field
-	x = (grid_size * 8) + margin
-	if def.digilines then
-		y = height - grid_size - margin + padding + 0.3
-		local w = width - x - margin
-		fs = fs .. ("field[%0.1f,%0.1f;%0.1f,%0.1f;channel;%s;${channel}]"):format(x, y, w, 0.7, "Channel")
+	-- Program paging controls
+	if leftover1 > 0 or leftover2 > 0 then
+		x = width - margin - grid_size * 2
+		fs = fs .. ("button[%0.1f,%0.1f;%0.1f,%0.1f;paging_prev;Previous]"):format(x, padding, grid_size, 0.6)
+			.. ("button[%0.1f,%0.1f;%0.1f,%0.1f;paging_next;Next]"):format(x + grid_size, padding, grid_size, 0.6)
 	end
 
 	-- Some filler for empty unused space
 	y = height - (grid_size * 4) - margin + padding
 	--fs = fs .. ("model[10,%0.1f;3,3;;node.obj;%s;0.1,0.1;true;false]"):format(y, table.concat(def.tiles, ","))
 	--fs = fs .. ("image[10,%0.1f;3,3;%s]"):format(y, def.tiles[6])
-	fs = fs .. ("item_image[%0.1f,%0.1f;3.6,3.6;%s]"):format(x, y, nodename)
+	local size = grid_size * 3
+	fs = fs .. ("item_image[%0.1f,%0.1f;%0.1f,%0.1f;%s]"):format(grid_size * 8 + margin, y, size, size, nodename)
 
-	-- Player inventory / return formspec
-	return fs .. ("list[current_player;main;%0.1f,%0.1f;8,4;]"):format(margin, y)
+	-- Player inventory
+	fs = fs .. ("list[current_player;main;%0.1f,%0.1f;8,4;]"):format(margin, y)
+
+	-- Input / output inventories
+	x = grid_size * def.input_size + grid_size + margin
+	y = 6
+	fs = fs .. list("src", margin, y, def.input_size, 1, S("In:")) .. list("dst", x, y, def.output_size, 1, S("Out:"))
+
+	x = grid_size * 8 + margin
+
+	-- Upgrades
+	if def.upgrade then
+		fs = fs .. list("upgrade1", x, y, 1, 1, S("Upgrade Slots")) .. list("upgrade2", x + grid_size, y, 1, 1)
+	end
+
+	-- Stack splitting toggle
+	if meta and def.tube and technic_cnc.pipeworks then
+		y = height - margin - grid_size * 4.5
+		fs = fs .. technic_cnc.pipeworks.cycling_button(meta, "splitstacks", margin, y)
+	end
+
+	-- Digilines channel field
+	if def.digilines then
+		y = height - grid_size - margin + padding + 0.3
+		local w = width - x - margin - grid_size + padding
+		fs = fs .. ("field[%0.1f,%0.1f;%0.1f,%0.1f;channel;Channel;${channel}]"):format(x, y, w, 0.7)
+		fs = fs .. ("button[%0.1f,%0.1f;%0.1f,%0.1f;setchannel;Set]"):format(x + w, y, 1, 0.7)
+	end
+
+	return fs
 end
 
 local function on_receive_fields(pos, formname, fields, sender)
 	local meta = minetest.get_meta(pos)
 	local name = sender:get_player_name()
 
-	if meta:get_int("public") ~= 1 and minetest.is_protected(pos, name) then
+	if meta:get_int("public") == 0 and minetest.is_protected(pos, name) then
 		return true
 	end
 
@@ -121,6 +134,11 @@ local function on_receive_fields(pos, formname, fields, sender)
 	elseif fields.half then
 		meta:set_int("size", 2)
 		return true
+	elseif fields.paging_next or fields.paging_prev then
+		-- TODO: Page index should be capped between 0 and max based on button count
+		local page = meta:get_int("page")
+		meta:set_int("page", page + (fields.paging_next and 1 or -1))
+		return
 	end
 
 	-- Resolve the node name and the number of items to make
@@ -143,7 +161,10 @@ local function on_receive_fields(pos, formname, fields, sender)
 			technic_cnc.produce(meta, inv, inputstack)
 		end
 		return true
-	elseif fields.key_enter and fields.key_enter_field == "channel" and not minetest.is_protected(pos, name) then
+	end
+
+	local setchannel = fields.setchannel or (fields.key_enter and fields.key_enter_field == "channel")
+	if setchannel and not minetest.is_protected(pos, name) then
 		meta:set_string("channel", fields.channel)
 		return true
 	end

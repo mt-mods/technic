@@ -120,10 +120,14 @@ function technic_cnc.get_product(program, material, size)
 end
 
 function technic_cnc.set_program(meta, program, size)
-	if size then
-		meta:set_int("size", math.max(1, math.min(2, size)))
+	if technic_cnc.products[program] then
+		if size then
+			meta:set_int("size", math.max(1, math.min(2, size)))
+		end
+		meta:set_string("program", program)
+		return true
 	end
-	meta:set_string("program", program)
+	return false
 end
 
 function technic_cnc.is_enabled(meta)
@@ -157,6 +161,7 @@ function technic_cnc.produce(meta, inventory, materialstack)
 			return true
 		end
 	end
+	return false
 end
 
 -- REGISTER MACHINES
@@ -167,8 +172,9 @@ function technic_cnc.register_cnc_machine(nodename, def)
 	assert(type(nodename) == "string" and #nodename > 0, "Invalid nodename argument")
 	assert(type(def.output_size) == "number", "output_size field should be number")
 	assert(type(def.description) == "string", "description field should be string")
-	assert(type(def.on_receive_fields) == "function", "on_receive_fields should be function")
-	assert(def.tube == nil or ({boolean=1,table=1})[type(def.tube)], "tube field should be unset, boolean or table")
+	assert(({["nil"]=1,["function"]=1})[type(def.get_formspec)], "get_formspec should be function")
+	assert(({["nil"]=1,["function"]=1})[type(def.on_receive_fields)], "on_receive_fields should be function")
+	assert(({["nil"]=1,table=1})[type(def.tube)], "tube field should be unset, boolean or table")
 
 	-- Register recipe if recipe given
 	if def.recipe then
@@ -179,13 +185,16 @@ function technic_cnc.register_cnc_machine(nodename, def)
 	end
 
 	-- Collect / generate basic variables for CNC machine
-	local get_formspec = def.get_formspec or technic_cnc.formspec.get_formspec
 	local nodename_active = nodename .. "_active"
 	local idle_infotext = S("%s Idle"):format(def.description)
 	local active_infotext = S("%s Active"):format(def.description)
 	local unpowered_infotext = S("%s Unpowered"):format(def.description)
 	local groups = { cracky = 2, technic_machine = 1, technic_lv = 1 }
 	-- It is possible to override these using def fields
+	local on_receive_fields = def.on_receive_fields or technic_cnc.formspec.on_receive_fields
+	local get_formspec = def.get_formspec or technic_cnc.formspec.get_formspec
+	local input_size = def.input_size or 1
+	local output_size = def.output_size or 4
 	local technic_run
 	local after_dig_node
 	local allow_metadata_inventory_put
@@ -193,7 +202,12 @@ function technic_cnc.register_cnc_machine(nodename, def)
 	local allow_metadata_inventory_move
 	local can_dig
 
-	if technic_cnc.use_technic then
+	-- Update few variables in definition table to make some things easier
+	def.get_formspec = get_formspec
+	def.input_size = input_size
+	def.output_size = output_size
+
+	if technic_cnc.use_technic and not def.technic_run then
 		-- Check and get EU demand for Technic CNC machine
 		assert(type(def.demand) == "number", "demand field must be set for Technic CNC")
 
@@ -202,10 +216,8 @@ function technic_cnc.register_cnc_machine(nodename, def)
 			if demand then
 				meta:set_int("LV_EU_demand", demand)
 			end
-			if oldname ~= newname or meta:get("infotext") ~= infotext then
-				meta:set_string("infotext", infotext)
-				technic.swap_node(pos, newname)
-			end
+			meta:set_string("infotext", infotext)
+			technic.swap_node(pos, newname)
 		end
 
 		-- Technic action code performing the transformation, use form handler for when not using technic
@@ -218,8 +230,7 @@ function technic_cnc.register_cnc_machine(nodename, def)
 
 			-- Get and check material stack
 			local inv = meta:get_inventory()
-			local srcstack = inv:get_stack("src", 1)
-			if srcstack:is_empty() then
+			if inv:is_empty("src") then
 				update_machine(pos, meta, node.name, nodename, idle_infotext, 0)
 				return
 			end
@@ -242,6 +253,13 @@ function technic_cnc.register_cnc_machine(nodename, def)
 			if src_time >= 3 then
 				-- Cycle counter expired, reset counter and attempt to produce items
 				meta:set_int("src_time", 0)
+				local srcstack
+				for index=1,input_size do
+					srcstack = inv:get_stack("src", index)
+					if not srcstack:is_empty() then
+						break
+					end
+				end
 				if not technic_cnc.produce(meta, inv, srcstack) then
 					-- Production failed, set machine status to idle for error alerting effect.
 					-- Machine is supposed to consume power as long as it is in this state.
@@ -295,17 +313,17 @@ function technic_cnc.register_cnc_machine(nodename, def)
 	end
 
 	-- Pipeworks formspec wrapper and groups
-	local on_receive_fields = def.on_receive_fields
 	if technic_cnc.use_pipeworks and def.tube and def.on_receive_fields then
 		local pipeworks_on_receive_fields = pipeworks.fs_helpers.on_receive_fields
 		on_receive_fields = function(pos, formname, fields, sender)
 			-- Checking return value of formspec handler is hack to selectively silence protection check messages
-			if not def.on_receive_fields(pos, formname, fields, sender) then
-				if not fields.quit and pipeworks.may_configure(pos, sender) then
+			if not def.on_receive_fields(pos, formname, fields, sender) and not fields.quit then
+				-- TODO: This causes invalid protection messages if paging buttons used on public machine
+				if pipeworks.may_configure(pos, sender) then
 					pipeworks_on_receive_fields(pos, fields)
-					local meta = minetest.get_meta(pos)
-					meta:set_string("formspec", get_formspec(nodename, def, meta))
 				end
+				local meta = minetest.get_meta(pos)
+				meta:set_string("formspec", get_formspec(nodename, def, meta))
 			end
 		end
 		groups.tubedevice = 1
@@ -325,7 +343,7 @@ function technic_cnc.register_cnc_machine(nodename, def)
 			meta:set_string("infotext", def.description)
 			meta:set_string("formspec", get_formspec(nodename, def, meta))
 			local inv = meta:get_inventory()
-			inv:set_size("src", 1)
+			inv:set_size("src", def.input_size)
 			inv:set_size("dst", def.output_size)
 			if def.upgrade then
 				inv:set_size("upgrade1", 1)
