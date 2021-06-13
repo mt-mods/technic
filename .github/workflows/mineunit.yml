@@ -27,6 +27,22 @@ jobs:
         COLOR: "${{ steps.mineunit.outputs.badge-color }}"
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+    - id: mineunit-cnc
+      uses: mt-mods/mineunit-actions@master
+      with:
+        working-directory: ./technic_cnc
+        badge-name: coverage-cnc
+        badge-label: Test coverage
+
+    - uses: RubbaBoy/BYOB@v1.2.0
+      if: success() && github.event_name == 'push' && github.ref == 'refs/heads/master'
+      with:
+        NAME: "${{ steps.mineunit-cnc.outputs.badge-name }}"
+        LABEL: "${{ steps.mineunit-cnc.outputs.badge-label }}"
+        STATUS: "${{ steps.mineunit-cnc.outputs.badge-status }}"
+        COLOR: "${{ steps.mineunit-cnc.outputs.badge-color }}"
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
     - uses: KeisukeYamashita/create-comment@v1
       if: success() && github.event_name == 'pull_request'
       with:
@@ -34,6 +50,12 @@ jobs:
         comment: |
           <details><summary><i>Click for detailed source code test coverage report</i></summary>
           
+          ### Test coverage report for Technic CNC ${{ steps.mineunit-cnc.outputs.coverage-total }} in ${{ steps.mineunit-cnc.outputs.coverage-files }} files:
+          ```
+          File                             Hits Missed Coverage
+          -----------------------------------------------------
+          ${{ steps.mineunit-cnc.outputs.mineunit-report }}
+          ```
           ### Test coverage report for technic ${{ steps.mineunit.outputs.coverage-total }} in ${{ steps.mineunit.outputs.coverage-files }} files:
           ```
           File                                      Hits Missed Coverage
@@ -41,6 +63,11 @@ jobs:
           ${{ steps.mineunit.outputs.mineunit-report }}
           ```
           ### Raw test runner output for geeks:
+          CNC:
+          ```
+          ${{ steps.mineunit-cnc.outputs.mineunit-stdout }}
+          ```
+          Technic:
           ```
           ${{ steps.mineunit.outputs.mineunit-stdout }}
           ```
