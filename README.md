@@ -88,6 +88,11 @@ Suitable for multiplayer environments.
 * No forceload hacks
 * Additional HV machines (@h-v-smacker)
 * LV, MV, and HV digiline cables (@S-S-X and @SwissalpS)
+* Chests with digilines and more complete user interface
+* Most of network code rewritten
+* Many bugs that allowed cheating fixed
+* CNC machine with pipeworks, upgrades and digiline support
+* Better performance
 * various others...
 
 ## Compatibility
@@ -139,7 +144,9 @@ Recommended mods that build on the `technic mod`:
 | network_overload_reset_time                  | After network conflict wait this many seconds before attempting to activate conflicting networks again.               |
 | switch_off_delay_seconds                     | switching station off delay.                                                                                          |
 
-See defaults for settings here: [technic/config.lua](https://github.com/mt-mods/technic/blob/master/technic/config.lua)
+See defaults for settings here: [technic/config.lua](./technic/config.lua)
+
+See configuration for CNC machines here: [technic_cnc/README.md](./technic_cnc/README.md)
 
 # Chat commands
 
