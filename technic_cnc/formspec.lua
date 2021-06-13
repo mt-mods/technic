@@ -5,8 +5,7 @@ local margin = 0.5
 local padding = 0.2
 local grid_size = 1 + padding
 
-local fs_prefix = "formspec_version[4]size[%d,%d]real_coordinates[true]"
-	.. "style_type[list;size=1,1;spacing=0.2,0.2]label[0.5,0.5;%s]"
+local fs_prefix = "formspec_version[4]size[%d,%d]style_type[list;size=1,1;spacing=0.2,0.2]label[0.5,0.5;%s]"
 
 local fs_slimhalf = "label[0.5,3.6;"..S("Slim Elements half / normal height:").."]"..
 	"image_button[0.5,4;1,0.49;technic_cnc_full%s.png;full; ]"..
