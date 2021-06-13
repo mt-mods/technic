@@ -12,7 +12,7 @@ describe("CNC API", function()
 	sourcefile("init")
 
 	-- Our player Sam will be helping, he promised to place some nodes
-	local Sam = Player()
+	local Sam = Player("Sam")
 
 	-- Construct test world with CNC machines
 	world.clear()

@@ -5,7 +5,8 @@ local margin = 0.5
 local padding = 0.2
 local grid_size = 1 + padding
 
-local fs_prefix = "formspec_version[4]size[%d,%d;]style_type[list;size=1,1;spacing=0.2,0.2]label[0.5,0.5;%s]"
+local fs_prefix = "formspec_version[4]size[%d,%d]real_coordinates[true]"
+	.. "style_type[list;size=1,1;spacing=0.2,0.2]label[0.5,0.5;%s]"
 
 local fs_slimhalf = "label[0.5,3.6;"..S("Slim Elements half / normal height:").."]"..
 	"image_button[0.5,4;1,0.49;technic_cnc_full%s.png;full; ]"..
@@ -114,9 +115,9 @@ local function get_formspec(nodename, def, meta)
 	-- Digilines channel field
 	if def.digilines then
 		y = height - grid_size - margin + padding + 0.3
-		local w = width - x - margin - grid_size + padding
-		fs = fs .. ("field[%0.1f,%0.1f;%0.1f,%0.1f;channel;Channel;${channel}]"):format(x, y, w, 0.7)
-		fs = fs .. ("button[%0.1f,%0.1f;%0.1f,%0.1f;setchannel;Set]"):format(x + w, y, 1, 0.7)
+		local w = width - x - margin - grid_size
+		fs = fs .. ("field[%0.1f,%0.1f;%0.1f,%0.1f;channel;Channel;${channel}]"):format(x + padding, y, w, 0.7)
+		fs = fs .. ("button[%0.1f,%0.1f;%0.1f,%0.1f;setchannel;Set]"):format(x + w + padding, y, 1, 0.7)
 	end
 
 	return fs
@@ -125,7 +126,7 @@ end
 local function on_receive_fields(pos, meta, fields, sender, update_formspec)
 	local name = sender:get_player_name()
 
-	if meta:get_int("public") == 0 and minetest.is_protected(pos, name) then
+	if fields.quit or (meta:get_int("public") == 0 and minetest.is_protected(pos, name)) then
 		return true
 	end
 

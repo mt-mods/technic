@@ -17,12 +17,16 @@ describe("CNC formspec interaction", function()
 	sourcefile("init")
 
 	-- Our player Sam will be helping, he promised to place some nodes
-	local Sam = Player()
+	local Sam = Player("Sam")
+	local SX = Player("SX")
 
 	-- Construct test world with CNC machines
 	world.clear()
 	local pos = {x=3,y=2,z=1}
 	world.place_node(pos, {name = "technic:cnc_mk2", param2 = 0}, Sam)
+
+	local protectedpos = {x=2,y=2,z=2}
+	mineunit:protect(protectedpos, SX)
 
 	local nodedef = minetest.registered_nodes["technic:cnc_mk2"]
 
@@ -39,7 +43,7 @@ describe("CNC formspec interaction", function()
 		meta:set_float("cnc_multiplier", 4.2)
 	end
 
-	-- TODO: Let Sam do some formspec interaction tests with CNC machines
+	-- Let Sam do some formspec interaction tests with CNC machines
 
 	it("allows placing materials", function()
 		Sam:do_metadata_inventory_put(pos, "src", 1, ItemStack("default:stone 42"))
@@ -50,8 +54,46 @@ describe("CNC formspec interaction", function()
 		assert.equals(42, stack:get_count())
 	end)
 
+	it("allows placing materials protected", function()
+		world.place_node(protectedpos, {name = "technic:cnc_mk2", param2 = 0}, SX)
+		SX:do_metadata_inventory_put(protectedpos, "src", 1, ItemStack("default:stone 42"))
+
+		-- Check metadata values
+		local stack = minetest.get_meta(protectedpos):get_inventory():get_stack("src", 1)
+		assert.equals("default:stone", stack:get_name())
+		assert.equals(42, stack:get_count())
+	end)
+
+	it("disallows placing materials protected", function()
+		world.place_node(protectedpos, {name = "technic:cnc_mk2", param2 = 0}, SX)
+		Sam:do_metadata_inventory_put(protectedpos, "src", 1, ItemStack("default:stone 42"))
+
+		-- Check metadata values
+		local stack = minetest.get_meta(protectedpos):get_inventory():get_stack("src", 1)
+		assert.equals("", stack:get_name())
+		assert.equals(0, stack:get_count())
+	end)
+
+	it("does not check protection for noop actions", function()
+		-- Check for unnecessary protection messages
+		spy.on(minetest, "is_protected")
+		-- Submit formspec without any meaningful action
+		nodedef.on_receive_fields(pos, "", { quit = true }, Sam)
+		-- Check that minetest.is_protected was not called
+		assert.spy(minetest.is_protected).was_not.called()
+	end)
+
+	it("checks protection for programming", function()
+		-- Check for unnecessary protection messages
+		spy.on(minetest, "is_protected")
+		-- Submit formspec without any meaningful action
+		nodedef.on_receive_fields(pos, "", { half = true }, Sam)
+		-- Check that minetest.is_protected was not called
+		assert.spy(minetest.is_protected).was.called()
+	end)
+
 	it("sets metadata on form submit", function()
-		-- And submit formspec selecting CNC sizes and digiline channel
+		-- Submit formspec selecting CNC sizes and digiline channel
 		nodedef.on_receive_fields(pos, "", { half = true }, Sam)
 		nodedef.on_receive_fields(pos, "", { full = true }, Sam)
 		nodedef.on_receive_fields(pos, "", { setchannel = true, channel = "Sam" }, Sam)
@@ -63,7 +105,7 @@ describe("CNC formspec interaction", function()
 	end)
 
 	it("manufactures products", function()
-		-- And submit formspec selecting CNC sizes and program, 2 spheres and 16 sticks
+		-- Submit formspec selecting CNC sizes and program, 2 spheres and 16 sticks
 		nodedef.on_receive_fields(pos, "", { sphere = true }, Sam)
 		nodedef.on_receive_fields(pos, "", { stick = true }, Sam)
 		nodedef.on_receive_fields(pos, "", { sphere = true }, Sam)
