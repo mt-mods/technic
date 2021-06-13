@@ -8,8 +8,8 @@ local grid_size = 1 + padding
 local fs_prefix = "formspec_version[4]size[%d,%d;]style_type[list;size=1,1;spacing=0.2,0.2]label[0.5,0.5;%s]"
 
 local fs_slimhalf = "label[0.5,3.6;"..S("Slim Elements half / normal height:").."]"..
-	"image_button[0.5,4;1,0.5;technic_cnc_full.png;full; ]"..
-	"image_button[0.5,4.5;1,0.5;technic_cnc_half.png;half; ]"
+	"image_button[0.5,4;1,0.49;technic_cnc_full%s.png;full; ]"..
+	"image_button[0.5,4.51;1,0.49;technic_cnc_half%s.png;half; ]"
 
 -- TODO: These should be defined in programs.lua and provide API to register more
 local slimhalf_buttons = {
@@ -22,7 +22,7 @@ local slimhalf_buttons = {
 
 -- Create button grid that returns paging information (leftover button count).
 -- WIP: Starting index could be easily added if needed to provide full paging.
-local function image_button_grid(x_start, y_start, width, height, items)
+local function image_button_grid(x_start, y_start, width, height, items, selected)
 	local result = ""
 	local count = 0
 	local row = 0
@@ -32,7 +32,8 @@ local function image_button_grid(x_start, y_start, width, height, items)
 	for _,name in ipairs(items) do
 		local x = x_start + column * grid_size
 		local y = y_start + row * grid_size
-		result = result .. ("image_button[%0.1f,%0.1f;1,1;technic_cnc_%s.png;%s;]"):format(x, y, name,name)
+		local modifier = selected == name and "^[invert:b" or ""
+		result = result .. ("image_button[%0.1f,%0.1f;1,1;technic_cnc_%s.png%s;%s;]"):format(x, y, name, modifier, name)
 		count = count + 1
 		if column + 1 < max_column then
 			column = column + 1
@@ -61,17 +62,19 @@ local function get_formspec(nodename, def, meta)
 	local width = grid_size * 11 + margin * 2
 	local height = 13
 	local fs = fs_prefix:format(width, height, S("Choose Milling Program:"))
+	local p = meta:get("program")
 
 	-- Programming buttons
 	local x = margin
 	local y = 1
-	local buttons1, leftover1 = image_button_grid(x, y, width - margin * 2, grid_size * 2, def.programs)
+	local buttons1, leftover1 = image_button_grid(x, y, width - margin * 2, grid_size * 2, def.programs, p)
 
 	-- Slim / half / normal
 	x = margin + grid_size
 	y = 4
-	local buttons2, leftover2 = image_button_grid(x, y, width - grid_size - margin * 2, grid_size, slimhalf_buttons)
-	fs = fs .. buttons1 .. fs_slimhalf .. buttons2
+	local buttons2, leftover2 = image_button_grid(x, y, width - grid_size - margin * 2, grid_size, slimhalf_buttons, p)
+	local half = meta:get("size") == "2"
+	fs = fs .. buttons1 .. fs_slimhalf:format(half and "" or "_active", half and "_active" or "") .. buttons2
 
 	-- Program paging controls
 	if leftover1 > 0 or leftover2 > 0 then
@@ -119,8 +122,7 @@ local function get_formspec(nodename, def, meta)
 	return fs
 end
 
-local function on_receive_fields(pos, formname, fields, sender)
-	local meta = minetest.get_meta(pos)
+local function on_receive_fields(pos, meta, fields, sender, update_formspec)
 	local name = sender:get_player_name()
 
 	if meta:get_int("public") == 0 and minetest.is_protected(pos, name) then
@@ -130,9 +132,11 @@ local function on_receive_fields(pos, formname, fields, sender)
 	-- Program for half/full size
 	if fields.full then
 		meta:set_int("size", 1)
+		update_formspec(meta)
 		return true
 	elseif fields.half then
 		meta:set_int("size", 2)
+		update_formspec(meta)
 		return true
 	elseif fields.paging_next or fields.paging_prev then
 		-- TODO: Page index should be capped between 0 and max based on button count
@@ -144,22 +148,23 @@ local function on_receive_fields(pos, formname, fields, sender)
 	-- Resolve the node name and the number of items to make
 	local program_selected
 	local products = technic_cnc.products
-	local inv = meta:get_inventory()
 	for program, _ in pairs(fields) do
 		if products[program] then
+			local update = meta:get("program") ~= program
 			technic_cnc.set_program(meta, program, meta:get_int("size"))
 			technic_cnc.enable(meta)
 			meta:set_string("cnc_user", name)
 			program_selected = true
+			if update then
+				update_formspec(meta)
+			end
 			break
 		end
 	end
 
 	if program_selected and not technic_cnc.use_technic then
-		local inputstack = inv:get_stack("src", 1)
-		if not inputstack:is_empty() then
-			technic_cnc.produce(meta, inv, inputstack)
-		end
+		local inv = meta:get_inventory()
+		technic_cnc.produce(meta, inv)
 		return true
 	end
 

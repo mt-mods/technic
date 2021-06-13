@@ -5,6 +5,7 @@ local button_base = "image_button[%0.1f,%0.1f;1,0.6"
 local button_label = "label[%0.1f,%0.1f;" .. S("Allow splitting incoming stacks from tubes") .. "]"
 local cycling_buttons = { pipeworks.button_off, pipeworks.button_on }
 local fs_helpers = pipeworks.fs_helpers
+local pipeworks_on_receive_fields = pipeworks.fs_helpers.on_receive_fields
 
 local function new_tube()
 	return {
@@ -36,8 +37,27 @@ local function cycling_button(meta, name, x, y)
 	return form_buttons .. button_label:format(x + 1.2, y + 0.31)
 end
 
+-- Pipeworks does not provide API to selectively silence protection messages.
+-- This wrapper handles pipeworks cycling buttons without sending unnecessary protection messages.
+local function on_receive_fields(pos, meta, fields, sender, update_formspec)
+	-- https://gitlab.com/VanessaE/pipeworks/-/blob/master/common.lua#L115
+	for field,_ in pairs(fields) do
+		if pipeworks.string_startswith(field, "fs_helpers_cycling:") then
+			if pipeworks.may_configure(pos, sender) then
+				pipeworks_on_receive_fields(pos, fields)
+				update_formspec(meta)
+			end
+			-- Handled and protection message sent if necessary
+			return true
+		end
+	end
+	-- Not handled, caller may continue processing
+	return false
+end
+
 return {
 	new_tube = new_tube,
 	cycling_button = cycling_button,
+	on_receive_fields = on_receive_fields,
 	tube_entry_overlay = tube_entry_overlay,
 }

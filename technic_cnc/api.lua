@@ -143,22 +143,35 @@ function technic_cnc.disable(meta)
 	meta:set_string("LV_EU_demand", "")
 end
 
-function technic_cnc.produce(meta, inventory, materialstack)
+function technic_cnc.get_material(inventory)
+	local srclist = inventory:get_list("src")
+	for index, stack in ipairs(srclist) do
+		if not stack:is_empty() then
+			return index, stack
+		end
+	end
+end
+
+function technic_cnc.produce(meta, inventory)
 	-- Get and check program
 	local program = meta:get("program")
 	if program then
-		-- Get product and produce items if output has enough space
-		local size = meta:get_int("size")
-		local product = technic_cnc.get_product(program, materialstack:get_name(), size)
-		if product and inventory:room_for_item("dst", product) then
-			-- Remove materials from input inventory
-			materialstack:take_item()
-			inventory:set_stack("src", 1, materialstack)
+		-- Get material stack
+		local index, materialstack = technic_cnc.get_material(inventory)
+		if index and materialstack then
+			-- Get product and produce items if output has enough space
+			local size = meta:get_int("size")
+			local product = technic_cnc.get_product(program, materialstack:get_name(), size)
+			if product and inventory:room_for_item("dst", product) then
+				-- Remove materials from input inventory
+				materialstack:take_item()
+				inventory:set_stack("src", index, materialstack)
 
-			-- Add results to output inventory of machine
-			inventory:add_item("dst", product)
+				-- Add results to output inventory of machine
+				inventory:add_item("dst", product)
 
-			return true
+				return true
+			end
 		end
 	end
 	return false
@@ -209,6 +222,24 @@ function technic_cnc.register_cnc_machine(nodename, def)
 	def.input_size = input_size
 	def.output_size = output_size
 
+	-- UPGRADE OLD CNC MACHINES
+	local function upgrade_machine(meta)
+		local product = meta:get("cnc_product")
+		if product then
+			meta:set_string("cnc_product", "")
+			meta:set_string("cnc_multiplier", "")
+			local program_raw = product:match("[%w_]+:[%w_]+_technic_cnc_([%w_]+)")
+			if program_raw then
+				local double = "_double"
+				local size = program_raw:sub(-#double) == double and 1 or 2
+				local program = size == 1 and program_raw:sub(1, #program_raw - #double) or program_raw
+				meta:set_string("program", program)
+				meta:set_int("size", size)
+			end
+			meta:set_string("formspec", get_formspec(nodename, def, meta))
+		end
+	end
+
 	if technic_cnc.use_technic and not def.technic_run then
 		-- Check and get EU demand for Technic CNC machine
 		assert(type(def.demand) == "number", "demand field must be set for Technic CNC")
@@ -225,6 +256,7 @@ function technic_cnc.register_cnc_machine(nodename, def)
 		-- Technic action code performing the transformation, use form handler for when not using technic
 		technic_run = function(pos, node)
 			local meta = minetest.get_meta(pos)
+			upgrade_machine(meta)
 
 			local demand = def.demand
 			if def.upgrade then
@@ -235,7 +267,7 @@ function technic_cnc.register_cnc_machine(nodename, def)
 				technic.handle_machine_pipeworks(pos, tube_upgrade)
 			end
 
-			if not technic_cnc.is_enabled(meta) then
+			if not technic_cnc.is_enabled(meta) or not meta:get("program") then
 				update_machine(pos, meta, node.name, nodename, idle_infotext, 0)
 				return
 			end
@@ -256,18 +288,13 @@ function technic_cnc.register_cnc_machine(nodename, def)
 			local src_time = meta:get_int("src_time")
 			if src_time >= 3 then
 				-- Cycle counter expired, reset counter and attempt to produce items
-				meta:set_int("src_time", 0)
-				local srcstack
-				for index=1,input_size do
-					srcstack = inv:get_stack("src", index)
-					if not srcstack:is_empty() then
-						break
-					end
-				end
-				if not technic_cnc.produce(meta, inv, srcstack) then
-					-- Production failed, set machine status to idle for error alerting effect.
-					-- Machine is supposed to consume power as long as it is in this state.
-					update_machine(pos, meta, node.name, nodename, idle_infotext)
+				if technic_cnc.produce(meta, inv) then
+					-- Production succeed, reset cycle counter
+					meta:set_int("src_time", 0)
+				else
+					-- Production failed, set machine status to unpowered and try again after one cycle
+					meta:set_int("src_time", 2)
+					update_machine(pos, meta, node.name, nodename, unpowered_infotext, 0)
 					return
 				end
 			else
@@ -316,21 +343,33 @@ function technic_cnc.register_cnc_machine(nodename, def)
 		end
 	end
 
-	-- Pipeworks formspec wrapper and groups
-	if technic_cnc.use_pipeworks and def.tube then
-		local pipeworks_on_receive_fields = pipeworks.fs_helpers.on_receive_fields
+	-- Formspec handlers with / without pipeworks
+	do
 		local wrapped_on_receive_fields = on_receive_fields
-		on_receive_fields = function(pos, formname, fields, sender)
-			-- Checking return value of formspec handler is hack to selectively silence protection check messages
-			if not wrapped_on_receive_fields(pos, formname, fields, sender) and not fields.quit then
-				-- TODO: This causes invalid protection messages if paging buttons used on public machine
-				if pipeworks.may_configure(pos, sender) then
-					pipeworks_on_receive_fields(pos, fields)
-				end
+		local function update_formspec(meta)
+			meta:set_string("formspec", get_formspec(nodename, def, meta))
+		end
+		if technic_cnc.pipeworks and def.tube then
+			local pipeworks_on_receive_fields = technic_cnc.pipeworks.on_receive_fields
+			on_receive_fields = function(pos, formname, fields, sender)
 				local meta = minetest.get_meta(pos)
-				meta:set_string("formspec", get_formspec(nodename, def, meta))
+				if not wrapped_on_receive_fields(pos, meta, fields, sender, update_formspec) and not fields.quit then
+					-- Custom pipeworks form handler to skip unnecessary protection messages
+					pipeworks_on_receive_fields(pos, meta, fields, sender, update_formspec)
+				end
+				upgrade_machine(meta)
+			end
+		else
+			on_receive_fields = function(pos, formname, fields, sender)
+				local meta = minetest.get_meta(pos)
+				wrapped_on_receive_fields(pos, meta, fields, sender, update_formspec)
+				upgrade_machine(meta)
 			end
 		end
+	end
+
+	-- Groups for pipeworks
+	if technic_cnc.pipeworks and def.tube then
 		groups.tubedevice = 1
 		groups.tubedevice_receiver = 1
 	end

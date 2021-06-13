@@ -26,6 +26,19 @@ describe("CNC formspec interaction", function()
 
 	local nodedef = minetest.registered_nodes["technic:cnc_mk2"]
 
+	do -- prepare machines for simple upgrade check
+		world.place_node({x=98,y=98,z=98}, {name = "technic:cnc", param2 = 0}, Sam)
+		local meta = minetest.get_meta({x=98,y=98,z=98})
+		meta:set_string("cnc_product", "default:stone_technic_cnc_element_t")
+		meta:set_float("cnc_multiplier", 4.2)
+	end
+	do -- prepare machines for simple upgrade check
+		world.place_node({x=99,y=99,z=99}, {name = "technic:cnc_mk2", param2 = 0}, Sam)
+		local meta = minetest.get_meta({x=99,y=99,z=99})
+		meta:set_string("cnc_product", "default:stone_technic_cnc_element_t_double")
+		meta:set_float("cnc_multiplier", 4.2)
+	end
+
 	-- TODO: Let Sam do some formspec interaction tests with CNC machines
 
 	it("allows placing materials", function()
@@ -68,6 +81,35 @@ describe("CNC formspec interaction", function()
 		local stack2 = meta:get_inventory():get_stack("dst", 2)
 		assert.equals("default:stone_technic_cnc_stick", stack2:get_name())
 		assert.equals(16, stack2:get_count())
+	end)
+
+	it("updates old machines", function()
+		do -- Verify starting point
+			local meta = minetest.get_meta({x=98,y=98,z=98})
+			assert.equals("default:stone_technic_cnc_element_t", meta:get("cnc_product"))
+		end
+		do -- Verify starting point
+			local meta = minetest.get_meta({x=99,y=99,z=99})
+			assert.equals("default:stone_technic_cnc_element_t_double", meta:get("cnc_product"))
+		end
+
+		nodedef.on_receive_fields({x=98,y=98,z=98}, "", { quit = true, channel = "Sam" }, Sam)
+		nodedef.on_receive_fields({x=99,y=99,z=99}, "", { quit = true, channel = "Sam" }, Sam)
+
+		do -- Check metadata values
+			local meta = minetest.get_meta({x=98,y=98,z=98})
+			assert.is_nil(meta:get("cnc_product"))
+			assert.is_nil(meta:get("cnc_multiplier"))
+			assert.equals("element_t", meta:get("program"))
+			assert.equals(2, meta:get_int("size"))
+		end
+		do -- Check metadata values
+			local meta = minetest.get_meta({x=99,y=99,z=99})
+			assert.is_nil(meta:get("cnc_product"))
+			assert.is_nil(meta:get("cnc_multiplier"))
+			assert.equals("element_t", meta:get("program"))
+			assert.equals(1, meta:get_int("size"))
+		end
 	end)
 
 end)

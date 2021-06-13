@@ -42,7 +42,7 @@ end
 --
 -- Register technic:cnc_mk2 machine
 --
-if technic_cnc.use_technic or technic_cnc.use_pipeworks or technic_cnc.use_digilines then
+if technic_cnc.use_technic or technic_cnc.pipeworks or technic_cnc.digilines then
 	local tiles = {
 		"technic_cnc_mk2_top.png", "technic_cnc_bottom.png", "technic_cnc_mk2_side.png",
 		"technic_cnc_mk2_side.png", "technic_cnc_mk2_side.png", "technic_cnc_mk2_front.png"

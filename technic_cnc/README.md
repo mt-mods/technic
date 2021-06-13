@@ -135,9 +135,12 @@ function technic_cnc.enable(meta)
 -- Disables CNC machine
 function technic_cnc.disable(meta)
 
+-- Finds first input stack with items
+function technic_cnc.get_material(inventory)
+
 -- Manufacture product based on current program.
 -- Updates src and dst inventories taking required amount from src inventory and placing products into dst inventory
-function technic_cnc.produce(meta, inventory, materialstack)
+function technic_cnc.produce(meta, inventory)
 ```
 
 ### Register new CNC machine defined by your mod:
