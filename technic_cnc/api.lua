@@ -408,11 +408,12 @@ function technic_cnc.register_cnc_machine(nodename, def)
 
 	-- Active state CNC machine
 	if technic_cnc.use_technic then
-		groups.not_in_creative_inventory = 1
+		local groups_active = table.copy(groups)
+		groups_active.not_in_creative_inventory = 1
 		minetest.register_node(":" .. nodename_active, {
 			description = def.description,
 			tiles = def.tiles_active,
-			groups = groups,
+			groups = groups_active,
 			connect_sides = {"bottom", "back", "left", "right"},
 			paramtype2 = "facedir",
 			drop = nodename,
