@@ -83,8 +83,8 @@ minetest.register_chatcommand("technic_get_active_networks", {
 			return align(("%s,%s,%s"):format(p.x,p.y,p.z),21)
 		end
 		for id,net in pairs(active_networks) do
+			activecount = activecount + 1
 			if minlag == 0 or (net.lag and net.lag >= minlag * 1000) then
-				activecount = activecount + 1
 				table.insert(network_info, ("Pos:%s PR:%s RE:%s BA:%s Skip:%s Lag:%sms"):format(
 					net2str(id), align(#net.PR_nodes, 4), align(#net.RE_nodes, 4), align(#net.BA_nodes, 4),
 					align(net.skip, 3), net.lag and align(("%0.2f"):format(net.lag / 1000), 6) or ""
