@@ -25,9 +25,9 @@ function technic.get_max_lag()
 		return 0
 	end
 	local max_lag = 0
-	for _,t in ipairs(samples) do
-		if t > max_lag then
-			max_lag = t
+	for i=1, #samples do
+		if samples[i] > max_lag then
+			max_lag = samples[i]
 		end
 	end
 	return max_lag / 1000000
@@ -38,8 +38,8 @@ function technic.get_avg_lag()
 		return 0
 	end
 	local avg_lag = 0
-	for _,t in ipairs(samples) do
-		avg_lag = avg_lag + t
+	for i=1, #samples do
+		avg_lag = avg_lag + samples[i]
 	end
 	return (avg_lag / #samples) / 1000000
 end
