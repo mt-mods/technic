@@ -28,19 +28,6 @@ function technic.get_max_lag()
 	return max_lag
 end
 
-function technic.get_min_lag()
-	if #samples < 1 then
-		return 0
-	end
-	local min_lag = 9999
-	for _,t in pairs(samples) do
-		if t < min_lag then
-			min_lag = t
-		end
-	end
-	return min_lag
-end
-
 function technic.get_avg_lag()
 	if #samples < 1 then
 		return 0
