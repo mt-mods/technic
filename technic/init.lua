@@ -35,7 +35,7 @@ end
 local S = technic.getter
 
 -- Lag monitoring
-dofile(modpath.."/lag.lua")
+dofile(modpath.."/max_lag.lua")
 
 -- Read configuration file
 dofile(modpath.."/config.lua")
