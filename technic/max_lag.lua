@@ -1,5 +1,5 @@
 
-local multiplier = tonumber(technic.config:get("max_lag_reduction_multiplier")) or 0.99
+local multiplier = technic.config:get_int("max_lag_reduction_multiplier")
 
 local last_step = minetest.get_us_time()
 
