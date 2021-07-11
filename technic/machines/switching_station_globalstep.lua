@@ -33,11 +33,11 @@ minetest.register_globalstep(function(dtime)
 	if max_lag > 5.0 then
 		technic_run_interval = 5.0
 	elseif max_lag > 2.0 then
-			technic_run_interval = 4.0
+		technic_run_interval = 4.0
 	elseif max_lag > 1.5 then
-			technic_run_interval = 3.0
+		technic_run_interval = 3.0
 	elseif max_lag > 1.0 then
-			technic_run_interval = 1.5
+		technic_run_interval = 1.5
 	else
 		-- normal run_interval
 		technic_run_interval = 1.0
