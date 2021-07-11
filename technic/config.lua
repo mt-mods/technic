@@ -33,6 +33,7 @@ local defaults = {
 	enable_radiation_throttling = "false",
 	enable_entity_radiation_damage = "true",
 	enable_longterm_radiation_damage = "true",
+	max_lag_reduction_multiplier = "0.99",
 	--constant_digit_count = nil,
 }
 
