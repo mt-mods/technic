@@ -1,15 +1,23 @@
-local function explode(sep, input)
-        local t={}
-        local i=0
-        for k in string.gmatch(input,"([^"..sep.."]+)") do
-            t[i]=k
-            i=i+1
-        end
-        return t
-end
+
+local multiplier = tonumber(technic.config:get("max_lag_reduction_multiplier"))
+
+local last_step = minetest.get_us_time()
+
+local max_lag = 0
+
+minetest.register_globalstep(function()
+	-- Calculate own dtime as a workaround to 2 second limit
+	local now = minetest.get_us_time()
+	local dtime = now - last_step
+	last_step = now
+
+	max_lag = max_lag * multiplier  -- Decrease slowly
+
+	if dtime > max_lag then
+		max_lag = dtime
+	end
+end)
 
 function technic.get_max_lag()
-	local arrayoutput = explode(", ",minetest.get_server_status())
-	local arrayoutput2 = explode("=",arrayoutput[4])
-	return tonumber(arrayoutput2[1])
+	return max_lag / 1000000
 end

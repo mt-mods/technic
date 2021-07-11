@@ -94,8 +94,8 @@ minetest.register_chatcommand("technic_get_active_networks", {
 		for _ in pairs(networks) do netcount = netcount + 1 end
 		for _ in pairs(cables) do nodecount = nodecount + 1 end
 		minetest.chat_send_player(name,
-			("Cached network data: %d active networks, %d total networks, %d network nodes.\n%s"):format(
-			activecount, netcount, nodecount, table.concat(network_info, "\n")
+			("Cached networks: %d active, %d total, %d nodes, %0.2f max lag.\n%s"):format(
+			activecount, netcount, nodecount, technic.get_max_lag(), table.concat(network_info, "\n")
 		))
 	end
 })

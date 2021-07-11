@@ -21,6 +21,7 @@ local defaults = {
 	quarry_dig_above_nodes = "3",
 	quarry_max_depth = "100",
 	quarry_time_limit = "5000",
+	max_lag_reduction_multiplier = "0.99",
 	--constant_digit_count = nil,
 }
 
