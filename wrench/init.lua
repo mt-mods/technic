@@ -178,7 +178,7 @@ minetest.register_tool("wrench:wrench", {
 	end,
 })
 
-if technic.config:get_bool("enable_wrench") then
+if technic.config:get_bool("enable_wrench_crafting") then
 	minetest.register_craft({
 		output = "wrench:wrench",
 		recipe = {
