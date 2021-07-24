@@ -27,19 +27,13 @@ if minetest.get_modpath("digilines") then
 	else
 		minetest.register_craft({
 			output = 'technic:hv_digi_cable 1',
-			recipe = {
-				{'digilines:wire_std_00000000', 'digilines:wire_std_00000000', 'digilines:wire_std_00000000'},
-				{'digilines:wire_std_00000000', 'technic:hv_cable',            'digilines:wire_std_00000000'},
-				{'digilines:wire_std_00000000', 'digilines:wire_std_00000000', 'digilines:wire_std_00000000'},
-			}
+			type = "shapeless",
+			recipe = {'digilines:wire_std_00000000', 'technic:hv_cable',            'digilines:wire_std_00000000'},
 		})
 		minetest.register_craft({
 			output = 'technic:hv_digi_cable_plate_1 1',
-			recipe = {
-				{'digilines:wire_std_00000000', 'digilines:wire_std_00000000', 'digilines:wire_std_00000000'},
-				{'digilines:wire_std_00000000', 'technic:hv_cable_plate_1',    'digilines:wire_std_00000000'},
-				{'digilines:wire_std_00000000', 'digilines:wire_std_00000000', 'digilines:wire_std_00000000'},
-			}
+			type = "shapeless",
+			recipe = {'digilines:wire_std_00000000', 'technic:hv_cable_plate_1',    'digilines:wire_std_00000000'},
 		})
 	end
 
