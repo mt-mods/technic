@@ -67,6 +67,9 @@ dofile(modpath.."/legacy.lua")
 -- visual effects
 dofile(modpath.."/effects.lua")
 
+-- replace craft recipes from configuration file
+dofile(modpath.."/config_recipes.lua")
+
 if minetest.settings:get_bool("log_mods") then
 	print(S("[Technic] Loaded in %f seconds"):format(os.clock() - load_start))
 end
