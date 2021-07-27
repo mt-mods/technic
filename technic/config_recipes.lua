@@ -30,6 +30,6 @@ end
 
 local conf_table = technic.config:to_table()
 for k, v in pairs(conf_table) do
-	local name = k:match('^(.+)_recipe$')
+	local name = k:match('^(.+)_recipe$') 
 	if name then replace_craft(name, v) end
 end
