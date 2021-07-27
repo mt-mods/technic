@@ -39,6 +39,15 @@ if minetest.get_modpath("ethereal") then
 	table.insert(recipes, {"default:clay", "dye:grey", "bakedclay:grey"})
 end
 
+if minetest.get_modpath("digilines") then
+	table.insert(recipes, {"technic:lv_cable",         "digilines:wire_std_00000000 2", "technic:lv_digi_cable"})
+	table.insert(recipes, {"technic:lv_cable_plate_1", "digilines:wire_std_00000000 2", "technic:lv_digi_cable_plate_1"})
+	table.insert(recipes, {"technic:mv_cable",         "digilines:wire_std_00000000 2", "technic:mv_digi_cable"})
+	table.insert(recipes, {"technic:mv_cable_plate_1", "digilines:wire_std_00000000 2", "technic:mv_digi_cable_plate_1"})
+	table.insert(recipes, {"technic:hv_cable",         "digilines:wire_std_00000000 2", "technic:hv_digi_cable"})
+	table.insert(recipes, {"technic:hv_cable_plate_1", "digilines:wire_std_00000000 2", "technic:hv_digi_cable_plate_1"})
+end
+
 for _, data in pairs(recipes) do
 	technic.register_alloy_recipe({input = {data[1], data[2]}, output = data[3], time = data[4]})
 end
