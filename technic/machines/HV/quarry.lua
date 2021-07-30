@@ -201,11 +201,15 @@ local function get_dig_pos(quarry_pos, quarry_dir, dig_pos, dig_index, dig_steps
 		max_depth = quarry_max_depth
 	end
 
+	local dig_level = meta:get_int("dig_level")
+	if (quarry_pos.y - dig_level) > max_depth then
+		return nil, dig_index
+	end
+
 	if dig_index > 0 and dig_index < dig_steps then
 		local facedir = (quarry_dir + quarry_dig_pattern[dig_index]) % 4
 		dig_pos = vector.add(dig_pos, minetest.facedir_to_dir(facedir))
 	elseif dig_index >= dig_steps then
-		local dig_level = meta:get_int("dig_level")
 		if (quarry_pos.y - dig_level) >= max_depth then
 			return nil, dig_index
 		end
