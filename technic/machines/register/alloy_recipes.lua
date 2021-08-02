@@ -29,23 +29,29 @@ local recipes = {
 	-- "[Compounding a] pure gum vulcanizate … with 50% of its weight of carbon black
 	-- improves its tensile strength and wear resistance …"
 	{"technic:raw_latex 4",           "technic:coal_dust 2",        "technic:rubber 6", 2},
-	{"default:ice", 		  	      "bucket:bucket_empty",        "bucket:bucket_water", 1 },
-	{"default:obsidian",			  "bucket:bucket_empty",        "bucket:bucket_lava", 1 },
+	{"default:ice",                   "bucket:bucket_empty",        "bucket:bucket_water", 1 },
+	{"default:obsidian",              "bucket:bucket_empty",        "bucket:bucket_lava", 1 },
 }
 
 if minetest.get_modpath("ethereal") then
-	table.insert(recipes, {"default:clay", "dye:red", "bakedclay:red"})
+	table.insert(recipes, {"default:clay", "dye:red",    "bakedclay:red"})
 	table.insert(recipes, {"default:clay", "dye:orange", "bakedclay:orange"})
-	table.insert(recipes, {"default:clay", "dye:grey", "bakedclay:grey"})
+	table.insert(recipes, {"default:clay", "dye:grey",   "bakedclay:grey"})
 end
 
 if minetest.get_modpath("digilines") then
-	table.insert(recipes, {"technic:lv_cable",         "digilines:wire_std_00000000 2", "technic:lv_digi_cable", 18})
-	table.insert(recipes, {"technic:lv_cable_plate_1", "digilines:wire_std_00000000 2", "technic:lv_digi_cable_plate_1", 18})
-	table.insert(recipes, {"technic:mv_cable",         "digilines:wire_std_00000000 2", "technic:mv_digi_cable", 18})
-	table.insert(recipes, {"technic:mv_cable_plate_1", "digilines:wire_std_00000000 2", "technic:mv_digi_cable_plate_1", 18})
-	table.insert(recipes, {"technic:hv_cable",         "digilines:wire_std_00000000 2", "technic:hv_digi_cable", 18})
-	table.insert(recipes, {"technic:hv_cable_plate_1", "digilines:wire_std_00000000 2", "technic:hv_digi_cable_plate_1", 18})
+	table.insert(recipes,
+		{"technic:lv_cable",         "digilines:wire_std_00000000 2", "technic:lv_digi_cable", 18})
+	table.insert(recipes,
+		{"technic:lv_cable_plate_1", "digilines:wire_std_00000000 2", "technic:lv_digi_cable_plate_1", 18})
+	table.insert(recipes,
+		{"technic:mv_cable",         "digilines:wire_std_00000000 2", "technic:mv_digi_cable", 18})
+	table.insert(recipes,
+		{"technic:mv_cable_plate_1", "digilines:wire_std_00000000 2", "technic:mv_digi_cable_plate_1", 18})
+	table.insert(recipes,
+		{"technic:hv_cable",         "digilines:wire_std_00000000 2", "technic:hv_digi_cable", 18})
+	table.insert(recipes,
+		{"technic:hv_cable_plate_1", "digilines:wire_std_00000000 2", "technic:hv_digi_cable_plate_1", 18})
 end
 
 for _, data in pairs(recipes) do
