@@ -40,9 +40,7 @@ some way.  Generally, machines of MV and HV tiers have two upgrade slots,
 and machines of lower tiers (fuel-fired and LV) do not.  Any item can
 be placed in an upgrade slot, but only specific items will have any
 upgrading effect.  It is possible to have multiple upgrades of the same
-type, but this can't be achieved by stacking more than one upgrade item
-in one slot: it is necessary to put the same kind of item in more than one
-upgrade slot.  The ability to upgrade machines is therefore very limited.
+type.  The ability to upgrade machines is therefore very limited.
 Two kinds of upgrade are currently possible: an energy upgrade and a
 tube upgrade.
 

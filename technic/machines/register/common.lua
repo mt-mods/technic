@@ -6,11 +6,11 @@ function technic.handle_machine_upgrades(meta)
 	-- Get the names of the upgrades
 	local inv = meta:get_inventory()
 
-	local srcstack = inv:get_stack("upgrade1", 1)
-	local upg_item1 = srcstack and srcstack:get_name()
+	local srcstack1 = inv:get_stack("upgrade1", 1)
+	local upg_item1 = srcstack1 and srcstack1:get_name()
 
-	srcstack = inv:get_stack("upgrade2", 1)
-	local upg_item2 = srcstack and srcstack:get_name()
+	local srcstack2 = inv:get_stack("upgrade2", 1)
+	local upg_item2 = srcstack2 and srcstack2:get_name()
 
 	-- Save some power by installing battery upgrades.
 	-- Tube loading speed can be upgraded using control logic units.
@@ -18,13 +18,13 @@ function technic.handle_machine_upgrades(meta)
 	local tube_upgrade = 0
 
 	if upg_item1 == "technic:control_logic_unit" then
-		tube_upgrade = tube_upgrade + 1
+		tube_upgrade = tube_upgrade + srcstack1:get_count()
 	elseif upg_item1 == "technic:battery" then
 		EU_upgrade = EU_upgrade + 1
 	end
 
 	if upg_item2 == "technic:control_logic_unit" then
-		tube_upgrade = tube_upgrade + 1
+		tube_upgrade = tube_upgrade + srcstack2:get_count()
 	elseif  upg_item2 == "technic:battery" then
 		EU_upgrade = EU_upgrade + 1
 	end
@@ -33,16 +33,25 @@ function technic.handle_machine_upgrades(meta)
 end
 
 -- handles the machine upgrades when set or removed
-local function on_machine_upgrade(meta, stack)
+local function on_machine_upgrade(meta, stack, list)
 	local stack_name = stack:get_name()
-	if stack_name == "default:chest" then
-		meta:set_int("public", 1)
-		return 1
-	elseif stack_name ~= "technic:control_logic_unit"
-	   and stack_name ~= "technic:battery" then
-		return 0
+
+	if stack_name == "technic:control_logic_unit" then
+		return stack:get_count()
 	end
-	return 1
+
+	local inv = meta:get_inventory()
+	-- only place a single item into it, if it's empty
+	-- or swap items
+	if inv:is_empty(list) or inv:get_stack(list, 1):get_name() ~= stack_name then
+		if stack_name == "default:chest" then
+			meta:set_int("public", 1)
+			return 1
+		elseif stack_name == "technic:battery" then
+			return 1
+		end
+	end
+	return 0
 end
 
 -- something is about to be removed
@@ -60,10 +69,14 @@ local function on_machine_downgrade(meta, stack, list)
 end
 
 
-function technic.send_items(pos, x_velocity, z_velocity, output_name)
+function technic.send_items(pos, x_velocity, z_velocity, output_name, count)
 	-- Send items on their way in the pipe system.
 	if output_name == nil then
 		output_name = "dst"
+	end
+
+	if count == nil then
+		count = 1
 	end
 
 	local meta = minetest.get_meta(pos)
@@ -74,9 +87,10 @@ function technic.send_items(pos, x_velocity, z_velocity, output_name)
 		if stack then
 			local item0 = stack:to_table()
 			if item0 then
-				item0["count"] = 1
+				local take = math.min(stack:get_count(), count)
+				item0["count"] = take
 				technic.tube_inject_item(pos, pos, vector.new(x_velocity, 0, z_velocity), item0)
-				stack:take_item(1)
+				stack:take_item(take)
 				inv:set_stack(output_name, i, stack)
 				return
 			end
@@ -106,12 +120,19 @@ function technic.handle_machine_pipeworks(pos, tube_upgrade, send_function)
 	if minetest.get_item_group(node1.name, "tubedevice") > 0 then
 		output_tube_connected = true
 	end
-	local tube_time = meta:get_int("tube_time") + tube_upgrade
-	if tube_time >= 2 then
-		tube_time = 0
-		if output_tube_connected then
-			send_function(pos, x_velocity, z_velocity)
-		end
+	local tube_time = (meta:get_int("tube_time") + 1) % 2
+
+	--[[
+	 CLUs: count
+	  0 -> 0, 0, ...
+	  1 -> 1, 0, ...
+	  2 -> 1, 1, ...
+	  3 -> 2, 1, ...
+	  4 -> 2, 2, ...
+	--]]
+	local count = math.floor(tube_upgrade / 2) + (tube_time * tube_upgrade) % 2
+	if output_tube_connected and count > 0 then
+		send_function(pos, x_velocity, z_velocity, nil, count)
 	end
 	meta:set_int("tube_time", tube_time)
 end
@@ -163,12 +184,7 @@ local function inv_change(pos, player, count, from_list, to_list, stack)
 		return 0
 	end
 	if to_upgrade then
-		-- only place a single item into it, if it's empty
-		local empty = meta:get_inventory():is_empty(to_list)
-		if empty then
-			return on_machine_upgrade(meta, stack)
-		end
-		return 0
+		return on_machine_upgrade(meta, stack, to_list)
 	elseif from_upgrade then
 		-- only called on take (not move)
 		on_machine_downgrade(meta, stack, from_list)
