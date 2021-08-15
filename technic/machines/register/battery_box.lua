@@ -69,6 +69,7 @@ minetest.register_craft({
 minetest.register_tool("technic:battery", {
 	description = S("RE Battery"),
 	inventory_image = "technic_battery.png",
+	groups = { disable_repair = 1 },
 	wear_represents = "technic_RE_charge",
 	on_refill = technic.refill_RE_charge,
 	tool_capabilities = {
