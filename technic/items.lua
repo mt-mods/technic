@@ -27,6 +27,7 @@ minetest.register_tool("technic:blue_energy_crystal", {
 		"technic_diamond_block_blue.png",
 		"technic_diamond_block_blue.png",
 		"technic_diamond_block_blue.png"),
+	groups = { disable_repair = 1 },
 	wear_represents = "technic_RE_charge",
 	on_refill = technic.refill_RE_charge,
 	tool_capabilities = {
@@ -43,6 +44,7 @@ minetest.register_tool("technic:green_energy_crystal", {
 		"technic_diamond_block_green.png",
 		"technic_diamond_block_green.png",
 		"technic_diamond_block_green.png"),
+	groups = { disable_repair = 1 },
 	wear_represents = "technic_RE_charge",
 	on_refill = technic.refill_RE_charge,
 	tool_capabilities = {
@@ -59,6 +61,7 @@ minetest.register_tool("technic:red_energy_crystal", {
 		"technic_diamond_block_red.png",
 		"technic_diamond_block_red.png",
 		"technic_diamond_block_red.png"),
+	groups = { disable_repair = 1 },
 	wear_represents = "technic_RE_charge",
 	on_refill = technic.refill_RE_charge,
 	tool_capabilities = {
