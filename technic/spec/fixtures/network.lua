@@ -1,6 +1,7 @@
 
 _G.technic = {}
 _G.technic.S = string.format
+_G.technic.modpath = "."
 _G.technic.getter = function(...) return "" end
 _G.technic.get_or_load_node = minetest.get_node
 _G.technic.digilines = {
