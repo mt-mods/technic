@@ -22,9 +22,8 @@ _G.screwdriver = {}
 
 sourcefile("helpers")
 sourcefile("machines/init")
---sourcefile("machines/switching_station")
 
-describe("LV machine network", function()
+describe("HV machine network", function()
 
 	local player = Player("SX")
 
@@ -36,27 +35,24 @@ describe("LV machine network", function()
 	mineunit:execute_globalstep(60)
 
 	local machines = {
-		"technic:lv_generator",
-		"technic:geothermal",
-		"technic:solar_panel",
-		"technic:solar_array_lv",
-		"technic:solar_array_lv",
-		"technic:solar_array_lv",
-		"technic:lv_battery_box0",
-		"technic:lv_electric_furnace",
-		"technic:lv_extractor",
-		"technic:lv_grinder",
-		"technic:lv_alloy_furnace",
-		"technic:lv_compressor",
-		"technic:lv_led",
-		"technic:lv_lamp",
-		"technic:water_mill",
+		"technic:hv_generator",
+		"technic:solar_array_hv",
+		"technic:solar_array_hv",
+		"technic:solar_array_hv",
+		"technic:solar_array_hv",
+		"technic:solar_array_hv",
+		"technic:hv_battery_box0",
+		"technic:hv_electric_furnace",
+		"technic:hv_grinder",
+		"technic:hv_compressor",
+		"technic:hv_nuclear_reactor_core",
+		"technic:quarry",
 	}
 
 	world.clear()
 	world.place_node({x=100,y=1,z=0}, "technic:switching_station", player)
 	for x = 1, 100 do
-		world.place_node({x=x,y=0,z=0}, "technic:lv_cable", player)
+		world.place_node({x=x,y=0,z=0}, "technic:hv_cable", player)
 	end
 	for x, name in ipairs(machines) do
 		world.place_node({x=x,y=1,z=0}, name, player)
