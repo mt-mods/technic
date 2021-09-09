@@ -31,6 +31,41 @@ local function round(v)
 	return math.floor(v + 0.5)
 end
 
+local function move_stacks(items, target)
+	for _, itemstring in ipairs(items) do
+		local leftover
+		for index, stack in ipairs(target) do
+			if stack:is_empty() then
+				-- Add whole stack (or leftover stack if any) and continue to next stack
+				target[index] = ItemStack(leftover or itemstring)
+				leftover = nil
+				break
+			end
+			-- Combine items to existing target stack and continue to next stack
+			leftover = stack:add_item(leftover or itemstring)
+			if leftover:is_empty() then
+				leftover = nil
+				break
+			end
+		end
+		if leftover then
+			-- Input does not fit in target, report failure
+			return false
+		end
+	end
+	-- All stacks processed, report success
+	return true
+end
+
+local function is_empty(invlist)
+	for _,stack in ipairs(invlist) do
+		if not stack:is_empty() then
+			return false
+		end
+	end
+	return true
+end
+
 function technic.register_base_machine(data)
 	local typename = data.typename
 	local input_size = technic.recipes[typename].input_size
@@ -107,8 +142,7 @@ function technic.register_base_machine(data)
 			meta:set_int("src_time", meta:get_int("src_time") + round(data.speed*10))
 		end
 		while true do
-			local result = inv:get_list("src")
-			result = not result:is_empty() and technic.get_recipe(typename, result)
+			local result = not inv:is_empty("src") and technic.get_recipe(typename, inv:get_list("src"))
 			if not result then
 				technic.swap_node(pos, machine_node)
 				meta:set_string("infotext", S("%s Idle"):format(machine_desc_tier))
@@ -128,30 +162,26 @@ function technic.register_base_machine(data)
 			end
 			local output = result.output
 			if type(output) ~= "table" then output = { output } end
-			local output_stacks = {}
-			for _, o in ipairs(output) do
-				table.insert(output_stacks, ItemStack(o))
-			end
-			local room_for_output = true
-			inv:set_size("dst_tmp", inv:get_size("dst"))
-			inv:set_list("dst_tmp", inv:get_list("dst"))
-			for _, o in ipairs(output_stacks) do
-				if not inv:room_for_item("dst_tmp", o) then
-					room_for_output = false
-					break
+			if inv:is_empty("dst") then
+				-- When dst is empty assume that all output items will fit
+				for _, itemstring in ipairs(output) do
+					inv:add_item("dst", itemstring)
 				end
-				inv:add_item("dst_tmp", o)
-			end
-			if not room_for_output then
-				technic.swap_node(pos, machine_node)
-				meta:set_string("infotext", S("%s Idle"):format(machine_desc_tier))
-				meta:set_int(tier.."_EU_demand", 0)
-				meta:set_int("src_time", round(result.time*10))
-				return
+			else
+				-- When dst is not empty try to fit items and check results
+				local dst_tmp = inv:get_list("dst") or {}
+				if move_stacks(output, dst_tmp) then
+					inv:set_list("dst", dst_tmp)
+				else
+					technic.swap_node(pos, machine_node)
+					meta:set_string("infotext", S("%s Idle"):format(machine_desc_tier))
+					meta:set_int(tier.."_EU_demand", 0)
+					meta:set_int("src_time", round(result.time*10))
+					return
+				end
 			end
 			meta:set_int("src_time", meta:get_int("src_time") - round(result.time*10))
 			inv:set_list("src", result.new_input)
-			inv:set_list("dst", inv:get_list("dst_tmp"))
 		end
 	end
 
