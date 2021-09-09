@@ -57,15 +57,6 @@ local function move_stacks(items, target)
 	return true
 end
 
-local function is_empty(invlist)
-	for _,stack in ipairs(invlist) do
-		if not stack:is_empty() then
-			return false
-		end
-	end
-	return true
-end
-
 function technic.register_base_machine(data)
 	local typename = data.typename
 	local input_size = technic.recipes[typename].input_size
