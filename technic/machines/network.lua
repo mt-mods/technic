@@ -195,15 +195,16 @@ technic.touch_node = touch_node
 
 function technic.disable_machine(pos, node)
 	local nodedef = minetest.registered_nodes[node.name]
-	if nodedef and nodedef.technic_disabled_machine_name then
-		node.name = nodedef.technic_disabled_machine_name
-		minetest.swap_node(pos, node)
-	elseif nodedef and nodedef.technic_on_disable then
-		nodedef.technic_on_disable(pos, node)
-	end
 	if nodedef then
 		local meta = minetest.get_meta(pos)
 		meta:set_string("infotext", S("%s Has No Network"):format(nodedef.description))
+	end
+	if nodedef and nodedef.technic_disabled_machine_name then
+		node.name = nodedef.technic_disabled_machine_name
+		minetest.swap_node(pos, node)
+	end
+	if nodedef and nodedef.technic_on_disable then
+		nodedef.technic_on_disable(pos, node)
 	end
 	local node_id = poshash(pos)
 	for _,nodes in pairs(node_timeout) do
