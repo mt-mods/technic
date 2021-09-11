@@ -1,4 +1,13 @@
 
+-- Load technic_worldgen mod
+
+mineunit:set_modpath("technic_worldgen", "../technic_worldgen")
+
+mineunit:set_current_modname("technic_worldgen")
+sourcefile("../technic_worldgen/init")
+mineunit:restore_current_modname()
+
+--[[
 -- Add cooking recipes from technic_worldgen without having to load whole mod
 
 local S = string.format
@@ -27,3 +36,4 @@ minetest.register_node( ":technic:mineral_lead", {
 	sounds = default.node_sound_stone_defaults(),
 	drop = "technic:lead_lump",
 })
+--]]

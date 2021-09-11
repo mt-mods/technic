@@ -17,17 +17,11 @@ fixture("network")
 fixture("default")
 fixture("technic_worldgen")
 
--- Screwdriver is listed as optional but mod crashes without it
-_G.screwdriver = {}
-
-sourcefile("helpers")
-sourcefile("machines/init")
+sourcefile("init")
 
 describe("HV machine network", function()
 
 	local player = Player("SX")
-
-	sourcefile("max_lag")
 
 	-- Execute on mods loaded callbacks to finish loading.
 	mineunit:mods_loaded()
