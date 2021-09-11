@@ -78,12 +78,18 @@ Used itemdef fields
 * `connect_sides`
 	* In addition to the default use (see lua_api.txt), this tells where the
 	  machine can be connected.
-#
-#
 * `technic_run(pos, node)`
 	* This function is currently used to update the node.
-	  Modders have to manually change the information about supply etc. in the
-	  node metadata.
+* `wear_represents = "string"`
+	* Specifies how the tool wear level is handled. Available modes:
+		* `"mechanical_wear"`: represents physical damage
+		* `"technic_RE_charge"`: represents electrical charge
+* `<itemdef>.technic_run = function(pos, node) ...`
+	* This callback is used to update the node.
+* `<itemdef>.technic_disabled_machine_name = "string"`
+	* Specifies the machine's node name to use when it's not connected connected to a network
+* `<itemdef>.technic_on_disable = function(pos, node) ...`
+	* This callback is run when the machine is no longer connected to a technic-powered network.
 
 Machine types
 -------------
