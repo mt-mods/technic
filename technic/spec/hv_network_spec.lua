@@ -52,20 +52,39 @@ describe("HV machine network", function()
 		world.place_node({x=x,y=1,z=0}, name, player)
 	end
 
-	it("executes network", function()
-		local function place_itemstack(pos, itemstack)
-			local meta = minetest.get_meta(pos)
-			local inv = meta:get_inventory()
-			inv:add_item("src", itemstack)
-		end
-		place_itemstack({x=8,y=1,z=0}, "technic:lead_lump 99")
-
-		spy.on(technic, "network_run")
-		for i=1, 60 do
+	-- Helper function to execute netowork
+	local function run_network(times)
+		times = times or 1
+		for i=1, times do
 			-- Globalstep every second instead of every 0.1 seconds
 			mineunit:execute_globalstep(1)
 		end
+	end
+
+	-- Helper function to place itemstack into machine inventory
+	local function place_itemstack(pos, itemstack, listname)
+		local meta = minetest.get_meta(pos)
+		local inv = meta:get_inventory()
+		if not inv:room_for_item(listname or "src", itemstack) then
+			inv:set_stack(listname or "src", 1, ItemStack())
+		end
+		inv:add_item(listname or "src", itemstack)
+	end
+
+	-- Get itemstack in inventory for inspection without removing it
+	local function get_itemstack(pos, listname, index)
+		local meta = minetest.get_meta(pos)
+		local inv = meta:get_inventory()
+		return inv:get_stack(listname or "dst", index or 1)
+	end
+
+	it("executes network", function()
+		spy.on(technic, "network_run")
+		run_network(60)
 		assert.spy(technic.network_run).called(60)
+		local id = technic.pos2network({x=100,y=0,z=0})
+		assert.not_nil(technic.networks[id])
+		assert.gt(technic.networks[id].supply, 0)
 	end)
 
 	it("kills network when switching station disappear", function()
@@ -89,16 +108,23 @@ describe("HV machine network", function()
 	end)
 
 	it("smelts ores", function()
-		local meta = minetest.get_meta({x=8,y=1,z=0})
-		local inv = meta:get_inventory()
-		local stack = inv:get_stack("dst", 1)
-		assert.is_true(stack:get_count() > 10)
+		local machine_pos = {x=8,y=1,z=0}
+		place_itemstack(machine_pos, "technic:lead_lump 99")
+		run_network(60)
+		-- Check results, at least 10 items processed and results in correct stuff
+		local stack = get_itemstack(machine_pos)
+		assert.gt(stack:get_count(), 10)
+		assert.equals(stack:get_name(), "technic:lead_ingot")
 	end)
 
 	it("grinds ores", function()
-		local id = technic.pos2network({x=100,y=0,z=0})
-		local net = technic.networks[id]
-		assert.gt(net.battery_charge, 1000)
+		local machine_pos = {x=9,y=1,z=0}
+		place_itemstack(machine_pos, "technic:lead_lump 99")
+		run_network(60)
+		-- Check results, at least 10 items processed and results in correct stuff
+		local stack = get_itemstack(machine_pos)
+		assert.gt(stack:get_count(), 10)
+		assert.equals(stack:get_name(), "technic:lead_dust")
 	end)
 
 end)
