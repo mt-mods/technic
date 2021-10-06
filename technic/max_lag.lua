@@ -1,3 +1,7 @@
+if minetest.get_server_max_lag then
+	function technic.get_max_lag() return minetest.get_server_max_lag() end
+	return
+end
 
 local multiplier = technic.config:get_int("max_lag_reduction_multiplier")
 
