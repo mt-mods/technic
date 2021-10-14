@@ -30,12 +30,12 @@ minetest.register_node("technic:dummy_light_source", {
 })
 
 
-local function illuminate(pos, light)
+local function illuminate(pos, active)
 	local pos1 = {x = pos.x - 3, y = pos.y - 1, z = pos.z - 3}
 	local pos2 = {x = pos.x + 3, y = pos.y - 3, z = pos.z + 3}
 
-	local find_node = light and "air" or "technic:dummy_light_source"
-	local set_node = {name = (light and "technic:dummy_light_source" or "air")}
+	local find_node = active and "air" or "technic:dummy_light_source"
+	local set_node = {name = (active and "technic:dummy_light_source" or "air")}
 
 	for _,p in pairs(minetest.find_nodes_in_area(pos1, pos2, find_node)) do
 		minetest.set_node(p, set_node)
