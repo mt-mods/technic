@@ -23,4 +23,5 @@ dofile(path.."/compressor.lua")
 
 dofile(path.."/music_player.lua")
 
+dofile(path.."/led.lua")
 dofile(path.."/lamp.lua")
