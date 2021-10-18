@@ -25,6 +25,7 @@ local defaults = {
 	quarry_time_limit = "5000",
 
 	-- Power network and general options
+	switch_max_range = "256",
 	switch_off_delay_seconds = "1800",
 	network_overload_reset_time = "20",
 	admin_priv = "basic_privs",
