@@ -224,10 +224,11 @@ function technic_cnc.register_cnc_machine(nodename, def)
 
 	-- UPGRADE OLD CNC MACHINES
 	local function upgrade_machine(meta)
-		local product = meta:get("cnc_product")
+		local product = meta:get("technic_power_machine")
 		if product then
 			meta:set_string("cnc_product", "")
 			meta:set_string("cnc_multiplier", "")
+			meta:set_string("technic_power_machine", "")
 			local program_raw = product:match("[%w_]+:[%w_]+_technic_cnc_([%w_]+)")
 			if program_raw then
 				local double = "_double"
