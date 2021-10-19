@@ -3,7 +3,7 @@ require("mineunit")
 mineunit("core")
 mineunit("player")
 
-describe("CNC API", function()
+describe("CNC digiline API", function()
 
 	fixture("default")
 	fixture("basic_materials")
