@@ -134,10 +134,6 @@ function technic.sw_pos2network(pos)
 	return cables[poshash({x=pos.x,y=pos.y-1,z=pos.z})]
 end
 
-function technic.sw_pos2network(pos)
-	return cables[poshash({x=pos.x,y=pos.y-1,z=pos.z})]
-end
-
 function technic.pos2network(pos)
 	return cables[poshash(pos)]
 end
