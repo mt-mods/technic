@@ -408,10 +408,9 @@ minetest.register_node("technic:quarry", {
 		-- Engine seems to copy definition anyway so skip additional table constructors
 		local particle = {
 			expirationtime = 5,
-			size = 24,
+			size = 12,
 			vertical = false,
-			texture = "cdb_clear.png^[opacity:215",
-			--texture = "technic_carbon_steel_block.png^default_tool_mesepick.png^[opacity:215",
+			texture = "technic_carbon_steel_block.png^default_tool_mesepick.png^[opacity:215",
 			playername = puncher:get_player_name(),
 			glow = 7
 		}
