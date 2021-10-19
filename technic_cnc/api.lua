@@ -224,20 +224,25 @@ function technic_cnc.register_cnc_machine(nodename, def)
 
 	-- UPGRADE OLD CNC MACHINES
 	local function upgrade_machine(meta)
-		local product = meta:get("technic_power_machine")
-		if product then
+		local oldmeta = meta:get("technic_power_machine")
+		if oldmeta then
+			local product = meta:get("cnc_product")
+			-- Remove old metadata fields
 			meta:set_string("cnc_product", "")
 			meta:set_string("cnc_multiplier", "")
 			meta:set_string("technic_power_machine", "")
-			local program_raw = product:match("[%w_]+:[%w_]+_technic_cnc_([%w_]+)")
-			if program_raw then
-				local double = "_double"
-				local size = program_raw:sub(-#double) == double and 1 or 2
-				local program = size == 1 and program_raw:sub(1, #program_raw - #double) or program_raw
-				meta:set_string("program", program)
-				meta:set_int("size", size)
+			if product then
+				-- Only executed for active machines, old inactive machines do not have cnc_product set
+				local program_raw = product:match("[%w_]+:[%w_]+_technic_cnc_([%w_]+)")
+				if program_raw then
+					local double = "_double"
+					local size = program_raw:sub(-#double) == double and 1 or 2
+					local program = size == 1 and program_raw:sub(1, #program_raw - #double) or program_raw
+					meta:set_string("program", program)
+					meta:set_int("size", size)
+				end
+				meta:set_string("formspec", get_formspec(nodename, def, meta))
 			end
-			meta:set_string("formspec", get_formspec(nodename, def, meta))
 		end
 	end
 
