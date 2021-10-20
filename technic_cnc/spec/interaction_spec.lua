@@ -126,13 +126,15 @@ describe("CNC formspec interaction", function()
 	end)
 
 	it("updates old machines", function()
-		do -- Verify starting point
+		do -- Verify starting point and set meta value that is used to look for old machine
 			local meta = minetest.get_meta({x=98,y=98,z=98})
 			assert.equals("default:stone_technic_cnc_element_t", meta:get("cnc_product"))
+			meta:set_float("technic_power_machine", 1)
 		end
-		do -- Verify starting point
+		do -- Verify starting point and set meta value that is used to look for old machine
 			local meta = minetest.get_meta({x=99,y=99,z=99})
 			assert.equals("default:stone_technic_cnc_element_t_double", meta:get("cnc_product"))
+			meta:set_float("technic_power_machine", 1)
 		end
 
 		nodedef.on_receive_fields({x=98,y=98,z=98}, "", { quit = true, channel = "Sam" }, Sam)
