@@ -14,6 +14,9 @@ technic.digilines = {
 	}
 }
 
+-- Compatibility shim to allow old API usage
+dofile(path.."/compat/api.lua")
+
 -- https://github.com/mt-mods/technic/issues/100
 dofile(path.."/compat/digtron.lua")
 

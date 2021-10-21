@@ -18,5 +18,3 @@ dofile(path.."/forcefield.lua")
 dofile(path.."/electric_furnace.lua")
 dofile(path.."/grinder.lua")
 dofile(path.."/compressor.lua")
-
-

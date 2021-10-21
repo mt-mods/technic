@@ -24,12 +24,3 @@ dofile(path.."/freezer_recipes.lua")
 
 -- Multi-Machine Recipes
 dofile(path.."/grindings.lua")
-
--- Machines
-dofile(path.."/alloy_furnace.lua")
-dofile(path.."/electric_furnace.lua")
-dofile(path.."/grinder.lua")
-dofile(path.."/extractor.lua")
-dofile(path.."/compressor.lua")
-dofile(path.."/centrifuge.lua")
-dofile(path.."/freezer.lua")

@@ -31,35 +31,38 @@ local function round(v)
 	return math.floor(v + 0.5)
 end
 
-function technic.register_base_machine(data)
-	local typename = data.typename
-	local input_size = technic.recipes[typename].input_size
-	local machine_name = data.machine_name
-	local machine_desc = data.machine_desc
-	local tier = data.tier
-	local ltier = string.lower(tier)
+function technic.register_base_machine(nodename, data)
+	local colon, modname, name, def = technic.register_compat_v1_to_v2(nodename, data)
+	local texture_prefix = modname.."_"..name
+	nodename = modname..":"..name
 
-	data.modname = data.modname or minetest.get_current_modname()
+	local typename = def.typename
+	local input_size = technic.recipes[typename].input_size
+	local tier = def.tier
+	local ltier = string.lower(tier)
+	local infotext_idle = S("%s Idle"):format(def.description:format(tier))
+	local infotext_active = S("%s Active"):format(def.description:format(tier))
+	local infotext_unpowered = S("%s Unpowered"):format(def.description:format(tier))
 
 	local groups = {cracky = 2, technic_machine = 1, ["technic_"..ltier] = 1}
-	if data.tube then
+	if def.tube then
 		groups.tubedevice = 1
 		groups.tubedevice_receiver = 1
 	end
-	local active_groups = {not_in_creative_inventory = 1}
-	for k, v in pairs(groups) do active_groups[k] = v end
+	local active_groups = table.copy(groups)
+	active_groups.not_in_creative_inventory = 1
 
 	local formspec =
 		"size[8,9;]"..
 		"list[context;src;"..(4-input_size)..",1;"..input_size..",1;]"..
 		"list[context;dst;5,1;2,2;]"..
 		"list[current_player;main;0,5;8,4;]"..
-		"label[0,0;"..machine_desc:format(tier).."]"..
+		"label[0,0;"..def.description:format(tier).."]"..
 		"listring[context;dst]"..
 		"listring[current_player;main]"..
 		"listring[context;src]"..
 		"listring[current_player;main]"
-	if data.upgrade then
+	if def.upgrade then
 		formspec = formspec..
 			"list[context;upgrade1;1,3;1,1;]"..
 			"list[context;upgrade2;2,3;1,1;]"..
@@ -71,23 +74,20 @@ function technic.register_base_machine(data)
 	end
 
 	local tube = technic.new_default_tube()
-	if data.can_insert then
-		tube.can_insert = data.can_insert
+	if def.can_insert then
+		tube.can_insert = def.can_insert
 	end
-	if data.insert_object then
-		tube.insert_object = data.insert_object
+	if def.insert_object then
+		tube.insert_object = def.insert_object
 	end
 
 	local run = function(pos, node)
-		local meta     = minetest.get_meta(pos)
-		local inv      = meta:get_inventory()
+		local meta = minetest.get_meta(pos)
+		local inv = meta:get_inventory()
 		local eu_input = meta:get_int(tier.."_EU_input")
+		local machine_demand = def.demand
 
-		local machine_desc_tier = machine_desc:format(tier)
-		local machine_node      = data.modname..":"..ltier.."_"..machine_name
-		local machine_demand    = data.demand
-
-		-- Setup meta data if it does not exist.
+		-- Setup meta def if it does not exist.
 		if not eu_input then
 			meta:set_int(tier.."_EU_demand", machine_demand[1])
 			meta:set_int(tier.."_EU_input", 0)
@@ -95,33 +95,33 @@ function technic.register_base_machine(data)
 		end
 
 		local EU_upgrade, tube_upgrade = 0, 0
-		if data.upgrade then
+		if def.upgrade then
 			EU_upgrade, tube_upgrade = technic.handle_machine_upgrades(meta)
 		end
-		if data.tube then
+		if def.tube then
 			technic.handle_machine_pipeworks(pos, tube_upgrade)
 		end
 
 		local powered = eu_input >= machine_demand[EU_upgrade+1]
 		if powered then
-			meta:set_int("src_time", meta:get_int("src_time") + round(data.speed*10))
+			meta:set_int("src_time", meta:get_int("src_time") + round(def.speed*10))
 		end
 		while true do
 			local result = inv:get_list("src") and technic.get_recipe(typename, inv:get_list("src"))
 			if not result then
-				technic.swap_node(pos, machine_node)
-				meta:set_string("infotext", S("%s Idle"):format(machine_desc_tier))
+				technic.swap_node(pos, nodename)
+				meta:set_string("infotext", infotext_idle)
 				meta:set_int(tier.."_EU_demand", 0)
 				meta:set_int("src_time", 0)
 				return
 			end
 			meta:set_int(tier.."_EU_demand", machine_demand[EU_upgrade+1])
-			technic.swap_node(pos, machine_node.."_active")
-			meta:set_string("infotext", S("%s Active"):format(machine_desc_tier))
+			technic.swap_node(pos, nodename.."_active")
+			meta:set_string("infotext", infotext_active)
 			if meta:get_int("src_time") < round(result.time*10) then
 				if not powered then
-					technic.swap_node(pos, machine_node)
-					meta:set_string("infotext", S("%s Unpowered"):format(machine_desc_tier))
+					technic.swap_node(pos, nodename)
+					meta:set_string("infotext", infotext_unpowered)
 				end
 				return
 			end
@@ -142,8 +142,8 @@ function technic.register_base_machine(data)
 				inv:add_item("dst_tmp", o)
 			end
 			if not room_for_output then
-				technic.swap_node(pos, machine_node)
-				meta:set_string("infotext", S("%s Idle"):format(machine_desc_tier))
+				technic.swap_node(pos, nodename)
+				meta:set_string("infotext", infotext_idle)
 				meta:set_int(tier.."_EU_demand", 0)
 				meta:set_int("src_time", round(result.time*10))
 				return
@@ -159,20 +159,20 @@ function technic.register_base_machine(data)
 		tentry = ""
 	end
 
-	minetest.register_node(data.modname..":"..ltier.."_"..machine_name, {
-		description = machine_desc:format(tier),
+	minetest.register_node(colon..nodename, {
+		description = def.description:format(tier),
 		tiles = {
-			data.modname.."_"..ltier.."_"..machine_name.."_top.png"..tentry,
-			data.modname.."_"..ltier.."_"..machine_name.."_bottom.png"..tentry,
-			data.modname.."_"..ltier.."_"..machine_name.."_side.png"..tentry,
-			data.modname.."_"..ltier.."_"..machine_name.."_side.png"..tentry,
-			data.modname.."_"..ltier.."_"..machine_name.."_side.png"..tentry,
-			data.modname.."_"..ltier.."_"..machine_name.."_front.png"
+			texture_prefix.."_top.png"..tentry,
+			texture_prefix.."_bottom.png"..tentry,
+			texture_prefix.."_side.png"..tentry,
+			texture_prefix.."_side.png"..tentry,
+			texture_prefix.."_side.png"..tentry,
+			texture_prefix.."_front.png"
 		},
 		paramtype2 = "facedir",
 		groups = groups,
-		tube = data.tube and tube or nil,
-		connect_sides = data.connect_sides or connect_default,
+		tube = def.tube and tube or nil,
+		connect_sides = def.connect_sides or connect_default,
 		legacy_facedir_simple = true,
 		sounds = default.node_sound_wood_defaults(),
 		on_construct = function(pos)
@@ -192,7 +192,7 @@ function technic.register_base_machine(data)
 				)..pipeworks.button_label
 			end
 
-			meta:set_string("infotext", machine_desc:format(tier))
+			meta:set_string("infotext", def.description:format(tier))
 			meta:set_int("tube_time",  0)
 			meta:set_string("formspec", formspec..form_buttons)
 			local inv = meta:get_inventory()
@@ -206,7 +206,7 @@ function technic.register_base_machine(data)
 		allow_metadata_inventory_take = technic.machine_inventory_take,
 		allow_metadata_inventory_move = technic.machine_inventory_move,
 		technic_run = run,
-		after_place_node = data.tube and pipeworks.after_place,
+		after_place_node = def.tube and pipeworks.after_place,
 		after_dig_node = technic.machine_after_dig_node,
 		on_receive_fields = function(pos, formname, fields, sender)
 			if fields.quit then return end
@@ -230,29 +230,29 @@ function technic.register_base_machine(data)
 		end,
 	})
 
-	minetest.register_node(data.modname..":"..ltier.."_"..machine_name.."_active",{
-		description = machine_desc:format(tier),
+	minetest.register_node(colon..nodename.."_active",{
+		description = def.description:format(tier),
 		tiles = {
-			data.modname.."_"..ltier.."_"..machine_name.."_top.png"..tentry,
-			data.modname.."_"..ltier.."_"..machine_name.."_bottom.png"..tentry,
-			data.modname.."_"..ltier.."_"..machine_name.."_side.png"..tentry,
-			data.modname.."_"..ltier.."_"..machine_name.."_side.png"..tentry,
-			data.modname.."_"..ltier.."_"..machine_name.."_side.png"..tentry,
-			data.modname.."_"..ltier.."_"..machine_name.."_front_active.png"
+			texture_prefix.."_top.png"..tentry,
+			texture_prefix.."_bottom.png"..tentry,
+			texture_prefix.."_side.png"..tentry,
+			texture_prefix.."_side.png"..tentry,
+			texture_prefix.."_side.png"..tentry,
+			texture_prefix.."_front_active.png"
 		},
 		paramtype2 = "facedir",
-		drop = data.modname..":"..ltier.."_"..machine_name,
+		drop = nodename,
 		groups = active_groups,
-		connect_sides = data.connect_sides or connect_default,
+		connect_sides = def.connect_sides or connect_default,
 		legacy_facedir_simple = true,
 		sounds = default.node_sound_wood_defaults(),
-		tube = data.tube and tube or nil,
+		tube = def.tube and tube or nil,
 		can_dig = technic.machine_can_dig,
 		allow_metadata_inventory_put = technic.machine_inventory_put,
 		allow_metadata_inventory_take = technic.machine_inventory_take,
 		allow_metadata_inventory_move = technic.machine_inventory_move,
 		technic_run = run,
-		technic_disabled_machine_name = data.modname..":"..ltier.."_"..machine_name,
+		technic_disabled_machine_name = nodename,
 		on_receive_fields = function(pos, formname, fields, sender)
 			if fields.quit then return end
 			if not pipeworks.may_configure(pos, sender) then return end
@@ -275,8 +275,8 @@ function technic.register_base_machine(data)
 		end,
 	})
 
-	technic.register_machine(tier, data.modname..":"..ltier.."_"..machine_name,            technic.receiver)
-	technic.register_machine(tier, data.modname..":"..ltier.."_"..machine_name.."_active", technic.receiver)
+	technic.register_machine(tier, nodename,            technic.receiver)
+	technic.register_machine(tier, nodename.."_active", technic.receiver)
 
 end -- End registration
 

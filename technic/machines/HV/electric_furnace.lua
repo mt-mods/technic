@@ -3,6 +3,7 @@
 -- In addition to this it can be upgraded with microcontrollers and batteries
 -- This new version uses the batteries to lower the power consumption of the machine
 -- Also in addition this furnace can be attached to the pipe system from the pipeworks mod.
+local S = technic.getter
 
 -- FIXME: kpoppel I'd like to introduce an induction heating element here also
 minetest.register_craft({
@@ -14,5 +15,12 @@ minetest.register_craft({
 	}
 })
 
-technic.register_electric_furnace({tier="HV", upgrade=1, tube=1, demand={4000, 2500, 1500}, speed=12})
-
+technic.register_base_machine("technic:hv_electric_furnace", {
+	typename = "cooking",
+	description = S("%s Furnace"),
+	tier="HV",
+	upgrade=1,
+	tube=1,
+	demand={4000, 2500, 1500},
+	speed=12
+})

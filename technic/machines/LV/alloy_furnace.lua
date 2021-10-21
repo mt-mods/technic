@@ -1,4 +1,5 @@
 -- LV Alloy furnace
+local S = technic.getter
 
 -- FIXME: kpoppel: I'd like to introduce an induction heating element here...
 minetest.register_craft({
@@ -10,5 +11,12 @@ minetest.register_craft({
 	}
 })
 
-technic.register_alloy_furnace({tier = "LV", speed = 1, demand = {300}})
-
+technic.register_base_machine("technic:lv_alloy_furnace", {
+	typename = "alloy",
+	description = S("%s Alloy Furnace"),
+	insert_object = technic.insert_object_unique_stack,
+	can_insert = technic.can_insert_unique_stack,
+	tier = "LV",
+	speed = 1,
+	demand = {300}
+})
