@@ -1,4 +1,5 @@
 -- HV grinder
+local S = technic.getter
 
 minetest.register_craft({
 	output = 'technic:hv_grinder',
@@ -9,5 +10,12 @@ minetest.register_craft({
 	}
 })
 
-technic.register_grinder({tier="HV", demand={1200, 900, 600}, speed=5, upgrade=1, tube=1})
-
+technic.register_base_machine("technic:hv_grinder", {
+	typename = "grinding",
+	description = S("%s Grinder"),
+	tier="HV",
+	demand={1200, 900, 600},
+	speed=5,
+	upgrade=1,
+	tube=1
+})

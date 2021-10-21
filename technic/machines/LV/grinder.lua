@@ -1,3 +1,4 @@
+local S = technic.getter
 
 minetest.register_alias("grinder", "technic:lv_grinder")
 minetest.register_craft({
@@ -9,5 +10,10 @@ minetest.register_craft({
 	}
 })
 
-technic.register_grinder({tier="LV", demand={200}, speed=1})
-
+technic.register_base_machine("technic:lv_grinder", {
+	typename = "grinding",
+	description = S("%s Grinder"),
+	tier="LV",
+	demand={200},
+	speed=1
+})

@@ -1,4 +1,5 @@
 -- MV compressor
+local S = technic.getter
 
 minetest.register_craft({
 	output = 'technic:mv_compressor',
@@ -9,4 +10,12 @@ minetest.register_craft({
 	}
 })
 
-technic.register_compressor({tier = "MV", demand = {800, 600, 400}, speed = 2, upgrade = 1, tube = 1})
+technic.register_base_machine("technic:mv_compressor", {
+	typename = "compressing",
+	description = S("%s Compressor"),
+	tier = "MV",
+	demand = {800, 600, 400},
+	speed = 2,
+	upgrade = 1,
+	tube = 1
+})

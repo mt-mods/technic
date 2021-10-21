@@ -9,7 +9,7 @@ minetest.register_craft({
 	}
 })
 
-technic.register_battery_box({
+technic.register_battery_box("technic:hv_battery_box", {
 	tier           = "HV",
 	max_charge     = 1000000,
 	charge_rate    = 100000,
@@ -19,4 +19,3 @@ technic.register_battery_box({
 	upgrade        = 1,
 	tube           = 1,
 })
-
