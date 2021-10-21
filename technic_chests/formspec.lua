@@ -155,7 +155,7 @@ function technic.chests.update_formspec(pos, data, edit_infotext)
 	meta:set_string("formspec", formspec)
 end
 
-function technic.chests.get_receive_fields(data)
+function technic.chests.get_receive_fields(nodename, data)
 	return function(pos, formname, fields, player)
 		if not fields or not player then
 			return
@@ -221,9 +221,9 @@ function technic.chests.get_receive_fields(data)
 				if fields["color_button"..i] then
 					local node = minetest.get_node(pos)
 					if technic.chests.colors[i] then
-						node.name = data.node_name.."_"..technic.chests.colors[i][1]
+						node.name = nodename.."_"..technic.chests.colors[i][1]
 					else
-						node.name = data.node_name
+						node.name = nodename
 					end
 					minetest.swap_node(pos, node)
 					meta:set_int("color", i)

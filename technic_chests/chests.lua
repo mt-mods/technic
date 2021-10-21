@@ -1,13 +1,16 @@
 
-local function register_chests(name, data)
-	for _,t in pairs({"", "_locked", "_protected"}) do
-		local data_copy = {}
-		for k, v in pairs(data) do
-			data_copy[k] = v
-		end
+local S = rawget(_G, "intllib") and intllib.Getter() or function(s) return s end
+
+local function register_chests(data)
+	local name = data.description:lower()
+	local type_description = {"Chest", "Locked Chest", "Protected Chest"}
+	for i,t in ipairs({"", "_locked", "_protected"}) do
+		local data_copy = table.copy(data)
 		data_copy.locked = t == "_locked"
 		data_copy.protected = t == "_protected"
-		technic.chests.register_chest(name, data_copy)
+		data_copy.texture_prefix = "technic_"..name.."_chest"
+		data_copy.description = S(("%s %s"):format(data.description, type_description[i]))
+		technic.chests.register_chest(":technic:"..name..t.."_chest", data_copy)
 	end
 end
 
@@ -68,7 +71,8 @@ local function register_crafts(name, material, base_open, base_locked, base_prot
 end
 
 -- Iron
-register_chests("Iron", {
+register_chests({
+	description = "Iron",
 	width = 9,
 	height = 5,
 	sort = true,
@@ -83,7 +87,8 @@ register_crafts(
 )
 
 -- Copper
-register_chests("Copper", {
+register_chests({
+	description = "Copper",
 	width = 12,
 	height = 5,
 	sort = true,
@@ -99,7 +104,8 @@ register_crafts(
 )
 
 -- Silver
-register_chests("Silver", {
+register_chests({
+	description = "Silver",
 	width = 12,
 	height = 6,
 	sort = true,
@@ -116,7 +122,8 @@ register_crafts(
 )
 
 -- Gold
-register_chests("Gold", {
+register_chests({
+	description = "Gold",
 	width = 15,
 	height = 6,
 	sort = true,
@@ -134,7 +141,8 @@ register_crafts(
 )
 
 -- Mithril
-register_chests("Mithril", {
+register_chests({
+	description = "Mithril",
 	width = 15,
 	height = 6,
 	sort = true,
