@@ -28,57 +28,51 @@ local node_groups_no_inv = {
 	not_in_creative_inventory = 1,
 }
 
-local function get_tiles(name, data, color)
-	local tiles = {
-		"technic_"..name.."_chest_top.png"..tube_entry,
-		"technic_"..name.."_chest_top.png"..tube_entry,
-		"technic_"..name.."_chest_side.png"..tube_entry,
-		"technic_"..name.."_chest_side.png"..tube_entry,
-		"technic_"..name.."_chest_side.png"..tube_entry,
-		"technic_"..name.."_chest_front.png"
+local function get_tiles(data, color)
+	local tiles = data.tiles and table.copy(data.tiles) or {
+		data.texture_prefix.."_top.png"..tube_entry,
+		data.texture_prefix.."_top.png"..tube_entry,
+		data.texture_prefix.."_side.png"..tube_entry,
+		data.texture_prefix.."_side.png"..tube_entry,
+		data.texture_prefix.."_side.png"..tube_entry,
+		data.texture_prefix.."_front.png"
 	}
 	if data.color and color then
 		tiles[6] = tiles[6].."^technic_chest_overlay_"..technic.chests.colors[color][1]..".png"
 	end
 	if data.locked then
-		tiles[6] = tiles[6].."^technic_"..name.."_chest_lock_overlay.png"
+		tiles[6] = tiles[6].."^"..data.texture_prefix.."_lock_overlay.png"
 	elseif data.protected then
 		tiles[6] = tiles[6]..protector_overlay
 	end
 	return tiles
 end
 
-function technic.chests.register_chest(name, data)
-	local lname = name:lower()
-	name = S(name)
+function technic.chests.register_chest(nodename, data)
+	assert(data.tiles or data.texture_prefix, "technic.chests.register_chest: tiles or texture_prefix required")
+	assert(data.description, "technic.chests.register_chest: description required")
+	local colon
+	colon, nodename = nodename:match("^(:?)(.+)")
+
 	if data.digilines and not has_digilines then
 		data.digilines = nil
 	end
-	if data.locked then
-		data.node_name = "technic:"..lname.."_locked_chest"
-		data.description = S("%s Locked Chest"):format(name)
-	elseif data.protected then
-		data.node_name = "technic:"..lname.."_protected_chest"
-		data.description = S("%s Protected Chest"):format(name)
-	else
-		data.node_name = "technic:"..lname.."_chest"
-		data.description = S("%s Chest"):format(name)
-	end
+
 	data.formspec = technic.chests.get_formspec(data)
 	local def = {
 		description = data.description,
-		tiles = get_tiles(lname, data),
+		tiles = data.tiles or get_tiles(data),
 		paramtype2 = "facedir",
 		legacy_facedir_simple = true,
 		groups = node_groups,
 		sounds = default.node_sound_wood_defaults(),
-		drop = data.node_name,
+		drop = nodename,
 		after_place_node = function(pos, placer)
 			local meta = minetest.get_meta(pos)
 			if data.locked then
 				local owner = placer:get_player_name() or ""
 				meta:set_string("owner", owner)
-				meta:set_string("infotext", S("%s Locked Chest (owned by %s)"):format(name, owner))
+				meta:set_string("infotext", S("%s (owned by %s)"):format(data.description, owner))
 			else
 				meta:set_string("infotext", data.description)
 			end
@@ -198,11 +192,11 @@ function technic.chests.register_chest(name, data)
 			end
 			local drops = {}
 			default.get_inventory_drops(pos, "main", drops)
-			drops[#drops+1] = data.node_name
+			drops[#drops+1] = nodename
 			minetest.remove_node(pos)
 			return drops
 		end,
-		on_receive_fields = technic.chests.get_receive_fields(data),
+		on_receive_fields = technic.chests.get_receive_fields(nodename, data),
 	}
 	if data.locked then
 		def.on_skeleton_key_use = function(pos, player, newsecret)
@@ -231,7 +225,7 @@ function technic.chests.register_chest(name, data)
 			},
 		}
 	end
-	minetest.register_node(":"..data.node_name, def)
+	minetest.register_node(colon..nodename, def)
 	if data.color then
 		for i = 1, 15 do
 			local colordef = {}
@@ -239,8 +233,8 @@ function technic.chests.register_chest(name, data)
 				colordef[k] = v
 			end
 			colordef.groups = node_groups_no_inv
-			colordef.tiles = get_tiles(lname, data, i)
-			minetest.register_node(":"..data.node_name.."_"..technic.chests.colors[i][1], colordef)
+			colordef.tiles = get_tiles(data, i)
+			minetest.register_node(colon..nodename.."_"..technic.chests.colors[i][1], colordef)
 		end
 	end
 end
