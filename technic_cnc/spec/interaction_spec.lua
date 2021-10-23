@@ -9,9 +9,6 @@ describe("CNC formspec interaction", function()
 	fixture("default")
 	fixture("basic_materials")
 	fixture("pipeworks")
-	-- Technic cannot be used for production without building complete technic network.
-	-- Running tests like that here might get too complicated thing to manage here.
-	--fixture("technic")
 	fixture("digilines")
 
 	sourcefile("init")

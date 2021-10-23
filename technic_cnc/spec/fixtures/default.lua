@@ -1,3 +1,4 @@
+mineunit:set_modpath("default", "spec/fixtures")
 
 minetest.register_node(":default:stone", {
 	description = "Mineunit stone",
