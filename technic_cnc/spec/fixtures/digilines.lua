@@ -1,5 +1,5 @@
 
-mineunit:set_modpath("digilines", "fixtures")
+mineunit:set_modpath("digilines", "spec/fixtures")
 
 _G.digilines = {
 	_msg_log = {},

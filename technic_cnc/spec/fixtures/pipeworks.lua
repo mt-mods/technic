@@ -1,5 +1,5 @@
 
-mineunit:set_modpath("pipeworks", "fixtures")
+mineunit:set_modpath("pipeworks", "spec/fixtures")
 
 _G.pipeworks = {
 	fs_helpers = {

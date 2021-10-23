@@ -1,3 +1,4 @@
+mineunit:set_modpath("pipeworks", "spec/fixtures")
 
 _G.pipeworks = {}
 _G.pipeworks.button_label = ""
