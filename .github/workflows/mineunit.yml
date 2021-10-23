@@ -80,7 +80,11 @@ jobs:
         comment: |
           <details><summary><i>Mineunit failed regression tests, click for details</i></summary>
           
-          ### Regression test log for technic:
+          ### Regression test log for Technic CNC:
+          ```
+          ${{ steps.mineunit-cnc.outputs.mineunit-stdout }}
+          ```
+          ### Regression test log for Technic:
           ```
           ${{ steps.mineunit.outputs.mineunit-stdout }}
           ```
