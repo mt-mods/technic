@@ -20,6 +20,7 @@ mesecon = {
 		}
 	}
 }
+
 mesecon = setmetatable(mesecon, {
 	__call = function(self,...) return self end,
 	__index = function(...) return function(...)end end,

@@ -1,37 +1,16 @@
 require("mineunit")
 --[[
 	Technic network unit tests.
-	Execute busted at technic source directory.
+	Execute mineunit at technic source directory.
 --]]
 
 -- Load fixtures required by tests
-mineunit("core")
-mineunit("player")
-mineunit("protection")
-
-fixture("pipeworks")
 fixture("network")
 
-sourcefile("machines/network")
-
-sourcefile("machines/register/cables")
-sourcefile("machines/LV/cables")
-sourcefile("machines/MV/cables")
-sourcefile("machines/HV/cables")
-
-sourcefile("machines/register/generator")
-sourcefile("machines/HV/generator")
-
-function get_network_fixture(sw_pos)
-	-- Build network
-	local net_id = technic.create_network(sw_pos)
-	assert.is_number(net_id)
-	local net = technic.networks[net_id]
-	assert.is_table(net)
-	return net
-end
-
 describe("Power network building", function()
+
+	sourcefile("machines/register/generator")
+	sourcefile("machines/HV/generator")
 
 	describe("cable building", function()
 

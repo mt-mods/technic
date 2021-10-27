@@ -1,24 +1,11 @@
 require("mineunit")
 --[[
 	Technic network unit tests.
-	Execute busted at technic source directory.
+	Execute mineunit at technic source directory.
 --]]
 
--- Load fixtures required by tests
-mineunit("core")
-mineunit("player")
-mineunit("protection")
-mineunit("common/after")
-mineunit("server")
-mineunit("voxelmanip")
-
-fixture("pipeworks")
-fixture("network")
-fixture("default")
-fixture("technic_worldgen")
-fixture("mesecons")
-
-sourcefile("init")
+-- Load complete technic mod
+fixture("technic")
 
 describe("LV machine network", function()
 
