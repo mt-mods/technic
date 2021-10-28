@@ -1,6 +1,4 @@
 
-local S = technic.getter
-
 local cable_tier = {}
 
 function technic.is_tier_cable(name, tier)
@@ -169,26 +167,35 @@ local function item_place_override_node(itemstack, placer, pointed, node)
 	return itemstack
 end
 
-local function override_table(target, source)
-	if target and source then
-		for k,v in pairs(source) do
-			target[k] = v
-		end
-	end
-	return target
-end
+local function cable_defaults(nodename, data)
+	assert(data.tier, "Technic cable registration requires `tier` field")
+	assert(data.size, "Technic cable registration requires `size` field")
+	assert(data.description, "Technic cable registration requires `description` field")
 
-function technic.register_cable(tier, size, description, prefix, override_cable, override_cable_plate)
-	prefix = prefix or ""
-	override_cable_plate = override_cable_plate or override_cable
+	local def = table.copy(data)
+	local tier = def.tier
 	local ltier = string.lower(tier)
-	local node_name = "technic:"..ltier..prefix.."_cable"
-	cable_tier[node_name] = tier
+	local size = def.size
 
-	local groups = {snappy=2, choppy=2, oddly_breakable_by_hand=2,
-			["technic_"..ltier.."_cable"] = 1}
-
-	local node_box = {
+	def.connects_to = def.connects_to or {
+		"group:technic_"..ltier.."_cable",
+		"group:technic_"..ltier,
+		"group:technic_all_tiers"
+	}
+	def.groups = def.groups or {
+		snappy = 2,
+		choppy = 2,
+		oddly_breakable_by_hand = 2,
+		["technic_"..ltier.."_cable"] = 1
+	}
+	def.drop = def.drop or nodename
+	def.sounds = def.sounds or default.node_sound_wood_defaults()
+	def.on_construct = def.on_construct or function(pos) place_network_node(pos, {tier}, nodename) end
+	def.on_destruct = def.on_destruct or function(pos) remove_network_node(pos, {tier}, nodename) end
+	def.paramtype = def.paramtype or "light"
+	def.sunlight_propagates = not (def.sunlight_propagates == false and true)
+	def.drawtype = def.drawtype or "nodebox"
+	def.node_box = def.node_box or {
 		type = "connected",
 		fixed          = {-size, -size, -size, size,  size, size},
 		connect_top    = {-size, -size, -size, size,  0.5,  size}, -- y+
@@ -198,142 +205,79 @@ function technic.register_cable(tier, size, description, prefix, override_cable,
 		connect_left   = {-0.5,  -size, -size, size,  size, size}, -- x-
 		connect_right  = {-size, -size, -size, 0.5,   size, size}, -- x+
 	}
+	return def
+end
 
-	minetest.register_node(node_name, override_table({
-		description = S("%s Cable"):format(tier),
-		tiles = {"technic_"..ltier..prefix.."_cable.png"},
-		inventory_image = "technic_"..ltier..prefix.."_cable_wield.png",
-		wield_image = "technic_"..ltier..prefix.."_cable_wield.png",
-		groups = groups,
-		sounds = default.node_sound_wood_defaults(),
-		drop = node_name,
-		paramtype = "light",
-		sunlight_propagates = true,
-		drawtype = "nodebox",
-		node_box = node_box,
-		connects_to = {"group:technic_"..ltier.."_cable",
-			"group:technic_"..ltier, "group:technic_all_tiers"},
-		on_construct = function(pos) place_network_node(pos, {tier}, node_name) end,
-		on_destruct = function(pos) remove_network_node(pos, {tier}, node_name) end,
-	}, override_cable))
-
-	local xyz = {
-		["-x"] = 1,
-		["-y"] = 2,
-		["-z"] = 3,
-		["x"] = 4,
-		["y"] = 5,
-		["z"] = 6,
-	}
-	local notconnects = {
-		[1] = "left",
-		[2] = "bottom",
-		[3] = "front",
-		[4] = "right",
-		[5] = "top",
-		[6] = "back",
-	}
-	local function s(p)
-		if p:find("-") then
-			return p:sub(2)
-		else
-			return "-"..p
-		end
-	end
-	-- TODO: Does this really need 6 different nodes? Use single node for cable plate if possible.
-	for p, i in pairs(xyz) do
-		local def = {
-			description = S("%s Cable Plate"):format(tier),
-			tiles = {"technic_"..ltier..prefix.."_cable.png"},
-			groups = table.copy(groups),
-			sounds = default.node_sound_wood_defaults(),
-			drop = node_name .. "_plate_1",
-			paramtype = "light",
-			sunlight_propagates = true,
-			drawtype = "nodebox",
-			node_box = table.copy(node_box),
-			connects_to = {"group:technic_"..ltier.."_cable",
-				"group:technic_"..ltier, "group:technic_all_tiers"},
-			on_construct = function(pos) place_network_node(pos, {tier}, node_name.."_plate_"..i) end,
-			on_destruct = function(pos) remove_network_node(pos, {tier}, node_name.."_plate_"..i) end,
-		}
+function technic.register_cable_plate(nodename, data)
+	local xyz = {"x","y","z"}
+	local notconnects = {"left", "bottom", "front", "right", "top", "back"}
+	local texture_basename = nodename:gsub(":", "_")
+	for i = 1, 6 do
+		-- Merge defaults and register cable plate
+		local def = cable_defaults(nodename.."_"..i, data)
+		local size = def.size
+		def.tiles = def.tiles or {texture_basename..".png"}
+		def.drop = nodename.."_1"
 		def.node_box.fixed = {
 			{-size, -size, -size, size, size, size},
 			{-0.5, -0.5, -0.5, 0.5, 0.5, 0.5}
 		}
-		def.node_box.fixed[1][xyz[p]] = 7/16 * (i-3.5)/math.abs(i-3.5)
-		def.node_box.fixed[2][xyz[s(p)]] = 3/8 * (i-3.5)/math.abs(i-3.5)
+		def.node_box.fixed[1][i] = 7/16 * (i-3.5)/math.abs(i-3.5)
+		def.node_box.fixed[2][(i + 2) % 6 + 1] = 3/8 * (i-3.5)/math.abs(i-3.5)
 		def.node_box["connect_"..notconnects[i]] = nil
 		if i == 1 then
 			def.on_place = function(itemstack, placer, pointed_thing)
 				local pointed_thing_diff = vector.subtract(pointed_thing.above, pointed_thing.under)
-				local num = 1
-				local changed
-				for k, v in pairs(pointed_thing_diff) do
-					if v ~= 0 then
-						changed = k
-						num = xyz[s(tostring(v):sub(-2, -2)..k)]
-						break
-					end
-				end
+				local index = pointed_thing_diff.x + (pointed_thing_diff.y*2) + (pointed_thing_diff.z*3)
+				local num = index < 0 and -index + 3 or index
 				local crtl = placer:get_player_control()
-				if (crtl.aux1 or crtl.sneak) and not (crtl.aux1 and crtl.sneak) and changed then
+				if (crtl.aux1 or crtl.sneak) and not (crtl.aux1 and crtl.sneak) then
 					local fine_pointed = minetest.pointed_thing_to_face_pos(placer, pointed_thing)
 					fine_pointed = vector.subtract(fine_pointed, pointed_thing.above)
-					fine_pointed[changed] = nil
-					local ps = {}
-					for p2, _ in pairs(fine_pointed) do
-						ps[#ps+1] = p2
-					end
-					local bigger = (math.abs(fine_pointed[ps[1]]) > math.abs(fine_pointed[ps[2]]) and ps[1]) or ps[2]
-					if math.abs(fine_pointed[bigger]) < 0.3 then
-						num = num + 3
-						num = (num <= 6 and num) or num - 6
+					fine_pointed[xyz[index < 0 and -index or index]] = nil
+					local key_a, a = next(fine_pointed)
+					local key_b, b = next(fine_pointed, key_a)
+					local far_key = math.abs(a) > math.abs(b) and key_a or key_b
+					local far = fine_pointed[far_key]
+					-- Plate facing
+					-- X pair floor +X 4 -X 1 -> Z pair, Y pair
+					-- Y pair floor +Y 5 -Y 2 -> X pair, Z pair
+					-- Z pair floor +Z 6 -Z 3 -> X pair, Y pair
+					if math.abs(far) < 0.3 then
+						num = num < 4 and num + 3 or num - 3
+					elseif far_key == "x" then
+						num = far < 0 and 1 or 4
+					elseif far_key == "y" then
+						num = far < 0 and 2 or 5
 					else
-						num = xyz[((fine_pointed[bigger] < 0 and "-") or "") .. bigger]
+						num = far < 0 and 3 or 6
 					end
 				end
-				if num == nil then num = 1 end
-				return item_place_override_node(
-					itemstack, placer, pointed_thing,
-					{name = node_name.."_plate_"..num}
-				)
+				return item_place_override_node(itemstack, placer, pointed_thing, {name = nodename.."_"..(num or 1)})
 			end
 		else
 			def.groups.not_in_creative_inventory = 1
 		end
 		def.on_rotate = function(pos, node, user, mode, new_param2)
-			local dir = 0
-			if mode == 1 then -- left-click
-				dir = 1
-			elseif mode == 2 then -- right-click
-				dir = -1
-			end
-			local num = tonumber(node.name:sub(-1))
-			num = num + dir
-			num = (num >= 1 and num) or num + 6
-			num = (num <= 6 and num) or num - 6
-			minetest.swap_node(pos, {name = node_name.."_plate_"..num})
+			-- mode 1 is left-click, mode 2 is right-click
+			local dir = mode == 1 and 1 or (mode == 2 and -1 or 0)
+			local num = tonumber(node.name:sub(-1)) + dir - 1
+			minetest.swap_node(pos, {name = nodename.."_"..(num % 6 + 1)})
 		end
-		minetest.register_node(node_name.."_plate_"..i, override_table(def, override_cable_plate))
-		cable_tier[node_name.."_plate_"..i] = tier
+		minetest.register_node(nodename.."_"..i, def)
+		cable_tier[nodename.."_"..i] = def.tier
 	end
+end
 
-	minetest.register_craft({
-		output = node_name.."_plate_1 5",
-		recipe = {
-			{""       , ""       , node_name},
-			{node_name, node_name, node_name},
-			{""       , ""       , node_name},
-		}
-	})
-
-	minetest.register_craft({
-		output = node_name,
-		recipe = {
-			{node_name.."_plate_1"},
-		}
-	})
+function technic.register_cable(nodename, data)
+	-- Merge defaults and register cable
+	local def = cable_defaults(nodename, data)
+	local texture_basename = nodename:gsub(":", "_")
+	def.tiles = def.tiles or {texture_basename..".png"}
+	def.inventory_image = def.inventory_image or def.inventory_image ~= false and texture_basename.."_wield.png" or nil
+	def.wield_image = def.wield_image or def.wield_image ~= false and texture_basename.."_wield.png" or nil
+	minetest.register_node(nodename, def)
+	cable_tier[nodename] = def.tier
 end
 
 minetest.register_on_mods_loaded(function()
