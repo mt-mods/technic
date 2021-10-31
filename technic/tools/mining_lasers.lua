@@ -92,36 +92,26 @@ local function laser_shoot(player, range, particle_texture, sound)
 end
 
 for _, m in pairs(mining_lasers_list) do
-	technic.register_power_tool("technic:laser_mk"..m[1], m[3])
-	minetest.register_tool("technic:laser_mk"..m[1], {
+	technic.register_power_tool("technic:laser_mk"..m[1], {
 		description = S("Mining Laser Mk%d"):format(m[1]),
 		inventory_image = "technic_mining_laser_mk"..m[1]..".png",
 		range = 0,
-		stack_max = 1,
-		wear_represents = "technic_RE_charge",
-		on_refill = technic.refill_RE_charge,
+		max_charge = m[3],
 		on_use = function(itemstack, user)
-			local meta = minetest.deserialize(itemstack:get_metadata())
-			if not meta or not meta.charge or meta.charge == 0 then
-				return
-			end
-
-			local range = m[2]
-			if meta.charge < m[4] then
-				if not allow_entire_discharging then
-					return
+			local charge = technic.get_RE_charge(itemstack)
+			if charge > 0 then
+				local range = m[2]
+				if charge < m[4] then
+					if not allow_entire_discharging then
+						return
+					end
+					-- If charge is too low, give the laser a shorter range
+					range = range * charge / m[4]
 				end
-				-- If charge is too low, give the laser a shorter range
-				range = range * meta.charge / m[4]
+				technic.use_RE_charge(itemstack, math.min(m[4], charge))
+				laser_shoot(user, range, "technic_laser_beam_mk" .. m[1] .. ".png", "technic_laser_mk" .. m[1])
+				return itemstack
 			end
-			laser_shoot(user, range, "technic_laser_beam_mk" .. m[1] .. ".png",
-				"technic_laser_mk" .. m[1])
-			if not technic.creative_mode then
-				meta.charge = math.max(meta.charge - m[4], 0)
-				technic.set_RE_wear(itemstack, meta.charge, m[3])
-				itemstack:set_metadata(minetest.serialize(meta))
-			end
-			return itemstack
 		end,
 	})
 end

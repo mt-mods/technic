@@ -2,8 +2,6 @@ local sonic_screwdriver_max_charge = 15000
 
 local S = technic.getter
 
-technic.register_power_tool("technic:sonic_screwdriver", sonic_screwdriver_max_charge)
-
 -- screwdriver handler code reused from minetest/minetest_game screwdriver @a9ac480
 local ROTATE_FACE = 1
 local ROTATE_AXIS = 2
@@ -41,8 +39,7 @@ local function screwdriver_handler(itemstack, user, pointed_thing, mode)
 	-- contrary to the default screwdriver, do not check for can_dig, to allow rotating machines with CLU's in them
 	-- this is consistent with the previous sonic screwdriver
 
-	local meta1 = minetest.deserialize(itemstack:get_metadata())
-	if not meta1 or not meta1.charge or meta1.charge < 100 then
+	if not technic.use_RE_charge(itemstack, 100) then
 		return
 	end
 
@@ -63,27 +60,18 @@ local function screwdriver_handler(itemstack, user, pointed_thing, mode)
 	node.param2 = preservePart + rotationPart
 	minetest.swap_node(pos, node)
 
-	if not technic.creative_mode then
-		meta1.charge = meta1.charge - 100
-		itemstack:set_metadata(minetest.serialize(meta1))
-		technic.set_RE_wear(itemstack, meta1.charge, sonic_screwdriver_max_charge)
-	end
-
 	return itemstack
 end
 
-minetest.register_tool("technic:sonic_screwdriver", {
+technic.register_power_tool("technic:sonic_screwdriver", {
 	description = S("Sonic Screwdriver (left-click rotates face, right-click rotates axis)"),
 	inventory_image = "technic_sonic_screwdriver.png",
-	wear_represents = "technic_RE_charge",
-	on_refill = technic.refill_RE_charge,
+	max_charge = sonic_screwdriver_max_charge,
 	on_use = function(itemstack, user, pointed_thing)
-		screwdriver_handler(itemstack, user, pointed_thing, ROTATE_FACE)
-		return itemstack
+		return screwdriver_handler(itemstack, user, pointed_thing, ROTATE_FACE)
 	end,
 	on_place = function(itemstack, user, pointed_thing)
-		screwdriver_handler(itemstack, user, pointed_thing, ROTATE_AXIS)
-		return itemstack
+		return screwdriver_handler(itemstack, user, pointed_thing, ROTATE_AXIS)
 	end,
 })
 

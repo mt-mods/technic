@@ -47,12 +47,10 @@ assert(technic.pretty_num(0) == "0 ")
 assert(technic.pretty_num(1234) == "1234 ")
 assert(technic.pretty_num(123456789) == "123.5 M")
 
-
 -- used to display power values
 function technic.EU_string(num)
 	return technic.pretty_num(num) .. "EU"
 end
-
 
 --- Same as minetest.swap_node, but only changes name
 -- and doesn't re-set if already set.
@@ -64,19 +62,61 @@ function technic.swap_node(pos, name)
 	end
 end
 
-
---- Fully charge RE chargeable item.
--- Must be defined early to reference in item definitions.
-function technic.refill_RE_charge(stack)
-	local max_charge = technic.power_tools[stack:get_name()]
-	if not max_charge then return stack end
-	technic.set_RE_wear(stack, max_charge, max_charge)
-	local meta = minetest.deserialize(stack:get_metadata()) or {}
-	meta.charge = max_charge
-	stack:set_metadata(minetest.serialize(meta))
-	return stack
+-- Wear down a tool depending on the remaining charge.
+local function set_RE_wear(stack, charge)
+	local stackdef = stack:get_definition()
+	if stackdef.max_charge and stackdef.wear_represents == "technic_RE_charge" then
+		if charge == 0 then
+			stack:set_wear(0)
+		else
+			stack:set_wear(math.max(1, math.min(65535, 65536 - math.floor(charge / stackdef.max_charge * 65535))))
+		end
+	end
 end
 
+function technic.set_RE_charge(stack, charge)
+	local meta = stack:get_meta()
+	charge = math.max(0, charge)
+	set_RE_wear(stack, charge)
+	meta:set_int("charge", charge)
+end
+
+function technic.get_RE_charge(stack)
+	local meta = stack:get_meta()
+	return meta:get_int("charge")
+end
+
+function technic.use_RE_charge(stack, amount)
+	if technic.creative_mode then
+		-- Do not check charge in creative mode
+		return true
+	end
+	local meta = stack:get_meta()
+	local charge = meta:get_int("charge")
+	if charge < amount then
+		-- Not enough energy available
+		return false
+	end
+	charge = charge - amount
+	set_RE_wear(stack, charge)
+	meta:set_int("charge", charge)
+	-- Charge used successfully
+	return true
+end
+
+function technic.get_RE_item_load(load1, max_load)
+	if load1 == 0 then load1 = 65535 end
+	local temp = 65536 - load1
+	temp = temp / 65535 * max_load
+	return math.floor(temp + 0.5)
+end
+
+function technic.set_RE_item_load(load1, max_load)
+	if load1 == 0 then return 65535 end
+	local temp = load1 / max_load * 65535
+	temp = 65536 - temp
+	return math.floor(temp)
+end
 
 -- If the node is loaded, returns it.  If it isn't loaded, load it and return nil.
 function technic.get_or_load_node(pos)
@@ -87,14 +127,12 @@ function technic.get_or_load_node(pos)
 	return nil
 end
 
-
 technic.tube_inject_item = pipeworks.tube_inject_item or function(pos, start_pos, velocity, item)
 	local tubed = pipeworks.tube_item(vector.new(pos), item)
 	tubed:get_luaentity().start_pos = vector.new(start_pos)
 	tubed:set_velocity(velocity)
 	tubed:set_acceleration(vector.new(0, 0, 0))
 end
-
 
 --- Iterates over the node positions along the specified ray.
 -- The returned positions will not include the starting position.
@@ -142,7 +180,6 @@ function technic.trace_node_ray(pos, dir, range)
 		return p
 	end, vector.round(pos)
 end
-
 
 --- Like trace_node_ray, but includes extra positions close to the ray.
 function technic.trace_node_ray_fat(pos, dir, range)

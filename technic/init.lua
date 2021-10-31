@@ -5,6 +5,7 @@
 local load_start = os.clock()
 
 technic = rawget(_G, "technic") or {}
+technic.plus = true
 technic.creative_mode = minetest.settings:get_bool("creative_mode")
 
 local modpath = minetest.get_modpath("technic")
@@ -43,14 +44,17 @@ dofile(modpath.."/max_lag.lua")
 -- Helper functions
 dofile(modpath.."/helpers.lua")
 
+-- Register functions
+dofile(modpath.."/register.lua")
+
+-- Compatibility shims for tools
+dofile(modpath.."/machines/compat/tools.lua")
+
 -- Items
 dofile(modpath.."/items.lua")
 
 -- Craft recipes for items
 dofile(modpath.."/crafts.lua")
-
--- Register functions
-dofile(modpath.."/register.lua")
 
 -- Radiation
 dofile(modpath.."/radiation.lua")

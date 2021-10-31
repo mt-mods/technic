@@ -5,16 +5,12 @@ local flashlight_max_charge = 30000
 
 local S = technic.getter
 
-technic.register_power_tool("technic:flashlight", flashlight_max_charge)
-
 minetest.register_alias("technic:light_off", "air")
 
-minetest.register_tool("technic:flashlight", {
+technic.register_power_tool("technic:flashlight", {
 	description = S("Flashlight"),
 	inventory_image = "technic_flashlight.png",
-	stack_max = 1,
-	wear_represents = "technic_RE_charge",
-	on_refill = technic.refill_RE_charge,
+	max_charge = flashlight_max_charge,
 })
 
 minetest.register_craft({
@@ -26,7 +22,6 @@ minetest.register_craft({
 	}
 })
 
-
 local player_positions = {}
 local was_wielding = {}
 
@@ -37,17 +32,10 @@ local function check_for_flashlight(player)
 	local inv = player:get_inventory()
 	local hotbar = inv:get_list("main")
 	for i = 1, 8 do
-		if hotbar[i]:get_name() == "technic:flashlight" then
-			local meta = minetest.deserialize(hotbar[i]:get_metadata())
-			if meta and meta.charge and meta.charge >= 2 then
-				if not technic.creative_mode then
-					meta.charge = meta.charge - 2;
-					technic.set_RE_wear(hotbar[i], meta.charge, flashlight_max_charge)
-					hotbar[i]:set_metadata(minetest.serialize(meta))
-					inv:set_stack("main", i, hotbar[i])
-				end
-				return true
-			end
+		if hotbar[i]:get_name() == "technic:flashlight" and technic.use_RE_charge(hotbar[i], 2) then
+			-- See https://github.com/minetest/minetest/issues/9377 for wield item animation
+			inv:set_stack("main", i, hotbar[i])
+			return true
 		end
 	end
 	return false
@@ -61,7 +49,6 @@ minetest.register_on_joinplayer(function(player)
 	player_positions[player_name] = rounded_pos
 	was_wielding[player_name] = true
 end)
-
 
 minetest.register_on_leaveplayer(function(player)
 	local player_name = player:get_player_name()
