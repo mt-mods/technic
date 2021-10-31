@@ -5,11 +5,6 @@ local S = technic.getter
 local tube_entry = "^pipeworks_tube_connection_metallic.png"
 local cable_entry = "^technic_cable_connection_overlay.png"
 
-technic.register_power_tool("technic:battery", 10000)
-technic.register_power_tool("technic:red_energy_crystal", 50000)
-technic.register_power_tool("technic:green_energy_crystal", 150000)
-technic.register_power_tool("technic:blue_energy_crystal", 450000)
-
 -- Battery recipes:
 -- Tin-copper recipe:
 minetest.register_craft({
@@ -66,19 +61,10 @@ minetest.register_craft({
 	}
 })
 
-minetest.register_tool("technic:battery", {
+technic.register_power_tool("technic:battery", {
 	description = S("RE Battery"),
 	inventory_image = "technic_battery.png",
 	groups = { disable_repair = 1 },
-	wear_represents = "technic_RE_charge",
-	on_refill = technic.refill_RE_charge,
-	tool_capabilities = {
-		charge = 0,
-		max_drop_level = 0,
-		groupcaps = {
-			fleshy = {times={}, uses=10000, maxlevel=0}
-		}
-	}
 })
 
 -- x+2 + (z+2)*2
@@ -213,54 +199,53 @@ function technic.register_battery_box(nodename, data)
 			return
 		end
 		-- Load and check tool metadata
-		local toolmeta = minetest.deserialize(toolstack:get_metadata()) or {}
-		if not toolmeta.charge then
-			toolmeta.charge = 0
-		end
-		return toolstack, toolmeta, technic.power_tools[toolname]
+		return toolstack, technic.power_tools[toolname]
 	end
 
 	local function charge_tools(meta, batt_charge, charge_step)
 		-- Get tool metadata
 		local inv = meta:get_inventory()
-		local toolstack, toolmeta, max_charge = get_tool(inv, "src")
-		if not toolstack then return batt_charge, false end
+		local toolstack, max_charge = get_tool(inv, "src")
+		if not toolstack then
+			return batt_charge, false
+		end
 		-- Do the charging
-		if toolmeta.charge >= max_charge then
+		local charge = technic.get_RE_charge(toolstack)
+		if charge >= max_charge then
 			return batt_charge, true
 		elseif batt_charge <= 0 then
 			return batt_charge, false
 		end
-		charge_step = math.min(charge_step, batt_charge)
-		charge_step = math.min(charge_step, max_charge - toolmeta.charge)
-		toolmeta.charge = toolmeta.charge + charge_step
-		technic.set_RE_wear(toolstack, toolmeta.charge, max_charge)
-		toolmeta.charge = toolmeta.charge
-		toolstack:set_metadata(minetest.serialize(toolmeta))
-		inv:set_stack("src", 1, toolstack)
-		return batt_charge - charge_step, (toolmeta.charge == max_charge)
+		local oldcharge = charge
+		charge_step = math.min(math.min(charge_step, batt_charge), max_charge - charge)
+		charge = charge + charge_step
+		if charge ~= oldcharge then
+			technic.set_RE_charge(toolstack, charge)
+			inv:set_stack("src", 1, toolstack)
+		end
+		return batt_charge - charge_step, (charge == max_charge)
 	end
 
 	local function discharge_tools(meta, batt_charge, charge_step, batt_max_charge)
 		-- Get tool metadata
 		local inv = meta:get_inventory()
-		local toolstack, toolmeta, max_charge = get_tool(inv, "dst")
+		local toolstack = get_tool(inv, "dst")
 		if not toolstack then return batt_charge, false end
 		-- Do the discharging
-		local tool_charge = toolmeta.charge
-		if tool_charge <= 0 then
+		local charge = technic.get_RE_charge(toolstack)
+		if charge <= 0 then
 			return batt_charge, true
 		elseif batt_charge >= batt_max_charge then
 			return batt_charge, false
 		end
-		charge_step = math.min(charge_step, batt_max_charge - batt_charge)
-		charge_step = math.min(charge_step, tool_charge)
-		tool_charge = tool_charge - charge_step
-		technic.set_RE_wear(toolstack, tool_charge, max_charge)
-		toolmeta.charge = tool_charge
-		toolstack:set_metadata(minetest.serialize(toolmeta))
-		inv:set_stack("dst", 1, toolstack)
-		return batt_charge + charge_step, (tool_charge == 0)
+		local oldcharge = charge
+		charge_step = math.min(math.min(charge_step, batt_max_charge - batt_charge), charge)
+		charge = charge - charge_step
+		if charge ~= oldcharge then
+			technic.set_RE_charge(toolstack, charge)
+			inv:set_stack("dst", 1, toolstack)
+		end
+		return batt_charge + charge_step, (charge == 0)
 	end
 
 	local function run(pos, node, run_state, network)

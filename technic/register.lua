@@ -28,40 +28,18 @@ function technic.register_machine(tier, nodename, machine_type)
 	table.insert(technic.machine_tiers[nodename], tier)
 end
 
-function technic.register_power_tool(craftitem, max_charge)
-	technic.power_tools[craftitem] = max_charge
-end
-
-
--- Utility functions. Not sure exactly what they do.. water.lua uses the two first.
-function technic.get_RE_item_load(load1, max_load)
-	if load1 == 0 then load1 = 65535 end
-	local temp = 65536 - load1
-	temp = temp / 65535 * max_load
-	return math.floor(temp + 0.5)
-end
-
-function technic.set_RE_item_load(load1, max_load)
-	if load1 == 0 then return 65535 end
-	local temp = load1 / max_load * 65535
-	temp = 65536 - temp
-	return math.floor(temp)
-end
-
--- Wear down a tool depending on the remaining charge.
-function technic.set_RE_wear(itemstack, item_load, max_load)
-	if (minetest.registered_items[itemstack:get_name()].wear_represents
-			or "mechanical_wear") ~= "technic_RE_charge" then
-		return itemstack
+function technic.register_power_tool(itemname, itemdef)
+	local max_charge = itemdef.technic_max_charge or itemdef.max_charge or 10000
+	itemdef.max_charge = nil
+	itemdef.wear_represents = itemdef.wear_represents or "technic_RE_charge"
+	itemdef.technic_max_charge = max_charge
+	itemdef.technic_wear_factor = 65535 / max_charge
+	itemdef.on_refill = itemdef.on_refill or function(stack)
+		-- This is always using originally defined max_charge even if stack somehow changed to another
+		technic.set_RE_charge(stack, max_charge)
+		return stack
 	end
-	local temp
-	if item_load == 0 then
-		temp = 0
-	else
-		temp = 65536 - math.floor(item_load / max_load * 65535)
-		if temp > 65535 then temp = 65535 end
-		if temp < 1 then temp = 1 end
-	end
-	itemstack:set_wear(temp)
-	return itemstack
+	itemdef.tool_capabilities = itemdef.tool_capabilities or { punch_attack_uses = 0 }
+	minetest.register_tool(itemname, itemdef)
+	technic.power_tools[itemname] = max_charge
 end
