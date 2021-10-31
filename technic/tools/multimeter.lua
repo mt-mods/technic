@@ -63,21 +63,7 @@ minetest.register_craft({
 })
 
 local function use_charge(itemstack, multiplier)
-	if technic.creative_mode then
-		-- Do not check charge in creative mode
-		return true
-	end
-	local real_pwr_use = power_usage * (multiplier or 1)
-	local meta = minetest.deserialize(itemstack:get_metadata())
-	if not meta or not meta.charge or meta.charge < real_pwr_use then
-		-- Not enough energy available
-		return false
-	end
-	meta.charge = meta.charge - real_pwr_use
-	technic.set_RE_wear(itemstack, meta.charge, max_charge)
-	itemstack:set_metadata(minetest.serialize(meta))
-	-- Charge used successfully
-	return true
+	return technic.use_RE_charge(itemstack, power_usage * (multiplier or 1))
 end
 
 local function async_itemstack_get(player, refstack)
@@ -298,16 +284,12 @@ local function check_node(pos)
 	end
 end
 
-technic.register_power_tool("technic:multimeter", max_charge)
-
-minetest.register_tool("technic:multimeter", {
+technic.register_power_tool("technic:multimeter", {
 	description = S("Multimeter"),
 	inventory_image = texture,
 	wield_image = texture,
-	stack_max = 1,
 	liquids_pointable = false,
-	wear_represents = "technic_RE_charge",
-	on_refill = technic.refill_RE_charge,
+	max_charge = max_charge,
 	on_use = function(itemstack, player, pointed_thing)
 		local pos = minetest.get_pointed_thing_position(pointed_thing, false)
 		if pos and pointed_thing.type == "node" then

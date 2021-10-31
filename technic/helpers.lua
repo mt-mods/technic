@@ -47,12 +47,10 @@ assert(technic.pretty_num(0) == "0 ")
 assert(technic.pretty_num(1234) == "1234 ")
 assert(technic.pretty_num(123456789) == "123.5 M")
 
-
 -- used to display power values
 function technic.EU_string(num)
 	return technic.pretty_num(num) .. "EU"
 end
-
 
 --- Same as minetest.swap_node, but only changes name
 -- and doesn't re-set if already set.
@@ -64,19 +62,44 @@ function technic.swap_node(pos, name)
 	end
 end
 
-
---- Fully charge RE chargeable item.
--- Must be defined early to reference in item definitions.
-function technic.refill_RE_charge(stack)
-	local max_charge = technic.power_tools[stack:get_name()]
-	if not max_charge then return stack end
-	technic.set_RE_wear(stack, max_charge, max_charge)
-	local meta = minetest.deserialize(stack:get_metadata()) or {}
-	meta.charge = max_charge
-	stack:set_metadata(minetest.serialize(meta))
-	return stack
+function technic.set_RE_charge(stack, charge)
+	local wear_factor = stack:get_definition().technic_wear_factor
+	if wear_factor then
+		local wear = math.floor(charge * wear_factor + 0.5)
+		stack:set_wear(wear > 0 and 65536 - wear or 0)
+	else
+		minetest.log("error", "technic.set_RE_charge item not registered as power tool: "..stack:get_name())
+	end
 end
 
+function technic.get_RE_charge(stack)
+	local wear_factor = stack:get_definition().technic_wear_factor
+	if wear_factor then
+		local wear = stack:get_wear()
+		return math.floor((wear > 0 and 65536 - wear or 0) / wear_factor + 0.5)
+	end
+	minetest.log("warning", "technic.get_RE_charge item not registered as power tool: "..stack:get_name())
+	return 0
+end
+
+function technic.use_RE_charge(stack, amount)
+	if technic.creative_mode or amount <= 0 then
+		-- Do not check charge in creative mode or when trying to use zero amount
+		return true
+	end
+	local charge = technic.get_RE_charge(stack)
+	if charge < amount then
+		-- Not enough energy available
+		return false
+	end
+	-- Ensure that at least single point is always added to wear when using tool
+	local wear_factor = stack:get_definition().technic_wear_factor
+	local wear = stack:get_wear()
+	wear = math.max(math.floor(wear + 1.5), math.floor(amount * wear_factor + wear + 0.5))
+	stack:set_wear(wear > 65535 and 0 or wear)
+	-- Charge used successfully
+	return true
+end
 
 -- If the node is loaded, returns it.  If it isn't loaded, load it and return nil.
 function technic.get_or_load_node(pos)
@@ -87,14 +110,12 @@ function technic.get_or_load_node(pos)
 	return nil
 end
 
-
 technic.tube_inject_item = pipeworks.tube_inject_item or function(pos, start_pos, velocity, item)
 	local tubed = pipeworks.tube_item(vector.new(pos), item)
 	tubed:get_luaentity().start_pos = vector.new(start_pos)
 	tubed:set_velocity(velocity)
 	tubed:set_acceleration(vector.new(0, 0, 0))
 end
-
 
 --- Iterates over the node positions along the specified ray.
 -- The returned positions will not include the starting position.
@@ -142,7 +163,6 @@ function technic.trace_node_ray(pos, dir, range)
 		return p
 	end, vector.round(pos)
 end
-
 
 --- Like trace_node_ray, but includes extra positions close to the ray.
 function technic.trace_node_ray_fat(pos, dir, range)

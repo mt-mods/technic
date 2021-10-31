@@ -21,55 +21,34 @@ minetest.register_craftitem( "technic:diamond_drill_head", {
 	inventory_image = "technic_diamond_drill_head.png",
 })
 
-minetest.register_tool("technic:blue_energy_crystal", {
+technic.register_power_tool("technic:blue_energy_crystal", {
 	description = S("Blue Energy Crystal"),
 	inventory_image = minetest.inventorycube(
 		"technic_diamond_block_blue.png",
 		"technic_diamond_block_blue.png",
 		"technic_diamond_block_blue.png"),
 	groups = { disable_repair = 1 },
-	wear_represents = "technic_RE_charge",
-	on_refill = technic.refill_RE_charge,
-	tool_capabilities = {
-		max_drop_level = 0,
-		groupcaps = {
-			fleshy = {times={}, uses=10000, maxlevel=0}
-		}
-	}
+	max_charge = 450000,
 })
 
-minetest.register_tool("technic:green_energy_crystal", {
+technic.register_power_tool("technic:green_energy_crystal", {
 	description = S("Green Energy Crystal"),
 	inventory_image = minetest.inventorycube(
 		"technic_diamond_block_green.png",
 		"technic_diamond_block_green.png",
 		"technic_diamond_block_green.png"),
 	groups = { disable_repair = 1 },
-	wear_represents = "technic_RE_charge",
-	on_refill = technic.refill_RE_charge,
-	tool_capabilities = {
-		max_drop_level = 0,
-		groupcaps = {
-			fleshy = {times={}, uses=10000, maxlevel=0}
-		}
-	}
+	max_charge = 150000,
 })
 
-minetest.register_tool("technic:red_energy_crystal", {
+technic.register_power_tool("technic:red_energy_crystal", {
 	description = S("Red Energy Crystal"),
 	inventory_image = minetest.inventorycube(
 		"technic_diamond_block_red.png",
 		"technic_diamond_block_red.png",
 		"technic_diamond_block_red.png"),
 	groups = { disable_repair = 1 },
-	wear_represents = "technic_RE_charge",
-	on_refill = technic.refill_RE_charge,
-	tool_capabilities = {
-		max_drop_level = 0,
-		groupcaps = {
-			fleshy = {times={}, uses=10000, maxlevel=0}
-		}
-	}
+	max_charge = 50000,
 })
 
 minetest.register_craftitem("technic:copper_coil", {

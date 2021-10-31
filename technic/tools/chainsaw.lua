@@ -14,9 +14,7 @@ local timber_nodenames = {} -- Cuttable nodes
 local max_saw_radius = 12 -- max x/z distance away from starting position to allow cutting
 -- Prevents forest destruction, increase for extra wide trees
 
-
 -- Support for nodes not in any supported node groups (tree, leaves, leafdecay, leafdecay_drop)
-
 timber_nodenames["default:papyrus"] = true
 timber_nodenames["default:cactus"] = true
 timber_nodenames["default:bush_stem"] = true
@@ -46,10 +44,7 @@ if minetest.get_modpath("trunks") then
 	end
 end
 
-
 local S = technic.getter
-
-technic.register_power_tool("technic:chainsaw", chainsaw_max_charge)
 
 -- Table for saving what was sawed down
 local produced = {}
@@ -171,21 +166,17 @@ local function chainsaw_dig(pos, current_charge)
 	return remaining_charge
 end
 
-
-minetest.register_tool("technic:chainsaw", {
+technic.register_power_tool("technic:chainsaw", {
 	description = S("Chainsaw"),
 	inventory_image = "technic_chainsaw.png",
-	stack_max = 1,
-	wear_represents = "technic_RE_charge",
-	on_refill = technic.refill_RE_charge,
+	max_charge = chainsaw_max_charge,
 	on_use = function(itemstack, user, pointed_thing)
 		if pointed_thing.type ~= "node" then
-			return itemstack
+			return
 		end
 
-		local meta = minetest.deserialize(itemstack:get_metadata())
-		if not meta or not meta.charge or
-				meta.charge < chainsaw_charge_per_node then
+		local charge = technic.get_RE_charge(itemstack)
+		if charge < chainsaw_charge_per_node then
 			return
 		end
 
@@ -197,10 +188,9 @@ minetest.register_tool("technic:chainsaw", {
 
 		-- Send current charge to digging function so that the
 		-- chainsaw will stop after digging a number of nodes
-		meta.charge = chainsaw_dig(pointed_thing.under, meta.charge)
+		charge = chainsaw_dig(pointed_thing.under, charge)
 		if not technic.creative_mode then
-			technic.set_RE_wear(itemstack, meta.charge, chainsaw_max_charge)
-			itemstack:set_metadata(minetest.serialize(meta))
+			technic.set_RE_charge(itemstack, charge)
 		end
 		return itemstack
 	end,
