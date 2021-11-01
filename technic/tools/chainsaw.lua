@@ -1,8 +1,7 @@
 -- Configuration
 
 local chainsaw_max_charge = 30000 -- Maximum charge of the saw
--- Gives 2500 nodes on a single charge (about 50 complete normal trees)
-local chainsaw_charge_per_node = 12
+local chainsaw_charge_per_node = 12 -- Gives 2500 nodes on a single charge (about 50 complete normal trees)
 
 local chainsaw_leaves = true -- Cut down tree leaves.
 -- Leaf decay may cause slowness on large trees if this is disabled.
@@ -144,8 +143,7 @@ end
 local function chainsaw_dig(pos, current_charge)
 	-- Start sawing things down
 	local remaining_charge = recursive_dig(pos, pos, current_charge)
-	minetest.sound_play("chainsaw", {pos = pos, gain = 1.0,
-			max_hear_distance = 10})
+	minetest.sound_play("chainsaw", {pos = pos, gain = 1.0, max_hear_distance = 10}, true)
 
 	-- Now drop items for the player
 	for name, stack in pairs(produced) do

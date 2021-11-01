@@ -44,7 +44,7 @@ technic.register_power_tool("technic:prospector", {
 				" is "..(found and "present" or "absent").." in "..look_diameter..
 				"x"..look_diameter.."x"..look_depth.." region")
 		minetest.sound_play("technic_prospector_"..(found and "hit" or "miss"),
-				{ pos = vector.add(user:get_pos(), { x = 0, y = 1, z = 0 }), gain = 1.0, max_hear_distance = 10 })
+				{ pos = vector.add(user:get_pos(), { x = 0, y = 1, z = 0 }), gain = 1.0, max_hear_distance = 10 }, true)
 		return toolstack
 	end,
 	on_place = function(toolstack, user, pointed_thing)

@@ -74,7 +74,7 @@ local function laser_shoot(player, range, particle_texture, sound)
 		size = 1,
 		texture = particle_texture .. "^[transform" .. math.random(0, 7),
 	})
-	minetest.sound_play(sound, {pos = player_pos, max_hear_distance = range})
+	minetest.sound_play(sound, {pos = player_pos, max_hear_distance = range}, true)
 	for pos in technic.trace_node_ray_fat(start_pos, dir, range) do
 		if minetest.is_protected(pos, player_name) then
 			minetest.record_protection_violation(pos, player_name)
