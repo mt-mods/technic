@@ -35,5 +35,5 @@ if use_pipeworks then technic_cnc.pipeworks = dofile(technic_cnc.modpath.."/pipe
 technic_cnc.formspec = dofile(technic_cnc.modpath .. "/formspec.lua")
 dofile(technic_cnc.modpath .. "/programs.lua")
 dofile(technic_cnc.modpath .. "/api.lua")
-dofile(technic_cnc.modpath .. "/materials.lua")
+dofile(technic_cnc.modpath .. "/materials/init.lua")
 dofile(technic_cnc.modpath .. "/cnc.lua")
