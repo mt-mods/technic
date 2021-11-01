@@ -182,7 +182,11 @@ local function make_constructor(mark, length)
 		allow_metadata_inventory_put = allow_inventory_put,
 		allow_metadata_inventory_take = technic.machine_inventory_take,
 		allow_metadata_inventory_move = technic.machine_inventory_move,
-		on_rotate = screwdriver.rotate_simple
+		on_rotate = function(pos, node, user, mode, new_param2)
+			if mode ~= 1 then
+				return false
+			end
+		end,
 	})
 
 	minetest.register_node("technic:constructor_mk"..mark.."_on", {

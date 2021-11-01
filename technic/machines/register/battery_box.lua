@@ -373,7 +373,11 @@ function technic.register_battery_box(data)
 			technic_run = run,
 			on_timer = on_timer,
 			on_rightclick = function(pos) update_node(pos, true) end,
-			on_rotate = screwdriver.rotate_simple,
+			on_rotate = function(pos, node, user, mode, new_param2)
+				if mode ~= 1 then
+					return false
+				end
+			end,
 			after_place_node = data.tube and pipeworks.after_place,
 			after_dig_node = technic.machine_after_dig_node,
 			on_receive_fields = function(pos, formname, fields, player)

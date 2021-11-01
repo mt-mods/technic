@@ -304,9 +304,9 @@ function technic.register_cable(tier, size, description, prefix, override_cable,
 		end
 		def.on_rotate = function(pos, node, user, mode, new_param2)
 			local dir = 0
-			if mode == screwdriver.ROTATE_FACE then -- left-click
+			if mode == 1 then -- left-click
 				dir = 1
-			elseif mode == screwdriver.ROTATE_AXIS then -- right-click
+			elseif mode == 2 then -- right-click
 				dir = -1
 			end
 			local num = tonumber(node.name:sub(-1))
