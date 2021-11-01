@@ -14,7 +14,7 @@ technic.register_power_tool("technic:vacuum", {
 		if original_charge < vacuum_charge_per_object then
 			return
 		end
-		minetest.sound_play("vacuumcleaner", {to_player = user:get_player_name(), gain = 0.4})
+		minetest.sound_play("vacuumcleaner", {to_player = user:get_player_name(), gain = 0.4}, true)
 		local pos = user:get_pos()
 		local inv = user:get_inventory()
 		local charge = original_charge
@@ -24,7 +24,7 @@ technic.register_power_tool("technic:vacuum", {
 				if inv and inv:room_for_item("main", ItemStack(entity.itemstring)) then
 					charge = charge - vacuum_charge_per_object
 					inv:add_item("main", ItemStack(entity.itemstring))
-					minetest.sound_play("item_drop_pickup", {to_player = user:get_player_name(), gain = 0.4,})
+					minetest.sound_play("item_drop_pickup", {to_player = user:get_player_name(), gain = 0.4}, true)
 					entity.itemstring = ""
 					object:remove()
 					if charge < vacuum_charge_per_object then
