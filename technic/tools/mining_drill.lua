@@ -235,7 +235,7 @@ local function drill_dig_it(pos, player, mode)
 		end
 	end
 
-	minetest.sound_play("mining_drill", {pos = pos, gain = 1.0, max_hear_distance = 10,})
+	minetest.sound_play("mining_drill", {pos = pos, gain = 1.0, max_hear_distance = 10}, true)
 end
 
 local function pos_is_pointable(pos)
