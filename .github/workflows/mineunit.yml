@@ -9,8 +9,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-      with:
-        submodules: true
 
     - id: mineunit
       uses: mt-mods/mineunit-actions@master
@@ -43,6 +41,13 @@ jobs:
         COLOR: "${{ steps.mineunit-cnc.outputs.badge-color }}"
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+    - id: mineunit-chests
+      uses: mt-mods/mineunit-actions@master
+      with:
+        working-directory: ./technic_chests
+        badge-name: coverage-chests
+        badge-label: Test coverage
+
     - uses: KeisukeYamashita/create-comment@v1
       if: success() && github.event_name == 'pull_request'
       with:
@@ -56,16 +61,29 @@ jobs:
           -----------------------------------------------------
           ${{ steps.mineunit-cnc.outputs.mineunit-report }}
           ```
+          
+          ### Test coverage report for technic chests ${{ steps.mineunit-chests.outputs.coverage-total }} in ${{ steps.mineunit-chests.outputs.coverage-files }} files:
+          ```
+          File          Hits Missed Coverage
+          ----------------------------------
+          ${{ steps.mineunit-chests.outputs.mineunit-report }}
+          ```
+          
           ### Test coverage report for technic ${{ steps.mineunit.outputs.coverage-total }} in ${{ steps.mineunit.outputs.coverage-files }} files:
           ```
           File                                      Hits Missed Coverage
           --------------------------------------------------------------
           ${{ steps.mineunit.outputs.mineunit-report }}
           ```
+          
           ### Raw test runner output for geeks:
           CNC:
           ```
           ${{ steps.mineunit-cnc.outputs.mineunit-stdout }}
+          ```
+          Chests:
+          ```
+          ${{ steps.mineunit-chests.outputs.mineunit-stdout }}
           ```
           Technic:
           ```
@@ -84,6 +102,12 @@ jobs:
           ```
           ${{ steps.mineunit-cnc.outputs.mineunit-stdout }}
           ```
+          
+          ### Regression test log for Technic Chests:
+          ```
+          ${{ steps.mineunit-chests.outputs.mineunit-stdout }}
+          ```
+          
           ### Regression test log for Technic:
           ```
           ${{ steps.mineunit.outputs.mineunit-stdout }}
