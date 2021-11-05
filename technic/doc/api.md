@@ -142,10 +142,13 @@ There are currently following types:
 
 Switching Station
 -----------------
-The switching station is the center of all power distribution on an electric
-network.
+The switching station is required to start electric network and keep it running.
+Unlike in original mod this node does not handle power distribution logic but instead just resets network timeout.
 
-The station collects power from sources (PR), distributes it to sinks (RE),
+Network logic
+-----------------
+
+The network logic collects power from sources (PR), distributes it to sinks (RE),
 and uses the excess/shortfall to charge and discharge batteries (BA).
 
 For now, all supply and demand values are expressed in kW.
@@ -156,8 +159,6 @@ If total demand is less than the available power they are all updated with the d
 If any surplus exists from the PR nodes the batteries will be charged evenly with excess power.
 If total demand exceeds generator supply then draw difference from batteries.
 If total demand is more than available power all RE nodes will be shut down.
-
-Hence for now all the power distribution logic resides in this single node.
 
 ### Node meta usage
 Nodes connected to the network will have one or more of these parameters as meta data:
