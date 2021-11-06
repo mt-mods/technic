@@ -104,20 +104,6 @@ function technic.use_RE_charge(stack, amount)
 	return true
 end
 
-function technic.get_RE_item_load(load1, max_load)
-	if load1 == 0 then load1 = 65535 end
-	local temp = 65536 - load1
-	temp = temp / 65535 * max_load
-	return math.floor(temp + 0.5)
-end
-
-function technic.set_RE_item_load(load1, max_load)
-	if load1 == 0 then return 65535 end
-	local temp = load1 / max_load * 65535
-	temp = 65536 - temp
-	return math.floor(temp)
-end
-
 -- If the node is loaded, returns it.  If it isn't loaded, load it and return nil.
 function technic.get_or_load_node(pos)
 	local node = minetest.get_node_or_nil(pos)
