@@ -18,11 +18,11 @@ describe("HV machine network", function()
 
 	local machines = {
 		"technic:hv_generator",
-		"technic:solar_array_hv",
-		"technic:solar_array_hv",
-		"technic:solar_array_hv",
-		"technic:solar_array_hv",
-		"technic:solar_array_hv",
+		"technic:hv_solar_array",
+		"technic:hv_solar_array",
+		"technic:hv_solar_array",
+		"technic:hv_solar_array",
+		"technic:hv_solar_array",
 		"technic:hv_battery_box0",
 		"technic:hv_electric_furnace",
 		"technic:hv_grinder",
