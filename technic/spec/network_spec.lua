@@ -12,6 +12,8 @@ sourcefile("machines/HV/generator")
 
 describe("Power network helper", function()
 
+	world.set_default_node("air")
+
 	world.layout({
 		{{x=100,y=100,z=100}, "technic:lv_cable"},
 		{{x=101,y=100,z=100}, "technic:lv_cable"},
