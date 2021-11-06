@@ -16,6 +16,7 @@ describe("LV machine network", function()
 	mineunit:mods_loaded()
 	-- Tell mods that 1 minute passed already to execute all weird minetest.after hacks.
 	mineunit:execute_globalstep(60)
+	world.set_default_node("air")
 
 	local machines = {
 		"technic:lv_generator",
