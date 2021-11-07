@@ -62,28 +62,13 @@ function technic.swap_node(pos, name)
 	end
 end
 
--- Wear down a tool depending on the remaining charge.
-local function set_RE_wear(stack, charge)
-	local stackdef = stack:get_definition()
-	if stackdef.max_charge and stackdef.wear_represents == "technic_RE_charge" then
-		if charge == 0 then
-			stack:set_wear(0)
-		else
-			stack:set_wear(math.max(1, math.min(65535, 65536 - math.floor(charge / stackdef.max_charge * 65535))))
-		end
-	end
-end
-
 function technic.set_RE_charge(stack, charge)
-	local meta = stack:get_meta()
-	charge = math.max(0, charge)
-	set_RE_wear(stack, charge)
-	meta:set_int("charge", charge)
+	stack:set_wear( -math.floor(charge * (65535 / stack:get_definition().max_charge) + 0.5) )
 end
 
 function technic.get_RE_charge(stack)
-	local meta = stack:get_meta()
-	return meta:get_int("charge")
+	local wear = stack:get_wear()
+	return math.floor((wear > 0 and 65536 - wear or 0) / (65535 / stack:get_definition().max_charge) + 0.5)
 end
 
 function technic.use_RE_charge(stack, amount)
@@ -91,15 +76,12 @@ function technic.use_RE_charge(stack, amount)
 		-- Do not check charge in creative mode
 		return true
 	end
-	local meta = stack:get_meta()
-	local charge = meta:get_int("charge")
+	local charge = technic.get_RE_charge(stack)
 	if charge < amount then
 		-- Not enough energy available
 		return false
 	end
-	charge = charge - amount
-	set_RE_wear(stack, charge)
-	meta:set_int("charge", charge)
+	technic.set_RE_charge(stack, charge - amount)
 	-- Charge used successfully
 	return true
 end
