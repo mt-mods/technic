@@ -16,12 +16,14 @@ function technic.register_power_tool(itemname, itemdef)
 			local redef = minetest.registered_items[itemname]
 			if redef and redef.wear_represents == "technic_RE_charge" and not redef.on_refill then
 				-- Override power tools that called register_power_tool but do not have on_refill function defined
+				local max_charge = itemdef
 				minetest.override_item(itemname, {
 					on_refill = function(stack)
-						technic.set_RE_charge(stack, stack:get_definition().max_charge or 10000)
+						technic.set_RE_charge(stack, max_charge)
 						return stack
 					end,
-					max_charge = itemdef,
+					max_charge = max_charge,
+					technic_wear_factor = 65535 / max_charge,
 				})
 				minetest.log("warning", "Updated on_refill and max_charge for "..itemname)
 			end

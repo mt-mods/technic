@@ -63,12 +63,13 @@ function technic.swap_node(pos, name)
 end
 
 function technic.set_RE_charge(stack, charge)
-	stack:set_wear( -math.floor(charge * (65535 / stack:get_definition().max_charge) + 0.5) )
+	local wear = math.floor(charge * stack:get_definition().technic_wear_factor + 0.5)
+	stack:set_wear(wear > 0 and 65536 - wear or 0)
 end
 
 function technic.get_RE_charge(stack)
 	local wear = stack:get_wear()
-	return math.floor((wear > 0 and 65536 - wear or 0) / (65535 / stack:get_definition().max_charge) + 0.5)
+	return math.floor((wear > 0 and 65536 - wear or 0) / stack:get_definition().technic_wear_factor + 0.5)
 end
 
 function technic.use_RE_charge(stack, amount)
@@ -82,7 +83,7 @@ function technic.use_RE_charge(stack, amount)
 		return false
 	end
 	-- Ensure that at least single point is always added to wear when using tool
-	local wear_factor = 65535 / stack:get_definition().max_charge
+	local wear_factor = stack:get_definition().technic_wear_factor
 	local wear = stack:get_wear()
 	wear = math.max(math.floor(wear + 1.5), math.floor(amount * wear_factor + wear + 0.5))
 	stack:set_wear(wear > 65535 and 0 or wear)
