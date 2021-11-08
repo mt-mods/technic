@@ -72,8 +72,8 @@ function technic.get_RE_charge(stack)
 end
 
 function technic.use_RE_charge(stack, amount)
-	if technic.creative_mode then
-		-- Do not check charge in creative mode
+	if technic.creative_mode or amount < 1 then
+		-- Do not check charge in creative mode or when trying to use zero amount
 		return true
 	end
 	local charge = technic.get_RE_charge(stack)
@@ -81,7 +81,11 @@ function technic.use_RE_charge(stack, amount)
 		-- Not enough energy available
 		return false
 	end
-	technic.set_RE_charge(stack, charge - amount)
+	-- Ensure that at least single point is always added to wear when using tool
+	local wear_factor = 65535 / stack:get_definition().max_charge
+	local wear = stack:get_wear()
+	wear = math.max(math.floor(wear + 1.5), math.floor(amount * wear_factor + wear + 0.5))
+	stack:set_wear(wear > 65535 and 0 or wear)
 	-- Charge used successfully
 	return true
 end
