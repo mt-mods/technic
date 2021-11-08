@@ -7,7 +7,18 @@ require("mineunit")
 -- Load complete technic mod
 fixture("technic")
 
+local RUN_TECHNIC_ADDONS_CHAINSAWMK3_TESTS = false
+
 describe("Technic power tool", function()
+
+	if RUN_TECHNIC_ADDONS_CHAINSAWMK3_TESTS then
+		-- Load technic_addons mod
+		mineunit:set_modpath("technic_addons", "../../technic_addons")
+		mineunit:set_current_modname("technic_addons")
+		sourcefile("../../technic_addons/init")
+		mineunit:restore_current_modname()
+	end
+
 
 	world.set_default_node("air")
 
@@ -73,8 +84,8 @@ describe("Technic power tool", function()
 			assert.is_function(itemdef.on_use)
 			assert.is_function(itemdef.on_refill)
 			assert.equals("technic_RE_charge", itemdef.wear_represents)
-			assert.is_number(itemdef.max_charge)
-			assert.gt(itemdef.max_charge, 0)
+			assert.is_number(itemdef.technic_max_charge)
+			assert.gt(itemdef.technic_max_charge, 0)
 		end)
 
 		it("technic.use_RE_charge works (zero charge)", function()
@@ -265,14 +276,14 @@ describe("Technic power tool", function()
 			assert.is_hashed(itemdef)
 			assert.is_function(itemdef.on_refill)
 			assert.equals("technic_RE_charge", itemdef.wear_represents)
-			assert.is_number(itemdef.max_charge)
-			assert.gt(itemdef.max_charge, 0)
+			assert.is_number(itemdef.technic_max_charge)
+			assert.gt(itemdef.technic_max_charge, 0)
 		end)
 
 		it("charge is used", function()
 			-- Get fully charged item
 			local stack = ItemStack(itemname)
-			technic.set_RE_charge(stack, itemdef.max_charge)
+			technic.set_RE_charge(stack, itemdef.technic_max_charge)
 			set_player_stack(stack)
 
 			-- Use item, flashlight charge is used every globalstep and there's no on_use definition
@@ -283,7 +294,7 @@ describe("Technic power tool", function()
 			assert.spy(technic.use_RE_charge).called(100)
 
 			-- Check that item charge was actually used and error is acceptable
-			local charge_used = itemdef.max_charge - technic.get_RE_charge(get_player_stack())
+			local charge_used = itemdef.technic_max_charge - technic.get_RE_charge(get_player_stack())
 			local exact_use = 2 * 100 -- 2 per cycle / 100 cycles
 			assert.lt(0.9, charge_used / exact_use)
 			assert.gt(1.1, charge_used / exact_use)
@@ -312,8 +323,8 @@ describe("Technic power tool", function()
 			assert.is_function(itemdef.on_use)
 			assert.is_function(itemdef.on_refill)
 			assert.equals("technic_RE_charge", itemdef.wear_represents)
-			assert.is_number(itemdef.max_charge)
-			assert.gt(itemdef.max_charge, 0)
+			assert.is_number(itemdef.technic_max_charge)
+			assert.gt(itemdef.technic_max_charge, 0)
 		end)
 
 		it("new item can be used", function()
@@ -341,8 +352,8 @@ describe("Technic power tool", function()
 
 			-- Take item from battery box and check charge / wear values
 			player:do_metadata_inventory_take(BB_Charge_POS, "src", 1)
-			assert.gt(itemdef.max_charge, 0)
-			assert.equals(itemdef.max_charge, technic.get_RE_charge(get_player_stack()))
+			assert.gt(itemdef.technic_max_charge, 0)
+			assert.equals(itemdef.technic_max_charge, technic.get_RE_charge(get_player_stack()))
 		end)
 
 		it("charge is used", function()
@@ -355,7 +366,86 @@ describe("Technic power tool", function()
 			local charge = technic.get_RE_charge(get_player_stack())
 			assert.is_number(charge)
 			assert.gt(charge, 0)
-			assert.lt(charge, itemdef.max_charge)
+			assert.lt(charge, itemdef.technic_max_charge)
+		end)
+
+	end)
+
+	describe("technic_addons:chainsawmk3", function()
+
+		-- Not running technic_addons:chainsawmk3 tests, this tools is just example of
+		-- actually available mod where max_charge vs use ratio goes over safe limits.
+		if not RUN_TECHNIC_ADDONS_CHAINSAWMK3_TESTS then return end
+
+		local itemname = "technic_addons:chainsawmk3"
+		local itemdef = minetest.registered_items[itemname]
+
+		setup(function()
+			world.add_layout({
+				-- Some wood for chainsaw
+				{{{x=-10,y=0,z=-10},{x=10,y=10,z=10}}, "default:wood"},
+			})
+			set_charge_stack(ItemStack())
+			set_discharge_stack(ItemStack())
+			mineunit:execute_on_joinplayer(player)
+			set_player_stack(itemname)
+		end)
+
+		teardown(function()
+			mineunit:execute_on_leaveplayer(player)
+		end)
+
+		it("is registered", function()
+			assert.is_hashed(itemdef)
+			assert.is_function(itemdef.on_use)
+			assert.is_function(itemdef.on_refill)
+			assert.equals("technic_RE_charge", itemdef.wear_represents)
+			assert.is_number(itemdef.technic_max_charge)
+			assert.gt(itemdef.technic_max_charge, 0)
+		end)
+
+		it("new item can be used", function()
+			spy.on(itemdef, "on_use")
+			player:do_use({x=0, y=0, z=0})
+			assert.spy(itemdef.on_use).called(1)
+		end)
+
+		it("has zero charge", function()
+			local stack = player:get_wielded_item()
+			assert.is_ItemStack(stack)
+			assert.is_false(stack:is_empty())
+			assert.equals(0, technic.get_RE_charge(stack))
+		end)
+
+		it("can be charged", function()
+			-- Put item from player inventory to battery box src inventory
+			player:do_metadata_inventory_put(BB_Charge_POS, "src", 1)
+
+			-- Verify that item charge is empty and charge in battery box for 30 seconds
+			assert.equals(0, technic.get_RE_charge(get_charge_stack()))
+			for i=0, math.ceil(itemdef.technic_max_charge / 10000) do
+				mineunit:execute_globalstep(1)
+			end
+
+			-- Take item from battery box and check charge / wear values
+			player:do_metadata_inventory_take(BB_Charge_POS, "src", 1)
+			assert.gt(itemdef.technic_max_charge, 0)
+			assert.equals(itemdef.technic_max_charge, technic.get_RE_charge(get_player_stack()))
+		end)
+
+		it("charge is used", function()
+			spy.on(itemdef, "on_use")
+			player:set_pos({x=0,y=1,z=0})
+			player:do_use(player:get_pos())
+			assert.spy(itemdef.on_use).called(1)
+
+			-- Check that item charge was actually used and is not zero
+			local charge_used = itemdef.technic_max_charge - technic.get_RE_charge(get_player_stack())
+			local accurate_use = 21 * 21 * 11 * 10 -- Area times use per node
+			local acceptable_error = accurate_use * 0.0001
+			assert.gt(accurate_use + acceptable_error, charge_used)
+			assert.lt(accurate_use - acceptable_error, charge_used)
+			assert.equals(accurate_use, charge_used)
 		end)
 
 	end)
