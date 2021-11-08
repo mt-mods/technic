@@ -63,31 +63,31 @@ minetest.register_craftitem(":technic:stainless_steel_ingot", {
 })
 
 local blocks = {
-	"uranium",
-	"chromium",
-	"zinc",
-	"lead",
-	"cast_iron",
-	"carbon_steel",
-	"stainless_steel",
-	"sulfur",
+	["uranium"] = "ingot",
+	["chromium"] = "ingot",
+	["zinc"] = "ingot",
+	["lead"] = "ingot",
+	["cast_iron"] = "ingot",
+	["carbon_steel"] = "ingot",
+	["stainless_steel"] = "ingot",
+	["sulfur"] = "lump",
 }
 
-for _, name in pairs(blocks) do
-	local block = "technic:"..name.."_block"
-	local ingot = "technic:"..name.."_ingot"
+for material, form in pairs(blocks) do
+	local block = "technic:"..material.."_block"
+	local item = "technic:"..material.."_"..form
 
 	minetest.register_craft({
 		output = block,
 		recipe = {
-			{ingot, ingot, ingot},
-			{ingot, ingot, ingot},
-			{ingot, ingot, ingot},
+			{item, item, item},
+			{item, item, item},
+			{item, item, item},
 		}
 	})
 
 	minetest.register_craft({
-		output = ingot.." 9",
+		output = item.." 9",
 		recipe = {{block}}
 	})
 end
