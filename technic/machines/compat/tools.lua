@@ -22,7 +22,7 @@ function technic.register_power_tool(itemname, itemdef)
 						technic.set_RE_charge(stack, max_charge)
 						return stack
 					end,
-					max_charge = max_charge,
+					technic_max_charge = max_charge,
 					technic_wear_factor = 65535 / max_charge,
 				})
 				minetest.log("warning", "Updated on_refill and max_charge for "..itemname)

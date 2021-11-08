@@ -7,7 +7,14 @@ technic.producer_receiver = "PR_RE"
 technic.battery  = "BA"
 
 technic.machines    = {}
-technic.power_tools = {} -- TODO: Should get rid of this table, tool stack already has all required data and more
+technic.power_tools = setmetatable({}, {
+	-- TODO: Should get rid of this table, tool stack / item definition already has all required data and more.
+	-- Add __newindex logging after technic itself is cleaned up. Other mods should not be accessing this but still.
+	__index = function(self, key)
+		minetest.log("warning", "Deprecated access technic.power_tools["..tostring(key).."]")
+		return rawget(self, key)
+	end,
+})
 technic.networks = {}
 technic.machine_tiers = {}
 
@@ -29,9 +36,9 @@ function technic.register_machine(tier, nodename, machine_type)
 end
 
 function technic.register_power_tool(itemname, itemdef)
-	local max_charge = itemdef.max_charge or 10000
+	local max_charge = itemdef.technic_max_charge or itemdef.max_charge or 10000
 	itemdef.wear_represents = itemdef.wear_represents or "technic_RE_charge"
-	itemdef.max_charge = max_charge
+	itemdef.technic_max_charge = max_charge
 	itemdef.technic_wear_factor = 65535 / max_charge
 	itemdef.on_refill = itemdef.on_refill or function(stack)
 		-- This is always using originally defined max_charge even if stack somehow changed to another
@@ -40,5 +47,5 @@ function technic.register_power_tool(itemname, itemdef)
 	end
 	itemdef.tool_capabilities = itemdef.tool_capabilities or { punch_attack_uses = 0 }
 	minetest.register_tool(itemname, itemdef)
-	technic.power_tools[itemname] = itemdef.max_charge
+	technic.power_tools[itemname] = max_charge
 end
