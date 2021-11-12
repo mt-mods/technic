@@ -260,3 +260,28 @@ describe("Technic API", function()
 	end)
 
 end)
+
+describe("Technic API internals", function()
+
+	it("technic.machines contain only machines", function()
+		local types = {PR=1, RE=1, PR_RE=1, BA=1}
+		for tier, machines in pairs(technic.machines) do
+			assert.is_hashed(machines)
+			for nodename, machine_type in pairs(machines) do
+				assert.is_hashed(minetest.registered_nodes[nodename])
+				local groups = minetest.registered_nodes[nodename].groups
+				local tier_group
+				for group,_ in pairs(groups) do
+					assert.is_nil(group:find("technic_.*_cable$"), "Cable in machines table: "..tostring(nodename))
+				end
+				assert.not_nil(groups.technic_machine, "Missing technic_machine group for "..tostring(machine_type))
+				assert.not_nil(types[machine_type], "Missing type for "..tostring(machine_type))
+			end
+		end
+	end)
+
+	it("technic.cables TBD, misleading name and should be updated", function()
+		pending("TBD technic.cables naming and need, see technic networks data for possible options")
+	end)
+
+end)
