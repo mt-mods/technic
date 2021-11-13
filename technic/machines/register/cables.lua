@@ -1,158 +1,13 @@
 
 local cable_tier = {}
 
-function technic.is_tier_cable(name, tier)
-	return cable_tier[name] == tier
+function technic.is_tier_cable(nodename, tier)
+	return cable_tier[nodename] == tier
 end
 
-function technic.get_cable_tier(name)
-	return cable_tier[name]
+function technic.get_cable_tier(nodename)
+	return cable_tier[nodename]
 end
-
-local function match_cable_tier_filter(name, tiers)
-	-- Helper to check for set of cable tiers
-	if tiers then
-		for _, tier in ipairs(tiers) do if cable_tier[name] == tier then return true end end
-		return false
-	end
-	return cable_tier[name] ~= nil
-end
-
-local function get_neighbors(pos, tiers)
-	-- TODO: Move this to network.lua
-	local tier_machines = tiers and technic.machines[tiers[1]]
-	local is_cable = match_cable_tier_filter(minetest.get_node(pos).name, tiers)
-	local network = is_cable and technic.networks[technic.pos2network(pos)]
-	local cables = {}
-	local machines = {}
-	local positions = {
-		{x=pos.x+1, y=pos.y,   z=pos.z},
-		{x=pos.x-1, y=pos.y,   z=pos.z},
-		{x=pos.x,   y=pos.y+1, z=pos.z},
-		{x=pos.x,   y=pos.y-1, z=pos.z},
-		{x=pos.x,   y=pos.y,   z=pos.z+1},
-		{x=pos.x,   y=pos.y,   z=pos.z-1},
-	}
-	for _,connected_pos in ipairs(positions) do
-		local name = minetest.get_node(connected_pos).name
-		if tier_machines and tier_machines[name] then
-			table.insert(machines, connected_pos)
-		elseif match_cable_tier_filter(name, tiers) then
-			local cable_network = technic.networks[technic.pos2network(connected_pos)]
-			table.insert(cables,{
-				pos = connected_pos,
-				network = cable_network,
-			})
-			if not network then network = cable_network end
-		end
-	end
-	return network, cables, machines
-end
-
-local function place_network_node(pos, tiers, name)
-	-- Get connections and primary network if there's any
-	local network, cables, machines = get_neighbors(pos, tiers)
-	if not network then
-		-- We're evidently not on a network, nothing to add ourselves to
-		return
-	end
-
-	-- Attach to primary network, this must be done before building branches from this position
-	technic.add_network_node(pos, network)
-	if not match_cable_tier_filter(name, tiers) then
-		if technic.machines[tiers[1]][name] == technic.producer_receiver then
-			-- FIXME: Multi tier machine like supply converter should also attach to other networks around pos.
-			--      Preferably also with connection rules defined for machine.
-			--      nodedef.connect_sides could be used to generate these rules.
-			--		For now, assume that all multi network machines belong to technic.producer_receiver group:
-			-- Get cables and networks around PR_RE machine
-			local _, machine_cables, _ = get_neighbors(pos)
-			for _,connection in ipairs(machine_cables) do
-				if connection.network and connection.network.id ~= network.id then
-					-- Attach PR_RE machine to secondary networks (last added is primary until above note is resolved)
-					technic.add_network_node(pos, connection.network)
-				end
-			end
-		else
-			-- Check connected cables for foreign networks, overload if machine was connected to multiple networks
-			for _, connection in ipairs(cables) do
-				if connection.network and connection.network.id ~= network.id then
-					technic.overload_network(connection.network.id)
-					technic.overload_network(network.id)
-				end
-			end
-		end
-		-- Machine added, skip all network building
-		return
-	end
-
-	-- Attach neighbor machines if cable was added
-	for _,machine_pos in ipairs(machines) do
-		technic.add_network_node(machine_pos, network)
-	end
-
-	-- Attach neighbor cables
-	for _,connection in ipairs(cables) do
-		if connection.network then
-			if connection.network.id ~= network.id then
-				-- Remove network if position belongs to another network
-				-- FIXME: Network requires partial rebuild but avoid doing it here if possible.
-				-- This might cause problems when merging two active networks into one
-				technic.remove_network(network.id)
-				technic.remove_network(connection.network.id)
-				connection.network = nil
-			end
-		else
-			-- There's cable that does not belong to any network, attach whole branch
-			technic.add_network_node(connection.pos, network)
-			technic.add_network_branch({connection.pos}, network)
-		end
-	end
-end
--- NOTE: Exported for tests but should probably be moved to network.lua
-technic.network_node_on_placenode = place_network_node
-
-local function remove_network_node(pos, tiers, name)
-	-- Get the network and neighbors
-	local network, cables, machines = get_neighbors(pos, tiers)
-	if not network then return end
-
-	if not match_cable_tier_filter(name, tiers) then
-		-- Machine removed, skip cable checks to prevent unnecessary network cleanups
-		for _,connection in ipairs(cables) do
-			if connection.network then
-				-- Remove machine from all networks around it
-				technic.remove_network_node(connection.network.id, pos)
-			end
-		end
-		return
-	end
-
-	if #cables == 1 then
-		-- Dead end cable removed, remove it from the network
-		technic.remove_network_node(network.id, pos)
-		-- Remove neighbor machines from network if cable was removed
-		if match_cable_tier_filter(name, tiers) then
-			for _,machine_pos in ipairs(machines) do
-				local net, _, _ = get_neighbors(machine_pos, tiers)
-				if not net then
-					-- Remove machine from network if it does not have other connected cables
-					technic.remove_network_node(network.id, machine_pos)
-				end
-			end
-		end
-	else
-		-- TODO: Check branches around and switching stations for branches:
-		--   remove branches that do not have switching station. Switching stations not tracked but could be easily tracked.
-		--   remove branches not connected to another branch. Individual branches not tracked, requires simple AI heuristics.
-		--   move branches that have switching station to new networks without checking or loading actual nodes in world.
-		--   To do all this network must be aware of individual branches and switching stations, might not be worth it...
-		-- For now remove whole network and let ABM rebuild it
-		technic.remove_network(network.id)
-	end
-end
--- NOTE: Exported for tests but should probably be moved to network.lua
-technic.network_node_on_dignode = remove_network_node
 
 local function item_place_override_node(itemstack, placer, pointed, node)
 	-- Call the default on_place function with a fake itemstack
@@ -176,6 +31,9 @@ local function cable_defaults(nodename, data)
 	local tier = def.tier
 	local ltier = string.lower(tier)
 	local size = def.size
+
+	local place_network_node = technic.place_network_node
+	local remove_network_node = technic.remove_network_node
 
 	def.connects_to = def.connects_to or {
 		"group:technic_"..ltier.."_cable",
@@ -279,21 +137,3 @@ function technic.register_cable(nodename, data)
 	minetest.register_node(nodename, def)
 	cable_tier[nodename] = def.tier
 end
-
-minetest.register_on_mods_loaded(function()
-	-- FIXME: Move this to register.lua or somewhere else where register_on_mods_loaded is not required.
-	--        Possible better option would be to inject these when machine is registered in register.lua.
-	for name, tiers in pairs(technic.machine_tiers) do
-		local nodedef = minetest.registered_nodes[name]
-		local on_construct = type(nodedef.on_construct) == "function" and nodedef.on_construct
-		local on_destruct = type(nodedef.on_destruct) == "function" and nodedef.on_destruct
-		minetest.override_item(name,{
-			on_construct = on_construct
-				and function(pos) on_construct(pos) place_network_node(pos, tiers, name) end
-				or  function(pos) place_network_node(pos, tiers, name) end,
-			on_destruct = on_destruct
-				and function(pos) on_destruct(pos) remove_network_node(pos, tiers, name) end
-				or  function(pos) remove_network_node(pos, tiers, name) end,
-		})
-	end
-end)

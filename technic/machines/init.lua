@@ -27,6 +27,8 @@ dofile(path.."/compat/digtron.lua")
 
 dofile(path.."/network.lua")
 
+dofile(path.."/overload.lua")
+
 dofile(path.."/register/init.lua")
 
 -- Tiers
