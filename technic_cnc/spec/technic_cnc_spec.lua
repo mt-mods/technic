@@ -7,9 +7,14 @@ require("mineunit")
 -- Load complete technic mod
 fixture("technic")
 
-describe("Technic CNC", function()
+mineunit:set_modpath("technic", "../technic")
+mineunit:set_current_modname("technic")
+sourcefile("../technic/init")
+mineunit:restore_current_modname()
 
-	fixture("technic_cnc")
+sourcefile("init")
+
+describe("Technic CNC", function()
 
 	local player = Player("SX")
 
@@ -39,14 +44,21 @@ describe("Technic CNC", function()
 		return inv:get_stack(listname or "dst", index or 1)
 	end
 
+	local function clear_itemstack(pos, listname)
+		local meta = minetest.get_meta(pos)
+		local inv = meta:get_inventory()
+		for index=1, inv:get_size(listname or "dst") do
+			inv:set_stack(listname or "dst", index, ItemStack())
+        end
+	end
+
 	-- Execute on mods loaded callbacks to finish loading.
 	mineunit:mods_loaded()
 	-- Tell mods that 1 minute passed already to execute all weird minetest.after hacks.
 	mineunit:execute_globalstep(60)
 
 	local cnc_pos = {x=0,y=1,z=0}
-	local program = next(technic_cnc.products)
-	local product_count = technic_cnc.products[program]
+	local program, product_count = next(technic_cnc.products)
 
 	describe("technic:cnc", function()
 
@@ -63,6 +75,7 @@ describe("Technic CNC", function()
 		end)
 
 		it("produces items", function()
+			clear_itemstack(cnc_pos)
 			local id = technic.pos2network(cnc_pos)
 			local net = technic.networks[id]
 			assert.not_nil(net)
@@ -81,6 +94,7 @@ describe("Technic CNC", function()
 		end)
 
 		it("uses energy", function()
+			clear_itemstack(cnc_pos)
 			place_itemstack(cnc_pos, "default:wood 99")
 			local id = technic.pos2network(cnc_pos)
 			local net = technic.networks[id]
@@ -111,6 +125,7 @@ describe("Technic CNC", function()
 		end)
 
 		it("produces items", function()
+			clear_itemstack(cnc_pos)
 			local id = technic.pos2network(cnc_pos)
 			local net = technic.networks[id]
 			assert.not_nil(net)
@@ -129,6 +144,7 @@ describe("Technic CNC", function()
 		end)
 
 		it("uses energy", function()
+			clear_itemstack(cnc_pos)
 			place_itemstack(cnc_pos, "default:wood 99")
 			local id = technic.pos2network(cnc_pos)
 			local net = technic.networks[id]
@@ -136,7 +152,38 @@ describe("Technic CNC", function()
 
 			-- Run network and check results
 			run_network()
-			assert.equal(net.demand, 900)
+			assert.equal(900, net.demand)
+		end)
+
+		it("disabling and enabling", function()
+			clear_itemstack(cnc_pos)
+			local id = technic.pos2network(cnc_pos)
+			local net = technic.networks[id]
+			assert.not_nil(net)
+
+			-- Fill input inventory and select program
+			local on_receive_fields = minetest.registered_nodes["technic:cnc_mk2"].on_receive_fields
+			assert.equals("function", type(on_receive_fields))
+			place_itemstack(cnc_pos, "default:wood 99")
+			on_receive_fields(cnc_pos, nil, {[program] = true}, player)
+
+			-- Clear and disable machine
+			local meta = minetest.get_meta(cnc_pos)
+			technic_cnc.disable(meta)
+
+			-- Run network and check results
+			run_network(10)
+			local products = get_itemstack(cnc_pos)
+			assert.is_true(products:is_empty())
+			assert.equal(0, net.demand)
+
+			-- Is enabled again when user selects program
+			on_receive_fields(cnc_pos, nil, {[program] = true}, player)
+			run_network(10)
+			products = get_itemstack(cnc_pos)
+			assert.is_ItemStack(products)
+			assert.gt(products:get_count(), product_count)
+			assert.equal(900, net.demand)
 		end)
 
 	end)

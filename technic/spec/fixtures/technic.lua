@@ -13,8 +13,6 @@ mineunit("voxelmanip")
 -- Load fixtures required by tests
 fixture("default")
 fixture("mesecons")
+fixture("digilines")
 fixture("pipeworks")
 fixture("technic_worldgen")
-
--- Load mod
-sourcefile("init")

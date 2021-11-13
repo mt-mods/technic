@@ -6,6 +6,7 @@ require("mineunit")
 
 -- Load complete technic mod
 fixture("technic")
+sourcefile("init")
 
 describe("LV machine network", function()
 
