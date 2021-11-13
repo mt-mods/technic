@@ -10,8 +10,8 @@ local network_node_arrays = {"PR_nodes","BA_nodes","RE_nodes"}
 technic.active_networks = {}
 local networks = {}
 technic.networks = networks
-local cables = {}
-technic.cables = cables
+local technic_cables = {}
+technic.cables = technic_cables
 
 local poshash = minetest.hash_node_position
 local hashpos = minetest.get_position_from_hash
@@ -38,9 +38,9 @@ function technic.merge_networks(net1, net2)
 	assert(type(net2) == "table", "Invalid net2 for technic.merge_networks")
 	assert(net1 ~= net2, "Deadlock recipe: net1 & net2 equals for technic.merge_networks")
 	-- Move data in cables table
-	for node_id,cable_net_id in pairs(cables) do
+	for node_id,cable_net_id in pairs(technic_cables) do
 		if cable_net_id == net2.id then
-			cables[node_id] = net1.id
+			technic_cables[node_id] = net1.id
 		end
 	end
 	-- Move data in machine tables
@@ -90,52 +90,21 @@ end
 
 -- Destroy network data
 function technic.remove_network(network_id)
-	for pos_hash,cable_net_id in pairs(cables) do
+	for pos_hash,cable_net_id in pairs(technic_cables) do
 		if cable_net_id == network_id then
-			cables[pos_hash] = nil
+			technic_cables[pos_hash] = nil
 		end
 	end
 	networks[network_id] = nil
 	technic.active_networks[network_id] = nil
 end
 
--- Remove machine or cable from network
-function technic.remove_network_node(network_id, pos)
-	local network = networks[network_id]
-	if not network then return end
-	-- Clear hash tables, cannot use table.remove
-	local node_id = poshash(pos)
-	cables[node_id] = nil
-	network.all_nodes[node_id] = nil
-	-- TODO: All following things can be skipped if node is not machine
-	--   check here if it is or is not cable
-	--   or add separate function to remove cables and move responsibility to caller
-	-- Clear indexed arrays, do NOT leave holes
-	local machine_removed = false
-	for _,tblname in ipairs(network_node_arrays) do
-		local tbl = network[tblname]
-		for i=#tbl,1,-1 do
-			local mpos = tbl[i]
-			if mpos.x == pos.x and mpos.y == pos.y and mpos.z == pos.z then
-				table.remove(tbl, i)
-				machine_removed = true
-				break
-			end
-		end
-	end
-	if machine_removed then
-		-- Machine can still be in world, just not connected to any network. If so then disable it.
-		local node = minetest.get_node(pos)
-		technic.disable_machine(pos, node)
-	end
-end
-
 function technic.sw_pos2network(pos)
-	return cables[poshash({x=pos.x,y=pos.y-1,z=pos.z})]
+	return technic_cables[poshash({x=pos.x,y=pos.y-1,z=pos.z})]
 end
 
 function technic.pos2network(pos)
-	return cables[poshash(pos)]
+	return technic_cables[poshash(pos)]
 end
 
 function technic.network2pos(network_id)
@@ -208,38 +177,176 @@ function technic.disable_machine(pos, node)
 	end
 end
 
---
--- Network overloading (incomplete cheat mitigation)
---
-local overload_reset_time = tonumber(technic.config:get("network_overload_reset_time"))
-local overloaded_networks = {}
+local function match_cable_tier_filter(name, tiers)
+	-- Helper to check for set of cable tiers
+	if tiers then
+		for _, tier in ipairs(tiers) do if technic.is_tier_cable(name, tier) then return true end end
+		return false
+	end
+	return technic.get_cable_tier(name) ~= nil
+end
 
-local function overload_network(network_id)
+local function get_neighbors(pos, tiers)
+	local tier_machines = tiers and technic.machines[tiers[1]]
+	local is_cable = match_cable_tier_filter(minetest.get_node(pos).name, tiers)
+	local network = is_cable and technic.networks[technic.pos2network(pos)]
+	local cables = {}
+	local machines = {}
+	local positions = {
+		{x=pos.x+1, y=pos.y,   z=pos.z},
+		{x=pos.x-1, y=pos.y,   z=pos.z},
+		{x=pos.x,   y=pos.y+1, z=pos.z},
+		{x=pos.x,   y=pos.y-1, z=pos.z},
+		{x=pos.x,   y=pos.y,   z=pos.z+1},
+		{x=pos.x,   y=pos.y,   z=pos.z-1},
+	}
+	for _,connected_pos in ipairs(positions) do
+		local name = minetest.get_node(connected_pos).name
+		if tier_machines and tier_machines[name] then
+			table.insert(machines, connected_pos)
+		elseif match_cable_tier_filter(name, tiers) then
+			local cable_network = technic.networks[technic.pos2network(connected_pos)]
+			table.insert(cables,{
+				pos = connected_pos,
+				network = cable_network,
+			})
+			if not network then network = cable_network end
+		end
+	end
+	return network, cables, machines
+end
+
+function technic.place_network_node(pos, tiers, name)
+	-- Get connections and primary network if there's any
+	local network, cables, machines = get_neighbors(pos, tiers)
+	if not network then
+		-- We're evidently not on a network, nothing to add ourselves to
+		return
+	end
+
+	-- Attach to primary network, this must be done before building branches from this position
+	technic.add_network_node(pos, network)
+	if not match_cable_tier_filter(name, tiers) then
+		if technic.machines[tiers[1]][name] == technic.producer_receiver then
+			-- FIXME: Multi tier machine like supply converter should also attach to other networks around pos.
+			--      Preferably also with connection rules defined for machine.
+			--      nodedef.connect_sides could be used to generate these rules.
+			--		For now, assume that all multi network machines belong to technic.producer_receiver group:
+			-- Get cables and networks around PR_RE machine
+			local _, machine_cables, _ = get_neighbors(pos)
+			for _,connection in ipairs(machine_cables) do
+				if connection.network and connection.network.id ~= network.id then
+					-- Attach PR_RE machine to secondary networks (last added is primary until above note is resolved)
+					technic.add_network_node(pos, connection.network)
+				end
+			end
+		else
+			-- Check connected cables for foreign networks, overload if machine was connected to multiple networks
+			for _, connection in ipairs(cables) do
+				if connection.network and connection.network.id ~= network.id then
+					technic.overload_network(connection.network.id)
+					technic.overload_network(network.id)
+				end
+			end
+		end
+		-- Machine added, skip all network building
+		return
+	end
+
+	-- Attach neighbor machines if cable was added
+	for _,machine_pos in ipairs(machines) do
+		technic.add_network_node(machine_pos, network)
+	end
+
+	-- Attach neighbor cables
+	for _,connection in ipairs(cables) do
+		if connection.network then
+			if connection.network.id ~= network.id then
+				-- Remove network if position belongs to another network
+				-- FIXME: Network requires partial rebuild but avoid doing it here if possible.
+				-- This might cause problems when merging two active networks into one
+				technic.remove_network(network.id)
+				technic.remove_network(connection.network.id)
+				connection.network = nil
+			end
+		else
+			-- There's cable that does not belong to any network, attach whole branch
+			technic.add_network_node(connection.pos, network)
+			technic.add_network_branch({connection.pos}, network)
+		end
+	end
+end
+
+-- Remove machine or cable from network
+local function remove_network_node(network_id, pos)
 	local network = networks[network_id]
-	if network then
-		network.supply = 0
-		network.battery_charge = 0
+	if not network then return end
+	-- Clear hash tables, cannot use table.remove
+	local node_id = poshash(pos)
+	technic_cables[node_id] = nil
+	network.all_nodes[node_id] = nil
+	-- TODO: All following things can be skipped if node is not machine
+	--   check here if it is or is not cable
+	--   or add separate function to remove cables and move responsibility to caller
+	-- Clear indexed arrays, do NOT leave holes
+	local machine_removed = false
+	for _,tblname in ipairs(network_node_arrays) do
+		local tbl = network[tblname]
+		for i=#tbl,1,-1 do
+			local mpos = tbl[i]
+			if mpos.x == pos.x and mpos.y == pos.y and mpos.z == pos.z then
+				table.remove(tbl, i)
+				machine_removed = true
+				break
+			end
+		end
 	end
-	overloaded_networks[network_id] = minetest.get_us_time() + (overload_reset_time * 1000 * 1000)
-end
-technic.overload_network = overload_network
-
-local function reset_overloaded(network_id)
-	local remaining = math.max(0, overloaded_networks[network_id] - minetest.get_us_time())
-	if remaining == 0 then
-		-- Clear cache, remove overload and restart network
-		technic.remove_network(network_id)
-		overloaded_networks[network_id] = nil
+	if machine_removed then
+		-- Machine can still be in world, just not connected to any network. If so then disable it.
+		local node = minetest.get_node(pos)
+		technic.disable_machine(pos, node)
 	end
-	-- Returns 0 when network reset or remaining time if reset timer has not expired yet
-	return remaining
 end
-technic.reset_overloaded = reset_overloaded
 
-local function is_overloaded(network_id)
-	return overloaded_networks[network_id]
+function technic.remove_network_node(pos, tiers, name)
+	-- Get the network and neighbors
+	local network, cables, machines = get_neighbors(pos, tiers)
+	if not network then return end
+
+	if not match_cable_tier_filter(name, tiers) then
+		-- Machine removed, skip cable checks to prevent unnecessary network cleanups
+		for _,connection in ipairs(cables) do
+			if connection.network then
+				-- Remove machine from all networks around it
+				remove_network_node(connection.network.id, pos)
+			end
+		end
+		return
+	end
+
+	if #cables == 1 then
+		-- Dead end cable removed, remove it from the network
+		remove_network_node(network.id, pos)
+		-- Remove neighbor machines from network if cable was removed
+		if match_cable_tier_filter(name, tiers) then
+			for _,machine_pos in ipairs(machines) do
+				local net, _, _ = get_neighbors(machine_pos, tiers)
+				if not net then
+					-- Remove machine from network if it does not have other connected cables
+					remove_network_node(network.id, machine_pos)
+				end
+			end
+		end
+	else
+		-- TODO: Check branches around and switching stations for branches:
+		--   remove branches that do not have switching station. Switching stations not tracked but could be easily tracked.
+		--   remove branches not connected to another branch. Individual branches not tracked, requires simple AI heuristics.
+		--   move branches that have switching station to new networks without checking or loading actual nodes in world.
+		--   To do all this network must be aware of individual branches and switching stations, might not be worth it...
+		-- For now remove whole network and let ABM rebuild it
+		technic.remove_network(network.id)
+	end
 end
-technic.is_overloaded = is_overloaded
 
 --
 -- Functions to traverse the electrical network
@@ -248,18 +355,18 @@ technic.is_overloaded = is_overloaded
 -- Add a machine node to the LV/MV/HV network
 local function add_network_machine(nodes, pos, network_id, all_nodes, multitier)
 	local node_id = poshash(pos)
-	local net_id_old = cables[node_id]
+	local net_id_old = technic_cables[node_id]
 	if net_id_old == nil or (multitier and net_id_old ~= network_id and all_nodes[node_id] == nil) then
 		-- Add machine to network only if it is not already added
 		table.insert(nodes, pos)
 		-- FIXME: Machines connecting to multiple networks should have way to store multiple network ids
-		cables[node_id] = network_id
+		technic_cables[node_id] = network_id
 		all_nodes[node_id] = pos
 		return true
 	elseif not multitier and net_id_old ~= network_id then
 		-- Do not allow running from multiple networks, trigger overload
-		overload_network(network_id)
-		overload_network(net_id_old)
+		technic.overload_network(network_id)
+		technic.overload_network(net_id_old)
 		local meta = minetest.get_meta(pos)
 		meta:set_string("infotext",S("Network Overloaded"))
 	end
@@ -268,15 +375,15 @@ end
 -- Add a wire node to the LV/MV/HV network
 local function add_cable_node(pos, network)
 	local node_id = poshash(pos)
-	if not cables[node_id] then
-		cables[node_id] = network.id
+	if not technic_cables[node_id] then
+		technic_cables[node_id] = network.id
 		network.all_nodes[node_id] = pos
 		if network.queue then
 			table.insert(network.queue, pos)
 		end
-	elseif cables[node_id] ~= network.id then
+	elseif technic_cables[node_id] ~= network.id then
 		-- Conflicting network connected, merge networks if both are still in building stage
-		local net2 = networks[cables[node_id]]
+		local net2 = networks[technic_cables[node_id]]
 		if net2 and net2.queue then
 			technic.merge_networks(network, net2)
 		end
@@ -288,7 +395,7 @@ local function add_network_node(network, pos, machines)
 	technic.get_or_load_node(pos)
 	local name = minetest.get_node(pos).name
 
-	if technic.is_tier_cable(name, network.tier) then
+	if technic.get_cable_tier(name) == network.tier then
 		add_cable_node(pos, network)
 	elseif machines[name] then
 		if     machines[name] == technic.producer then
@@ -438,6 +545,21 @@ end
 --
 local node_technic_run = {}
 minetest.register_on_mods_loaded(function()
+	for name, tiers in pairs(technic.machine_tiers) do
+		local nodedef = minetest.registered_nodes[name]
+		local on_construct = type(nodedef.on_construct) == "function" and nodedef.on_construct
+		local on_destruct = type(nodedef.on_destruct) == "function" and nodedef.on_destruct
+		local place_node = technic.place_network_node
+		local remove_node = technic.remove_network_node
+		minetest.override_item(name, {
+			on_construct = on_construct
+				and function(pos) on_construct(pos) place_node(pos, tiers, name) end
+				or  function(pos) place_node(pos, tiers, name) end,
+			on_destruct = on_destruct
+				and function(pos) on_destruct(pos) remove_node(pos, tiers, name) end
+				or  function(pos) remove_node(pos, tiers, name) end,
+		})
+	end
 	for name, _ in pairs(technic.machine_tiers) do
 		if type(minetest.registered_nodes[name].technic_run) == "function" then
 			node_technic_run[name] = minetest.registered_nodes[name].technic_run
