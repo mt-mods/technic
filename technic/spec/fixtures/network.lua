@@ -37,6 +37,7 @@ technic.register_tier("MV", "Busted MV")
 technic.register_tier("HV", "Busted HV")
 
 sourcefile("machines/network")
+sourcefile("machines/overload")
 
 sourcefile("machines/register/cables")
 sourcefile("machines/LV/cables")

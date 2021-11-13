@@ -6,6 +6,7 @@ require("mineunit")
 
 -- Load fixtures required by tests
 fixture("technic")
+sourcefile("init")
 
 describe("Technic API", function()
 

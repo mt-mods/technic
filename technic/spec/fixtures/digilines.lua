@@ -1,10 +1,12 @@
 
+-- Simple digilines mod fixture that logs sent messages, works with some simple digiline mods
+
 mineunit:set_modpath("digilines", "spec/fixtures")
 
-_G.digilines = {
+digilines = {
 	_msg_log = {},
 	receptor_send = function(pos, rules, channel, msg)
-		table.insert(_G.digilines._msg_log, {
+		table.insert(digilines._msg_log, {
 			pos = pos,
 			rules = rules,
 			channel = channel,
@@ -28,3 +30,8 @@ _G.digilines = {
 		}
 	}
 }
+
+digilines = setmetatable(digilines, {
+	__call = function(self,...) return self end,
+	__index = function(...) return function(...)end end,
+})
