@@ -10,21 +10,38 @@ end
 local chests_meta = {
 	iron = {
 		infotext = wrench.META_TYPE_STRING,
+		formspec = wrench.META_TYPE_STRING,
+		sort_mode = wrench.META_TYPE_INT,
 	},
 	copper = {
 		infotext = wrench.META_TYPE_STRING,
+		formspec = wrench.META_TYPE_STRING,
+		sort_mode = wrench.META_TYPE_INT,
+		autosort = wrench.META_TYPE_INT,
 	},
 	silver = {
 		infotext = wrench.META_TYPE_STRING,
 		formspec = wrench.META_TYPE_STRING,
+		sort_mode = wrench.META_TYPE_INT,
+		autosort = wrench.META_TYPE_INT,
 	},
 	gold = {
 		infotext = wrench.META_TYPE_STRING,
 		formspec = wrench.META_TYPE_STRING,
+		sort_mode = wrench.META_TYPE_INT,
+		autosort = wrench.META_TYPE_INT,
 	},
 	mithril = {
 		infotext = wrench.META_TYPE_STRING,
 		formspec = wrench.META_TYPE_STRING,
+		sort_mode = wrench.META_TYPE_INT,
+		autosort = wrench.META_TYPE_INT,
+		channel = wrench.META_TYPE_STRING,
+		send_put = wrench.META_TYPE_INT,
+		send_take = wrench.META_TYPE_INT,
+		send_inject = wrench.META_TYPE_INT,
+		send_pull = wrench.META_TYPE_INT,
+		send_overflow = wrench.META_TYPE_INT,
 	},
 }
 

@@ -28,6 +28,7 @@ end
 
 register_mod_nodes("default")
 register_mod_nodes("technic")
+register_mod_nodes("technic_cnc")
 register_mod_nodes("technic_chests")
 register_mod_nodes("drawers")
 
