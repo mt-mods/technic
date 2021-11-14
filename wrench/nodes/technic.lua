@@ -4,10 +4,8 @@
 local machine_invlist = {"src", "dst"}
 local machine_invlist_upgrades = {"src", "dst", "upgrade1", "upgrade2"}
 
-local function register_machine_node(nodename, tier, extra_fields, lists)
-	if not lists then
-		lists = tier ~= "LV" and machine_invlist_upgrades or machine_invlist
-	end
+local function register_machine_node(nodename, tier)
+	local lists = tier ~= "LV" and machine_invlist_upgrades or machine_invlist
 	local metas = {
 		infotext = wrench.META_TYPE_STRING,
 		formspec = wrench.META_TYPE_STRING,
@@ -16,9 +14,6 @@ local function register_machine_node(nodename, tier, extra_fields, lists)
 		tube_time = tier ~= "LV" and wrench.META_TYPE_INT or nil,
 		src_time = wrench.META_TYPE_INT,
 	}
-	for key, value in pairs(extra_fields or {}) do
-		metas[key] = value
-	end
 	wrench:register_node(nodename, {lists = lists, metas = metas})
 end
 
@@ -31,23 +26,21 @@ local base_machines = {
 	alloy_furnace = {tiers = {"LV", "MV"}},
 	extractor = {tiers = {"LV", "MV"}},
 	centrifuge = {tiers = {"MV"}},
+	freezer = {tiers = {"MV"}},
 }
 
 for name, data in pairs(base_machines) do
 	for _,tier in ipairs(data.tiers) do
 		local nodename = "technic:"..tier:lower().."_"..name
-		register_machine_node(nodename, tier, data.extra_fields, data.lists)
+		register_machine_node(nodename, tier)
 		if minetest.registered_nodes[nodename.."_active"] then
-			register_machine_node(nodename.."_active", tier, data.extra_fields, data.lists)
+			register_machine_node(nodename.."_active", tier)
 		end
 	end
 end
 
 ---------------------------------------------------------------------
----------------------------------------------------------------------
--- SPECIAL NODES
----------------------------------------------------------------------
----------------------------------------------------------------------
+-- Special nodes
 
 wrench:register_node("technic:coal_alloy_furnace", {
 	lists = {"fuel", "src", "dst"},
@@ -79,30 +72,6 @@ wrench:register_node("technic:tool_workshop", {
 		MV_EU_demand = wrench.META_TYPE_INT,
 		MV_EU_input = wrench.META_TYPE_INT,
 		tube_time = wrench.META_TYPE_INT
-	},
-})
-
-wrench:register_node("technic:cnc", {
-	lists = {"src", "dst"},
-	metas = {
-		infotext = wrench.META_TYPE_STRING,
-		formspec = wrench.META_TYPE_STRING,
-		LV_EU_demand = wrench.META_TYPE_INT,
-		LV_EU_input = wrench.META_TYPE_INT,
-		src_time = wrench.META_TYPE_INT,
-		cnc_product = wrench.META_TYPE_STRING
-	},
-})
-
-wrench:register_node("technic:cnc_active", {
-	lists = {"src", "dst"},
-	metas = {
-		infotext = wrench.META_TYPE_STRING,
-		formspec = wrench.META_TYPE_STRING,
-		LV_EU_demand = wrench.META_TYPE_INT,
-		LV_EU_input = wrench.META_TYPE_INT,
-		src_time = wrench.META_TYPE_INT,
-		cnc_product = wrench.META_TYPE_STRING
 	},
 })
 
