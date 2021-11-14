@@ -19,43 +19,6 @@ wrench.META_TYPE_FLOAT = 1
 wrench.META_TYPE_STRING = 2
 wrench.META_TYPE_INT = 3
 
-local STRING, FLOAT  =
-	wrench.META_TYPE_STRING,
-	wrench.META_TYPE_FLOAT
-
-wrench.registered_nodes = {
-	["default:chest"] = {
-		lists = {"main"},
-	},
-	["default:chest_locked"] = {
-		lists = {"main"},
-		metas = {owner = STRING,
-			infotext = STRING},
-		owned = true,
-	},
-	["default:furnace"] = {
-		lists = {"fuel", "src", "dst"},
-		metas = {infotext = STRING,
-			fuel_totaltime = FLOAT,
-			fuel_time = FLOAT,
-			src_totaltime = FLOAT,
-			src_time = FLOAT},
-	},
-	["default:furnace_active"] = {
-		lists = {"fuel", "src", "dst"},
-		metas = {infotext = STRING,
-			fuel_totaltime = FLOAT,
-			fuel_time = FLOAT,
-			src_totaltime = FLOAT,
-			src_time = FLOAT},
-		store_meta_always = true,
-	},
-	["default:sign_wall"] = {
-		metas = {infotext = STRING,
-			text = STRING},
-	},
-}
-
 function wrench:original_name(name)
 	for key, value in pairs(self.registered_nodes) do
 		if name == value.name then
@@ -65,7 +28,11 @@ function wrench:original_name(name)
 end
 
 function wrench:register_node(name, def)
+	assert(type(name) == "string", "wrench:register_node invalid type for name")
+	assert(type(def) == "table", "wrench:register_node invalid type for def")
 	if minetest.registered_nodes[name] then
 	    self.registered_nodes[name] = def
+	else
+		minetest.log("warning", "Attempt to register unknown node for wrench: "..tostring(name))
 	end
 end
