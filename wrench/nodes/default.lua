@@ -37,7 +37,14 @@ wrench:register_node("default:furnace_active", {
 	store_meta_always = true,
 })
 
-wrench:register_node("default:sign_wall", {
+wrench:register_node("default:sign_wall_wood", {
+	metas = {
+		infotext = wrench.META_TYPE_STRING,
+		text = wrench.META_TYPE_STRING
+	},
+})
+
+wrench:register_node("default:sign_wall_steel", {
 	metas = {
 		infotext = wrench.META_TYPE_STRING,
 		text = wrench.META_TYPE_STRING
