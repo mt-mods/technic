@@ -13,12 +13,24 @@ available to survival-mode players.
 
 local LATEST_SERIALIZATION_VERSION = 1
 
-wrench = {}
+wrench = {
+	registered_nodes = {}
+}
 
 local modpath = minetest.get_modpath(minetest.get_current_modname())
-dofile(modpath.."/support.lua")
-dofile(modpath.."/technic.lua")
-dofile(modpath.."/drawers.lua")
+dofile(modpath.."/api.lua")
+
+local function register_mod_nodes(modname)
+	if minetest.get_modpath(modname) then
+		dofile(modpath.."/nodes/"..modname..".lua")
+	end
+end
+
+register_mod_nodes("default")
+register_mod_nodes("technic")
+register_mod_nodes("technic_cnc")
+register_mod_nodes("technic_chests")
+register_mod_nodes("drawers")
 
 -- Boilerplate to support localized strings if intllib mod is installed.
 local S = rawget(_G, "intllib") and intllib.Getter() or function(s) return s end
