@@ -119,9 +119,14 @@ local tube = {
 	connect_sides = {left=1, right=1, back=1, top=1},
 }
 
-function technic.register_battery_box(data)
-	local tier = data.tier
+function technic.register_battery_box(nodename, data)
+	local colon, modname, name, def = technic.register_compat_v1_to_v2(nodename, data, "battery_box")
+	local texture_prefix = modname.."_"..name
+	nodename = modname..":"..name
+
+	local tier = def.tier
 	local ltier = string.lower(tier)
+
 	local formspec =
 		"size[8,9]"..
 		"image[1,1;1,2;technic_power_meter_bg.png]"..
@@ -137,7 +142,7 @@ function technic.register_battery_box(data)
 		"listring[current_player;main]"..
 		"listring[context;src]"..
 		"listring[current_player;main]"..
-		(data.upgrade and
+		(def.upgrade and
 			"list[context;upgrade1;3.5,3;1,1;]"..
 			"list[context;upgrade2;4.5,3;1,1;]"..
 			"label[3.5,4;"..S("Upgrade Slots").."]"..
@@ -168,10 +173,10 @@ function technic.register_battery_box(data)
 		local meta = minetest.get_meta(pos)
 		local current_charge = meta:get_int("internal_EU_charge")
 		local EU_upgrade = 0
-		if data.upgrade then
+		if def.upgrade then
 			EU_upgrade = technic.handle_machine_upgrades(meta)
 		end
-		local max_charge = data.max_charge * (1 + EU_upgrade / 10)
+		local max_charge = def.max_charge * (1 + EU_upgrade / 10)
 		-- Select node textures
 		local charge_ratio = current_charge / max_charge
 		local charge_count = math.ceil(charge_ratio * 8)
@@ -179,7 +184,7 @@ function technic.register_battery_box(data)
 		charge_count = math.max(charge_count, 0)
 		local last_count = meta:get_float("last_side_shown")
 		if charge_count ~= last_count then
-			technic.swap_node(pos, "technic:" .. ltier .. "_battery_box" .. charge_count)
+			technic.swap_node(pos, nodename .. charge_count)
 			meta:set_float("last_side_shown", charge_count)
 		end
 		-- Update formspec and infotext
@@ -265,10 +270,10 @@ function technic.register_battery_box(data)
 		local current_charge = meta:get_int("internal_EU_charge")
 
 		local EU_upgrade, tube_upgrade = 0, 0
-		if data.upgrade then
+		if def.upgrade then
 			EU_upgrade, tube_upgrade = technic.handle_machine_upgrades(meta)
 		end
-		local max_charge = data.max_charge * (1 + EU_upgrade / 10)
+		local max_charge = def.max_charge * (1 + EU_upgrade / 10)
 
 		-- Charge/discharge the battery with the input EUs
 		if eu_input >= 0 then
@@ -279,10 +284,10 @@ function technic.register_battery_box(data)
 
 		-- Charging/discharging tools here
 		local tool_full, tool_empty
-		current_charge, tool_full = charge_tools(meta, current_charge, data.charge_step)
-		current_charge, tool_empty = discharge_tools(meta, current_charge, data.discharge_step, max_charge)
+		current_charge, tool_full = charge_tools(meta, current_charge, def.charge_step)
+		current_charge, tool_empty = discharge_tools(meta, current_charge, def.discharge_step, max_charge)
 
-		if data.tube and (tool_full or tool_empty) then
+		if def.tube and (tool_full or tool_empty) then
 			technic.handle_machine_pipeworks(pos, tube_upgrade, function(pos2, x_velocity, z_velocity)
 				if tool_full then
 					technic.send_items(pos2, x_velocity, z_velocity, "src")
@@ -293,8 +298,8 @@ function technic.register_battery_box(data)
 		end
 
 		-- We allow batteries to charge on less than the demand
-		local supply = math.min(data.discharge_rate, current_charge)
-		local demand = math.min(data.charge_rate, max_charge - current_charge)
+		local supply = math.min(def.discharge_rate, current_charge)
+		local demand = math.min(def.charge_rate, max_charge - current_charge)
 		network:update_battery(current_charge, max_charge, supply, demand)
 
 		meta:set_int(tier.."_EU_demand", demand)
@@ -321,23 +326,22 @@ function technic.register_battery_box(data)
 			groups.not_in_creative_inventory = 1
 		end
 
-		if data.tube then
+		if def.tube then
 			groups.tubedevice = 1
 			groups.tubedevice_receiver = 1
 		end
 
-		local top_tex = "technic_"..ltier.."_battery_box_top.png"..tube_entry
-		local front_tex = "technic_"..ltier.."_battery_box_front.png^technic_power_meter"..i..".png"
-		local side_tex = "technic_"..ltier.."_battery_box_side.png"..tube_entry
-		local bottom_tex = "technic_"..ltier.."_battery_box_bottom.png"..cable_entry
-
+		local top_tex = texture_prefix.."_top.png"..tube_entry
+		local front_tex = texture_prefix.."_front.png^technic_power_meter"..i..".png"
+		local side_tex = texture_prefix.."_side.png"..tube_entry
+		local bottom_tex = texture_prefix.."_bottom.png"..cable_entry
 		if ltier == "lv" then
-			top_tex = "technic_"..ltier.."_battery_box_top.png"
-			front_tex = "technic_"..ltier.."_battery_box_side.png^technic_power_meter"..i..".png"
-			side_tex = "technic_"..ltier.."_battery_box_side.png^technic_power_meter"..i..".png"
+			top_tex = texture_prefix.."_top.png"
+			front_tex = texture_prefix.."_side.png^technic_power_meter"..i..".png"
+			side_tex = texture_prefix.."_side.png^technic_power_meter"..i..".png"
 		end
 
-		minetest.register_node("technic:"..ltier.."_battery_box"..i, {
+		minetest.register_node(colon..nodename..i, {
 			description = S("%s Battery Box"):format(tier),
 			tiles = {
 				top_tex,
@@ -348,7 +352,7 @@ function technic.register_battery_box(data)
 				front_tex},
 			groups = groups,
 			connect_sides = {"bottom"},
-			tube = data.tube and tube or nil,
+			tube = def.tube and tube or nil,
 			paramtype2 = "facedir",
 			sounds = default.node_sound_wood_defaults(),
 			drop = "technic:"..ltier.."_battery_box0",
@@ -378,12 +382,12 @@ function technic.register_battery_box(data)
 					return false
 				end
 			end,
-			after_place_node = data.tube and pipeworks.after_place,
+			after_place_node = def.tube and pipeworks.after_place,
 			after_dig_node = technic.machine_after_dig_node,
 			on_receive_fields = function(pos, formname, fields, player)
-				local name = player:get_player_name()
-				if minetest.is_protected(pos, name) then
-					minetest.record_protection_violation(pos, name)
+				local playername = player:get_player_name()
+				if minetest.is_protected(pos, playername) then
+					minetest.record_protection_violation(pos, playername)
 					return
 				elseif fields.setchannel then
 					local meta = minetest.get_meta(pos)
@@ -412,7 +416,7 @@ function technic.register_battery_box(data)
 							supply = meta:get_int(tier.."_EU_supply"),
 							input  = meta:get_int(tier.."_EU_input"),
 							charge = meta:get_int("internal_EU_charge"),
-							max_charge = data.max_charge * (1 + technic.handle_machine_upgrades(meta) / 10),
+							max_charge = def.max_charge * (1 + technic.handle_machine_upgrades(meta) / 10),
 							src      = inv:get_stack("src", 1):to_table(),
 							dst      = inv:get_stack("dst", 1):to_table(),
 							upgrade1 = inv:get_stack("upgrade1", 1):to_table(),
@@ -427,7 +431,7 @@ function technic.register_battery_box(data)
 	-- Register as a battery type
 	-- Battery type machines function as power reservoirs and can both receive and give back power
 	for i = 0, 8 do
-		technic.register_machine(tier, "technic:"..ltier.."_battery_box"..i, technic.battery)
+		technic.register_machine(tier, nodename..i, technic.battery)
 	end
 
 end -- End registration

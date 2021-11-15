@@ -151,6 +151,29 @@ describe("Power network helper", function()
 
 end)
 
+describe("Network initialization", function()
+
+	describe("overload", function()
+
+		world.layout({
+			{{x=10,y=11,z=10}, "technic:switching_station"}, -- First network
+			{{x=10,y=10,z=10}, "technic:hv_cable"},
+			{{x=11,y=10,z=10}, "technic:hv_generator"}, -- This machine is connected to both networks
+			{{x=12,y=10,z=10}, "technic:hv_cable"},
+			{{x=12,y=11,z=10}, "technic:switching_station"}, -- Second network
+		})
+
+		it("networks connected through machine", function()
+			local net1 = get_network_fixture({x=10,y=11,z=10})
+			local net2 = get_network_fixture({x=12,y=11,z=10})
+			assert.truthy(technic.is_overloaded(net1.id))
+			assert.truthy(technic.is_overloaded(net2.id))
+		end)
+
+	end)
+
+end)
+
 describe("technic.merge_networks", function()
 
 	describe("function behavior", function()

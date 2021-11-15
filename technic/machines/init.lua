@@ -11,8 +11,16 @@ technic.digilines = {
 		{x= 0,y=-1,z= 1},{x= 0,y=-1,z=-1}, -- 1 node below along z diagonal
 		-- added rules for digi cable
 		{x =  0, y = -1, z = 0}, -- along y below
+	},
+	rules_allfaces = {
+		{x= 1, y= 0, z= 0}, {x=-1, y= 0, z= 0}, -- along x beside
+		{x= 0, y= 1, z= 0}, {x= 0, y=-1, z= 0}, -- along y above and below
+		{x= 0, y= 0, z= 1}, {x= 0, y= 0, z=-1}, -- along z beside
 	}
 }
+
+-- Compatibility shim to allow old API usage
+dofile(path.."/compat/api.lua")
 
 -- https://github.com/mt-mods/technic/issues/100
 dofile(path.."/compat/digtron.lua")

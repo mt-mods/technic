@@ -1,3 +1,4 @@
+local S = technic.getter
 
 minetest.register_alias("extractor", "technic:lv_extractor")
 
@@ -25,4 +26,10 @@ else
 
 end
 
-technic.register_extractor({tier = "LV", demand = {300}, speed = 1})
+technic.register_base_machine("technic:lv_extractor", {
+	typename = "extracting",
+	description = S("%s Extractor"),
+	tier = "LV",
+	demand = {300},
+	speed = 1
+})

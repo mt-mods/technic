@@ -1,3 +1,5 @@
+local S = technic.getter
+
 minetest.register_craft({
 	output = 'technic:hv_cable 3',
 	recipe = {
@@ -7,24 +9,46 @@ minetest.register_craft({
 	}
 })
 
-technic.register_cable("HV", 3/16)
+minetest.register_craft({
+	output = "technic:hv_cable_plate_1 5",
+	recipe = {
+		{""                , ""                , "technic:hv_cable"},
+		{"technic:hv_cable", "technic:hv_cable", "technic:hv_cable"},
+		{""                , ""                , "technic:hv_cable"},
+	}
+})
+
+minetest.register_craft({
+	output = "technic:hv_cable",
+	recipe = {{"technic:hv_cable_plate_1"}}
+})
+
+-- Register cables
+
+technic.register_cable("technic:hv_cable", {
+	tier = "HV",
+	size = 3/16,
+	description = S("%s Cable"):format("HV")
+})
+technic.register_cable_plate("technic:hv_cable_plate", {
+	tier = "HV",
+	size = 3/16,
+	description = S("%s Cable Plate"):format("HV"),
+	tiles = {"technic_hv_cable.png"},
+})
 
 if minetest.get_modpath("digilines") then
-
-	local S = technic.getter
-
-	technic.register_cable("HV", 3/16, S("HV Cable (digiline)"), "_digi", {
-		digiline = {
-			wire = {
-				rules = {
-					{x = 1, y = 0, z = 0},
-					{x =-1, y = 0, z = 0},
-					{x = 0, y = 1, z = 0},
-					{x = 0, y =-1, z = 0},
-					{x = 0, y = 0, z = 1},
-					{x = 0, y = 0, z =-1}
-				}
-			}
-		}
+	technic.register_cable("technic:hv_digi_cable", {
+		tier = "HV",
+		size = 3/16,
+		description = S("%s Digiline Cable"):format("HV"),
+		digiline = { wire = { rules = technic.digilines.rules_allfaces } }
+	})
+	technic.register_cable_plate("technic:hv_digi_cable_plate", {
+		tier = "HV",
+		size = 3/16,
+		description = S("%s Digiline Cable Plate"):format("HV"),
+		digiline = { wire = { rules = technic.digilines.rules_allfaces } },
+		tiles = {"technic_hv_digi_cable.png"}
 	})
 end

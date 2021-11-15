@@ -6,7 +6,7 @@
 -- The LV arrays are used to make medium voltage arrays.
 
 minetest.register_craft({
-	output = 'technic:solar_array_lv 1',
+	output = 'technic:lv_solar_array 1',
 	recipe = {
 		{'technic:solar_panel',        'technic:solar_panel',    'technic:solar_panel'},
 		{'technic:carbon_steel_ingot', 'technic:lv_transformer', 'technic:carbon_steel_ingot'},
@@ -14,5 +14,9 @@ minetest.register_craft({
 	}
 })
 
-technic.register_solar_array({tier="LV", power=10})
+technic.register_solar_array("technic:lv_solar_array", {
+	tier="LV",
+	power=10
+})
 
+minetest.register_alias("technic:solar_array_lv", "technic:lv_solar_array")

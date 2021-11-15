@@ -20,9 +20,9 @@ describe("LV machine network", function()
 		"technic:lv_generator",
 		"technic:geothermal",
 		"technic:solar_panel",
-		"technic:solar_array_lv",
-		"technic:solar_array_lv",
-		"technic:solar_array_lv",
+		"technic:lv_solar_array",
+		"technic:lv_solar_array",
+		"technic:lv_solar_array",
 		"technic:lv_battery_box0",
 		"technic:lv_electric_furnace",
 		"technic:lv_extractor",
@@ -159,7 +159,7 @@ describe("LV machine network", function()
 		-- Remove generators and run network 60 times
 		local generators = {
 			["technic:solar_panel"] = 1,
-			["technic:solar_array_lv"] = 1,
+			["technic:lv_solar_array"] = 1,
 		}
 		local restore = remove_nodes(generators)
 
