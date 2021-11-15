@@ -32,6 +32,8 @@ register_mod_nodes("technic_cnc")
 register_mod_nodes("technic_chests")
 register_mod_nodes("drawers")
 
+dofile(modpath.."/legacy.lua")
+
 -- Boilerplate to support localized strings if intllib mod is installed.
 local S = rawget(_G, "intllib") and intllib.Getter() or function(s) return s end
 
