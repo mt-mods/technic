@@ -129,7 +129,6 @@ Recommended mods that build on the `technic mod`:
 | enable_mining_drill                          |                                                                                                                       |
 | enable_mining_laser                          |                                                                                                                       |
 | enable_flashlight                            |                                                                                                                       |
-| enable_wrench_crafting                       | enable recipe for wrench                                                                                              |
 | enable_wind_mill                             |                                                                                                                       |
 | enable_frames                                |                                                                                                                       |
 | enable_corium_griefing                       |                                                                                                                       |

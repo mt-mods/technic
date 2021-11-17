@@ -1,6 +1,14 @@
 
 -- Register wrench support for technic_chests
 
+local function get_chest_description(pos, meta, node)
+	local desc = minetest.registered_nodes[node.name].description
+	local text = meta:get_string("infotext")
+	if text ~= desc then
+		return text
+	end
+end
+
 local function with_owner_field(metas)
 	local result = table.copy(metas)
 	result.owner = wrench.META_TYPE_STRING
@@ -46,17 +54,20 @@ local chests_meta = {
 }
 
 for name, metas in pairs(chests_meta) do
-	wrench:register_node("technic:"..name.."_chest", {
+	wrench.register_node("technic:"..name.."_chest", {
 		lists = {"main"},
 		metas = metas,
+		description = get_chest_description,
 	})
-	wrench:register_node("technic:"..name.."_protected_chest", {
+	wrench.register_node("technic:"..name.."_protected_chest", {
 		lists = {"main"},
 		metas = metas,
+		description = get_chest_description,
 	})
-	wrench:register_node("technic:"..name.."_locked_chest", {
+	wrench.register_node("technic:"..name.."_locked_chest", {
 		lists = {"main"},
 		metas = with_owner_field(metas),
+		description = get_chest_description,
 		owned = true,
 	})
 end
@@ -82,17 +93,20 @@ local chest_mark_colors = {
 }
 
 for i = 1, 15 do
-	wrench:register_node("technic:gold_chest"..chest_mark_colors[i], {
+	wrench.register_node("technic:gold_chest"..chest_mark_colors[i], {
 		lists = {"main"},
 		metas = chests_meta.gold,
+		description = get_chest_description,
 	})
-	wrench:register_node("technic:gold_protected_chest"..chest_mark_colors[i], {
+	wrench.register_node("technic:gold_protected_chest"..chest_mark_colors[i], {
 		lists = {"main"},
 		metas = chests_meta.gold,
+		description = get_chest_description,
 	})
-	wrench:register_node("technic:gold_locked_chest"..chest_mark_colors[i], {
+	wrench.register_node("technic:gold_locked_chest"..chest_mark_colors[i], {
 		lists = {"main"},
 		metas = with_owner_field(chests_meta.gold),
+		description = get_chest_description,
 		owned = true,
 	})
 end
