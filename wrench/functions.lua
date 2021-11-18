@@ -97,6 +97,9 @@ function wrench.pickup_node(pos, player)
 end
 
 function wrench.restore_node(pos, player, stack)
+	if not stack then
+		return
+	end
 	local data = get_stored_metadata(stack)
 	if not data then
 		return
