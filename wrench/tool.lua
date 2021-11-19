@@ -13,15 +13,13 @@ minetest.register_tool("wrench:wrench", {
 		if minetest.is_protected(pos, name) then
 			return
 		end
-		local can_pickup, msg = wrench.can_pickup_node(pos, player)
-		if not can_pickup then
-			if msg then
-				minetest.chat_send_player(name, msg)
+		local picked_up, err_msg = wrench.pickup_node(pos, player)
+		if not picked_up then
+			if err_msg then
+				minetest.chat_send_player(name, err_msg)
 			end
 			return
 		end
-		local new_stack = wrench.pickup_node(pos, player)
-		player:get_inventory():add_item("main", new_stack)
 		itemstack:add_wear(65535 / 20)
 		return itemstack
 	end,

@@ -3,6 +3,14 @@ local S = rawget(_G, "intllib") and intllib.Getter() or function(s) return s end
 
 local SERIALIZATION_VERSION = 1
 
+local errors = {
+	owned = S("Cannot pickup node. Owned by %s."),
+	full_inv = S("Not enough room in inventory to pickup node."),
+	bad_item = S("Cannot pickup node containing %s."),
+	nested = S("Cannot pickup node. Nesting inventories is not allowed."),
+	metadata = S("Cannot pickup node. Node contains too much metadata."),
+}
+
 local function get_stored_metadata(itemstack)
 	local meta = itemstack:get_meta()
 	local data = meta:get("data") or meta:get("")
@@ -11,38 +19,6 @@ local function get_stored_metadata(itemstack)
 		return
 	end
 	return data
-end
-
-function wrench.can_pickup_node(pos, player)
-	local def = wrench.registered_nodes[minetest.get_node(pos).name]
-	if not def then
-		return false
-	end
-	local meta = minetest.get_meta(pos)
-	if def.owned and not minetest.check_player_privs(player, "protection_bypass") then
-		local owner = meta:get_string("owner")
-		if owner ~= "" and owner ~= player:get_player_name() then
-			return false, S("Cannot pickup node. Owned by %s"):format(owner)
-		end
-	end
-	if not player:get_inventory():room_for_item("main", "unique_item") then
-		return false, S("No room in inventory to pickup node.")
-	end
-	local inv = meta:get_inventory()
-	for _,listname in pairs(def.lists or {}) do
-		for _,stack in pairs(inv:get_list(listname) or {}) do
-			local item = stack:get_name()
-			if wrench.blacklisted_items[item] then
-				local desc = minetest.registered_items[item].description
-				return false, S("Cannot pickup node containing %s"):format(desc)
-			end
-			local data = get_stored_metadata(stack)
-			if data and data.lists and next(data.lists) ~= nil then
-				return false, S("Cannot pickup node. Nesting inventories is not allowed.")
-			end
-		end
-	end
-	return true
 end
 
 local function get_description(def, pos, meta, node, player)
@@ -64,17 +40,31 @@ function wrench.pickup_node(pos, player)
 	if not def then
 		return
 	end
+	local meta = minetest.get_meta(pos)
+	if def.owned and not minetest.check_player_privs(player, "protection_bypass") then
+		local owner = meta:get_string("owner")
+		if owner ~= "" and owner ~= player:get_player_name() then
+			return false, errors.owned:format(owner)
+		end
+	end
 	local data = {
 		name = node.name,
 		version = SERIALIZATION_VERSION,
 		lists = {},
 		metas = {},
 	}
-	local meta = minetest.get_meta(pos)
 	local inv = meta:get_inventory()
 	for _, listname in pairs(def.lists or {}) do
 		local list = inv:get_list(listname)
 		for i, stack in pairs(list) do
+			if wrench.blacklisted_items[stack:get_name()] then
+				local desc = stack:get_definition().description
+				return false, errors.bad_item:format(desc)
+			end
+			local sdata = get_stored_metadata(stack)
+			if sdata and sdata.lists and next(sdata.lists) ~= nil then
+				return false, errors.nested
+			end
 			list[i] = stack:to_string()
 		end
 		data.lists[listname] = list
@@ -92,8 +82,16 @@ function wrench.pickup_node(pos, player)
 	local item_meta = stack:get_meta()
 	item_meta:set_string("data", minetest.serialize(data))
 	item_meta:set_string("description", get_description(def, pos, meta, node, player))
+	if #stack:to_string() > 65000 then
+		return false, errors.metadata
+	end
+	local player_inv = player:get_inventory()
+	if not player_inv:room_for_item("main", stack) then
+		return false, errors.full_inv
+	end
+	player_inv:add_item("main", stack)
 	minetest.remove_node(pos)
-	return stack
+	return true
 end
 
 function wrench.restore_node(pos, player, stack)
