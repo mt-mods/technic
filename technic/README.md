@@ -36,3 +36,7 @@ veikk0 (Veikko Mäkelä) (CC BY-SA 4.0):
     * Derived from "Nuclear alarm.wav" by Freesound.org user rene___ from <https://freesound.org/people/rene___/sounds/56778/>. Originally licensed under CC0 1.0 <https://creativecommons.org/publicdomain/zero/1.0/>
 
 CC BY-SA 4.0: <https://creativecommons.org/licenses/by-sa/4.0/>
+
+CC0:
+ * technic_geiger_*.ogg
+  * Adapted from https://freesound.org/people/cookies+policy/sounds/555930/
