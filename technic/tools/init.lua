@@ -14,6 +14,7 @@ if enabled("sonic_screwdriver") then dofile(path.."/sonic_screwdriver.lua") end
 if enabled("prospector")        then dofile(path.."/prospector.lua") end
 if enabled("vacuum")            then dofile(path.."/vacuum.lua") end
 if enabled("multimeter")        then dofile(path.."/multimeter.lua") end
+if enabled("geiger_counter")    then dofile(path.."/geiger_counter.lua") end
 
 if minetest.get_modpath("screwdriver") then
 	-- compatibility alias
