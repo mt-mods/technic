@@ -14,7 +14,7 @@ local function register_machine_node(nodename, tier)
 		tube_time = tier ~= "LV" and wrench.META_TYPE_INT or nil,
 		src_time = wrench.META_TYPE_INT,
 	}
-	wrench:register_node(nodename, {lists = lists, metas = metas})
+	wrench.register_node(nodename, {lists = lists, metas = metas})
 end
 
 -- base_machines table row format: name = { extra meta fields }
@@ -42,7 +42,7 @@ end
 ---------------------------------------------------------------------
 -- Special nodes
 
-wrench:register_node("technic:coal_alloy_furnace", {
+wrench.register_node("technic:coal_alloy_furnace", {
 	lists = {"fuel", "src", "dst"},
 	metas = {
 		infotext = wrench.META_TYPE_STRING,
@@ -53,7 +53,7 @@ wrench:register_node("technic:coal_alloy_furnace", {
 	},
 })
 
-wrench:register_node("technic:coal_alloy_furnace_active", {
+wrench.register_node("technic:coal_alloy_furnace_active", {
 	lists = {"fuel", "src", "dst"},
 	metas = {
 		infotext = wrench.META_TYPE_STRING,
@@ -64,7 +64,7 @@ wrench:register_node("technic:coal_alloy_furnace_active", {
 	},
 })
 
-wrench:register_node("technic:tool_workshop", {
+wrench.register_node("technic:tool_workshop", {
 	lists = {"src", "upgrade1", "upgrade2"},
 	metas = {
 		infotext = wrench.META_TYPE_STRING,
@@ -75,9 +75,9 @@ wrench:register_node("technic:tool_workshop", {
 	},
 })
 
-for tier, _ in pairs(technic.machines) do
+for _, tier in pairs({"LV", "MV", "HV"}) do
 	for i = 0, 8 do
-		wrench:register_node("technic:"..tier:lower().."_battery_box"..i, {
+		wrench.register_node("technic:"..tier:lower().."_battery_box"..i, {
 			lists = tier ~= "LV" and machine_invlist_upgrades or machine_invlist,
 			metas = {
 				infotext = wrench.META_TYPE_STRING,
