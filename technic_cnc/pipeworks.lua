@@ -40,7 +40,7 @@ end
 -- Pipeworks does not provide API to selectively silence protection messages.
 -- This wrapper handles pipeworks cycling buttons without sending unnecessary protection messages.
 local function on_receive_fields(pos, meta, fields, sender, update_formspec)
-	-- https://gitlab.com/VanessaE/pipeworks/-/blob/master/common.lua#L115
+	-- https://github.com/mt-mods/pipeworks/-/blob/master/common.lua#L115
 	for field,_ in pairs(fields) do
 		if pipeworks.string_startswith(field, "fs_helpers_cycling:") then
 			if pipeworks.may_configure(pos, sender) then
