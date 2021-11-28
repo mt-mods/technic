@@ -10,7 +10,7 @@ minetest.register_tool("wrench:wrench", {
 		end
 		local name = player:get_player_name()
 		local pos = pointed_thing.under
-		if minetest.is_protected(pos, name) then
+		if not pos or minetest.is_protected(pos, name) then
 			return
 		end
 		local picked_up, err_msg = wrench.pickup_node(pos, player)
