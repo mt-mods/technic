@@ -13,8 +13,8 @@ EOF
 
 rm -rf ${WORLDDIR}
 mkdir -p ${WORLDMODDIR}
-git clone --depth 1 https://gitlab.com/VanessaE/basic_materials.git ${WORLDMODDIR}/basic_materials
-git clone --depth 1 https://gitlab.com/VanessaE/pipeworks.git ${WORLDMODDIR}/pipeworks
+git clone --depth 1 https://github.com/mt-mods/basic_materials.git ${WORLDMODDIR}/basic_materials
+git clone --depth 1 https://github.com/mt-mods/pipeworks.git ${WORLDMODDIR}/pipeworks
 git clone --depth 1 https://github.com/minetest-mods/moreores.git ${WORLDMODDIR}/moreores
 
 chmod 777 ${MTDIR} -R

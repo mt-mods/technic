@@ -36,9 +36,9 @@ their own manuals:
 
 * [Minetest Game Documentation](https://wiki.minetest.net/Main_Page)
 * [Mesecons Documentation](http://mesecons.net/items.html)
-* [Pipeworks Documentation](https://gitlab.com/VanessaE/pipeworks/-/wikis/home)
+* [Pipeworks Documentation](https://github.com/mt-mods/pipeworks/-/wikis/home)
 * [Moreores Forum Post](https://forum.minetest.net/viewtopic.php?t=549)
-* [Basic materials Repository](https://gitlab.com/VanessaE/basic_materials)
+* [Basic materials Repository](https://github.com/mt-mods/basic_materials)
 * [mtinfo generated documentation](https://mt-mods.github.io/technic/#/mods/technic/items)
 
 Recipes for constructable items in technic are generally not guessable,
@@ -110,8 +110,8 @@ Dependencies:
 
 * https://github.com/minetest-mods/mesecons
 * https://github.com/minetest-mods/moreores
-* https://gitlab.com/VanessaE/pipeworks
-* https://gitlab.com/VanessaE/basic_materials
+* https://github.com/mt-mods/pipeworks
+* https://github.com/mt-mods/basic_materials
 
 Recommended optional Dependencies:
 
