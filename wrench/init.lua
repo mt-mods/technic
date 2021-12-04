@@ -13,16 +13,16 @@ dofile(modpath.."/legacy.lua")
 dofile(modpath.."/functions.lua")
 dofile(modpath.."/tool.lua")
 
-function wrench.register_node(name, def)
-	assert(type(name) == "string", "wrench.register_node invalid type for name")
-	assert(type(def) == "table", "wrench.register_node invalid type for def")
+function wrench:register_node(name, def)
+	assert(type(name) == "string", "wrench:register_node invalid type for name")
+	assert(type(def) == "table", "wrench:register_node invalid type for def")
 	local node_def = minetest.registered_nodes[name]
 	if node_def then
-		wrench.registered_nodes[name] = table.copy(def)
+		self.registered_nodes[name] = table.copy(def)
 		local old_after_place = node_def.after_place_node
 		minetest.override_item(name, {
 			after_place_node = function(...)
-				if not wrench.restore_node(...) and old_after_place then
+				if not wrench:restore_node(...) and old_after_place then
 					return old_after_place(...)
 				end
 			end
@@ -32,11 +32,11 @@ function wrench.register_node(name, def)
 	end
 end
 
-function wrench.blacklist_item(name)
+function wrench:blacklist_item(name)
 	assert(type(name) == "string", "wrench:blacklist_item invalid type for name")
 	local node_def = minetest.registered_items[name]
 	if node_def then
-		wrench.blacklisted_items[name] = true
+		self.blacklisted_items[name] = true
 	else
 		minetest.log("warning", "Attempt to blacklist unknown item for wrench: "..name)
 	end

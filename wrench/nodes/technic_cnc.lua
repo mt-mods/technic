@@ -2,10 +2,10 @@
 -- Register wrench support for Technic CNC
 
 local function register_cnc(name, def)
-	wrench.register_node(name, def)
+	wrench:register_node(name, def)
 	if minetest.registered_nodes[name.."_active"] then
 		-- Only available if technic is active
-		wrench.register_node(name.."_active", def)
+		wrench:register_node(name.."_active", def)
 	end
 end
 

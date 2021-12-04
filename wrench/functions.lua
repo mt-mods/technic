@@ -34,9 +34,9 @@ local function get_description(def, pos, meta, node, player)
 	return S("%s with items"):format(minetest.registered_nodes[node.name].description)
 end
 
-function wrench.pickup_node(pos, player)
+function wrench:pickup_node(pos, player)
 	local node = minetest.get_node(pos)
-	local def = wrench.registered_nodes[node.name]
+	local def = self.registered_nodes[node.name]
 	if not def then
 		return
 	end
@@ -57,7 +57,7 @@ function wrench.pickup_node(pos, player)
 	for _, listname in pairs(def.lists or {}) do
 		local list = inv:get_list(listname)
 		for i, stack in pairs(list) do
-			if wrench.blacklisted_items[stack:get_name()] then
+			if self.blacklisted_items[stack:get_name()] then
 				local desc = stack:get_definition().description
 				return false, errors.bad_item:format(desc)
 			end
@@ -94,7 +94,7 @@ function wrench.pickup_node(pos, player)
 	return true
 end
 
-function wrench.restore_node(pos, player, stack)
+function wrench:restore_node(pos, player, stack)
 	if not stack then
 		return
 	end
@@ -102,7 +102,7 @@ function wrench.restore_node(pos, player, stack)
 	if not data then
 		return
 	end
-	local def = wrench.registered_nodes[data.name]
+	local def = self.registered_nodes[data.name]
 	if not def then
 		return
 	end

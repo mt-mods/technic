@@ -28,9 +28,9 @@ for _, drawer_type in ipairs({1, 2, 4}) do
 		def.metas["stack_max_factor" .. suffix] = INT
 	end
 
-	wrench.register_node("drawers:wood" .. drawer_type, def)
-	wrench.register_node("drawers:acacia_wood" .. drawer_type, def)
-	wrench.register_node("drawers:aspen_wood" .. drawer_type, def)
-	wrench.register_node("drawers:junglewood" .. drawer_type, def)
-	wrench.register_node("drawers:pine_wood" .. drawer_type, def)
+	wrench:register_node("drawers:wood" .. drawer_type, def)
+	wrench:register_node("drawers:acacia_wood" .. drawer_type, def)
+	wrench:register_node("drawers:aspen_wood" .. drawer_type, def)
+	wrench:register_node("drawers:junglewood" .. drawer_type, def)
+	wrench:register_node("drawers:pine_wood" .. drawer_type, def)
 end

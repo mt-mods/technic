@@ -13,7 +13,7 @@ minetest.register_tool("wrench:wrench", {
 		if not pos or minetest.is_protected(pos, name) then
 			return
 		end
-		local picked_up, err_msg = wrench.pickup_node(pos, player)
+		local picked_up, err_msg = wrench:pickup_node(pos, player)
 		if not picked_up then
 			if err_msg then
 				minetest.chat_send_player(name, err_msg)
