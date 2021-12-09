@@ -5,3 +5,8 @@
 Wrench=Llave Inglesa
 @1 with items=@1 con elementos
 
+Cannot pickup node. Owned by @1.=
+Not enough room in inventory to pickup node.=
+Cannot pickup node containing @1.=
+Cannot pickup node. Nesting inventories is not allowed.=
+Cannot pickup node. Node contains too much metadata.=
