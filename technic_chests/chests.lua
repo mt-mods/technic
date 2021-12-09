@@ -4,9 +4,9 @@ local S = minetest.get_translator(minetest.get_current_modname())
 local function register_chests(data)
 	local name = data.description:lower()
 	local type_description = {
-		S("@1 Chest", data.description),
-		S("@1 Locked Chest", data.description),
-		S("@1 Protected Chest", data.description),
+		S("@1 Chest", S(data.description)),
+		S("@1 Locked Chest", S(data.description)),
+		S("@1 Protected Chest", S(data.description)),
 	}
 	for i,t in ipairs({"", "_locked", "_protected"}) do
 		local data_copy = table.copy(data)
