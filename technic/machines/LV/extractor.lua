@@ -28,7 +28,7 @@ end
 
 technic.register_base_machine("technic:lv_extractor", {
 	typename = "extracting",
-	description = S("%s Extractor"),
+	description = S("@1 Extractor", S("LV")),
 	tier = "LV",
 	demand = {300},
 	speed = 1

@@ -12,7 +12,7 @@ minetest.register_craft({
 
 technic.register_base_machine("technic:hv_grinder", {
 	typename = "grinding",
-	description = S("%s Grinder"),
+	description = S("@1 Grinder", S("HV")),
 	tier="HV",
 	demand={1200, 900, 600},
 	speed=5,

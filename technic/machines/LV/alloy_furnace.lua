@@ -13,7 +13,7 @@ minetest.register_craft({
 
 technic.register_base_machine("technic:lv_alloy_furnace", {
 	typename = "alloy",
-	description = S("%s Alloy Furnace"),
+	description = S("@1 Alloy Furnace", S("LV")),
 	insert_object = technic.insert_object_unique_stack,
 	can_insert = technic.can_insert_unique_stack,
 	tier = "LV",

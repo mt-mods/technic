@@ -1,5 +1,5 @@
 
-local S = rawget(_G, "intllib") and intllib.Getter() or function(s) return s end
+local S = minetest.get_translator(minetest.get_current_modname())
 
 minetest.register_tool("wrench:wrench", {
 	description = S("Wrench"),

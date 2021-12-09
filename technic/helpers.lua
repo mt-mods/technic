@@ -1,7 +1,7 @@
 local constant_digit_count = technic.config:get("constant_digit_count")
 
--- converts a number to a readable string with SI prefix, e.g. 10000 → "10 k",
--- 15 → "15 ", 0.1501 → "150.1 m"
+-- converts a number to a readable string with SI prefix, e.g. 10000 → "10 k",
+-- 15 → "15 ", 0.1501 → "150.1 m"
 -- a non-breaking space (U+a0) instead of a usual one is put after number
 -- The precision is 4 digits
 local prefixes = {[-8] = "y", [-7] = "z", [-6] = "a", [-5] = "f", [-4] = "p",
@@ -24,28 +24,28 @@ function technic.pretty_num(num)
 		if num == 0 then
 			-- handle 0 explicilty to avoid showing "-0"
 			if not constant_digit_count then
-				return "0 "
+				return "0 "
 			end
 			-- gives 0.000
-			return string.format("%.3f ", 0)
+			return string.format("%.3f ", 0)
 		end
-		return string.format("%.4g ", num)
+		return string.format("%.4g ", num)
 	end
 
 	num = num * 10 ^ (-3 * pref_i)
 	if constant_digit_count then
 		local comma_digits_cnt = 3 - (b - 3 * pref_i)
-		return string.format("%." .. comma_digits_cnt .. "f %s",
+		return string.format("%." .. comma_digits_cnt .. "f %s",
 			num, prefixes[pref_i])
 	end
-	return string.format("%.4g %s", num, prefixes[pref_i])
+	return string.format("%.4g %s", num, prefixes[pref_i])
 end
 
 -- some unittests
-assert(technic.pretty_num(-0) == "0 ")
-assert(technic.pretty_num(0) == "0 ")
-assert(technic.pretty_num(1234) == "1234 ")
-assert(technic.pretty_num(123456789) == "123.5 M")
+assert(technic.pretty_num(-0) == "0 ")
+assert(technic.pretty_num(0) == "0 ")
+assert(technic.pretty_num(1234) == "1234 ")
+assert(technic.pretty_num(123456789) == "123.5 M")
 
 
 -- used to display power values

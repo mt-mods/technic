@@ -201,9 +201,9 @@ function technic_cnc.register_cnc_machine(nodename, def)
 
 	-- Collect / generate basic variables for CNC machine
 	local nodename_active = nodename .. "_active"
-	local idle_infotext = S("%s Idle"):format(def.description)
-	local active_infotext = S("%s Active"):format(def.description)
-	local unpowered_infotext = S("%s Unpowered"):format(def.description)
+	local idle_infotext = S("@1 Idle", def.description)
+	local active_infotext = S("@1 Active", def.description)
+	local unpowered_infotext = S("@1 Unpowered", def.description)
 	local groups = { cracky = 2, technic_machine = 1, technic_lv = 1 }
 	-- It is possible to override these using def fields
 	local on_receive_fields = def.on_receive_fields or technic_cnc.formspec.on_receive_fields

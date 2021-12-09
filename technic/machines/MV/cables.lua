@@ -30,12 +30,12 @@ minetest.register_craft({
 technic.register_cable("technic:mv_cable", {
 	tier = "MV",
 	size = 2.5/16,
-	description = S("%s Cable"):format("MV")
+	description = S("@1 Cable", S("MV"))
 })
 technic.register_cable_plate("technic:mv_cable_plate", {
 	tier = "MV",
 	size = 2.5/16,
-	description = S("%s Cable Plate"):format("MV"),
+	description = S("@1 Cable Plate", S("MV")),
 	tiles = {"technic_mv_cable.png"},
 })
 
@@ -43,13 +43,13 @@ if minetest.get_modpath("digilines") then
 	technic.register_cable("technic:mv_digi_cable", {
 		tier = "MV",
 		size = 2.5/16,
-		description = S("%s Digiline Cable"):format("MV"),
+		description = S("@1 Digiline Cable", S("MV")),
 		digiline = { wire = { rules = technic.digilines.rules_allfaces } }
 	})
 	technic.register_cable_plate("technic:mv_digi_cable_plate", {
 		tier = "MV",
 		size = 2.5/16,
-		description = S("%s Digiline Cable Plate"):format("MV"),
+		description = S("@1 Digiline Cable Plate", S("MV")),
 		digiline = { wire = { rules = technic.digilines.rules_allfaces } },
 		tiles = {"technic_mv_digi_cable.png"}
 	})

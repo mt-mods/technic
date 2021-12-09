@@ -7,7 +7,7 @@ function technic.register_solar_array(nodename, data)
 
 	local tier = def.tier
 	local ltier = string.lower(tier)
-	local infotext = S("Arrayed Solar %s Generator"):format(tier)
+	local infotext = S("Arrayed Solar @1 Generator", S(tier))
 
 	local run = function(pos, node)
 		-- The action here is to make the solar array produce power
@@ -33,7 +33,7 @@ function technic.register_solar_array(nodename, data)
 			meta:set_string("infotext", S("@1 Active (@2)", infotext, technic.EU_string(charge_to_give)))
 			meta:set_int(tier.."_EU_supply", charge_to_give)
 		else
-			meta:set_string("infotext", S("%s Idle"):format(infotext))
+			meta:set_string("infotext", S("@1 Idle", infotext))
 			meta:set_int(tier.."_EU_supply", 0)
 		end
 	end
@@ -51,7 +51,7 @@ function technic.register_solar_array(nodename, data)
 	}
 	def.connect_sides = def.connect_sides or {"bottom"}
 	def.sounds = def.sounds or default.node_sound_wood_defaults()
-	def.description = def.description or S("Arrayed Solar %s Generator"):format(tier)
+	def.description = def.description or S("Arrayed Solar @1 Generator", S(tier))
 	def.active = def.active or false
 	def.drawtype = def.drawtype or "nodebox"
 	def.paramtype = def.paramtype or "light"

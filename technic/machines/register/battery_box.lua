@@ -133,7 +133,7 @@ function technic.register_battery_box(nodename, data)
 		"list[context;src;3,1;1,1;]"..
 		"image[4,1;1,1;technic_battery_reload.png]"..
 		"list[context;dst;5,1;1,1;]"..
-		"label[0,0;"..S("%s Battery Box"):format(tier).."]"..
+		"label[0,0;"..S("@1 Battery Box", S(tier)).."]"..
 		"label[3,0;"..S("Charge").."]"..
 		"label[5,0;"..S("Discharge").."]"..
 		"label[1,3;"..S("Power level").."]"..
@@ -192,7 +192,7 @@ function technic.register_battery_box(nodename, data)
 		local infotext = S("@1 Battery Box: @2 / @3", tier,
 			technic.EU_string(current_charge), technic.EU_string(max_charge))
 		if eu_input == 0 then
-			infotext = S("%s Idle"):format(infotext)
+			infotext = S("@1 Idle", infotext)
 		end
 		meta:set_string("infotext", infotext)
 		if update_formspec then
@@ -342,7 +342,7 @@ function technic.register_battery_box(nodename, data)
 		end
 
 		minetest.register_node(colon..nodename..i, {
-			description = S("%s Battery Box"):format(tier),
+			description = S("@1 Battery Box", S(tier)),
 			tiles = {
 				top_tex,
 				bottom_tex,
@@ -358,7 +358,7 @@ function technic.register_battery_box(nodename, data)
 			drop = "technic:"..ltier.."_battery_box0",
 			on_construct = function(pos)
 				local meta = minetest.get_meta(pos)
-				meta:set_string("infotext", S("%s Battery Box"):format(tier))
+				meta:set_string("infotext", S("@1 Battery Box", S(tier)))
 				meta:set_int(tier.."_EU_demand", 0)
 				meta:set_int(tier.."_EU_supply", 0)
 				meta:set_int(tier.."_EU_input",  0)

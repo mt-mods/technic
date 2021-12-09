@@ -1,5 +1,7 @@
+# textdomain: wrench
+
 # technic_wrench translation template
 
-Wrench =
-%s with items =
+Wrench=
+@1 with items=
 

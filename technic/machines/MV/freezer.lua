@@ -12,7 +12,7 @@ minetest.register_craft({
 
 technic.register_base_machine("technic:mv_freezer", {
 	typename = "freezing",
-	description = S("%s Freezer"),
+	description = S("@1 Freezer", S("MV")),
 	tier = "MV",
 	demand = {800, 600, 400},
 	speed = 0.5,

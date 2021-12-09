@@ -1,6 +1,5 @@
 
-local S = rawget(_G, "intllib") and intllib.Getter() or function(s) return s end
---local S = minetest.get_translator("technic_chests")
+local S = minetest.get_translator(minetest.get_current_modname())
 
 local modpath = minetest.get_modpath("technic_chests")
 

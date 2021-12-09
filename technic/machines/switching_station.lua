@@ -19,7 +19,7 @@ local function start_network(pos)
 	local tier = technic.sw_pos2tier(pos)
 	if not tier then
 		local meta = minetest.get_meta(pos)
-		meta:set_string("infotext", S("%s Has No Network"):format(S("Switching Station")))
+		meta:set_string("infotext", S("@1 Has No Network", S("Switching Station")))
 		return
 	end
 	local network_id = technic.sw_pos2network(pos) or technic.create_network(pos)
@@ -85,9 +85,9 @@ minetest.register_node("technic:switching_station",{
 			if technic.is_overloaded(network_id) then
 				local remaining = technic.reset_overloaded(network_id)
 				if remaining > 0 then
-					infotext = S("%s Network Overloaded, Restart in %dms"):format(S("Switching Station"), remaining / 1000)
+					infotext = S("@1 Network Overloaded, Restart in @2ms", S("Switching Station"), remaining / 1000)
 				else
-					infotext = S("%s Restarting Network"):format(S("Switching Station"))
+					infotext = S("@1 Restarting Network", S("Switching Station"))
 				end
 				technic.network_infotext(network_id, infotext)
 			else

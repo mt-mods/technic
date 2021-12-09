@@ -9,7 +9,7 @@ local quarry_time_limit = tonumber(technic.config:get("quarry_time_limit"))
 
 local quarry_demand = 10000
 local quarry_eject_dir = vector.new(0, 1, 0)
-local machine_name = S("%s Quarry"):format("HV")
+local machine_name = S("@1 Quarry", S("HV"))
 local quarry_formspec =
 	"size[8,9]"..
 	"item_image[7,0;1,1;technic:quarry]"..
@@ -81,25 +81,27 @@ local function set_quarry_status(pos)
 		formspec = formspec.."button[4,0.9;2,1;disable;"..S("Enabled").."]"
 		if meta:get_int("purge_on") == 1 then
 			status = S("Purging cache")
-			meta:set_string("infotext", S("%s purging cache"):format(machine_name))
+			meta:set_string("infotext", S("@1 purging cache", machine_name))
 			meta:set_int("HV_EU_demand", 0)
 		elseif meta:get_int("finished") == 1 then
 			status = S("Digging finished")
-			meta:set_string("infotext", S("%s Finished"):format(machine_name))
+			meta:set_string("infotext", S("@1 Finished", machine_name))
 			meta:set_int("HV_EU_demand", 0)
 		else
 			local rel_y = meta:get_int("dig_level") - pos.y
-			status = S("Digging %d m "..(rel_y > 0 and "above" or "below").." machine"):format(math.abs(rel_y))
+			status = (rel_y > 0) and
+				S("Digging @1 m above machine", math.abs(rel_y)) or
+				S("Digging @1 m below machine", math.abs(rel_y))
 			if meta:get_int("HV_EU_input") >= quarry_demand then
-				meta:set_string("infotext", S("%s Active"):format(machine_name) .. " " .. status)
+				meta:set_string("infotext", S("@1 Active", machine_name) .. " " .. status)
 			else
-				meta:set_string("infotext", S("%s Unpowered"):format(machine_name))
+				meta:set_string("infotext", S("@1 Unpowered", machine_name))
 			end
 			meta:set_int("HV_EU_demand", quarry_demand)
 		end
 	else
 		formspec = formspec.."button[4,0.9;2,1;enable;"..S("Disabled").."]"
-		meta:set_string("infotext", S("%s Disabled"):format(machine_name))
+		meta:set_string("infotext", S("@1 Disabled", machine_name))
 		meta:set_int("HV_EU_demand", 0)
 	end
 	meta:set_string("formspec", formspec.."label[0,4.1;"..minetest.formspec_escape(status).."]")
@@ -364,7 +366,7 @@ local digiline_def = function(pos, _, channel, msg)
 end
 
 minetest.register_node("technic:quarry", {
-	description = S("%s Quarry"):format("HV"),
+	description = S("@1 Quarry", S("HV")),
 	tiles = {
 		"technic_carbon_steel_block.png^pipeworks_tube_connection_metallic.png",
 		"technic_carbon_steel_block.png^technic_cable_connection_overlay.png",

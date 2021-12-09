@@ -11,7 +11,7 @@ minetest.register_craft({
 
 technic.register_base_machine("technic:mv_centrifuge", {
 	typename = "separating",
-	description = S("%s Centrifuge"),
+	description = S("@1 Centrifuge", S("MV")),
 	tier = "MV",
 	demand = { 8000, 7000, 6000 },
 	speed = 2,

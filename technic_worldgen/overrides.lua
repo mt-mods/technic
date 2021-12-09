@@ -28,8 +28,8 @@ local function is_steel(name, desc)
 end
 
 local function edit_desc(desc, old, new)
-	desc = desc:gsub(old, S(new))
-	desc = desc:gsub(old:lower(), S(new:lower()))
+	desc = desc:gsub(old, new)
+	desc = desc:gsub(old:lower(), new:lower())
 	return desc
 end
 

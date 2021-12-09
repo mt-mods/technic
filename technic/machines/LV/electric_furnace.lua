@@ -14,7 +14,7 @@ minetest.register_craft({
 
 technic.register_base_machine("technic:lv_electric_furnace", {
 	typename = "cooking",
-	description = S("%s Furnace"),
+	description = S("@1 Furnace", S("LV")),
 	tier="LV",
 	demand={300},
 	speed = 2
