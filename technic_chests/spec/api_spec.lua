@@ -47,16 +47,17 @@ describe("Chests API", function()
 		local materials = {"iron", "copper", "silver", "gold", "mithril"}
 		local types = {"", "_locked", "_protected"}
 		local failed = {}
+		local S = minetest.get_translator("technic_chests")
 		for _,m in ipairs(materials) do
 			for _,t in ipairs(types) do
 				local name = "technic:"..m..t.."_chest"
 				local description
 				if t == "_locked" then
-					description = ("%s Locked Chest"):format(m:sub(1,1):upper() .. m:sub(2))
+					description = S("@1 Locked Chest", S(m:sub(1,1):upper() .. m:sub(2)))
 				elseif t == "_protected" then
-					description = ("%s Protected Chest"):format(m:sub(1,1):upper() .. m:sub(2))
+					description = S("@1 Protected Chest", S(m:sub(1,1):upper() .. m:sub(2)))
 				else
-					description = ("%s Chest"):format(m:sub(1,1):upper() .. m:sub(2))
+					description = S("@1 Chest", S(m:sub(1,1):upper() .. m:sub(2)))
 				end
 				assert.equals(description, minetest.registered_nodes[name].description)
 			end
