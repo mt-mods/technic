@@ -654,7 +654,7 @@ function technic.network_run(network_id)
 	end
 	--dprint("Total RE demand:"..RE_eu_demand)
 
-	technic.network_infotext(network_id, S("@1. Supply: @2 Demand: @3",
+	technic.network_infotext(network_id, S("@1. Supply: @2 Demand: @3",
 			S("Switching Station"), technic.EU_string(PR_eu_supply),
 			technic.EU_string(RE_eu_demand)))
 
