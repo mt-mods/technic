@@ -420,7 +420,7 @@ local griefing = technic.config:get_bool("enable_corium_griefing")
 
 for _, state in pairs({"flowing", "source"}) do
 	minetest.register_node("technic:corium_"..state, {
-		description = S(state == "source" and "Corium Source" or "Flowing Corium"),
+		description = state == "source" and S("Corium Source") or S("Flowing Corium"),
 		drawtype = (state == "source" and "liquid" or "flowingliquid"),
 		tiles = {{
 			name = "technic_corium_"..state.."_animated.png",
