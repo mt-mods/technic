@@ -1,7 +1,7 @@
 # textdomain: technic_cnc
 
 CNC Machine=数控机床
-@1 CNC Machine=%s数控机床
+@1 CNC Machine=@1数控机床
 Cylinder=圆柱
 Element Cross=元素交叉
 Element Cross Double=元素交叉双精度
