@@ -31,7 +31,4 @@ read_globals = {
 
 	-- Only used in technic/machines/MV/lighting.lua (disabled)
 	"isprotect", "homedecor_expect_infinite_stacks",
-
-	-- TODO: Remove after translation update
-	"intllib"
 }

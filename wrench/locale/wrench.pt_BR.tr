@@ -1,0 +1,14 @@
+# textdomain: wrench
+
+# Braziliam portuguese translation for wrench
+# Tradução portuguesa brasileira para wrench
+# By Sires
+
+Wrench=Chave Inglesa
+@1 with items=@1 com items
+
+Cannot pickup node. Owned by @1.=
+Not enough room in inventory to pickup node.=
+Cannot pickup node containing @1.=
+Cannot pickup node. Nesting inventories is not allowed.=
+Cannot pickup node. Node contains too much metadata.=

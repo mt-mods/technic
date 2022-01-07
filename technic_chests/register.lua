@@ -1,6 +1,5 @@
 
-local S = rawget(_G, "intllib") and intllib.Getter() or function(s) return s end
---local S = minetest.get_translator("technic_chests")
+local S = minetest.get_translator(minetest.get_current_modname())
 
 local has_pipeworks = minetest.get_modpath("pipeworks")
 local has_digilines = minetest.get_modpath("digilines")
@@ -72,7 +71,7 @@ function technic.chests.register_chest(nodename, data)
 			if data.locked then
 				local owner = placer:get_player_name() or ""
 				meta:set_string("owner", owner)
-				meta:set_string("infotext", S("%s (owned by %s)"):format(data.description, owner))
+				meta:set_string("infotext", S("@1 (owned by @2)", data.description, owner))
 			else
 				meta:set_string("infotext", data.description)
 			end

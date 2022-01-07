@@ -1,6 +1,5 @@
 
-local S = rawget(_G, "intllib") and intllib.Getter() or function(s) return s end
---local S = minetest.get_translator("technic_chests")
+local S = minetest.get_translator(minetest.get_current_modname())
 
 local has_pipeworks = minetest.get_modpath("pipeworks")
 
@@ -33,7 +32,7 @@ local function get_color_fs(x, y, meta)
 	else
 		color = S("None")
 	end
-	return fs.."label["..(x + 0.1)..","..(y + 3.4)..";"..S("Selected Color: %s"):format(color).."]"
+	return fs.."label["..(x + 0.1)..","..(y + 3.4)..";"..S("Selected Color: @1", color).."]"
 end
 
 local function get_quickmove_fs(x, y)

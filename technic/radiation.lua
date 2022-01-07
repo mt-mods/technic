@@ -420,7 +420,7 @@ local griefing = technic.config:get_bool("enable_corium_griefing")
 
 for _, state in pairs({"flowing", "source"}) do
 	minetest.register_node("technic:corium_"..state, {
-		description = S(state == "source" and "Corium Source" or "Flowing Corium"),
+		description = state == "source" and S("Corium Source") or S("Flowing Corium"),
 		drawtype = (state == "source" and "liquid" or "flowingliquid"),
 		tiles = {{
 			name = "technic_corium_"..state.."_animated.png",
@@ -485,12 +485,12 @@ if rawget(_G, "bucket") and bucket.register_liquid then
 		"technic:corium_flowing",
 		"technic:bucket_corium",
 		"technic_bucket_corium.png",
-		"Corium Bucket"
+		S("Corium Bucket")
 	)
 end
 
 minetest.register_node("technic:chernobylite_block", {
-        description = S("Chernobylite Block"),
+	description = S("Chernobylite Block"),
 	tiles = {"technic_chernobylite_block.png"},
 	is_ground_content = true,
 	groups = {cracky=1, radioactive=4, level=2},

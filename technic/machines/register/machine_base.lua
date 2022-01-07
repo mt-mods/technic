@@ -40,9 +40,9 @@ function technic.register_base_machine(nodename, data)
 	local input_size = technic.recipes[typename].input_size
 	local tier = def.tier
 	local ltier = string.lower(tier)
-	local infotext_idle = S("%s Idle"):format(def.description:format(tier))
-	local infotext_active = S("%s Active"):format(def.description:format(tier))
-	local infotext_unpowered = S("%s Unpowered"):format(def.description:format(tier))
+	local infotext_idle = S("@1 Idle", def.description)
+	local infotext_active = S("@1 Active", def.description)
+	local infotext_unpowered = S("@1 Unpowered", def.description)
 
 	local groups = {cracky = 2, technic_machine = 1, ["technic_"..ltier] = 1}
 	if def.tube then
@@ -57,7 +57,7 @@ function technic.register_base_machine(nodename, data)
 		"list[context;src;"..(4-input_size)..",1;"..input_size..",1;]"..
 		"list[context;dst;5,1;2,2;]"..
 		"list[current_player;main;0,5;8,4;]"..
-		"label[0,0;"..def.description:format(tier).."]"..
+		"label[0,0;"..def.description.."]"..
 		"listring[context;dst]"..
 		"listring[current_player;main]"..
 		"listring[context;src]"..
@@ -160,7 +160,7 @@ function technic.register_base_machine(nodename, data)
 	end
 
 	minetest.register_node(colon..nodename, {
-		description = def.description:format(tier),
+		description = def.description,
 		tiles = {
 			texture_prefix.."_top.png"..tentry,
 			texture_prefix.."_bottom.png"..tentry,
@@ -192,7 +192,7 @@ function technic.register_base_machine(nodename, data)
 				)..pipeworks.button_label
 			end
 
-			meta:set_string("infotext", def.description:format(tier))
+			meta:set_string("infotext", def.description)
 			meta:set_int("tube_time",  0)
 			meta:set_string("formspec", formspec..form_buttons)
 			local inv = meta:get_inventory()
@@ -231,7 +231,7 @@ function technic.register_base_machine(nodename, data)
 	})
 
 	minetest.register_node(colon..nodename.."_active",{
-		description = def.description:format(tier),
+		description = def.description,
 		tiles = {
 			texture_prefix.."_top.png"..tentry,
 			texture_prefix.."_bottom.png"..tentry,

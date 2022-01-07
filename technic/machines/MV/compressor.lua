@@ -12,7 +12,7 @@ minetest.register_craft({
 
 technic.register_base_machine("technic:mv_compressor", {
 	typename = "compressing",
-	description = S("%s Compressor"),
+	description = S("@1 Compressor", S("MV")),
 	tier = "MV",
 	demand = {800, 600, 400},
 	speed = 2,

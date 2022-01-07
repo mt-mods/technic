@@ -36,7 +36,7 @@ end
 
 function technic.register_alloy_furnace(def)
 	def.typename = "alloy"
-	def.description = S("%s Alloy Furnace")
+	def.description = S("@1 Alloy Furnace", S(def.tier))
 	def.insert_object = technic.insert_object_unique_stack
 	def.can_insert = technic.can_insert_unique_stack
 	technic.register_base_machine(def)
@@ -44,36 +44,36 @@ end
 
 function technic.register_centrifuge(def)
 	def.typename = "separating"
-	def.description = S("%s Centrifuge")
+	def.description = S("@1 Centrifuge", S(def.tier))
 	technic.register_base_machine(def)
 end
 
 function technic.register_compressor(def)
 	def.typename = "compressing"
-	def.description = S("%s Compressor")
+	def.description = S("@1 Compressor", S(def.tier))
 	technic.register_base_machine(def)
 end
 
 function technic.register_extractor(def)
 	def.typename = "extracting"
-	def.description = S("%s Extractor")
+	def.description = S("@1 Extractor", S(def.tier))
 	technic.register_base_machine(def)
 end
 
 function technic.register_freezer(def)
 	def.typename = "freezing"
-	def.description = S("%s Freezer")
+	def.description = S("@1 Freezer", S(def.tier))
 	technic.register_base_machine(def)
 end
 
 function technic.register_grinder(def)
 	def.typename = "grinding"
-	def.description = S("%s Grinder")
+	def.description = S("@1 Grinder", S(def.tier))
 	technic.register_base_machine(def)
 end
 
 function technic.register_electric_furnace(def)
 	def.typename = "cooking"
-	def.description = S("%s Furnace")
+	def.description = S("@1 Furnace", S(def.tier))
 	technic.register_base_machine(def)
 end

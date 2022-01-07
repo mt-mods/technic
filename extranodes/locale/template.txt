@@ -1,7 +1,16 @@
+# textdomain: extranodes
+
 # technic_extranodes translation template
 
-Marble =
-Marble Bricks =
-Granite =
-Concrete =
+Marble=
+Marble Bricks=
+Granite=
+Concrete=
 
+Granite Bricks=
+Zinc Block=
+Cast Iron Block=
+Carbon Steel Block=
+Stainless Steel Block=
+Insulator/cable clip=
+Steel strut with insulator/cable clip=

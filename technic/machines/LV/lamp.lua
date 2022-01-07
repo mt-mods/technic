@@ -5,10 +5,10 @@
 
 local S = technic.getter
 
-local desc = S("%s Lamp"):format("LV")
-local active_desc = S("%s Active"):format(desc)
-local unpowered_desc = S("%s Unpowered"):format(desc)
-local off_desc = S("%s Off"):format(desc)
+local desc = S("@1 Lamp", S("LV"))
+local active_desc = S("@1 Active", desc)
+local unpowered_desc = S("@1 Unpowered", desc)
+local off_desc = S("@1 Off", desc)
 local demand = 50
 
 

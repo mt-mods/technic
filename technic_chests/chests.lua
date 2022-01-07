@@ -1,15 +1,19 @@
 
-local S = rawget(_G, "intllib") and intllib.Getter() or function(s) return s end
+local S = minetest.get_translator(minetest.get_current_modname())
 
 local function register_chests(data)
 	local name = data.description:lower()
-	local type_description = {"Chest", "Locked Chest", "Protected Chest"}
+	local type_description = {
+		S("@1 Chest", S(data.description)),
+		S("@1 Locked Chest", S(data.description)),
+		S("@1 Protected Chest", S(data.description)),
+	}
 	for i,t in ipairs({"", "_locked", "_protected"}) do
 		local data_copy = table.copy(data)
 		data_copy.locked = t == "_locked"
 		data_copy.protected = t == "_protected"
 		data_copy.texture_prefix = "technic_"..name.."_chest"
-		data_copy.description = S(("%s %s"):format(data.description, type_description[i]))
+		data_copy.description = type_description[i]
 		technic.chests.register_chest(":technic:"..name..t.."_chest", data_copy)
 	end
 end

@@ -12,7 +12,7 @@ minetest.register_craft({
 
 technic.register_base_machine("technic:mv_extractor", {
 	typename = "extracting",
-	description = S("%s Extractor"),
+	description = S("@1 Extractor", S("MV")),
 	tier = "MV",
 	demand = {800, 600, 400},
 	speed = 2,

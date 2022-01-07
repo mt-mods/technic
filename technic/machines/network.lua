@@ -127,7 +127,7 @@ function technic.network_infotext(network_id, text)
 		elseif network.queue then
 			local count = 0
 			for _ in pairs(network.all_nodes) do count = count + 1 end
-			return S("Building Network: %d Nodes"):format(count)
+			return S("Building Network: @1 Nodes", count)
 		else
 			return network.infotext
 		end
@@ -162,7 +162,7 @@ function technic.disable_machine(pos, node)
 	local nodedef = minetest.registered_nodes[node.name]
 	if nodedef then
 		local meta = minetest.get_meta(pos)
-		meta:set_string("infotext", S("%s Has No Network"):format(nodedef.description))
+		meta:set_string("infotext", S("@1 Has No Network", nodedef.description))
 	end
 	if nodedef and nodedef.technic_disabled_machine_name then
 		node.name = nodedef.technic_disabled_machine_name
@@ -607,7 +607,7 @@ function technic.network_run(network_id)
 		network = networks[network_id]
 	else
 		--dprint("Not connected to a network")
-		technic.network_infotext(network_id, S("%s Has No Network"):format(S("Switching Station")))
+		technic.network_infotext(network_id, S("@1 Has No Network", S("Switching Station")))
 		return
 	end
 
