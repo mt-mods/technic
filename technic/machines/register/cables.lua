@@ -89,7 +89,7 @@ function technic.register_cable_plate(nodename, data)
 				local index = pointed_thing_diff.x + (pointed_thing_diff.y*2) + (pointed_thing_diff.z*3)
 				local num = index < 0 and -index + 3 or index
 				local crtl = placer:get_player_control()
-				if (crtl.aux1 or crtl.sneak) and not (crtl.aux1 and crtl.sneak) then
+				if (crtl.aux1 or crtl.sneak) and not (crtl.aux1 and crtl.sneak) and index ~= 0 then
 					local fine_pointed = minetest.pointed_thing_to_face_pos(placer, pointed_thing)
 					fine_pointed = vector.subtract(fine_pointed, pointed_thing.above)
 					fine_pointed[xyz[index < 0 and -index or index]] = nil
@@ -111,7 +111,8 @@ function technic.register_cable_plate(nodename, data)
 						num = far < 0 and 3 or 6
 					end
 				end
-				return item_place_override_node(itemstack, placer, pointed_thing, {name = nodename.."_"..(num or 1)})
+				local node = {name = nodename.."_"..(num ~= 0 and num or 1)}
+				return item_place_override_node(itemstack, placer, pointed_thing, node)
 			end
 		else
 			def.groups.not_in_creative_inventory = 1
