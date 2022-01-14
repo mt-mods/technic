@@ -228,22 +228,21 @@ local function get_dig_pos(quarry_pos, quarry_dir, dig_pos, dig_index, dig_steps
 end
 
 local function dig_particles(dig_pos)
-  for n = 1,20 do
-  	local v = {x = math.random() - 0.5, y = math.random() - 0.5, z = math.random() - 0.5}
-  	local vl = (v.x^2 + v.y^2 + v.z^2) ^ 0.5
-  	if vl ~= 0 then -- This is to prevent possible very rare crashes
-	  	vl = vl / 3
-	  	v = {x = v.x / vl, y = v.y / vl, z = v.z / vl}
-	  	minetest.add_particle({
-	  		pos = {x = dig_pos.x + math.random() - 0.5, y = dig_pos.y + math.random() - 0.5, z = dig_pos.z + math.random() - 0.5},
-	  		velocity = v,
-	  		acceleration = 0,
-	  		expirationtime = math.random() * 0.5,
-	  		size = math.random(1, 3),
-	  		texture = "technic_magentaparticle.png",
-	  		glow = 14
-	  	})
-	  end
+	local r = -2
+	for x = -1,1,2 do
+	for y = -1,1,2 do
+	for z = -1,1,2 do
+		minetest.add_particle({
+			pos = {x = dig_pos.x + x*0.5, y = dig_pos.y + y*0.5, z = dig_pos.z + z*0.5},
+			velocity = {x = x*r, y = y*r, z = z*r},
+			acceleration = 0,
+			expirationtime = 0.25,
+			size = 2,
+			texture = "technic_magentaparticle.png",
+			glow = 14
+		})
+  end
+  end
   end
 end
 
