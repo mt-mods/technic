@@ -225,6 +225,26 @@ local function get_dig_pos(quarry_pos, quarry_dir, dig_pos, dig_index, dig_steps
 	return dig_pos, dig_index
 end
 
+local function dig_particles(dig_pos)
+  for n = 1,50 do
+  	local v = {x = math.random() - 0.5, y = math.random() - 0.5, z = math.random() - 0.5}
+  	local vl = (v.x^2 + v.y^2 + v.z^2) ^ 0.5
+  	if vl ~= 0 then -- This is to prevent possible very rare crashes
+	  	vl = vl / 3
+	  	v = {x = v.x / vl, y = v.y / vl, z = v.z / vl}
+	  	minetest.add_particle({
+	  		pos = {x = dig_pos.x + math.random() - 0.5, y = dig_pos.y + math.random() - 0.5, z = dig_pos.z + math.random() - 0.5},
+	  		velocity = v,
+	  		acceleration = 0,
+	  		expirationtime = math.random() * 0.5,
+	  		size = math.random(1, 3),
+	  		texture = "technic_magentaparticle.png",
+	  		glow = 14
+	  	})
+	  end
+  end
+end
+
 local function execute_dig(pos, node, meta)
 	local dig_pos = minetest.string_to_pos(meta:get_string("dig_pos"))
 	local quarry_dir = meta:get_int("quarry_dir")
@@ -251,6 +271,7 @@ local function execute_dig(pos, node, meta)
 			if can_dig_node(dig_pos, dig_node.name, owner, digger) then
 				-- found something to dig, dig it and stop searching
 				minetest.remove_node(dig_pos)
+				dig_particles(dig_pos)
 				local inv = meta:get_inventory()
 				local drops = minetest.get_node_drops(dig_node.name, "")
 				for _, dropped_item in ipairs(drops) do
