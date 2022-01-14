@@ -227,6 +227,15 @@ local function get_dig_pos(quarry_pos, quarry_dir, dig_pos, dig_index, dig_steps
 	return dig_pos, dig_index
 end
 
+local function should_generate_particles(pos)
+	local id = technic.pos2network(pos)
+	local net = id and technic.networks[id]
+	if net then
+		return net.lag < 35000
+	end
+	return false
+end
+
 local function dig_particles(dig_pos)
 	local r = -2
 	for x = -1,1,2 do
@@ -272,7 +281,7 @@ local function execute_dig(pos, node, meta)
 			if can_dig_node(dig_pos, dig_node.name, owner, digger) then
 				-- found something to dig, dig it and stop searching
 				minetest.remove_node(dig_pos)
-				if enable_quarry_dig_particles then
+				if enable_quarry_dig_particles and should_generate_particles(pos) then
 					dig_particles(dig_pos)
 				end
 				local inv = meta:get_inventory()
