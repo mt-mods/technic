@@ -36,6 +36,9 @@ local defaults = {
 	enable_longterm_radiation_damage = "true",
 	max_lag_reduction_multiplier = "0.99",
 	--constant_digit_count = nil,
+
+	-- Partical effects
+	enable_quarry_dig_particles = "false"
 }
 
 --

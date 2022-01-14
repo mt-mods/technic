@@ -38,6 +38,8 @@ local quarry_dig_pattern = {
 	3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 }
 
+local enable_quarry_dig_particles = technic.config:get_bool("enable_quarry_dig_particles")
+
 local function is_player_allowed(pos, name)
 	local owner = minetest.get_meta(pos):get_string("owner")
 	if owner == "" or owner == name then
@@ -226,7 +228,7 @@ local function get_dig_pos(quarry_pos, quarry_dir, dig_pos, dig_index, dig_steps
 end
 
 local function dig_particles(dig_pos)
-  for n = 1,50 do
+  for n = 1,20 do
   	local v = {x = math.random() - 0.5, y = math.random() - 0.5, z = math.random() - 0.5}
   	local vl = (v.x^2 + v.y^2 + v.z^2) ^ 0.5
   	if vl ~= 0 then -- This is to prevent possible very rare crashes
@@ -271,7 +273,9 @@ local function execute_dig(pos, node, meta)
 			if can_dig_node(dig_pos, dig_node.name, owner, digger) then
 				-- found something to dig, dig it and stop searching
 				minetest.remove_node(dig_pos)
-				dig_particles(dig_pos)
+				if enable_quarry_dig_particles then
+					dig_particles(dig_pos)
+				end
 				local inv = meta:get_inventory()
 				local drops = minetest.get_node_drops(dig_node.name, "")
 				for _, dropped_item in ipairs(drops) do
