@@ -229,7 +229,7 @@ end
 
 local function dig_particles(quarry_pos, dig_pos, dig_node)
 	local param2 = minetest.get_node(quarry_pos).param2
-	quarry_pos = {x = quarry_pos.x, y = quarry_pos.y, z = quarry_pos.z}
+	quarry_pos = vector.new(quarry_pos)
 	if param2 == 0 then quarry_pos.z = quarry_pos.z + 1 end
 	if param2 == 1 then quarry_pos.x = quarry_pos.x + 1 end
 	if param2 == 2 then quarry_pos.z = quarry_pos.z - 1 end
@@ -239,12 +239,12 @@ local function dig_particles(quarry_pos, dig_pos, dig_node)
 	local vec = vector.direction(dig_pos, quarry_pos)
 	local mag = vector.distance(dig_pos, quarry_pos)
 	vec = vector.multiply(vec, (mag - 0.5) / t)
-	local acc = {x = 0, y = 0, z = 0}
+	local acc = vector.new(0, 0, 0)
 	if param2 == 0 then
-		acc.z = 0-a
+		acc.z = -a
 		vec.z = vec.z + (a * t / 2)
 	elseif param2 == 1 then
-		acc.x = 0-a
+		acc.x = -a
 		vec.x = vec.x + (a * t / 2)
 	elseif param2 == 2 then
 		acc.z = a
