@@ -227,15 +227,6 @@ local function get_dig_pos(quarry_pos, quarry_dir, dig_pos, dig_index, dig_steps
 	return dig_pos, dig_index
 end
 
-local function should_generate_particles(pos)
-	local id = technic.pos2network(pos)
-	local net = id and technic.networks[id]
-	if net then
-		return net.lag < 35000
-	end
-	return false
-end
-
 local function dig_particles(quarry_pos, dig_pos, dig_node)
 	param2 = minetest.get_node(quarry_pos).param2
 	quarry_pos = {x = quarry_pos.x, y = quarry_pos.y, z = quarry_pos.z}
@@ -279,7 +270,7 @@ local function dig_particles(quarry_pos, dig_pos, dig_node)
 	})
 end
 
-local function execute_dig(pos, node, meta)
+local function execute_dig(pos, node, meta, network)
 	local dig_pos = minetest.string_to_pos(meta:get_string("dig_pos"))
 	local quarry_dir = meta:get_int("quarry_dir")
 	if not dig_pos then
@@ -305,7 +296,7 @@ local function execute_dig(pos, node, meta)
 			if can_dig_node(dig_pos, dig_node.name, owner, digger) then
 				-- found something to dig, dig it and stop searching
 				minetest.remove_node(dig_pos)
-				if enable_quarry_dig_particles and should_generate_particles(pos) then
+				if enable_quarry_dig_particles and network.lag < 35000 then
 					dig_particles(pos, dig_pos, dig_node)
 				end
 				local inv = meta:get_inventory()
@@ -334,7 +325,7 @@ local function execute_dig(pos, node, meta)
 	end
 end
 
-local function quarry_run(pos, node)
+local function quarry_run(pos, node, run_state, network)
 	local meta = minetest.get_meta(pos)
 	if minetest.pos_to_string(pos) ~= meta:get_string("quarry_pos") then
 		-- quarry has been moved since last dig
@@ -342,7 +333,7 @@ local function quarry_run(pos, node)
 	elseif meta:get_int("purge_on") == 1 then
 		quarry_handle_purge(pos)
 	elseif meta:get_int("enabled") and meta:get_int("HV_EU_input") >= quarry_demand and meta:get_int("finished") == 0 then
-		execute_dig(pos, node, meta)
+		execute_dig(pos, node, meta, network)
 	elseif not meta:get_inventory():is_empty("cache") then
 		meta:set_int("purge_on", 1)
 	end

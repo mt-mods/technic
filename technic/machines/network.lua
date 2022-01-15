@@ -620,8 +620,8 @@ function technic.network_run(network_id)
 	network.BA_charge_active = 0
 
 	local vm = VoxelManip()
-	run_nodes(PR_nodes, vm, technic.producer)
-	run_nodes(RE_nodes, vm, technic.receiver)
+	run_nodes(PR_nodes, vm, technic.producer, network)
+	run_nodes(RE_nodes, vm, technic.receiver, network)
 	run_nodes(BA_nodes, vm, technic.battery, network)
 
 	-- Strings for the meta data
