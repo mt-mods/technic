@@ -239,7 +239,7 @@ local function dig_particles(quarry_pos, dig_pos, dig_node)
 	local vec = vector.direction(dig_pos, quarry_pos)
 	local mag = vector.distance(dig_pos, quarry_pos)
 	vec = vector.multiply(vec, (mag - 0.5) / t)
-	acc = {x = 0, y = 0, z = 0}
+	local acc = {x = 0, y = 0, z = 0}
 	if param2 == 0 then
 		acc.z = 0-a
 		vec.z = vec.z + (a * t / 2)
