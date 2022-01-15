@@ -237,10 +237,31 @@ local function should_generate_particles(pos)
 end
 
 local function dig_particles(quarry_pos, dig_pos, dig_node)
+	param2 = minetest.get_node(quarry_pos).param2
+	quarry_pos = {x = quarry_pos.x, y = quarry_pos.y, z = quarry_pos.z}
+	if param2 == 0 then quarry_pos.z = quarry_pos.z + 1 end
+	if param2 == 1 then quarry_pos.x = quarry_pos.x + 1 end
+	if param2 == 2 then quarry_pos.z = quarry_pos.z - 1 end
+	if param2 == 3 then quarry_pos.x = quarry_pos.x - 1 end
 	local t = 0.5
+	local a = 50
 	local vec = vector.direction(dig_pos, quarry_pos)
 	local mag = vector.distance(dig_pos, quarry_pos)
-	vec = vector.multiply(vec, (mag - 1) / t)
+	vec = vector.multiply(vec, (mag - 0.5) / t)
+	acc = {x = 0, y = 0, z = 0}
+	if param2 == 0 then
+		acc.z = 0-a
+		vec.z = vec.z + (a * t / 2)
+	elseif param2 == 1 then
+		acc.x = 0-a
+		vec.x = vec.x + (a * t / 2)
+	elseif param2 == 2 then
+		acc.z = a
+		vec.z = vec.z - (a * t / 2)
+	elseif param2 == 3 then
+		acc.x = a
+		vec.x = vec.x - (a * t / 2)
+	end
 	minetest.add_particlespawner({
 		amount = 50,
 		time = 0.5,
@@ -248,6 +269,8 @@ local function dig_particles(quarry_pos, dig_pos, dig_node)
 		maxpos = vector.add(dig_pos, 0.5),
 		minvel = vec,
 		maxvel = vec,
+		minacc = acc,
+		maxacc = acc,
 		minsize = 1,
 		maxsize = 2,
 		minexptime = t,
