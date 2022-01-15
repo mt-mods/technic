@@ -236,23 +236,28 @@ local function should_generate_particles(pos)
 	return false
 end
 
-local function dig_particles(dig_pos)
-	local r = -2
-	for x = -1,1,2 do
-	for y = -1,1,2 do
-	for z = -1,1,2 do
-		minetest.add_particle({
-			pos = {x = dig_pos.x + x*0.5, y = dig_pos.y + y*0.5, z = dig_pos.z + z*0.5},
-			velocity = {x = x*r, y = y*r, z = z*r},
-			acceleration = 0,
-			expirationtime = 0.25,
-			size = 2,
-			texture = "technic_magentaparticle.png",
-			glow = 14
-		})
-  end
-  end
-  end
+local function dig_particles(quarry_pos, dig_pos, dig_node)
+	local t = 0.5
+	local vec = {
+		x = quarry_pos.x - dig_pos.x,
+		y = quarry_pos.y - dig_pos.y,
+		z = quarry_pos.z - dig_pos.z}
+	local mag = (vec.x^2 + vec.y^2 + vec.z^2) ^ 0.5
+	mag = (mag - 1) / mag
+	vec = {x = vec.x * mag / t, y = vec.y * mag / t, z = vec.z * mag / t}
+	minetest.add_particlespawner({
+		amount = 50,
+		time = 0.5,
+		minpos = vector.subtract(dig_pos, 0.5),
+		maxpos = vector.add(dig_pos, 0.5),
+		minvel = vec,
+		maxvel = vec,
+		minsize = 1,
+		maxsize = 2,
+		minexptime = t,
+		maxexptime = t,
+		node = dig_node
+	})
 end
 
 local function execute_dig(pos, node, meta)
@@ -282,7 +287,7 @@ local function execute_dig(pos, node, meta)
 				-- found something to dig, dig it and stop searching
 				minetest.remove_node(dig_pos)
 				if enable_quarry_dig_particles and should_generate_particles(pos) then
-					dig_particles(dig_pos)
+					dig_particles(pos, dig_pos, dig_node)
 				end
 				local inv = meta:get_inventory()
 				local drops = minetest.get_node_drops(dig_node.name, "")
