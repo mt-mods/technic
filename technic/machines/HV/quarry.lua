@@ -238,13 +238,9 @@ end
 
 local function dig_particles(quarry_pos, dig_pos, dig_node)
 	local t = 0.5
-	local vec = {
-		x = quarry_pos.x - dig_pos.x,
-		y = quarry_pos.y - dig_pos.y,
-		z = quarry_pos.z - dig_pos.z}
-	local mag = (vec.x^2 + vec.y^2 + vec.z^2) ^ 0.5
-	mag = (mag - 1) / mag
-	vec = {x = vec.x * mag / t, y = vec.y * mag / t, z = vec.z * mag / t}
+	local vec = vector.direction(dig_pos, quarry_pos)
+	local mag = vector.distance(dig_pos, quarry_pos)
+	vec = vector.multiply(vec, (mag - 1) / t)
 	minetest.add_particlespawner({
 		amount = 50,
 		time = 0.5,
