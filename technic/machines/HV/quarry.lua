@@ -228,7 +228,7 @@ local function get_dig_pos(quarry_pos, quarry_dir, dig_pos, dig_index, dig_steps
 end
 
 local function dig_particles(quarry_pos, dig_pos, dig_node)
-	param2 = minetest.get_node(quarry_pos).param2
+	local param2 = minetest.get_node(quarry_pos).param2
 	quarry_pos = {x = quarry_pos.x, y = quarry_pos.y, z = quarry_pos.z}
 	if param2 == 0 then quarry_pos.z = quarry_pos.z + 1 end
 	if param2 == 1 then quarry_pos.x = quarry_pos.x + 1 end
