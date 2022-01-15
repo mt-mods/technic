@@ -37,7 +37,7 @@ local defaults = {
 	max_lag_reduction_multiplier = "0.99",
 	--constant_digit_count = nil,
 
-	-- Partical effects
+	-- Particle effects
 	enable_quarry_dig_particles = "false"
 }
 
