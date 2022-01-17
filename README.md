@@ -144,6 +144,7 @@ Recommended mods that build on the `technic mod`:
 | quarry_dig_above_nodes                       | begin digging this many nodes above quarry node.                                                                      |
 | network_overload_reset_time                  | After network conflict wait this many seconds before attempting to activate conflicting networks again.               |
 | switch_off_delay_seconds                     | switching station off delay.                                                                                          |
+| enable_quarry_dig_particles                  | Enables particle effect with the quarry digs a node.                                                                  |
 
 See defaults for settings here: [technic/config.lua](./technic/config.lua)
 
