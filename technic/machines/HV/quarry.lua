@@ -38,6 +38,8 @@ local quarry_dig_pattern = {
 	3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 }
 
+local quarry_dig_particles = technic.config:get_bool("quarry_dig_particles")
+
 local function is_player_allowed(pos, name)
 	local owner = minetest.get_meta(pos):get_string("owner")
 	if owner == "" or owner == name then
@@ -225,7 +227,46 @@ local function get_dig_pos(quarry_pos, quarry_dir, dig_pos, dig_index, dig_steps
 	return dig_pos, dig_index
 end
 
-local function execute_dig(pos, node, meta)
+local function dig_particles(quarry_pos, dig_pos, dig_node)
+	local param2 = minetest.get_node(quarry_pos).param2
+	quarry_pos = vector.add(quarry_pos, minetest.facedir_to_dir(param2))
+	local t = 0.5
+	local a = 50
+	local vec = vector.direction(dig_pos, quarry_pos)
+	local mag = vector.distance(dig_pos, quarry_pos)
+	vec = vector.multiply(vec, (mag - 0.5) / t)
+	local acc = vector.new(0, 0, 0)
+	if param2 == 0 then
+		acc.z = -a
+		vec.z = vec.z + (a * t / 2)
+	elseif param2 == 1 then
+		acc.x = -a
+		vec.x = vec.x + (a * t / 2)
+	elseif param2 == 2 then
+		acc.z = a
+		vec.z = vec.z - (a * t / 2)
+	elseif param2 == 3 then
+		acc.x = a
+		vec.x = vec.x - (a * t / 2)
+	end
+	minetest.add_particlespawner({
+		amount = 50,
+		time = 0.5,
+		minpos = vector.subtract(dig_pos, 0.5),
+		maxpos = vector.add(dig_pos, 0.5),
+		minvel = vec,
+		maxvel = vec,
+		minacc = acc,
+		maxacc = acc,
+		minsize = 1,
+		maxsize = 2,
+		minexptime = t,
+		maxexptime = t,
+		node = dig_node
+	})
+end
+
+local function execute_dig(pos, node, meta, network)
 	local dig_pos = minetest.string_to_pos(meta:get_string("dig_pos"))
 	local quarry_dir = meta:get_int("quarry_dir")
 	if not dig_pos then
@@ -251,6 +292,9 @@ local function execute_dig(pos, node, meta)
 			if can_dig_node(dig_pos, dig_node.name, owner, digger) then
 				-- found something to dig, dig it and stop searching
 				minetest.remove_node(dig_pos)
+				if quarry_dig_particles and network.lag < 35000 then
+					dig_particles(pos, dig_pos, dig_node)
+				end
 				local inv = meta:get_inventory()
 				local drops = minetest.get_node_drops(dig_node.name, "")
 				for _, dropped_item in ipairs(drops) do
@@ -277,7 +321,7 @@ local function execute_dig(pos, node, meta)
 	end
 end
 
-local function quarry_run(pos, node)
+local function quarry_run(pos, node, run_state, network)
 	local meta = minetest.get_meta(pos)
 	if minetest.pos_to_string(pos) ~= meta:get_string("quarry_pos") then
 		-- quarry has been moved since last dig
@@ -285,7 +329,7 @@ local function quarry_run(pos, node)
 	elseif meta:get_int("purge_on") == 1 then
 		quarry_handle_purge(pos)
 	elseif meta:get_int("enabled") and meta:get_int("HV_EU_input") >= quarry_demand and meta:get_int("finished") == 0 then
-		execute_dig(pos, node, meta)
+		execute_dig(pos, node, meta, network)
 	elseif not meta:get_inventory():is_empty("cache") then
 		meta:set_int("purge_on", 1)
 	end
