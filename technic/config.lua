@@ -24,7 +24,7 @@ local defaults = {
 	quarry_dig_above_nodes = "3",
 	quarry_max_depth = "100",
 	quarry_time_limit = "5000",
-	quarry_dig_particles = "false"
+	quarry_dig_particles = "false",
 
 	-- Power network and general options
 	switch_off_delay_seconds = "1800",
