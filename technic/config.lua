@@ -38,7 +38,7 @@ local defaults = {
 	--constant_digit_count = nil,
 
 	-- Particle effects
-	enable_quarry_dig_particles = "false"
+	quarry_dig_particles = "false"
 }
 
 --

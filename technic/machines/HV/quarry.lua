@@ -38,7 +38,7 @@ local quarry_dig_pattern = {
 	3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 }
 
-local enable_quarry_dig_particles = technic.config:get_bool("enable_quarry_dig_particles")
+local quarry_dig_particles = technic.config:get_bool("quarry_dig_particles")
 
 local function is_player_allowed(pos, name)
 	local owner = minetest.get_meta(pos):get_string("owner")
@@ -292,7 +292,7 @@ local function execute_dig(pos, node, meta, network)
 			if can_dig_node(dig_pos, dig_node.name, owner, digger) then
 				-- found something to dig, dig it and stop searching
 				minetest.remove_node(dig_pos)
-				if enable_quarry_dig_particles and network.lag < 35000 then
+				if quarry_dig_particles and network.lag < 35000 then
 					dig_particles(pos, dig_pos, dig_node)
 				end
 				local inv = meta:get_inventory()
