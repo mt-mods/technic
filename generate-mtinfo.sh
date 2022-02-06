@@ -8,7 +8,7 @@ echo "moreblocks.stairsplus_in_creative_inventory = false" >> ${CONFIG}
 
 # prepare dependent mods
 WORLDMODS_DIR=/tmp/technic_worldmods
-git clone --depth=1 https://github.com/mt-mods/basic_materials.git ${WORLDMODS_DIR}/basic_materials
+git clone --recurse-submodules --depth=1 https://github.com/mt-mods/basic_materials.git ${WORLDMODS_DIR}/basic_materials
 git clone --depth=1 https://github.com/mt-mods/pipeworks.git ${WORLDMODS_DIR}/pipeworks
 git clone --depth=1 https://github.com/mt-mods/unifieddyes.git ${WORLDMODS_DIR}/unifieddyes
 git clone --depth=1 https://github.com/minetest-mods/moreblocks.git ${WORLDMODS_DIR}/moreblocks
