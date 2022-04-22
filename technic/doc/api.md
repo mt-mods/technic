@@ -1,13 +1,12 @@
-This file is fairly incomplete. Help is welcome.
+This file is fairly incomplete. Read the code if this is not enough. Help is welcome.
 
 Tiers
 -----
-The tier is a string, currently `"LV"`, `"MV"` and `"HV"` are supported.
+The tier is a string, currently `"LV"`, `"MV"` and `"HV"` are included with technic.
 
 Network
 -------
-The network is the cable with the connected machine nodes. Currently the
-switching station handles the network activity.
+The network is the cable with the connected machine nodes. The switching station activates network.
 
 Helper functions
 ----------------
@@ -24,14 +23,6 @@ Helper functions
 * `technic.get_or_load_node(pos)`
 	* If the mapblock is loaded, it returns the node at pos,
 	  else it loads the chunk and returns `nil`.
-* `technic.set_RE_wear(itemstack, item_load, max_charge)`
-	* If the `wear_represents` field in the item's nodedef is
-	  `"technic_RE_charge"`, this function does nothing.
-* `technic.refill_RE_charge(itemstack)`
-	* This function fully recharges an RE chargeable item.
-	* If `technic.power_tools[itemstack:get_name()]` is `nil` (or `false`), this
-	  function does nothing, else that value is the maximum charge.
-	* The itemstack metadata is changed to contain the charge.
 * `technic.is_tier_cable(nodename, tier)`
 	* Tells whether the node `nodename` is the cable of the tier `tier`.
 * `technic.get_cable_tier(nodename)`
@@ -43,34 +34,84 @@ Helper functions
 * `technic.trace_node_ray_fat(pos, dir, range)`
 	* Like `technic.trace_node_ray` but includes extra positions near the ray.
 	* The node ray functions are used for mining lasers.
-* `technic.config:get(name)`
-	* Some configuration function
 * `technic.tube_inject_item(pos, start_pos, velocity, item)`
 	* Same as `pipeworks.tube_inject_item`
 
-Registration functions
+Configuration API
 ----------------------
-* `technic.register_power_tool(itemname, max_charge)`
-	* Same as `technic.power_tools[itemname] = max_charge`
-	* This function makes the craftitem `itemname` chargeable.
+* `technic.config` Settings object that contains Technic configuration.
+	* Provides all methods that are provided by Minetest Settings object.
+	* Uses `<world-path>/technic.conf` as configuration file.
+	* If key is not present in configuration then returns default value for that key.
+	* `:get_int(key)` Return number value for configuration key.
+
+Power tool API
+----------------------
+
+* `technic.register_power_tool(itemname, definition)`
+	* Registers power tool adding required fields, otherwise same as `minetest.register_tool(itemname, definition)`.
+	* For regular power tools you only want to change `max_charge` and leave other fields unset (defaults).
+	* Special fields for `definition`:
+		* `max_charge` Number, maximum charge for tool. Defaults to `10000` which is same as RE battery.
+		* `on_refill` Function to refill charge completely. Default is to set maximum charge for tool.
+		* `wear_represents` Customize wear indicator instead of using charge level. Default is `"technic_RE_charge"`.
+		* `tool_capabilities` See Minetest documentation. Default is `{ punch_attack_uses = 0 }`.
+* `technic.get_RE_charge(itemstack)`
+	* Returns current charge level of tool
+* `technic.set_RE_charge(itemstack, charge)`
+	* Sets tool charge level.
+* `technic.use_RE_charge(itemstack, charge)`
+	* Attempt to use charge and return `true`/`false` indicating success.
+	* Always succeeds without checking charge level if creative is enabled.
+
+Machine registration API
+----------------------
 * `technic.register_machine(tier, nodename, machine_type)`
-	* Same as `technic.machines[tier][nodename] = machine_type`
-	* Currently this is requisite to make technic recognize your node.
+	* Custom machine registration. Not needed when using builtin machine registration functions.
 	* See also `Machine types`
 * `technic.register_tier(tier)`
-	* Same as `technic.machines[tier] = {}`
+	* Registers network tier.
 	* See also `tiers`
+* `technic.register_base_machine(nodename, def)`
+	* Register various types of basic factory processing machines.
+	* `typename = "compressing"`
+	* `description = S("%s Compressor")`
+	* `tier = "HV"`
+	* `demand = {1500, 1000, 750}`
+	* `speed = 5`
+	* `upgrade = 1`
+	* `tube = 1`
+	* TODO / TBD
+* `technic.register_solar_array(nodename, def)`
+	* Registers solar array generator.
+	* `tier = "HV"`
+	* `power = 100`
+	* TODO / TBD
+* `technic.register_battery_box(nodename, def)`
+	* Registers battery box node used as energy storage.
+	* TODO / TBD
+* `technic.register_cable(nodename, data)`
+	* Registers technic network cables.
+	* `tier = "HV"`
+	* `size = 3/16`
+	* `description = S("%s Digiline Cable"):format("HV")`
+	* `digiline = { wire = { rules = technic.digilines.rules_allfaces } }`
+* `technic.register_cable_plate(nodename, data)`
+	* Registers technic network cable plates. Results in multiple nodes registered with `_1` to `_6` appended to name.
+	* See `technic.register_cable(nodename, data)`
+
+Network control API
+----------------------
+* TBD, functions exported through technic namespace are currently considered to be internal use only.
 
 ### Specific machines
-* `technic.register_solar_array(data)`
-	* data is a table
 * `technic.can_insert_unique_stack(pos, node, stack, direction)`
 * `technic.insert_object_unique_stack(pos, node, stack, direction)`
 	* Functions for the parameters `can_insert` and `insert_object` to avoid
-	  filling multiple inventory slots with same type of item.
+		filling multiple inventory slots with same type of item.
 
 Used itemdef fields
--------------------
+----------------------
 * groups:
 	* `technic_<ltier> = 1` ltier is a tier in small letters; this group makes
 	  the node connect to the cable(s) of the right tier.
@@ -101,42 +142,29 @@ There are currently following types:
 
 Switching Station
 -----------------
-The switching station is the center of all power distribution on an electric
-network.
+The switching station is required to start electric network and keep it running.
+Unlike in original mod this node does not handle power distribution logic but instead just resets network timeout.
 
-The station collects power from sources (PR), distributes it to sinks (RE),
+Network logic
+-----------------
+
+The network logic collects power from sources (PR), distributes it to sinks (RE),
 and uses the excess/shortfall to charge and discharge batteries (BA).
 
 For now, all supply and demand values are expressed in kW.
 
-It works like this:
- All PR,BA,RE nodes are indexed and tagged with the switching station.
-The tagging is a workaround to allow more stations to be built without allowing
-a cheat with duplicating power.
- All the RE nodes are queried for their current EU demand. Those which are off
-would require no or a small standby EU demand, while those which are on would
-require more.
-If the total demand is less than the available power they are all updated with
-the demand number.
-If any surplus exists from the PR nodes the batteries will be charged evenly
-with this.
-If the total demand requires draw on the batteries they will be discharged
-evenly.
-
-If the total demand is more than the available power all RE nodes will be shut
-down. We have a brown-out situation.
-
-Hence for now all the power distribution logic resides in this single node.
+All the RE nodes are queried for their current EU demand. Those which are off would
+require no or a small standby EU demand, while those which are on would require more.
+If total demand is less than the available power they are all updated with the demand number.
+If any surplus exists from the PR nodes the batteries will be charged evenly with excess power.
+If total demand exceeds generator supply then draw difference from batteries.
+If total demand is more than available power all RE nodes will be shut down.
 
 ### Node meta usage
-Nodes connected to the network will have one or more of these parameters as meta
-data:
-	* `<LV|MV|HV>_EU_supply` : Exists for PR and BA node types.
-	This is the EU value supplied by the node. Output
-	* `<LV|MV|HV>_EU_demand` : Exists for RE and BA node types.
-	This is the EU value the node requires to run. Output
-	* `<LV|MV|HV>_EU_input`  : Exists for RE and BA node types.
-	This is the actual EU value the network can give the node. Input
+Nodes connected to the network will have one or more of these parameters as meta data:
+* `<LV|MV|HV>_EU_supply` : Exists for PR and BA node types. This is the EU value supplied by the node. Output
+* `<LV|MV|HV>_EU_demand` : Exists for RE and BA node types. This is the EU value the node requires to run. Output
+* `<LV|MV|HV>_EU_input`  : Exists for RE and BA node types. This is the actual EU value the network can give the node. Input
 
 The reason the LV|MV|HV type is prepended to meta data is because some machine
 could require several supplies to work.
