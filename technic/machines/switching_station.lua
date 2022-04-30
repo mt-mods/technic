@@ -99,18 +99,19 @@ minetest.register_node("technic:switching_station",{
 				-- Network exists and is not overloaded, reactivate network
 				technic.activate_network(network_id)
 				infotext = technic.network_infotext(network_id)
-			end
-			meta:set_string("infotext", infotext)
-			-- If mesecon signal and power supply or demand changed then
-			-- send them via digilines.
-			if mesecons_path and digilines_path and mesecon.is_powered(pos) then
-				if PR_eu_supply ~= network.supply or RE_eu_demand ~= network.demand then
-					local meta = minetest.get_meta(pos)
-					local channel = meta:get_string("channel")
-					digilines.receptor_send(pos, technic.digilines.rules, channel, {
-						supply = PR_eu_supply,
-						demand = RE_eu_demand
-					})
+				meta:set_string("infotext", infotext)
+				-- If mesecon signal enabled and power supply or demand changed then send them via digilines.
+				if mesecons_path and digilines_path and mesecon.is_powered(pos) then
+					local network = technic.networks[network_id]
+					if meta:get_int("supply") ~= network.supply or meta:get_int("demand") ~= network.demand then
+						meta:set_int("supply", network.supply)
+						meta:set_int("demand", network.demand)
+						local channel = meta:get_string("channel")
+						digilines.receptor_send(pos, technic.digilines.rules, channel, {
+							supply = network.supply,
+							demand = network.demand
+						})
+					end
 				end
 			end
 		else

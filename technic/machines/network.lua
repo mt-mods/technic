@@ -118,7 +118,7 @@ end
 function technic.switch_remove(pos, net)
 	local swindex = technic.switch_index(pos, net)
 	if swindex then
-		table.remove(net.swpos, index)
+		table.remove(net.swpos, swindex)
 	end
 	return #net.swpos
 end
