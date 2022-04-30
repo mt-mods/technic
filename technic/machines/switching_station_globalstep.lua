@@ -49,15 +49,7 @@ minetest.register_globalstep(function(dtime)
 	local active_switches = 0
 
 	for network_id, network in pairs(technic.active_networks) do
-		local pos = technic.network2sw_pos(network_id)
-
-		local node = technic.get_or_load_node(pos) or minetest.get_node(pos)
-
-		if node.name ~= "technic:switching_station" then
-			-- station vanished
-			technic.remove_network(network_id)
-
-		elseif network.timeout > now and not technic.is_overloaded(network_id) then
+		if network.timeout > now and not technic.is_overloaded(network_id) then
 			-- station active
 			active_switches = active_switches + 1
 
@@ -95,9 +87,8 @@ minetest.register_globalstep(function(dtime)
 			end
 
 		else
-			-- station timed out
+			-- network timed out
 			technic.active_networks[network_id] = nil
-
 		end
 	end
 
