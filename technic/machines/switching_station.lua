@@ -59,8 +59,7 @@ minetest.register_node("technic:switching_station",{
 		minetest.get_node_timer(pos):start(1.0)
 	end,
 	on_destruct = function(pos)
-		-- Remove network when switching station is removed, if
-		-- there's another switching station network will be rebuilt.
+		-- Remove network when last switching stations is removed
 		local network_id = technic.sw_pos2network(pos)
 		local network = network_id and technic.networks[network_id]
 		if network and technic.switch_remove(pos, network) < 1 then
@@ -99,7 +98,6 @@ minetest.register_node("technic:switching_station",{
 				-- Network exists and is not overloaded, reactivate network
 				technic.activate_network(network_id)
 				infotext = technic.network_infotext(network_id)
-				meta:set_string("infotext", infotext)
 				-- If mesecon signal enabled and power supply or demand changed then send them via digilines.
 				if mesecons_path and digilines_path and mesecon.is_powered(pos) then
 					local network = technic.networks[network_id]
@@ -114,6 +112,7 @@ minetest.register_node("technic:switching_station",{
 					end
 				end
 			end
+			meta:set_string("infotext", infotext)
 		else
 			-- Network does not exist yet, attempt to create new network here
 			start_network(pos)

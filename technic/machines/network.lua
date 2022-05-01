@@ -99,7 +99,7 @@ function technic.remove_network(network_id)
 	technic.active_networks[network_id] = nil
 end
 
-function technic.switch_index(pos, net)
+local function switch_index(pos, net)
 	for index, spos in ipairs(net.swpos) do
 		if pos.x == spos.x and pos.y == spos.y and pos.z == spos.z then
 			return index
@@ -108,7 +108,7 @@ function technic.switch_index(pos, net)
 end
 
 function technic.switch_insert(pos, net)
-	local swindex = technic.switch_index(pos, net)
+	local swindex = switch_index(pos, net)
 	if swindex == nil then
 		table.insert(net.swpos, table.copy(pos))
 	end
@@ -116,7 +116,7 @@ function technic.switch_insert(pos, net)
 end
 
 function technic.switch_remove(pos, net)
-	local swindex = technic.switch_index(pos, net)
+	local swindex = switch_index(pos, net)
 	if swindex then
 		table.remove(net.swpos, swindex)
 	end
