@@ -108,8 +108,7 @@ local function switch_index(pos, net)
 end
 
 function technic.switch_insert(pos, net)
-	local swindex = switch_index(pos, net)
-	if swindex == nil then
+	if not switch_index(pos, net) then
 		table.insert(net.swpos, table.copy(pos))
 	end
 	return #net.swpos
