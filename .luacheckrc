@@ -26,7 +26,7 @@ read_globals = {
 	"mesecon", "moretrees",
 	"unified_inventory", "protector",
 	"unifieddyes", "digiline_remote",
-	"monitoring", "drawers", "mg",
+	"drawers", "mg",
 	"craftguide", "i3",
 
 	-- Only used in technic/machines/MV/lighting.lua (disabled)
