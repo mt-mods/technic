@@ -29,13 +29,9 @@ minetest.register_globalstep(function(dtime)
 
 	local now = minetest.get_us_time()
 
-	local active_switches = 0
-
 	for network_id, network in pairs(technic.active_networks) do
 		if network.timeout > now and not technic.is_overloaded(network_id) then
 			-- station active
-			active_switches = active_switches + 1
-
 			if network.skip > 0 then
 				network.skip = network.skip - 1
 			else
