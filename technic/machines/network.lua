@@ -99,6 +99,29 @@ function technic.remove_network(network_id)
 	technic.active_networks[network_id] = nil
 end
 
+local function switch_index(pos, net)
+	for index, spos in ipairs(net.swpos) do
+		if pos.x == spos.x and pos.y == spos.y and pos.z == spos.z then
+			return index
+		end
+	end
+end
+
+function technic.switch_insert(pos, net)
+	if not switch_index(pos, net) then
+		table.insert(net.swpos, table.copy(pos))
+	end
+	return #net.swpos
+end
+
+function technic.switch_remove(pos, net)
+	local swindex = switch_index(pos, net)
+	if swindex then
+		table.remove(net.swpos, swindex)
+	end
+	return #net.swpos
+end
+
 function technic.sw_pos2network(pos)
 	return technic_cables[poshash({x=pos.x,y=pos.y-1,z=pos.z})]
 end
@@ -514,8 +537,8 @@ function technic.build_network(network_id)
 		network = {
 			-- Build queue
 			queue = {},
-			-- Basic network data and lookup table for attached nodes (no switching stations)
-			id = network_id, tier = tier, all_nodes = {},
+			-- Basic network data and lookup table for attached nodes
+			id = network_id, tier = tier, all_nodes = {}, swpos = {},
 			-- Indexed arrays for iteration by machine type
 			PR_nodes = {}, RE_nodes = {}, BA_nodes = {},
 			-- Power generation, usage and capacity related variables
@@ -580,9 +603,6 @@ local function run_nodes(list, vm, run_stage, network)
 	end
 end
 
-local mesecons_path = minetest.get_modpath("mesecons")
-local digilines_path = minetest.get_modpath("digilines")
-
 function technic.network_run(network_id)
 	--
 	-- !!! !!! !!! !!! !!! !!! !!! !!! !!! !!! !!!
@@ -592,19 +612,16 @@ function technic.network_run(network_id)
 	-- should be removed and/or refactored.
 	--
 
-	local pos = technic.network2sw_pos(network_id)
 	local t0 = minetest.get_us_time()
 
 	local PR_nodes
 	local BA_nodes
 	local RE_nodes
 
-	local tier = technic.sw_pos2tier(pos)
-	local network
-	if tier then
-		PR_nodes, BA_nodes, RE_nodes = get_network(network_id, tier)
+	local network = networks[network_id]
+	if network then
+		PR_nodes, BA_nodes, RE_nodes = get_network(network_id, network.tier)
 		if not PR_nodes or technic.is_overloaded(network_id) then return end
-		network = networks[network_id]
 	else
 		--dprint("Not connected to a network")
 		technic.network_infotext(network_id, S("@1 Has No Network", S("Switching Station")))
@@ -625,9 +642,9 @@ function technic.network_run(network_id)
 	run_nodes(BA_nodes, vm, technic.battery, network)
 
 	-- Strings for the meta data
-	local eu_demand_str    = tier.."_EU_demand"
-	local eu_input_str     = tier.."_EU_input"
-	local eu_supply_str    = tier.."_EU_supply"
+	local eu_demand_str = network.tier.."_EU_demand"
+	local eu_input_str  = network.tier.."_EU_input"
+	local eu_supply_str = network.tier.."_EU_supply"
 
 	-- Distribute charge equally across multiple batteries.
 	local charge_distributed = math.floor(network.BA_charge_active / network.BA_count_active)
@@ -657,20 +674,6 @@ function technic.network_run(network_id)
 	technic.network_infotext(network_id, S("@1. Supply: @2 Demand: @3",
 			S("Switching Station"), technic.EU_string(PR_eu_supply),
 			technic.EU_string(RE_eu_demand)))
-
-	-- If mesecon signal and power supply or demand changed then
-	-- send them via digilines.
-	if mesecons_path and digilines_path and mesecon.is_powered(pos) then
-		if PR_eu_supply ~= network.supply or
-				RE_eu_demand ~= network.demand then
-			local meta = minetest.get_meta(pos)
-			local channel = meta:get_string("channel")
-			digilines.receptor_send(pos, technic.digilines.rules, channel, {
-				supply = PR_eu_supply,
-				demand = RE_eu_demand
-			})
-		end
-	end
 
 	-- Data that will be used by the power monitor
 	network.supply = PR_eu_supply
@@ -703,7 +706,8 @@ function technic.network_run(network_id)
 		local t1 = minetest.get_us_time()
 		local diff = t1 - t0
 		if diff > 50000 then
-			minetest.log("warning", "[technic] [+supply] technic_run took " .. diff .. " us at " .. minetest.pos_to_string(pos))
+			minetest.log("warning", "[technic] [+supply] technic_run took " .. diff .. " us at "
+				.. minetest.pos_to_string(hashpos(network_id)))
 		end
 
 		return
@@ -733,7 +737,8 @@ function technic.network_run(network_id)
 		local t1 = minetest.get_us_time()
 		local diff = t1 - t0
 		if diff > 50000 then
-			minetest.log("warning", "[technic] [-supply] technic_run took " .. diff .. " us at " .. minetest.pos_to_string(pos))
+			minetest.log("warning", "[technic] [-supply] technic_run took " .. diff .. " us at "
+				.. minetest.pos_to_string(hashpos(network_id)))
 		end
 
 		return
@@ -757,7 +762,8 @@ function technic.network_run(network_id)
 	local t1 = minetest.get_us_time()
 	local diff = t1 - t0
 	if diff > 50000 then
-		minetest.log("warning", "[technic] technic_run took " .. diff .. " us at " .. minetest.pos_to_string(pos))
+		minetest.log("warning", "[technic] technic_run took " .. diff .. " us at "
+			.. minetest.pos_to_string(hashpos(network_id)))
 	end
 
 end

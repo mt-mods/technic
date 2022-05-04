@@ -1,6 +1,7 @@
 -- See also technic/doc/api.md
 
 local mesecons_path = minetest.get_modpath("mesecons")
+local digilines_path = minetest.get_modpath("digilines")
 
 local S = technic.getter
 
@@ -20,10 +21,13 @@ local function start_network(pos)
 	if not tier then
 		local meta = minetest.get_meta(pos)
 		meta:set_string("infotext", S("@1 Has No Network", S("Switching Station")))
-		return
+	else
+		local network_id = technic.sw_pos2network(pos) or technic.create_network(pos)
+		local network = network_id and technic.networks[network_id]
+		if network and technic.switch_insert(pos, network) > 0 then
+			technic.activate_network(network_id)
+		end
 	end
-	local network_id = technic.sw_pos2network(pos) or technic.create_network(pos)
-	technic.activate_network(network_id)
 end
 
 local mesecon_def
@@ -55,10 +59,10 @@ minetest.register_node("technic:switching_station",{
 		minetest.get_node_timer(pos):start(1.0)
 	end,
 	on_destruct = function(pos)
-		-- Remove network when switching station is removed, if
-		-- there's another switching station network will be rebuilt.
+		-- Remove network when last switching stations is removed
 		local network_id = technic.sw_pos2network(pos)
-		if technic.networks[network_id] then
+		local network = network_id and technic.networks[network_id]
+		if network and technic.switch_remove(pos, network) < 1 then
 			technic.remove_network(network_id)
 		end
 	end,
@@ -94,6 +98,19 @@ minetest.register_node("technic:switching_station",{
 				-- Network exists and is not overloaded, reactivate network
 				technic.activate_network(network_id)
 				infotext = technic.network_infotext(network_id)
+				-- If mesecon signal enabled and power supply or demand changed then send them via digilines.
+				if mesecons_path and digilines_path and mesecon.is_powered(pos) then
+					local network = technic.networks[network_id]
+					if meta:get_int("supply") ~= network.supply or meta:get_int("demand") ~= network.demand then
+						meta:set_int("supply", network.supply)
+						meta:set_int("demand", network.demand)
+						local channel = meta:get_string("channel")
+						digilines.receptor_send(pos, technic.digilines.rules, channel, {
+							supply = network.supply,
+							demand = network.demand
+						})
+					end
+				end
 			end
 			meta:set_string("infotext", infotext)
 		else
