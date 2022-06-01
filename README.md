@@ -26,7 +26,7 @@ The technic modpack depends on some other modpacks:
 
 * the basic Minetest game
 * mesecons, which supports the construction of logic systems based on
-  signalling elements
+  signaling elements
 * pipeworks, which supports the automation of item transport
 * moreores, which provides some additional ore types
 * basic_materials, which provides some basic craft items
@@ -49,7 +49,7 @@ its specialised recipe types.
 
 # Documentation
 
-Ingame:
+In-game:
 
 * [Resources](./technic/doc/resources.md)
 * [Substances](./technic/doc/substances.md)
@@ -134,7 +134,7 @@ Recommended mods that build on the `technic mod`:
 | enable_frames                                |                                                                                                                       |
 | enable_corium_griefing                       |                                                                                                                       |
 | enable_radiation_protection                  |                                                                                                                       |
-| enable_radiation_throttling                  | enable lag- and per-second-trottling of radiation damage                                                              |
+| enable_radiation_throttling                  | enable lag- and per-second-throttling of radiation damage                                                             |
 | enable_entity_radiation_damage               |                                                                                                                       |
 | enable_longterm_radiation_damage             |                                                                                                                       |
 | enable_nuclear_reactor_digiline_selfdestruct |                                                                                                                       |
