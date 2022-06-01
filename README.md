@@ -26,7 +26,7 @@ The technic modpack depends on some other modpacks:
 
 * the basic Minetest game
 * mesecons, which supports the construction of logic systems based on
-  signalling elements
+  signaling elements
 * pipeworks, which supports the automation of item transport
 * moreores, which provides some additional ore types
 * basic_materials, which provides some basic craft items
@@ -49,7 +49,7 @@ its specialised recipe types.
 
 # Documentation
 
-Ingame:
+In-game:
 
 * [Resources](./technic/doc/resources.md)
 * [Substances](./technic/doc/substances.md)
