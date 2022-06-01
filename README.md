@@ -134,7 +134,7 @@ Recommended mods that build on the `technic mod`:
 | enable_frames                                |                                                                                                                       |
 | enable_corium_griefing                       |                                                                                                                       |
 | enable_radiation_protection                  |                                                                                                                       |
-| enable_radiation_throttling                  | enable lag- and per-second-trottling of radiation damage                                                              |
+| enable_radiation_throttling                  | enable lag- and per-second-throttling of radiation damage                                                              |
 | enable_entity_radiation_damage               |                                                                                                                       |
 | enable_longterm_radiation_damage             |                                                                                                                       |
 | enable_nuclear_reactor_digiline_selfdestruct |                                                                                                                       |
