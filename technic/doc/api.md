@@ -52,10 +52,16 @@ Power tool API
 	* Registers power tool adding required fields, otherwise same as `minetest.register_tool(itemname, definition)`.
 	* For regular power tools you only want to change `max_charge` and leave other fields unset (defaults).
 	* Special fields for `definition`:
-		* `max_charge` Number, maximum charge for tool. Defaults to `10000` which is same as RE battery.
+		* `technic_max_charge` Number, maximum charge for tool. Defaults to `10000` which is same as RE battery.
 		* `on_refill` Function to refill charge completely. Default is to set maximum charge for tool.
 		* `wear_represents` Customize wear indicator instead of using charge level. Default is `"technic_RE_charge"`.
 		* `tool_capabilities` See Minetest documentation. Default is `{ punch_attack_uses = 0 }`.
+		* `technic_get_charge = function(itemstack) ...`
+			* This optional callback will be used to get itemstack charge and max\_charge
+			* Have to return values `charge, max_charge`
+			* Etc. `local charge, maxcharge = itemdef.technic_get_charge(itemstack)`
+		* `technic_set_charge = function(itemstack, charge) ...`
+			* This optional callback will be used to set itemstack charge
 * `technic.get_RE_charge(itemstack)`
 	* Returns current charge level of tool
 * `technic.set_RE_charge(itemstack, charge)`

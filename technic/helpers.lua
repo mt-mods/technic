@@ -63,9 +63,11 @@ function technic.swap_node(pos, name)
 end
 
 function technic.set_RE_charge(stack, charge)
-	local wear_factor = stack:get_definition().technic_wear_factor
-	if wear_factor then
-		local wear = math.floor(charge * wear_factor + 0.5)
+	local def = stack:get_definition()
+	if def.technic_set_charge then
+		def.technic_set_charge(stack, charge)
+	elseif def.technic_wear_factor then
+		local wear = math.floor(charge * def.technic_wear_factor + 0.5)
 		stack:set_wear(wear > 0 and 65536 - wear or 0)
 	else
 		minetest.log("error", "technic.set_RE_charge item not registered as power tool: "..stack:get_name())
@@ -73,13 +75,15 @@ function technic.set_RE_charge(stack, charge)
 end
 
 function technic.get_RE_charge(stack)
-	local wear_factor = stack:get_definition().technic_wear_factor
-	if wear_factor then
+	local def = stack:get_definition()
+	if def.technic_get_charge then
+		return def.technic_get_charge(stack)
+	elseif def.technic_wear_factor then
 		local wear = stack:get_wear()
-		return math.floor((wear > 0 and 65536 - wear or 0) / wear_factor + 0.5)
+		return math.floor((wear > 0 and 65536 - wear or 0) / def.technic_wear_factor + 0.5), def.technic_max_charge
 	end
 	minetest.log("warning", "technic.get_RE_charge item not registered as power tool: "..stack:get_name())
-	return 0
+	return 0, 0
 end
 
 function technic.use_RE_charge(stack, amount)
