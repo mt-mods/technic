@@ -34,9 +34,11 @@ function technic.register_power_tool(itemname, itemdef)
 	itemdef.wear_represents = itemdef.wear_represents or "technic_RE_charge"
 	itemdef.technic_max_charge = max_charge
 	itemdef.technic_wear_factor = 65535 / max_charge
+	itemdef.technic_get_charge = itemdef.technic_get_charge or technic.get_RE_charge
+	itemdef.technic_set_charge = itemdef.technic_set_charge or technic.set_RE_charge
 	itemdef.on_refill = itemdef.on_refill or function(stack)
-		-- This is always using originally defined max_charge even if stack somehow changed to another
-		technic.set_RE_charge(stack, max_charge)
+		local def = stack:get_definition()
+		def.technic_set_charge(stack, def.technic_max_charge)
 		return stack
 	end
 	itemdef.tool_capabilities = itemdef.tool_capabilities or { punch_attack_uses = 0 }
