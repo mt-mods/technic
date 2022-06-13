@@ -222,7 +222,7 @@ function technic.register_battery_box(nodename, data)
 			tooldef.technic_set_charge(toolstack, charge)
 			inv:set_stack("src", 1, toolstack)
 		end
-		return batt_charge - charge_step, (charge == def.technic_max_charge)
+		return batt_charge - charge_step, (charge == tooldef.technic_max_charge)
 	end
 
 	local function discharge_tools(meta, batt_charge, charge_step, batt_max_charge)
