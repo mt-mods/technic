@@ -73,13 +73,13 @@ function technic.set_RE_charge(stack, charge)
 end
 
 function technic.get_RE_charge(stack)
-	local wear_factor = stack:get_definition().technic_wear_factor
-	if wear_factor then
+	local def = stack:get_definition()
+	if def.technic_wear_factor then
 		local wear = stack:get_wear()
-		return math.floor((wear > 0 and 65536 - wear or 0) / wear_factor + 0.5)
+		return (wear > 0 and math.floor((65536 - wear) / def.technic_wear_factor + 0.5) or 0), def.technic_max_charge
 	end
 	minetest.log("warning", "technic.get_RE_charge item not registered as power tool: "..stack:get_name())
-	return 0
+	return 0, 0
 end
 
 function technic.use_RE_charge(stack, amount)

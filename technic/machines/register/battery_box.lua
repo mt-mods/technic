@@ -194,55 +194,56 @@ function technic.register_battery_box(nodename, data)
 		end
 		-- Get itemstack and check if it is registered tool
 		local toolstack = inventory:get_stack(listname, 1)
-		local toolname = toolstack:get_name()
-		if technic.power_tools[toolname] == nil then
+		local tooldef = toolstack:get_definition()
+		if not tooldef.technic_max_charge then
 			return
 		end
-		-- Load and check tool metadata
-		return toolstack, technic.power_tools[toolname]
+		return toolstack, tooldef
 	end
 
 	local function charge_tools(meta, batt_charge, charge_step)
 		-- Get tool metadata
 		local inv = meta:get_inventory()
-		local toolstack, max_charge = get_tool(inv, "src")
+		local toolstack, tooldef = get_tool(inv, "src")
 		if not toolstack then
 			return batt_charge, false
 		end
 		-- Do the charging
-		local charge = technic.get_RE_charge(toolstack)
-		if charge >= max_charge then
+		local charge = tooldef.technic_get_charge(toolstack)
+		if charge >= tooldef.technic_max_charge then
 			return batt_charge, true
 		elseif batt_charge <= 0 then
 			return batt_charge, false
 		end
 		local oldcharge = charge
-		charge_step = math.min(math.min(charge_step, batt_charge), max_charge - charge)
+		charge_step = math.min(charge_step, batt_charge, tooldef.technic_max_charge - charge)
 		charge = charge + charge_step
 		if charge ~= oldcharge then
-			technic.set_RE_charge(toolstack, charge)
+			tooldef.technic_set_charge(toolstack, charge)
 			inv:set_stack("src", 1, toolstack)
 		end
-		return batt_charge - charge_step, (charge == max_charge)
+		return batt_charge - charge_step, (charge == tooldef.technic_max_charge)
 	end
 
 	local function discharge_tools(meta, batt_charge, charge_step, batt_max_charge)
 		-- Get tool metadata
 		local inv = meta:get_inventory()
-		local toolstack = get_tool(inv, "dst")
-		if not toolstack then return batt_charge, false end
+		local toolstack, tooldef = get_tool(inv, "dst")
+		if not toolstack then
+			return batt_charge, false
+		end
 		-- Do the discharging
-		local charge = technic.get_RE_charge(toolstack)
+		local charge = tooldef.technic_get_charge(toolstack)
 		if charge <= 0 then
 			return batt_charge, true
 		elseif batt_charge >= batt_max_charge then
 			return batt_charge, false
 		end
 		local oldcharge = charge
-		charge_step = math.min(math.min(charge_step, batt_max_charge - batt_charge), charge)
+		charge_step = math.min(charge_step, batt_max_charge - batt_charge, charge)
 		charge = charge - charge_step
 		if charge ~= oldcharge then
-			technic.set_RE_charge(toolstack, charge)
+			tooldef.technic_set_charge(toolstack, charge)
 			inv:set_stack("dst", 1, toolstack)
 		end
 		return batt_charge + charge_step, (charge == 0)
