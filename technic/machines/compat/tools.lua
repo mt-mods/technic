@@ -78,8 +78,6 @@ function technic.register_power_tool(itemname, def_or_max_charge)
 				local overrides = {
 					technic_max_charge = def_or_max_charge,
 					technic_wear_factor = 65535 / def_or_max_charge,
-					technic_get_charge = technic.get_RE_charge,
-					technic_set_charge = technic.set_RE_charge,
 					on_refill = function(stack)
 						local tooldef = stack:get_definition()
 						tooldef.technic_set_charge(stack, def_or_max_charge)
@@ -89,6 +87,8 @@ function technic.register_power_tool(itemname, def_or_max_charge)
 				-- Add legacy meta handlers if mod did not attempt to read technic.plus value
 				local modname = itemname:match(":?(.+):")
 				if plus_aware[modname] then
+					overrides.technic_get_charge = redef.technic_get_charge or technic.get_RE_charge
+					overrides.technic_set_charge = redef.technic_set_charge or technic.set_RE_charge
 					minetest.log("warning", "Mod "..modname.." seems to be aware of technic.plus but "..
 						itemname.." is still using deprecated registration, skipping meta charge compatibility.")
 				elseif not redef.technic_get_charge and not redef.technic_set_charge then
@@ -99,6 +99,9 @@ function technic.register_power_tool(itemname, def_or_max_charge)
 				-- Override tool definition with added / new values
 				minetest.override_item(itemname, overrides)
 				minetest.log("warning", "Updated legacy Technic power tool definition for "..itemname)
+			else
+				minetest.log("error", "Technic compatibility overrides skipped for "..itemname..", charging might "..
+					'cause crash. Upgrading to technic.register_power_tool("'..itemname..'", {itemdef}) recommended.')
 			end
 		end)
 	else
