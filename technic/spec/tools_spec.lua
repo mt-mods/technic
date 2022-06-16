@@ -43,8 +43,8 @@ describe("Technic power tool", function()
 	local discharge_inv = minetest.get_meta(BB_Discharge_POS):get_inventory()
 	local function set_charge_stack(stack) charge_inv:set_stack("src", 1, stack) end
 	local function get_charge_stack() return charge_inv:get_stack("src", 1) end
-	local function set_discharge_stack(stack) discharge_inv:set_stack("src", 1, stack) end
-	local function get_discharge_stack() return discharge_inv:get_stack("src", 1) end
+	local function set_discharge_stack(stack) discharge_inv:set_stack("dst", 1, stack) end
+	local function get_discharge_stack() return discharge_inv:get_stack("dst", 1) end
 	local function set_player_stack(stack) return player:get_inventory():set_stack("main", 1, stack) end
 	local function get_player_stack() return player:get_inventory():get_stack("main", 1) end
 
@@ -346,7 +346,7 @@ describe("Technic power tool", function()
 
 			-- Verify that item charge is empty and charge in battery box for 30 seconds
 			assert.equals(0, technic.get_RE_charge(get_charge_stack()))
-			for i=0, 30 do
+			for i=1, 30 do
 				mineunit:execute_globalstep(1)
 			end
 
@@ -367,6 +367,22 @@ describe("Technic power tool", function()
 			assert.is_number(charge)
 			assert.gt(charge, 0)
 			assert.lt(charge, itemdef.technic_max_charge)
+		end)
+
+		it("can be discharged", function()
+			-- Put item from player inventory to battery box src inventory
+			player:do_metadata_inventory_put(BB_Discharge_POS, "dst", 1)
+
+			-- Verify that item is charged and discharge in battery box for 3 seconds
+			assert.lt(itemdef.technic_max_charge / 2, technic.get_RE_charge(get_discharge_stack()))
+			for i=1, 3 do
+				mineunit:execute_globalstep(1)
+			end
+
+			-- Take item from battery box and check charge / wear values
+			player:do_metadata_inventory_take(BB_Discharge_POS, "dst", 1)
+			assert.gt(itemdef.technic_max_charge, 0)
+			assert.equals(0, technic.get_RE_charge(get_player_stack()))
 		end)
 
 	end)
