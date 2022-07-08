@@ -14,6 +14,9 @@ local errors = {
 local function get_stored_metadata(itemstack)
 	local meta = itemstack:get_meta()
 	local data = meta:get("data") or meta:get("")
+	if not data then
+		return
+	end
 	data = minetest.deserialize(data)
 	if not data or not data.version or not data.name then
 		return
