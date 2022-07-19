@@ -20,9 +20,12 @@ local quarry_formspec =
 	"label[0,0;"..machine_name.."]"..
 	"button[6,0.9;2,1;restart;"..S("Restart").."]"
 
+local mesecons_checkbox = minetest.get_modpath("mesecons")
+	and function(state) return "checkbox[4.3,3.9;mesecons;"..S("Controlled by Mesecon Signal")..";"..state.."]" end
+	or function() return "" end
+
 if has_digilines then
-	quarry_formspec = quarry_formspec
-			.. "field[4.3,3.4;4,1;channel;Channel;${channel}]"
+	quarry_formspec = quarry_formspec .. "field[4.3,3.4;4,1;channel;Channel;${channel}]"
 end
 
 -- hard-coded spiral dig pattern for up to 17x17 dig area
@@ -106,6 +109,7 @@ local function set_quarry_status(pos)
 		meta:set_string("infotext", S("@1 Disabled", machine_name))
 		meta:set_int("HV_EU_demand", 0)
 	end
+	formspec = formspec .. mesecons_checkbox(meta:get("mesecons") or "true")
 	meta:set_string("formspec", formspec.."label[0,4.1;"..minetest.formspec_escape(status).."]")
 end
 
@@ -134,6 +138,9 @@ local function quarry_receive_fields(pos, formname, fields, sender)
 		end
 	end
 
+	if fields.mesecons then
+		meta:set_string("mesecons", fields.mesecons == "false" and "false" or "")
+	end
 	if fields.channel then
 		meta:set_string("channel", fields.channel)
 	end
@@ -523,13 +530,17 @@ minetest.register_node("technic:quarry", {
 		effector = {
 			action_on = function(pos)
 				local meta = minetest.get_meta(pos)
-				meta:set_int("enabled", 1)
-				set_quarry_status(pos)
+				if meta:get("mesecons") ~= "false" then
+					meta:set_int("enabled", 1)
+					set_quarry_status(pos)
+				end
 			end,
 			action_off = function(pos)
 				local meta = minetest.get_meta(pos)
-				meta:set_int("enabled", 0)
-				set_quarry_status(pos)
+				if meta:get("mesecons") ~= "false" then
+					meta:set_int("enabled", 0)
+					set_quarry_status(pos)
+				end
 			end
 		}
 	},
