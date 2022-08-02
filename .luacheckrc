@@ -27,7 +27,7 @@ read_globals = {
 	"unified_inventory", "protector",
 	"unifieddyes", "digiline_remote",
 	"drawers", "mg",
-	"craftguide", "i3",
+	"craftguide", "i3", "mtt",
 
 	-- Only used in technic/machines/MV/lighting.lua (disabled)
 	"isprotect", "homedecor_expect_infinite_stacks",

@@ -6,9 +6,15 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        ENGINE_VERSION: [5.3.0, 5.4.0, 5.5.0, latest]
 
     steps:
     - uses: actions/checkout@v2
-
+      with:
+        fetch-depth: 0
+        submodules: recursive
     - name: test
-      run: MINETEST_VERSION=5.2.0 ./integration-test.sh
+      run: docker-compose up --exit-code-from test
