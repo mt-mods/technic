@@ -1,0 +1,20 @@
+version: "3.6"
+
+services:
+ test:
+  build:
+   context: ./.test
+   args:
+    ENGINE_VERSION: ${ENGINE_VERSION:-5.5.0}
+  entrypoint: "minetestserver --config /minetest.conf"
+  user: root
+  volumes:
+    - "./:/root/.minetest/worlds/world/worldmods/technic/"
+    - "./.test/minetest.conf:/minetest.conf"
+    - "./.test/registered_nodes.txt:/root/.minetest/worlds/world/registered_nodes.txt"
+    - "world:/root/.minetest/worlds/world"
+  ports:
+    - "30000:30000/udp"
+
+volumes:
+  world: {}
