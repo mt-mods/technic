@@ -273,6 +273,23 @@ local function dig_particles(quarry_pos, dig_pos, dig_node)
 	})
 end
 
+-- fake player cache management
+-- name -> fake_player
+local fake_player_cache = {}
+
+-- creates or returns an existing fake player ref
+local function get_or_create_fake_player(name)
+	if not fake_player_cache[name] then
+		fake_player_cache[name] = pipeworks.create_fake_player({name = name})
+	end
+	return fake_player_cache[name]
+end
+
+-- clear the fake-player on player leave
+minetest.register_on_leaveplayer(function(player)
+	fake_player_cache[player:get_player_name()] = nil
+end)
+
 local function execute_dig(pos, node, meta, network)
 	local dig_pos = minetest.string_to_pos(meta:get_string("dig_pos"))
 	local quarry_dir = meta:get_int("quarry_dir")
@@ -281,7 +298,7 @@ local function execute_dig(pos, node, meta, network)
 		dig_pos = find_ground(pos, quarry_dir, meta)
 	else
 		local owner = meta:get_string("owner")
-		local digger = pipeworks.create_fake_player({name = owner})
+		local digger = get_or_create_fake_player(owner)
 		local dig_steps = meta:get_int("dig_steps")
 		local dig_index = meta:get_int("dig_index")
 		local t0 = minetest.get_us_time()
@@ -295,7 +312,8 @@ local function execute_dig(pos, node, meta, network)
 				meta:set_int("purge_on", 1)
 				break
 			end
-			local dig_node = technic.get_or_load_node(dig_pos) or minetest.get_node(dig_pos)
+			minetest.load_area(dig_pos)
+			local dig_node = minetest.get_node(dig_pos)
 			if can_dig_node(dig_pos, dig_node.name, owner, digger) then
 				-- found something to dig, dig it and stop searching
 				minetest.remove_node(dig_pos)
