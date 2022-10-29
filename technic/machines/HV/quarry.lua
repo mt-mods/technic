@@ -56,7 +56,7 @@ end
 
 local function reset_quarry(pos)
 	local meta = minetest.get_meta(pos)
-	local node = technic.get_or_load_node(pos) or minetest.get_node(pos)
+	local node = minetest.get_node(pos)
 	meta:set_int("quarry_dir", node.param2)
 	meta:set_string("quarry_pos", minetest.pos_to_string(pos))
 	meta:set_string("dig_pos", "")
@@ -312,8 +312,7 @@ local function execute_dig(pos, node, meta, network)
 				meta:set_int("purge_on", 1)
 				break
 			end
-			minetest.load_area(dig_pos)
-			local dig_node = minetest.get_node(dig_pos)
+			local dig_node = technic.get_node_force(dig_pos)
 			if can_dig_node(dig_pos, dig_node.name, owner, digger) then
 				-- found something to dig, dig it and stop searching
 				minetest.remove_node(dig_pos)

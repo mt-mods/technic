@@ -201,10 +201,10 @@ end
 
 local function remote_start_net(player, pos)
 	local sw_pos = {x=pos.x,y=pos.y+1,z=pos.z}
-	-- Try to load switch network node with VoxelManip
-	local sw_node = technic.get_or_load_node(sw_pos) or minetest.get_node(sw_pos)
+	-- Try to load switch network node
+	local sw_node = technic.get_node_force(sw_pos)
 	if sw_node.name ~= "technic:switching_station" then return "switchload" end
-	-- Try to load network node with VoxelManip
+	-- Try to load network node
 	local tier = technic.sw_pos2tier(sw_pos, true)
 	if not tier then return "cableload" end
 	-- Check protections

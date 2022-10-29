@@ -78,12 +78,12 @@ function technic.activate_network(network_id, timeout)
 	end
 end
 
-function technic.sw_pos2tier(pos, use_vm)
+function technic.sw_pos2tier(pos, load_node)
 	-- Get cable tier for switching station or nil if no cable
-	-- use_vm true to use VoxelManip to load node
+	-- load_node true to use minetest.load_area to load node
 	local cable_pos = {x=pos.x,y=pos.y-1,z=pos.z}
-	if use_vm then
-		technic.get_or_load_node(cable_pos)
+	if load_node then
+		minetest.load_area(cable_pos)
 	end
 	return technic.get_cable_tier(minetest.get_node(cable_pos).name)
 end
@@ -415,8 +415,7 @@ end
 
 -- Generic function to add found connected nodes to the right classification array
 local function add_network_node(network, pos, machines)
-	technic.get_or_load_node(pos)
-	local name = minetest.get_node(pos).name
+	local name = technic.get_node_force(pos).name
 
 	if technic.get_cable_tier(name) == network.tier then
 		add_cable_node(pos, network)
@@ -592,12 +591,8 @@ end)
 
 local function run_nodes(list, vm, run_stage, network)
 	for _, pos in ipairs(list) do
-		local node = minetest.get_node_or_nil(pos)
-		if not node then
-			vm:read_from_map(pos, pos)
-			node = minetest.get_node_or_nil(pos)
-		end
-		if node and node.name and node_technic_run[node.name] then
+		local node = technic.get_node_force(pos)
+		if node_technic_run[node.name] then
 			node_technic_run[node.name](pos, node, run_stage, network)
 		end
 	end
