@@ -101,16 +101,10 @@ function technic.use_RE_charge(stack, amount)
 	return true
 end
 
--- If the node is loaded, returns it. If it isn't loaded, load it and return nil.
+-- If the node is loaded, returns it. If it isn't loaded, load it.
 function technic.get_or_load_node(pos)
 	local node = minetest.get_node_or_nil(pos)
 	if node then return node end
-	minetest.load_area(pos)
-	return nil
-end
-
--- Loads the node and returns it.
-function technic.get_node_force(pos)
 	minetest.load_area(pos)
 	return minetest.get_node(pos)
 end
