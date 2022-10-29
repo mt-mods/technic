@@ -415,7 +415,7 @@ end
 
 -- Generic function to add found connected nodes to the right classification array
 local function add_network_node(network, pos, machines)
-	local name = technic.get_node_force(pos).name
+	local name = technic.get_or_load_node(pos).name
 
 	if technic.get_cable_tier(name) == network.tier then
 		add_cable_node(pos, network)

@@ -312,7 +312,7 @@ local function execute_dig(pos, node, meta, network)
 				meta:set_int("purge_on", 1)
 				break
 			end
-			local dig_node = technic.get_node_force(dig_pos)
+			local dig_node = technic.get_or_load_node(dig_pos)
 			if can_dig_node(dig_pos, dig_node.name, owner, digger) then
 				-- found something to dig, dig it and stop searching
 				minetest.remove_node(dig_pos)
