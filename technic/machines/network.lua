@@ -591,8 +591,12 @@ end)
 
 local function run_nodes(list, vm, run_stage, network)
 	for _, pos in ipairs(list) do
-		local node = technic.get_node_force(pos)
-		if node_technic_run[node.name] then
+		local node = minetest.get_node_or_nil(pos)
+		if not node then
+			vm:read_from_map(pos, pos)
+			node = minetest.get_node_or_nil(pos)
+		end
+		if node and node.name and node_technic_run[node.name] then
 			node_technic_run[node.name](pos, node, run_stage, network)
 		end
 	end
