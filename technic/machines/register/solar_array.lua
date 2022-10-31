@@ -18,7 +18,7 @@ function technic.register_solar_array(nodename, data)
 		-- built below 0m
 		local pos1 = { y = pos.y + 1, x = pos.x, z = pos.z }
 
-		technic.get_or_load_node(pos1)
+		minetest.load_area(pos1)
 		local light = minetest.get_node_light(pos1, nil)
 		local time_of_day = minetest.get_timeofday()
 		local meta = minetest.get_meta(pos)

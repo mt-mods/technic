@@ -101,13 +101,12 @@ function technic.use_RE_charge(stack, amount)
 	return true
 end
 
--- If the node is loaded, returns it.  If it isn't loaded, load it and return nil.
+-- If the node is loaded, returns it. If it isn't loaded, load it.
 function technic.get_or_load_node(pos)
 	local node = minetest.get_node_or_nil(pos)
 	if node then return node end
-	local vm = VoxelManip()
-	local _, _ = vm:read_from_map(pos, pos)
-	return nil
+	minetest.load_area(pos)
+	return minetest.get_node(pos)
 end
 
 technic.tube_inject_item = pipeworks.tube_inject_item or function(pos, start_pos, velocity, item)
