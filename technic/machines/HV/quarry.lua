@@ -509,3 +509,38 @@ minetest.register_craft({
 })
 
 technic.register_machine("HV", "technic:quarry", technic.receiver)
+
+minetest.register_lbm({
+	label = "Old quarry conversion",
+	name = "technic:old_quarry_conversion",
+	nodenames = {"technic:quarry"},
+	run_at_every_load = false,
+	action = function(pos, node)
+		local meta = minetest.get_meta(pos)
+		if meta:get("quarry_pos") then
+			-- Quarry v2, calculate step
+			local diameter = meta:get_int("size") * 2 + 1
+			local num_steps = diameter * diameter
+			local step = (meta:get_int("dig_level") - pos.y) * num_steps
+			meta:set_int("step", step)
+			-- Delete unused meta values
+			meta:set_string("quarry_dir", "")
+			meta:set_string("quarry_pos", "")
+			meta:set_string("dig_pos", "")
+			meta:set_string("dig_level", "")
+			meta:set_string("dig_index", "")
+			meta:set_string("dig_steps", "")
+		else
+			-- Quarry v1, reset quarry
+			reset_quarry(meta)
+		end
+		local dir = minetest.facedir_to_dir(node.param2)
+		local offset = vector.multiply(dir, meta:get_int("size") + 1)
+		meta:set_int("offset_x", offset.x)
+		meta:set_int("offset_z", offset.z)
+		if not meta:get("max_depth") then
+			meta:set_int("max_depth", quarry_max_depth)
+		end
+		update_formspec(meta)
+	end
+})
