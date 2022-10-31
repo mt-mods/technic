@@ -448,6 +448,8 @@ minetest.register_node("technic:quarry", {
 	on_construct = function(pos)
 		local meta = minetest.get_meta(pos)
 		meta:set_int("size", 4)
+		meta:set_int("offset_x", 0)
+		meta:set_int("offset_z", 0)
 		meta:set_int("max_depth", quarry_max_depth)
 		meta:get_inventory():set_size("cache", 12)
 		reset_quarry(meta)
