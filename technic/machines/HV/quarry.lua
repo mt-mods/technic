@@ -415,7 +415,6 @@ local function digiline_action(pos, _, channel, msg)
 		if msg.offset_z then
 			meta:set_int("offset_z", clamp(msg.offset_z, -10, 10, 0))
 		end
-		update_formspec(meta)
 	end
 end
 
