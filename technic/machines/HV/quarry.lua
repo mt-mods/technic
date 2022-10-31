@@ -266,7 +266,8 @@ local function update_formspec(meta)
 	end
 	if has_mesecons then
 		local selected = meta:get("mesecons") or "true"
-		fs = fs.."checkbox[0,4.1;mesecons;"..S("Enable Mesecons Control")..";"..selected.."]"
+		local y = quarry_dig_particles and 4.1 or 3.8
+		fs = fs.."checkbox[0,"..y..";mesecons;"..S("Enable Mesecons Control")..";"..selected.."]"
 	end
 	meta:set_string("formspec", fs.."label[4,0;"..status.."]")
 end
