@@ -352,7 +352,8 @@ local function quarry_run(pos, node, run_state, network)
 		reset_quarry(pos)
 	elseif meta:get_int("purge_on") == 1 then
 		quarry_handle_purge(pos)
-	elseif meta:get_int("enabled") and meta:get_int("HV_EU_input") >= quarry_demand and meta:get_int("finished") == 0 then
+	elseif meta:get_int("enabled") == 1 and meta:get_int("finished") == 0
+			and meta:get_int("HV_EU_input") >= quarry_demand then
 		execute_dig(pos, node, meta, network)
 	elseif not meta:get_inventory():is_empty("cache") then
 		meta:set_int("purge_on", 1)
