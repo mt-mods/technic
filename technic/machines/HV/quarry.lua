@@ -110,10 +110,14 @@ end
 
 local function do_digging(pos, meta, net_time)
 	local us_start = minetest.get_us_time()
+	local step = tonumber(meta:get("step"))
+	if not step then
+		-- Missing metadata or not yet updated by conversion LBM, abort digging
+		return
+	end
 	local radius = meta:get_int("size")
 	local diameter = radius * 2 + 1
 	local num_steps = diameter * diameter
-	local step = meta:get_int("step")
 	local dug = meta:get_int("dug")
 	local max_depth = meta:get_int("max_depth")
 	local offset = {
