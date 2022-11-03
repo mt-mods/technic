@@ -333,6 +333,10 @@ local function add_particle_line(pos1, pos2, player)
 end
 
 local function show_working_area(pos, _, player)
+	if not player or player:get_wielded_item():get_name() ~= "" then
+		-- Only spawn particles when using an empty hand
+		return
+	end
 	local meta = minetest.get_meta(pos)
 	local radius = meta:get_int("size") + 0.5
 	local offset = vector.new(meta:get_int("offset_x"), 0, meta:get_int("offset_z"))
