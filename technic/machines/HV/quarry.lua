@@ -162,7 +162,7 @@ local function do_digging(pos, meta, net_time)
 		if can_dig_node(pos, node.name, owner, digger) then
 			-- Found something to dig, dig it and stop
 			minetest.remove_node(dig_pos)
-			if quarry_dig_particles and meta:get("particles") ~= "false" then
+			if quarry_dig_particles then
 				spawn_dig_particles(pos, dig_pos, node)
 			end
 			local inv = meta:get_inventory()
@@ -264,14 +264,9 @@ local function update_formspec(meta)
 	else
 		fs = fs.."button[4,0.6;2,1;enable;"..S("Disabled").."]"
 	end
-	if quarry_dig_particles then
-		local selected = meta:get("particles") or "true"
-		fs = fs.."checkbox[0,3.6;particles;"..S("Enable Digging Particles")..";"..selected.."]"
-	end
 	if has_mesecons then
 		local selected = meta:get("mesecons") or "true"
-		local y = quarry_dig_particles and 4.1 or 3.8
-		fs = fs.."checkbox[0,"..y..";mesecons;"..S("Enable Mesecons Control")..";"..selected.."]"
+		fs = fs.."checkbox[0,3.8;mesecons;"..S("Enable Mesecons Control")..";"..selected.."]"
 	end
 	meta:set_string("formspec", fs.."label[4,0;"..status.."]")
 end
@@ -299,9 +294,6 @@ local function quarry_receive_fields(pos, _, fields, sender)
 	end
 	if fields.offset_z then
 		meta:set_int("offset_z", clamp(fields.offset_z, -10, 10, 0))
-	end
-	if quarry_dig_particles and fields.particles then
-		meta:set_string("particles", fields.particles)
 	end
 	if fields.mesecons then
 		meta:set_string("mesecons", fields.mesecons)
