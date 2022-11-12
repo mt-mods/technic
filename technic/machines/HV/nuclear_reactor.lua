@@ -301,7 +301,7 @@ local function run(pos, node)
 		burn_time = burn_time + 1
 		meta:set_int("burn_time", burn_time)
 		local percent = math.floor(burn_time / burn_ticks * 100)
-		meta:set_string("infotext", reactor_desc.." ("..percent.."%)")
+		meta:set_string("infotext", S("@1 Nuclear Reactor Core (@2% Fuel Used)", S("HV"), percent))
 		meta:set_int("HV_EU_supply", power_supply)
 	end
 end
