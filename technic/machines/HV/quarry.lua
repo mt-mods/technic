@@ -127,12 +127,27 @@ local function do_digging(pos, meta, net_time)
 	}
 	if dug == -1 then
 		-- Find ground before digging
-		local pos1 = {x = offset.x - radius, y = -offset.y, z = offset.z - radius}
-		local pos2 = {x = offset.x + radius, y = -offset.y, z = offset.z + radius}
+		if offset.y > max_depth then
+			meta:set_int("finished", 1)
+			return
+		end
+		local pos1 = {
+			x = pos.x + offset.x - radius,
+			y = pos.y - offset.y,
+			z = pos.z + offset.z - radius
+		}
+		local pos2 = {
+			x = pos.x + offset.x + radius,
+			y = pos.y - offset.y,
+			z = pos.z + offset.z + radius
+		}
+		minetest.load_area(pos1, pos2)
 		local nodes = minetest.find_nodes_in_area(pos1, pos2, {"air", "vacuum:vacuum"})
 		if #nodes < num_steps then
+			-- There are nodes to dig, start digging at this layer
 			meta:set_int("dug", 0)
 		else
+			-- Move down to next layer
 			meta:set_int("step", step + num_steps)
 		end
 		return
