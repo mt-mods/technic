@@ -3,9 +3,6 @@
 # template.txt
 # Template for translations of Technic
 
-## Misc
-[Technic] Loaded in @1 seconds=[Technic] Chargement en @1 secondes
-                                                        
 ## Items                                                
 Silicon Wafer=Tranche de silicium
 Doped Silicon Wafer=Tranche de silicium doppée

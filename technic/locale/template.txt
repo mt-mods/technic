@@ -3,10 +3,6 @@
 # template.txt
 # Template for translations of Technic
 
-
-## Misc
-[Technic] Loaded in @1 seconds=
-
 ## Items
 Silicon Wafer=
 Doped Silicon Wafer=
