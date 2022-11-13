@@ -1,6 +1,4 @@
 
-local load_start = minetest.get_us_time()
-
 technic = rawget(_G, "technic") or {}
 technic.plus = true
 technic.creative_mode = minetest.settings:get_bool("creative_mode")
@@ -46,10 +44,6 @@ dofile(modpath.."/legacy.lua")
 
 -- Visual effects
 dofile(modpath.."/effects.lua")
-
-if minetest.settings:get_bool("log_mods") then
-	print("[Technic] Loaded in "..(minetest.get_us_time() - load_start).." seconds")
-end
 
 if minetest.get_modpath("mtt") then
 	dofile(modpath.."/integration_test.lua")
