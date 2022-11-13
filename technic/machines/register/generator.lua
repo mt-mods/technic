@@ -98,7 +98,7 @@ function technic.register_generator(data)
 		end
 		meta:set_string("formspec",
 			"size[8, 9]"..
-			"label[0, 0;"..minetest.formspec_escape(desc).."]"..
+			"label[0, 0;"..desc.."]"..
 			"list[context;src;3, 1;1, 1;]"..
 			"image[4, 1;1, 1;default_furnace_fire_bg.png^[lowpart:"..
 			(percent)..":default_furnace_fire_fg.png]"..
@@ -241,7 +241,7 @@ function technic.register_generator(data)
 			end
 			meta:set_string("formspec",
 				"size[8, 9]"..
-				"label[0, 0;"..minetest.formspec_escape(desc).."]"..
+				"label[0, 0;"..desc.."]"..
 				"list[context;src;3, 1;1, 1;]"..
 				"image[4, 1;1, 1;default_furnace_fire_bg.png^[lowpart:"..
 				(percent)..":default_furnace_fire_fg.png]"..
@@ -275,7 +275,7 @@ function technic.register_generator(data)
 
 			meta:set_string("formspec",
 				"size[8, 9]"..
-				"label[0, 0;"..minetest.formspec_escape(desc).."]"..
+				"label[0, 0;"..desc.."]"..
 				"list[context;src;3, 1;1, 1;]"..
 				"image[4, 1;1, 1;default_furnace_fire_bg.png^[lowpart:"..
 				(percent)..":default_furnace_fire_fg.png]"..

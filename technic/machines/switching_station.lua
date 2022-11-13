@@ -52,7 +52,7 @@ minetest.register_node("technic:switching_station",{
 	on_construct = function(pos)
 		local meta = minetest.get_meta(pos)
 		meta:set_string("infotext", S("Switching Station"))
-		meta:set_string("formspec", "field[channel;Channel;${channel}]")
+		meta:set_string("formspec", "field[channel;"..S("Digiline Channel")..";${channel}]")
 		start_network(pos)
 
 		-- start nodetimer

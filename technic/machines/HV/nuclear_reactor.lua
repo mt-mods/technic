@@ -36,8 +36,8 @@ local function make_reactor_formspec(meta)
 	"list[context;src;2,1;3,2;]"..
 	"list[current_player;main;0,5;8,4;]"..
 	"listring[]"..
-	"button[5.5,1.5;2,1;start;Start]"..
-	"checkbox[5.5,2.5;autostart;automatic Start;"..meta:get_string("autostart").."]"
+	"button[5.5,1.5;2,1;start;"..S("Start").."]"..
+	"checkbox[5.5,2.5;autostart;"..S("Automatic Start")..";"..meta:get_string("autostart").."]"
 	if not has_digilines then
 		return f
 	end
@@ -47,8 +47,8 @@ local function make_reactor_formspec(meta)
 		return f
 	end
 	return f..
-		"button_exit[4.6,3.69;2,1;save;Save]"..
-		"field[1,4;4,1;channel;Digiline Channel;${channel}]"
+		"button_exit[4.6,3.69;2,1;save;"..S("Save").."]"..
+		"field[1,4;4,1;channel;"..S("Digiline Channel")..";${channel}]"
 end
 
 local SS_OFF = 0
@@ -309,7 +309,7 @@ end
 local nuclear_reactor_receive_fields = function(pos, formname, fields, sender)
 	local player_name = sender:get_player_name()
 	if minetest.is_protected(pos, player_name) then
-		minetest.chat_send_player(player_name, "You are not allowed to edit this!")
+		minetest.chat_send_player(player_name, S("You are not allowed to edit this!"))
 		minetest.record_protection_violation(pos, player_name)
 		return
 	end
@@ -323,9 +323,9 @@ local nuclear_reactor_receive_fields = function(pos, formname, fields, sender)
 	if fields.start then
 		local b = start_reactor(pos, meta)
 		if b then
-			minetest.chat_send_player(player_name, "Start successful")
+			minetest.chat_send_player(player_name, S("Start successful"))
 		else
-			minetest.chat_send_player(player_name, "Error")
+			minetest.chat_send_player(player_name, S("Error"))
 		end
 	end
 	if fields.autostart then

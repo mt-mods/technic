@@ -1,3 +1,5 @@
+local S = technic.getter
+
 -- the interval between technic_run calls
 local technic_run_interval = 1.0
 local set_default_timeout = technic.set_default_timeout
@@ -56,8 +58,9 @@ minetest.register_globalstep(function(dtime)
 				if network.skip > 0 then
 					-- calculate efficiency in percent and display it
 					local efficiency = math.floor(1/network.skip*100)
-					technic.network_infotext(network_id, "Polyfuse triggered, current efficiency: " ..
-						efficiency .. "% generated lag : " .. math.floor(switch_diff/1000) .. " ms")
+					technic.network_infotext(network_id,
+						S("Polyfuse triggered, current efficiency: @1%, generated lag: @2 ms",
+							efficiency, math.floor(switch_diff/1000)))
 
 					-- remove laggy network from active index
 					-- it will be reactivated when a player is near it
