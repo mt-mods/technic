@@ -57,7 +57,7 @@ local function set_display(pos, meta)
 		(meta:get_int("locked") == 0 and
 			"button[3,1;2,1;lock;"..S("Unlocked").."]" or
 			"button[3,1;2,1;unlock;"..S("Locked").."]")..
-		"field[0.25,2.3;1,1;radius;"..S("Radius:")..";${radius}]"..
+		"field[0.25,2.3;1,1;radius;"..S("Radius")..";${radius}]"..
 		(meta:get_int("enabled") == 0 and
 			"button[3,2;2,1;enable;"..S("Disabled").."]" or
 			"button[3,2;2,1;disable;"..S("Enabled").."]")..
