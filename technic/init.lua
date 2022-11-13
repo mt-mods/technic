@@ -45,6 +45,9 @@ dofile(modpath.."/legacy.lua")
 -- Visual effects
 dofile(modpath.."/effects.lua")
 
+-- Chat commands
+dofile(modpath.."/chatcommands.lua")
+
 if minetest.get_modpath("mtt") then
 	dofile(modpath.."/integration_test.lua")
 end

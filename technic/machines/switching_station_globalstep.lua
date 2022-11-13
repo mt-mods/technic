@@ -74,11 +74,3 @@ minetest.register_globalstep(function(dtime)
 		end
 	end
 end)
-
-minetest.register_chatcommand("technic_flush_switch_cache", {
-	description = "removes all loaded networks from the cache",
-	privs = { server = true },
-	func = function()
-		technic.active_networks = {}
-	end
-})
