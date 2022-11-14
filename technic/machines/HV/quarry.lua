@@ -534,6 +534,15 @@ minetest.register_lbm({
 	action = function(pos, node)
 		local meta = minetest.get_meta(pos)
 		if meta:get("quarry_pos") then
+			-- Quarry v2, calculate step if quarry is digging below
+			local level = meta:get_int("dig_level") - pos.y
+			if level < 0 then
+				local diameter = meta:get_int("size") * 2 + 1
+				local num_steps = diameter * diameter
+				-- Convert the negative value to positive, and go back up one level
+				level = math.abs(level + 1)
+				meta:set_int("step", level * num_steps)
+			end
 			-- Delete unused meta values
 			meta:set_string("quarry_dir", "")
 			meta:set_string("quarry_pos", "")
@@ -541,6 +550,9 @@ minetest.register_lbm({
 			meta:set_string("dig_level", "")
 			meta:set_string("dig_index", "")
 			meta:set_string("dig_steps", "")
+		else
+			-- Quarry v1, reset quarry
+			reset_quarry(meta)
 		end
 		local dir = minetest.facedir_to_dir(node.param2)
 		local offset = vector.multiply(dir, meta:get_int("size") + 1)
@@ -549,7 +561,6 @@ minetest.register_lbm({
 		if not meta:get("max_depth") then
 			meta:set_int("max_depth", quarry_max_depth)
 		end
-		reset_quarry(meta)
 		update_formspec(meta)
 	end
 })
