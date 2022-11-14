@@ -412,7 +412,7 @@ local function digiline_action(pos, _, channel, msg)
 			dig_level = -(math.floor(meta:get_int("step") / num_steps) + 1),
 		})
 	elseif msg.command == "set" then
-		if msg.enabled then
+		if msg.enabled ~= nil then
 			meta:set_int("enabled", msg.enabled == true and 1 or 0)
 		end
 		if msg.restart == true then
