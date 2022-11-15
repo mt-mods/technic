@@ -15,10 +15,10 @@ local cable_entry = "^technic_cable_connection_overlay.png"
 
 local function set_supply_converter_formspec(meta)
 	local formspec = "size[5,2.25]"..
-		"field[0.3,0.5;2,1;power;"..S("Input Power")..";"..meta:get_int("power").."]"
+		"field[0.3,0.5;2,1;power;"..S("Input Power")..";${power}]"
 	if digilines_path then
 		formspec = formspec..
-			"field[2.3,0.5;3,1;channel;Digiline Channel;"..meta:get_string("channel").."]"
+			"field[2.3,0.5;3,1;channel;"..S("Digiline Channel")..";${channel}]"
 	end
 	-- The names for these toggle buttons are explicit about which
 	-- state they'll switch to, so that multiple presses (arising

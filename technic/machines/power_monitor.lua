@@ -65,7 +65,7 @@ minetest.register_node("technic:power_monitor",{
 	on_construct = function(pos)
 		local meta = minetest.get_meta(pos)
 		meta:set_string("infotext", S("Power Monitor"))
-		meta:set_string("formspec", "field[channel;Channel;${channel}]")
+		meta:set_string("formspec", "field[channel;"..S("Digiline Channel")..";${channel}]")
 	end,
 	on_receive_fields = function(pos, formname, fields, sender)
 		if not fields.channel then

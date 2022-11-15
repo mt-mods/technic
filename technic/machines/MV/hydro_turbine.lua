@@ -50,8 +50,8 @@ local run = function(pos, node)
 
 	meta:set_int("MV_EU_supply", eu_supply)
 
-	meta:set_string("infotext",
-	S("Hydro @1 Generator", S("MV")).." ("..production_level.."%)")
+	meta:set_string("infotext", S("@1 (@2% Efficiency)",
+		S("Hydro @1 Generator", S("MV")), production_level))
 	if production_level > 0 and
 		minetest.get_node(pos).name == "technic:hydro_turbine" then
 		technic.swap_node(pos, "technic:hydro_turbine_active")

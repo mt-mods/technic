@@ -82,11 +82,9 @@ local function set_display(meta)
 			"button[0,3;1,1;track7;7]"..
 			"button[1,3;1,1;track8;8]"..
 			"button[2,3;1,1;track9;9]"..
-			"button[3,1;1,1;stop;Stop]"..
-			"label[0,4;"..minetest.formspec_escape(
-				meta:get_int("active") == 0 and
-					S("Stopped") or
-					S("Current track @1", meta:get_int("current_track"))).."]")
+			"button[3,1;1,1;stop;"..S("Stop").."]"..
+			"label[0,4;"..(meta:get_int("active") == 0 and S("Stopped") or
+					S("Current track: @1", meta:get_int("current_track"))).."]")
 end
 
 minetest.register_node("technic:music_player", {

@@ -100,12 +100,12 @@ local function set_forcefield_formspec(meta)
 	local formspec
 	if digilines_path then
 		formspec = "size[5,3.25]"..
-			"field[0.3,3;5,1;channel;Digiline Channel;"..meta:get_string("channel").."]"
+			"field[0.3,3;5,1;channel;"..S("Digiline Channel")..";${channel}]"
 	else
 		formspec = "size[5,2.25]"
 	end
 	formspec = formspec..
-		"field[0.3,0.5;2,1;range;"..S("Range")..";"..meta:get_int("range").."]"
+		"field[0.3,0.5;2,1;range;"..S("Range")..";${range}]"
 	-- The names for these toggle buttons are explicit about which
 	-- state they'll switch to, so that multiple presses (arising
 	-- from the ambiguity between lag and a missed press) only make
@@ -133,7 +133,7 @@ end
 local forcefield_receive_fields = function(pos, formname, fields, sender)
 	local player_name = sender:get_player_name()
 	if minetest.is_protected(pos, player_name) then
-		minetest.chat_send_player(player_name, "You are not allowed to edit this!")
+		minetest.chat_send_player(player_name, S("You are not allowed to edit this!"))
 		minetest.record_protection_violation(pos, player_name)
 		return
 	end

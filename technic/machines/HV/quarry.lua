@@ -251,14 +251,14 @@ local base_formspec = "size[8,9]"..
 	"list[current_player;main;0,5.2;8,4;]"..
 	"listring[]"..
 	"button[6,0.6;2,1;restart;"..S("Restart").."]"..
-	"field[4.3,2.1;2,1;size;"..S("Radius:")..";${size}]"..
-	"field[6.3,2.1;2,1;max_depth;"..S("Max Depth:")..";${max_depth}]"..
-	"field[4.3,3.1;2,1;offset_x;"..S("Offset X:")..";${offset_x}]"..
-	"field[6.3,3.1;2,1;offset_z;"..S("Offset Z:")..";${offset_z}]"
+	"field[4.3,2.1;2,1;size;"..S("Radius")..";${size}]"..
+	"field[6.3,2.1;2,1;max_depth;"..S("Max Depth")..";${max_depth}]"..
+	"field[4.3,3.1;2,1;offset_x;"..S("Offset X")..";${offset_x}]"..
+	"field[6.3,3.1;2,1;offset_z;"..S("Offset Z")..";${offset_z}]"
 
 if has_digilines then
 	base_formspec = base_formspec..
-	"field[4.3,4.2;4,1;channel;"..S("Digiline Channel:")..";${channel}]"
+	"field[4.3,4.2;4,1;channel;"..S("Digiline Channel")..";${channel}]"
 end
 
 local function update_formspec(meta)

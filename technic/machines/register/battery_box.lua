@@ -145,9 +145,8 @@ function technic.register_battery_box(nodename, data)
 		return formspec .. "image[1,1;1,2;technic_power_meter_bg.png^[lowpart:" ..
 			math.floor(charge_ratio * 100) .. ":technic_power_meter_fg.png]" ..
 			(digilines_path and
-				("field[0.3,4;2.2,1;channel;Digiline channel;%s]button[2,3.7;1,1;setchannel;Set]")
-				:format(minetest.formspec_escape(channel))
-			or "")
+				("field[0.3,4;2.2,1;channel;"..S("Digiline Channel")..";${channel}]"..
+				"button[2,3.7;1,1;setchannel;"..S("Save").."]") or "")
 
 	end
 
