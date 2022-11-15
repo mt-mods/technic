@@ -412,7 +412,7 @@ local function digiline_action(pos, _, channel, msg)
 			dig_level = -(math.floor(meta:get_int("step") / num_steps) + 1),
 		})
 	elseif msg.command == "set" then
-		if msg.enabled then
+		if msg.enabled ~= nil then
 			meta:set_int("enabled", msg.enabled == true and 1 or 0)
 		end
 		if msg.restart == true then
@@ -534,11 +534,15 @@ minetest.register_lbm({
 	action = function(pos, node)
 		local meta = minetest.get_meta(pos)
 		if meta:get("quarry_pos") then
-			-- Quarry v2, calculate step
-			local diameter = meta:get_int("size") * 2 + 1
-			local num_steps = diameter * diameter
-			local step = (meta:get_int("dig_level") - pos.y) * num_steps
-			meta:set_int("step", step)
+			-- Quarry v2, calculate step if quarry is digging below
+			local level = meta:get_int("dig_level") - pos.y
+			if level < 0 then
+				local diameter = meta:get_int("size") * 2 + 1
+				local num_steps = diameter * diameter
+				-- Convert the negative value to positive, and go back up one level
+				level = math.abs(level + 1)
+				meta:set_int("step", level * num_steps)
+			end
 			-- Delete unused meta values
 			meta:set_string("quarry_dir", "")
 			meta:set_string("quarry_pos", "")
