@@ -19,7 +19,6 @@ local defaults = {
 
 	-- Machine options
 	enable_wind_mill = "false",
-	enable_frames = "false",
 	enable_nuclear_reactor_digiline_selfdestruct = "false",
 	quarry_max_depth = "100",
 	quarry_time_limit = "3000",
