@@ -29,16 +29,48 @@ minetest.register_node("technic:dummy_light_source", {
 	groups = {not_in_creative_inventory = 1}
 })
 
+local content_id_light_source = minetest.get_content_id("technic:dummy_light_source")
+local content_id_air = minetest.CONTENT_AIR
 
 local function illuminate(pos, active)
-	local pos1 = {x = pos.x - 3, y = pos.y - 1, z = pos.z - 3}
-	local pos2 = {x = pos.x + 3, y = pos.y - 3, z = pos.z + 3}
+	local pos1 = {x = pos.x - 3, y = pos.y - 3, z = pos.z - 3}
+	local pos2 = {x = pos.x + 3, y = pos.y - 1, z = pos.z + 3}
 
-	local find_node = active and "air" or "technic:dummy_light_source"
-	local set_node = {name = (active and "technic:dummy_light_source" or "air")}
+	-- prepare vmanip, voxel-area and node-data
+	local vm = minetest.get_voxel_manip()
+	local e1, e2 = vm:read_from_map(pos1, pos2)
+	local va = VoxelArea:new({MinEdge = e1, MaxEdge = e2})
+	local node_data = vm:get_data()
 
-	for _,p in pairs(minetest.find_nodes_in_area(pos1, pos2, find_node)) do
-		minetest.set_node(p, set_node)
+	-- replacements
+	local src_node, dst_node
+	if active then
+		src_node = content_id_air
+		dst_node = content_id_light_source
+	else
+		src_node = content_id_light_source
+		dst_node = content_id_air
+	end
+
+	-- dirty/changed flag
+	local dirty = false
+
+	for x=pos1.x, pos2.x do
+	for y=pos1.y, pos2.y do
+	for z=pos1.z, pos2.z do
+		local index = va:index(x,y,z)
+		if node_data[index] == src_node then
+			node_data[index] = dst_node
+			dirty = true
+		end
+	end
+	end
+	end
+
+	if dirty then
+		-- write data back to map if changed
+		vm:set_data(node_data)
+		vm:write_to_map()
 	end
 end
 
