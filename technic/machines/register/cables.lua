@@ -9,6 +9,13 @@ function technic.get_cable_tier(nodename)
 	return cable_tier[nodename]
 end
 
+function technic.register_cable_tier(name, tier)
+	assert(technic.machines[tier], "Tier does not exist")
+	assert(type(name) == "string", "Invalid node name")
+
+	cable_tier[name] = tier
+end
+
 local function item_place_override_node(itemstack, placer, pointed, node)
 	-- Call the default on_place function with a fake itemstack
 	local temp_itemstack = ItemStack(itemstack)

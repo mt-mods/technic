@@ -27,7 +27,11 @@ Helper functions
 	* Tells whether the node `nodename` is the cable of the tier `tier`.
 * `technic.get_cable_tier(nodename)`
 	* Returns the tier of the cable `nodename` or `nil`.
-* `technic.trace_node_ray(pos, dir, range)`
+* `technic.register_cable_tier(nodename, tier)`
+	* Register user defined cable to list of known tier cables.
+	* `nodename`: string, name of the node
+	* `tier`: string, tier name
+ * `technic.trace_node_ray(pos, dir, range)`
 	* Returns an iteration function (usable in the for loop) to iterate over the
 	  node positions along the specified ray.
 	* The returned positions will not include the starting position `pos`.
