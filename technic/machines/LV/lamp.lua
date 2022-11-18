@@ -35,7 +35,8 @@ local function illuminate(pos, active)
 	local pos2 = {x = pos.x + 3, y = pos.y - 1, z = pos.z + 3}
 
 	local vm = minetest.get_voxel_manip()
-	local va = VoxelArea(vm:read_from_map(pos1, pos2))
+	local emin, emax = vm:read_from_map(pos1, pos2)
+	local va = VoxelArea:new({MinEdge = emin, MaxEdge = emax})
 	local node_data = vm:get_data()
 
 	local find_node = active and cid_air or cid_light
