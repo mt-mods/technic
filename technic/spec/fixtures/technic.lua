@@ -9,6 +9,9 @@ mineunit("protection")
 mineunit("common/after")
 mineunit("server")
 mineunit("voxelmanip")
+if mineunit:config("engine_version") ~= "mineunit" then
+	mineunit("game/voxelarea")
+end
 
 -- Load fixtures required by tests
 fixture("default")
