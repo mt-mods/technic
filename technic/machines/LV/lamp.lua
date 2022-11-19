@@ -27,17 +27,33 @@ minetest.register_node("technic:dummy_light_source", {
 	groups = {not_in_creative_inventory = 1}
 })
 
+local cid_light = minetest.get_content_id("technic:dummy_light_source")
+local cid_air = minetest.CONTENT_AIR
 
 local function illuminate(pos, active)
-	local pos1 = {x = pos.x - 3, y = pos.y - 1, z = pos.z - 3}
-	local pos2 = {x = pos.x + 3, y = pos.y - 3, z = pos.z + 3}
+	local pos1 = {x = pos.x - 3, y = pos.y - 3, z = pos.z - 3}
+	local pos2 = {x = pos.x + 3, y = pos.y - 1, z = pos.z + 3}
 
-	local find_node = active and "air" or "technic:dummy_light_source"
-	local set_node = {name = (active and "technic:dummy_light_source" or "air")}
+	local vm = minetest.get_voxel_manip()
+	local emin, emax = vm:read_from_map(pos1, pos2)
+	local va = VoxelArea:new({MinEdge = emin, MaxEdge = emax})
+	local node_data = vm:get_data()
 
-	for _,p in pairs(minetest.find_nodes_in_area(pos1, pos2, find_node)) do
-		minetest.set_node(p, set_node)
+	local find_node = active and cid_air or cid_light
+	local set_node = active and cid_light or cid_air
+
+	local dirty = false
+	for i in va:iterp(pos1, pos2) do
+		if node_data[i] == find_node then
+			node_data[i] = set_node
+			dirty = true
+		end
 	end
+	if dirty then
+		vm:set_data(node_data)
+		vm:write_to_map()
+	end
+end
 
 local function set_random_timer(pos, mint, maxt)
 	local t = math.random(mint * 10, maxt * 10) * 0.1
