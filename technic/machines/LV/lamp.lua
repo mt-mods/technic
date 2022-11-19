@@ -2,7 +2,6 @@
 -- LV Lamp - a powerful light source.
 -- Illuminates a 7x7x3(H) volume below itself with light bright as the sun.
 
-
 local S = technic.getter
 
 local desc = S("@1 Lamp", S("LV"))
@@ -10,7 +9,6 @@ local active_desc = S("@1 Active", desc)
 local unpowered_desc = S("@1 Unpowered", desc)
 local off_desc = S("@1 Off", desc)
 local demand = 50
-
 
 -- Invisible light source node used for illumination
 minetest.register_node("technic:dummy_light_source", {
@@ -40,6 +38,10 @@ local function illuminate(pos, active)
 	for _,p in pairs(minetest.find_nodes_in_area(pos1, pos2, find_node)) do
 		minetest.set_node(p, set_node)
 	end
+
+local function set_random_timer(pos, mint, maxt)
+	local t = math.random(mint * 10, maxt * 10) * 0.1
+	minetest.get_node_timer(pos):start(t)
 end
 
 local function lamp_run(pos, node)
@@ -55,15 +57,13 @@ local function lamp_run(pos, node)
 		if eu_input < demand then
 			technic.swap_node(pos, "technic:lv_lamp")
 			meta:set_string("infotext", unpowered_desc)
-			illuminate(pos, false)
-		else
-			illuminate(pos, true)
+			set_random_timer(pos, 0.2, 1)
 		end
 	elseif node.name == "technic:lv_lamp" then
 		if eu_input >= demand then
 			technic.swap_node(pos, "technic:lv_lamp_active")
 			meta:set_string("infotext", active_desc)
-			illuminate(pos, true)
+			set_random_timer(pos, 0.2, 2)
 		end
 	end
 end
@@ -77,10 +77,10 @@ local function lamp_toggle(pos, node, player)
 		meta:set_string("infotext", active_desc)
 		meta:set_int("LV_EU_demand", demand)
 	else
-		illuminate(pos, false)
 		technic.swap_node(pos, "technic:lv_lamp")
 		meta:set_string("infotext", off_desc)
 		meta:set_int("LV_EU_demand", 0)
+		set_random_timer(pos, 0.2, 1)
 	end
 end
 
@@ -117,7 +117,11 @@ minetest.register_node("technic:lv_lamp", {
 		meta:set_int("LV_EU_demand", demand)
 	end,
 	on_destruct = illuminate,
-	on_rightclick = lamp_toggle
+	on_rightclick = lamp_toggle,
+	on_timer = function(pos)
+		illuminate(pos, false)
+		-- Don't start the timer again, otherwise lights will fight each other
+	end,
 })
 
 minetest.register_node("technic:lv_lamp_active", {
@@ -151,11 +155,17 @@ minetest.register_node("technic:lv_lamp_active", {
 	can_dig = technic.machine_can_dig,
 	technic_run = lamp_run,
 	technic_on_disable = function(pos)
-		illuminate(pos, false)
 		technic.swap_node(pos, "technic:lv_lamp")
+		set_random_timer(pos, 0.2, 1)
 	end,
 	on_destruct = illuminate,
 	on_rightclick = lamp_toggle,
+	on_timer = function(pos, elapsed)
+		if elapsed < 60 then  -- Don't check immediately after being unloaded
+			illuminate(pos, true)
+		end
+		set_random_timer(pos, 30, 60)  -- Check every 30-60 seconds
+	end,
 })
 
 technic.register_machine("LV", "technic:lv_lamp", technic.receiver)
