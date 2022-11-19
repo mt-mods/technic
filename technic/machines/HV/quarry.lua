@@ -533,7 +533,11 @@ minetest.register_lbm({
 	run_at_every_load = false,
 	action = function(pos, node)
 		local meta = minetest.get_meta(pos)
-		if meta:get("quarry_pos") then
+		if meta:get("step") then
+			-- Quarry v3, don't do anything
+			-- This can happen when a quarry is moved with a jumpdrive
+			return
+		elseif meta:get("quarry_pos") then
 			-- Quarry v2, calculate step if quarry is digging below
 			local level = meta:get_int("dig_level") - pos.y
 			if level < 0 then
