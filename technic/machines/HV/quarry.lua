@@ -174,7 +174,7 @@ local function do_digging(pos, meta, net_time)
 			offset.y = offset.y + 1
 		end
 		local node = technic.get_or_load_node(dig_pos)
-		if can_dig_node(pos, node.name, owner, digger) then
+		if can_dig_node(dig_pos, node.name, owner, digger) then
 			-- Found something to dig, dig it and stop
 			minetest.remove_node(dig_pos)
 			if quarry_dig_particles then
