@@ -110,7 +110,7 @@ end
 
 local function do_digging(pos, meta, net_time)
 	local us_start = minetest.get_us_time()
-	local step = tonumber(meta:get("step"))
+	local step = tonumber(meta:get("step") or "")
 	if not step then
 		-- Missing metadata or not yet updated by conversion LBM, abort digging
 		return
