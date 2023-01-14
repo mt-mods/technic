@@ -2,7 +2,7 @@
  The enriched uranium rod driven EU generator.
 A very large and advanced machine providing vast amounts of power.
 Very efficient but also expensive to run as it needs uranium.
-Provides 10000 HV EUs for one week (only counted when loaded).
+Provides 100000 HV EUs for one week (only counted when loaded).
 
 The nuclear reactor core requires a casing of water and a protective
 shield to work.  This is checked now and then and if the casing is not
@@ -277,7 +277,7 @@ local function run(pos, node)
 	local burn_time = meta:get_int("burn_time") or 0
 	if burn_time >= burn_ticks or burn_time == 0 then
 		if has_digilines and meta:get_int("HV_EU_supply") == power_supply then
-			digilines.receptor_send(pos, technic.digilines.rules,
+			digilines.receptor_send(pos, technic.digilines.rules_allfaces,
 				-- TODO: Remove "remote_channel" and use de facto standard "channel"
 				meta:get("channel") or meta:get_string("remote_channel"),
 				{
@@ -378,7 +378,7 @@ local digiline_def = function(pos, _, channel, msg)
 				invtable[i] = -stack:get_count()
 			end
 		end
-		digilines.receptor_send(pos, technic.digilines.rules, channel, {
+		digilines.receptor_send(pos, technic.digilines.rules_allfaces, channel, {
 			burn_time = meta:get_int("burn_time"),
 			enabled   = meta:get_int("HV_EU_supply") == power_supply,
 			siren     = meta:get_int("siren") == 1,
@@ -396,12 +396,12 @@ local digiline_def = function(pos, _, channel, msg)
 	elseif msg.command == "start" then
 		local b = start_reactor(pos, meta)
 		if b then
-			digilines.receptor_send(pos, technic.digilines.rules, channel, {
+			digilines.receptor_send(pos, technic.digilines.rules_allfaces, channel, {
 				command = "start_success",
 				pos = pos
 			})
 		else
-			digilines.receptor_send(pos, technic.digilines.rules, channel, {
+			digilines.receptor_send(pos, technic.digilines.rules_allfaces, channel, {
 				command = "start_error",
 				pos = pos
 			})
@@ -435,11 +435,11 @@ minetest.register_node("technic:hv_nuclear_reactor_core", {
 	-- digiline interface
 	digiline = {
 		receptor = {
-			rules = technic.digilines.rules,
+			rules = technic.digilines.rules_allfaces,
 			action = function() end,
 		},
 		effector = {
-			rules = technic.digilines.rules,
+			rules = technic.digilines.rules_allfaces,
 			action = digiline_def,
 		},
 	},
@@ -472,11 +472,11 @@ minetest.register_node("technic:hv_nuclear_reactor_core_active", {
 	-- digiline interface
 	digiline = {
 		receptor = {
-			rules = technic.digilines.rules,
+			rules = technic.digilines.rules_allfaces,
 			action = function() end,
 		},
 		effector = {
-			rules = technic.digilines.rules,
+			rules = technic.digilines.rules_allfaces,
 			action = digiline_def,
 		},
 	},
