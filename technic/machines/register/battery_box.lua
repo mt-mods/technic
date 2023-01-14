@@ -371,7 +371,7 @@ function technic.register_battery_box(nodename, data)
 			after_dig_node = technic.machine_after_dig_node,
 			on_receive_fields = function(pos, formname, fields, player)
 				local playername = player:get_player_name()
-				if minetest.is_protected(pos, playername) then
+				if fields.quit or minetest.is_protected(pos, playername) then
 					minetest.record_protection_violation(pos, playername)
 					return
 				elseif fields.setchannel then
