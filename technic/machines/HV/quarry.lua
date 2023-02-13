@@ -193,7 +193,7 @@ local function do_digging(pos, meta, net_time)
 				end
 			end
 			dug = dug + 1
-			if full or dug % 100 == 0 then
+			if full or dug % 99 == 0 then
 				-- Time to purge the cache
 				meta:set_int("purge_on", 1)
 			end
