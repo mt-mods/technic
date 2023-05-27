@@ -1,7 +1,7 @@
 # textdomain: wrench
 
-Wrench=售忒
-@1 with items=@1湍昜
+Wrench=扳手
+@1 with items=@1带物品
 Cannot pickup node. Owned by @1.=
 Not enough room in inventory to pickup node.=
 Cannot pickup node containing @1.=
