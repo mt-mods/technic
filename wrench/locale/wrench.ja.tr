@@ -4,5 +4,5 @@
 # technic_wrenchの日本語への翻訳
 # by damiemk
 
-Wrench = レンチ
-%s with items = アイテム付きレンチ %s
+Wrench=レンチ
+@1 with items=アイテム付きレンチ @1
