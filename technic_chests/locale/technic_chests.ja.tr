@@ -38,6 +38,6 @@ Wooden=木造
 
 # Sorting
 Sort=組織する
-Auto-sort is %s=自動組織が %s になっている
+Auto-sort is @1=自動組織が @1 になっている
 Off=オフ
 On=オン
