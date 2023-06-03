@@ -3,6 +3,7 @@ local S = technic.getter
 
 local has_digilines = minetest.get_modpath("digilines")
 local has_mesecons = minetest.get_modpath("mesecons")
+local has_vizlib = minetest.get_modpath("vizlib")
 
 local quarry_max_depth = technic.config:get_int("quarry_max_depth")
 local quarry_dig_particles = technic.config:get_bool("quarry_dig_particles")
@@ -322,23 +323,6 @@ local function quarry_receive_fields(pos, _, fields, sender)
 	update_formspec(meta)
 end
 
-local function add_particle_line(pos1, pos2, player)
-	local dist = vector.distance(pos1, pos2)
-	minetest.add_particlespawner({
-		playername = player:get_player_name(),
-		amount = dist * 80,  -- About 4 particles per node at any given time
-		time = 10,
-		minpos = pos1,
-		maxpos = pos2,
-		minsize = 0.8,
-		maxsize = 0.8,
-		minexptime = 0.5,
-		maxexptime = 0.5,
-		texture = "technic_line_particle.png",
-		glow = 14,
-	})
-end
-
 local function show_working_area(pos, _, player)
 	if not player or player:get_wielded_item():get_name() ~= "" then
 		-- Only spawn particles when using an empty hand
@@ -347,22 +331,11 @@ local function show_working_area(pos, _, player)
 	local meta = minetest.get_meta(pos)
 	local radius = meta:get_int("size") + 0.5
 	local offset = vector.new(meta:get_int("offset_x"), 0, meta:get_int("offset_z"))
-	-- Four top corners of the area
-	local p1 = vector.add(pos, vector.new(offset.x + radius, -0.5, offset.z + radius))
-	local p2 = vector.add(pos, vector.new(offset.x - radius, -0.5, offset.z + radius))
-	local p3 = vector.add(pos, vector.new(offset.x - radius, -0.5, offset.z - radius))
-	local p4 = vector.add(pos, vector.new(offset.x + radius, -0.5, offset.z - radius))
-	-- Draw the top square
-	add_particle_line(p1, p2, player)
-	add_particle_line(p2, p3, player)
-	add_particle_line(p3, p4, player)
-	add_particle_line(p4, p1, player)
-	-- Draw the edges down to the bottom
-	local down = vector.new(0, -meta:get_int("max_depth"), 0)
-	add_particle_line(p1, vector.add(p1, down), player)
-	add_particle_line(p2, vector.add(p2, down), player)
-	add_particle_line(p3, vector.add(p3, down), player)
-	add_particle_line(p4, vector.add(p4, down), player)
+	local depth = meta:get_int("max_depth") + 0.5
+	-- Draw area from top corner to bottom corner
+	local pos1 = vector.add(pos, vector.new(offset.x - radius, -0.5, offset.z - radius))
+	local pos2 = vector.add(pos, vector.new(offset.x + radius, -depth, offset.z + radius))
+	vizlib.draw_area(pos1, pos2, {player = player})
 end
 
 local function digiline_action(pos, _, channel, msg)
@@ -454,7 +427,7 @@ minetest.register_node("technic:quarry", {
 			return { vector.new(0, 1, 0) }
 		end
 	},
-	on_punch = show_working_area,
+	on_punch = has_vizlib and show_working_area or nil,
 	on_rightclick = function(pos)
 		local meta = minetest.get_meta(pos)
 		update_formspec(meta)
