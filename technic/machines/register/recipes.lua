@@ -12,6 +12,7 @@ function technic.register_recipe_type(typename, origdata)
 		if have_ui and unified_inventory.register_craft_type then
 			unified_inventory.register_craft_type(typename, {
 				description = data.description,
+				icon = data.icon,
 				width = data.input_size,
 				height = 1,
 			})
