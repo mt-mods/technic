@@ -64,6 +64,7 @@ local function register_recipe(typename, data)
 	end
 
 	technic.recipes[typename].recipes[index] = recipe
+	if data.hidden then return end
 	
 	local outputs = type(data.output) == "table" and data.output or {data.output}
 	for _,output in ipairs(outputs) do
