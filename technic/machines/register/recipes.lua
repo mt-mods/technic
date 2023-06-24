@@ -8,25 +8,23 @@ function technic.register_recipe_type(typename, origdata)
 	for k, v in pairs(origdata) do data[k] = v end
 	data.input_size = data.input_size or 1
 	data.output_size = data.output_size or 1
-	if data.output_size == 1 then
-		if have_ui and unified_inventory.register_craft_type then
-			unified_inventory.register_craft_type(typename, {
-				description = data.description,
-				icon = data.icon,
-				width = data.input_size,
-				height = 1,
-			})
-		end
-		if have_cg and craftguide.register_craft_type then
-			craftguide.register_craft_type(typename, {
-				description = data.description,
-			})
-		end
-		if have_i3 then
-			i3.register_craft_type(typename, {
-				description = data.description,
-			})
-		end
+	if have_ui and unified_inventory.register_craft_type then
+		unified_inventory.register_craft_type(typename, {
+			description = data.description,
+			icon = data.icon,
+			width = data.input_size,
+			height = 1,
+		})
+	end
+	if have_cg and craftguide.register_craft_type then
+		craftguide.register_craft_type(typename, {
+			description = data.description,
+		})
+	end
+	if have_i3 then
+		i3.register_craft_type(typename, {
+			description = data.description,
+		})
 	end
 	data.recipes = {}
 	technic.recipes[typename] = data
@@ -66,32 +64,29 @@ local function register_recipe(typename, data)
 	end
 
 	technic.recipes[typename].recipes[index] = recipe
-	if have_ui and technic.recipes[typename].output_size == 1 then
-		unified_inventory.register_craft({
-			type = typename,
-			output = data.output,
-			items = data.input,
-			width = 0,
-		})
-	end
-	if (have_cg or have_i3) and technic.recipes[typename].output_size == 1 then
-		local result = data.output
-		if (type(result)=="table") then
-			result = result[1]
+	
+	local outputs = type(data.output) == "table" and data.output or {data.output}
+	for _,output in ipairs(outputs) do
+		if have_ui then
+			unified_inventory.register_craft({
+				type = typename,
+				output = output,
+				items = data.input,
+				width = 0,
+			})
 		end
-		local items = table.concat(data.input, ", ")
 		if have_cg and craftguide.register_craft then
 			craftguide.register_craft({
 				type = typename,
-				result = result,
-				items = {items},
+				result = output,
+				items = {table.concat(data.input, ", ")},
 			})
 		end
 		if have_i3 then
 			i3.register_craft({
 				type = typename,
-				result = result,
-				items = {items},
+				result = output,
+				items = {table.concat(data.input, ", ")},
 			})
 		end
 	end
