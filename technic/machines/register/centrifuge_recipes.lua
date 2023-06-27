@@ -2,7 +2,8 @@ local S = technic.getter
 
 technic.register_recipe_type("separating", {
 	description = S("Separating"),
-	output_size = 2,
+	icon = "technic_mv_centrifuge_front.png",
+	output_size = 4,
 })
 
 function technic.register_separating_recipe(data)

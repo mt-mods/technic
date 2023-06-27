@@ -1,31 +1,31 @@
+
 local have_ui = minetest.get_modpath("unified_inventory")
 local have_cg = minetest.get_modpath("craftguide")
 local have_i3 = minetest.get_modpath("i3")
 
 technic.recipes = { cooking = { input_size = 1, output_size = 1 } }
+
 function technic.register_recipe_type(typename, origdata)
-	local data = {}
-	for k, v in pairs(origdata) do data[k] = v end
+	local data = table.copy(origdata)
 	data.input_size = data.input_size or 1
 	data.output_size = data.output_size or 1
-	if data.output_size == 1 then
-		if have_ui and unified_inventory.register_craft_type then
-			unified_inventory.register_craft_type(typename, {
-				description = data.description,
-				width = data.input_size,
-				height = 1,
-			})
-		end
-		if have_cg and craftguide.register_craft_type then
-			craftguide.register_craft_type(typename, {
-				description = data.description,
-			})
-		end
-		if have_i3 then
-			i3.register_craft_type(typename, {
-				description = data.description,
-			})
-		end
+	if have_ui and unified_inventory.register_craft_type then
+		unified_inventory.register_craft_type(typename, {
+			description = data.description,
+			icon = data.icon,
+			width = data.input_size,
+			height = 1,
+		})
+	end
+	if have_cg and craftguide.register_craft_type then
+		craftguide.register_craft_type(typename, {
+			description = data.description,
+		})
+	end
+	if have_i3 then
+		i3.register_craft_type(typename, {
+			description = data.description,
+		})
 	end
 	data.recipes = {}
 	technic.recipes[typename] = data
@@ -57,7 +57,7 @@ local function register_recipe(typename, data)
 	local recipe = {time = data.time, input = {}, output = data.output}
 	local index = get_recipe_index(data.input)
 	if not index then
-		print("[Technic] ignored registration of garbage recipe!")
+		minetest.log("warning", "[Technic] ignored registration of garbage recipe!")
 		return
 	end
 	for _, stack in ipairs(data.input) do
@@ -65,32 +65,30 @@ local function register_recipe(typename, data)
 	end
 
 	technic.recipes[typename].recipes[index] = recipe
-	if have_ui and technic.recipes[typename].output_size == 1 then
-		unified_inventory.register_craft({
-			type = typename,
-			output = data.output,
-			items = data.input,
-			width = 0,
-		})
-	end
-	if (have_cg or have_i3) and technic.recipes[typename].output_size == 1 then
-		local result = data.output
-		if (type(result)=="table") then
-			result = result[1]
+	if data.hidden then return end
+
+	local outputs = type(data.output) == "table" and data.output or {data.output}
+	for _,output in ipairs(outputs) do
+		if have_ui then
+			unified_inventory.register_craft({
+				type = typename,
+				output = output,
+				items = data.input,
+				width = 0,
+			})
 		end
-		local items = table.concat(data.input, ", ")
 		if have_cg and craftguide.register_craft then
 			craftguide.register_craft({
 				type = typename,
-				result = result,
-				items = {items},
+				result = output,
+				items = {table.concat(data.input, ", ")},
 			})
 		end
 		if have_i3 then
 			i3.register_craft({
 				type = typename,
-				result = result,
-				items = {items},
+				result = output,
+				items = {table.concat(data.input, ", ")},
 			})
 		end
 	end
@@ -101,48 +99,51 @@ function technic.register_recipe(typename, data)
 end
 
 function technic.get_recipe(typename, items)
-	if typename == "cooking" then -- Already builtin in Minetest, so use that
+	if typename == "cooking" then -- Already built into Minetest, so use that
 		local result, new_input = minetest.get_craft_result({
 			method = "cooking",
 			width = 1,
-			items = items})
+			items = items,
+		})
 		-- Compatibility layer
 		if not result or result.time == 0 then
-			return nil
+			return
 		-- Workaround for recipes with replacements
 		elseif not new_input.items[1]:is_empty() and new_input.items[1]:get_name() ~= items[1]:get_name() then
 			items[1]:take_item(1)
-			return {time = result.time,
-			        new_input = {items[1]},
-			        output = {new_input.items[1], result.item}}
+			return {
+				time = result.time,
+				new_input = {items[1]},
+				output = {new_input.items[1], result.item}
+			}
 		else
-			return {time = result.time,
-			        new_input = new_input.items,
-			        output = result.item}
+			return {
+				time = result.time,
+				new_input = new_input.items,
+				output = result.item
+			}
 		end
 	end
 	local index = get_recipe_index(items)
-	if not index then
-		print("[Technic] ignored registration of garbage recipe!")
-		return
-	end
+	if not index then return end
+
 	local recipe = technic.recipes[typename].recipes[index]
 	if recipe then
 		local new_input = {}
 		for i, stack in ipairs(items) do
 			if stack:get_count() < recipe.input[stack:get_name()] then
-				return nil
+				return
 			else
 				new_input[i] = ItemStack(stack)
 				new_input[i]:take_item(recipe.input[stack:get_name()])
 			end
 		end
-		return {time = recipe.time,
-		        new_input = new_input,
-		        output = recipe.output}
+		return {
+			time = recipe.time,
+			new_input = new_input,
+			output = recipe.output
+		}
 	else
-		return nil
+		return
 	end
 end
-
-
