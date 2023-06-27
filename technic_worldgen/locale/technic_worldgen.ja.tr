@@ -1,7 +1,6 @@
 # textdomain: technic_worldgen
 
-# template.txt
-# technic_worldgen translation template
+# technic_worldgen japanese translation
 
 ###crafts.lua
 Uranium Lump=
@@ -33,7 +32,7 @@ Carbon Steel Block=
 Stainless Steel Block=
 Brass Block=
 Wrought Iron=
-Blast-resistant Concrete Block=
+Blast-resistant Concrete Block=耐爆性コンクリートのブロック
 
 ###rubber.lua
 Rubber Tree Sapling=

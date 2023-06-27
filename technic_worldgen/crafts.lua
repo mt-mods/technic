@@ -1,5 +1,5 @@
 
-local S = technic.worldgen.gettext
+local S = minetest.get_translator("technic_worldgen")
 
 minetest.register_craftitem(":technic:uranium_lump", {
 	description = S("Uranium Lump"),
@@ -149,5 +149,14 @@ minetest.register_craft({
 	recipe = {
 		{"technic:granite","technic:granite"},
 		{"technic:granite","technic:granite"}
+	}
+})
+
+minetest.register_craft({
+	output = "technic:blast_resistant_concrete 5",
+	recipe = {
+		{"basic_materials:concrete_block", "technic:composite_plate", "basic_materials:concrete_block"},
+		{"technic:composite_plate", "basic_materials:concrete_block", "technic:composite_plate"},
+		{"basic_materials:concrete_block", "technic:composite_plate", "basic_materials:concrete_block"},
 	}
 })
