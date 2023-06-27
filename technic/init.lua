@@ -1,6 +1,9 @@
 
 technic = rawget(_G, "technic") or {}
+
 technic.plus = true
+technic.version = 1.2
+
 technic.creative_mode = minetest.settings:get_bool("creative_mode")
 
 local modpath = minetest.get_modpath("technic")
