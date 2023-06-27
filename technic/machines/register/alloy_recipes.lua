@@ -13,7 +13,7 @@ function technic.register_alloy_recipe(data)
 end
 
 local recipes = {
-	{"technic:copper_dust 7",         "technic:tin_dust",           "technic:bronze_ingot 8", 12},
+	{"technic:copper_dust 7",         "technic:tin_dust",           "default:bronze_ingot 8", 12},
 	{"default:copper_ingot 7",        "default:tin_ingot",          "default:bronze_ingot 8", 12},
 	{"technic:wrought_iron_dust 2",   "technic:coal_dust",          "technic:carbon_steel_ingot 2", 6},
 	{"technic:wrought_iron_ingot 2",  "technic:coal_dust",          "technic:carbon_steel_ingot 2", 6},
