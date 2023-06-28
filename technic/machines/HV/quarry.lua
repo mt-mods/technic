@@ -64,15 +64,18 @@ local function player_allowed(pos, name)
 	return not minetest.is_protected(pos, name)
 end
 
-local function can_dig_node(pos, node_name, owner, digger)
+local function can_dig_node(pos, dig_pos, node_name, owner, digger)
 	if node_name == "air" or node_name == "vacuum:vacuum" then
 		return false
 	end
+	if vector.equals(pos, dig_pos) then
+		return false  -- Don't dig self
+	end
 	local def = minetest.registered_nodes[node_name]
-	if not def or not def.diggable or (def.can_dig and not def.can_dig(pos, digger)) then
+	if not def or not def.diggable or (def.can_dig and not def.can_dig(dig_pos, digger)) then
 		return false
 	end
-	return not minetest.is_protected(pos, owner)
+	return not minetest.is_protected(dig_pos, owner)
 end
 
 local function do_purge(pos, meta)
@@ -123,7 +126,7 @@ local function do_digging(pos, meta, net_time)
 	local max_depth = meta:get_int("max_depth")
 	local offset = {
 		x = meta:get_int("offset_x"),
-		y = math.floor(step / num_steps) + 1,
+		y = math.floor(step / num_steps) + 1 - meta:get_int("offset_y"),
 		z = meta:get_int("offset_z")
 	}
 	if dug == -1 then
@@ -175,7 +178,7 @@ local function do_digging(pos, meta, net_time)
 			offset.y = offset.y + 1
 		end
 		local node = technic.get_or_load_node(dig_pos)
-		if can_dig_node(dig_pos, node.name, owner, digger) then
+		if can_dig_node(pos, dig_pos, node.name, owner, digger) then
 			-- Found something to dig, dig it and stop
 			minetest.remove_node(dig_pos)
 			if quarry_dig_particles then
@@ -254,8 +257,9 @@ local base_formspec = "size[8,9]"..
 	"button[6,0.6;2,1;restart;"..S("Restart").."]"..
 	"field[4.3,2.1;2,1;size;"..S("Radius")..";${size}]"..
 	"field[6.3,2.1;2,1;max_depth;"..S("Max Depth")..";${max_depth}]"..
-	"field[4.3,3.1;2,1;offset_x;"..S("Offset X")..";${offset_x}]"..
-	"field[6.3,3.1;2,1;offset_z;"..S("Offset Z")..";${offset_z}]"
+	"field[4.3,3.1;1.333,1;offset_x;"..S("Offset X")..";${offset_x}]"..
+	"field[5.633,3.1;1.333,1;offset_y;"..S("Offset Y")..";${offset_y}]"..
+	"field[6.966,3.1;1.333,1;offset_z;"..S("Offset Z")..";${offset_z}]"
 
 if has_digilines then
 	base_formspec = base_formspec..
@@ -272,8 +276,12 @@ local function update_formspec(meta)
 	elseif meta:get_int("enabled") == 1 then
 		local diameter = meta:get_int("size") * 2 + 1
 		local num_steps = diameter * diameter
-		local y_level = math.floor(meta:get_int("step") / num_steps) + 1
-		status = S("Digging @1 m below machine", y_level)
+		local y_level = math.floor(meta:get_int("step") / num_steps) + 1 - meta:get_int("offset_y")
+		if y_level < 0 then
+			status = S("Digging @1 m above machine", math.abs(y_level))
+		else
+			status = S("Digging @1 m below machine", y_level)
+		end
 	end
 	if meta:get_int("enabled") == 1 then
 		fs = fs.."button[4,0.6;2,1;disable;"..S("Enabled").."]"
@@ -308,6 +316,9 @@ local function quarry_receive_fields(pos, _, fields, sender)
 	if fields.offset_x then
 		meta:set_int("offset_x", clamp(fields.offset_x, -10, 10, 0))
 	end
+	if fields.offset_y then
+		meta:set_int("offset_y", clamp(fields.offset_y, -10, 10, 0))
+	end
 	if fields.offset_z then
 		meta:set_int("offset_z", clamp(fields.offset_z, -10, 10, 0))
 	end
@@ -330,10 +341,10 @@ local function show_working_area(pos, _, player)
 	end
 	local meta = minetest.get_meta(pos)
 	local radius = meta:get_int("size") + 0.5
-	local offset = vector.new(meta:get_int("offset_x"), 0, meta:get_int("offset_z"))
+	local offset = vector.new(meta:get_int("offset_x"), meta:get_int("offset_y"), meta:get_int("offset_z"))
 	local depth = meta:get_int("max_depth") + 0.5
 	-- Draw area from top corner to bottom corner
-	local pos1 = vector.add(pos, vector.new(offset.x - radius, -0.5, offset.z - radius))
+	local pos1 = vector.add(pos, vector.new(offset.x - radius, offset.y - 0.5, offset.z - radius))
 	local pos2 = vector.add(pos, vector.new(offset.x + radius, -depth, offset.z + radius))
 	vizlib.draw_area(pos1, pos2, {player = player})
 end
@@ -354,8 +365,13 @@ local function digiline_action(pos, _, channel, msg)
 			msg = {command = "max_depth", value = msg:sub(11,-1)}
 		elseif msg:sub(1,9) == "offset_x " then
 			msg = {command = "offset_x", value = msg:sub(10,-1)}
+		elseif msg:sub(1,9) == "offset_y " then
+			msg = {command = "offset_y", value = msg:sub(10,-1)}
 		elseif msg:sub(1,9) == "offset_z " then
 			msg = {command = "offset_z", value = msg:sub(10,-1)}
+		elseif msg:sub(1,7) == "offset " then
+			local s = string.split(msg:sub(8,-1), ",")
+			msg = {command = "offset", value = {x = s[1], y = s[2], z = s[3]}}
 		end
 	end
 	if type(msg) ~= "table" then return end
@@ -366,7 +382,8 @@ local function digiline_action(pos, _, channel, msg)
 			msg = {command = "set", restart = true}
 		elseif cmd == "on" or cmd == "off" then
 			msg = {command = "set", enabled = msg.command == "on"}
-		elseif cmd == "radius" or cmd == "max_depth" or cmd == "offset_x" or cmd == "offset_z" then
+		elseif cmd == "radius" or cmd == "max_depth" or cmd == "offset"
+				or cmd == "offset_x" or cmd == "offset_y" or cmd == "offset_z" then
 			msg = {command = "set", [cmd] = msg.value}
 		end
 	end
@@ -374,15 +391,22 @@ local function digiline_action(pos, _, channel, msg)
 	if msg.command == "get" then
 		local diameter = meta:get_int("size") * 2 + 1
 		local num_steps = diameter * diameter
+		local offset = {
+			x = meta:get_int("offset_x"),
+			y = meta:get_int("offset_y"),
+			z = meta:get_int("offset_z")
+		}
 		digilines.receptor_send(pos, technic.digilines.rules, channel, {
 			enabled = meta:get_int("enabled") == 1,
 			finished = meta:get_int("finished") == 1,
 			radius = meta:get_int("size"),
 			max_depth = meta:get_int("max_depth"),
-			offset_x = meta:get_int("offset_x"),
-			offset_z = meta:get_int("offset_z"),
+			offset_x = offset.x,
+			offset_y = offset.y,
+			offset_z = offset.z,
+			offset = offset,
 			dug_nodes = meta:get_int("dug"),
-			dig_level = -(math.floor(meta:get_int("step") / num_steps) + 1),
+			dig_level = -(math.floor(meta:get_int("step") / num_steps) + 1 - offset.y),
 		})
 	elseif msg.command == "set" then
 		if msg.enabled ~= nil then
@@ -400,8 +424,16 @@ local function digiline_action(pos, _, channel, msg)
 		if msg.offset_x then
 			meta:set_int("offset_x", clamp(msg.offset_x, -10, 10, 0))
 		end
+		if msg.offset_y then
+			meta:set_int("offset_y", clamp(msg.offset_x, -10, 10, 0))
+		end
 		if msg.offset_z then
 			meta:set_int("offset_z", clamp(msg.offset_z, -10, 10, 0))
+		end
+		if msg.offset and type(msg.offset) == "table" then
+			meta:set_int("offset_x", clamp(msg.offset.x, -10, 10, 0))
+			meta:set_int("offset_y", clamp(msg.offset.y, -10, 10, 0))
+			meta:set_int("offset_z", clamp(msg.offset.z, -10, 10, 0))
 		end
 	end
 end
@@ -436,6 +468,7 @@ minetest.register_node("technic:quarry", {
 		local meta = minetest.get_meta(pos)
 		meta:set_int("size", 4)
 		meta:set_int("offset_x", 0)
+		meta:set_int("offset_y", 0)
 		meta:set_int("offset_z", 0)
 		meta:set_int("max_depth", quarry_max_depth)
 		meta:get_inventory():set_size("cache", 12)
@@ -534,6 +567,7 @@ minetest.register_lbm({
 		local dir = minetest.facedir_to_dir(node.param2)
 		local offset = vector.multiply(dir, meta:get_int("size") + 1)
 		meta:set_int("offset_x", offset.x)
+		meta:set_int("offset_y", 4)
 		meta:set_int("offset_z", offset.z)
 		if not meta:get("max_depth") then
 			meta:set_int("max_depth", quarry_max_depth)
