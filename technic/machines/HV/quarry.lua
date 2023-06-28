@@ -471,6 +471,7 @@ minetest.register_node("technic:quarry", {
 		meta:set_int("offset_y", 0)
 		meta:set_int("offset_z", 0)
 		meta:set_int("max_depth", quarry_max_depth)
+		meta:set_string("mesecons", "false")
 		meta:get_inventory():set_size("cache", 12)
 		reset_quarry(meta)
 		update_formspec(meta)
