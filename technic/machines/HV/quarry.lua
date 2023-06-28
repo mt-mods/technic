@@ -4,6 +4,7 @@ local S = technic.getter
 local has_digilines = minetest.get_modpath("digilines")
 local has_mesecons = minetest.get_modpath("mesecons")
 local has_vizlib = minetest.get_modpath("vizlib")
+local has_jumpdrive = minetest.get_modpath("jumpdrive")
 
 local quarry_max_depth = technic.config:get_int("quarry_max_depth")
 local quarry_dig_particles = technic.config:get_bool("quarry_dig_particles")
@@ -290,7 +291,19 @@ local function update_formspec(meta)
 	end
 	if has_mesecons then
 		local selected = meta:get("mesecons") or "true"
-		fs = fs.."checkbox[0,3.8;mesecons;"..S("Enable Mesecons Control")..";"..selected.."]"
+		if has_jumpdrive then
+			fs = fs.."checkbox[0,3.6;mesecons;"..S("Enable Mesecons Control")..";"..selected.."]"
+		else
+			fs = fs.."checkbox[0,3.8;mesecons;"..S("Enable Mesecons Control")..";"..selected.."]"
+		end
+	end
+	if has_jumpdrive then
+		local selected = meta:get("reset_on_move") or "true"
+		if has_mesecons then
+			fs = fs.."checkbox[0,4.1;reset_on_move;"..S("Restart When Moved")..";"..selected.."]"
+		else
+			fs = fs.."checkbox[0,3.8;reset_on_move;"..S("Restart When Moved")..";"..selected.."]"
+		end
 	end
 	meta:set_string("formspec", fs.."label[4,0;"..status.."]")
 end
@@ -324,6 +337,9 @@ local function quarry_receive_fields(pos, _, fields, sender)
 	end
 	if fields.mesecons then
 		meta:set_string("mesecons", fields.mesecons)
+	end
+	if fields.reset_on_move then
+		meta:set_string("reset_on_move", fields.reset_on_move)
 	end
 	if fields.channel then
 		meta:set_string("channel", fields.channel)
@@ -472,10 +488,17 @@ minetest.register_node("technic:quarry", {
 		meta:set_int("offset_z", 0)
 		meta:set_int("max_depth", quarry_max_depth)
 		meta:set_string("mesecons", "false")
+		meta:set_string("reset_on_move", "false")
 		meta:get_inventory():set_size("cache", 12)
 		reset_quarry(meta)
 		update_formspec(meta)
 	end,
+	on_movenode = has_jumpdrive and function(_, pos)
+		local meta = minetest.get_meta(pos)
+		if meta:get("reset_on_move") ~= "false" then
+			reset_quarry(meta)
+		end
+	end or nil,
 	after_place_node = function(pos, placer, itemstack)
 		minetest.get_meta(pos):set_string("owner", placer:get_player_name())
 		pipeworks.scan_for_tube_objects(pos)
