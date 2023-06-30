@@ -20,11 +20,13 @@ function technic.register_recipe_type(typename, origdata)
 	if have_cg and craftguide.register_craft_type then
 		craftguide.register_craft_type(typename, {
 			description = data.description,
+			icon = data.icon,
 		})
 	end
 	if have_i3 then
 		i3.register_craft_type(typename, {
 			description = data.description,
+			icon = data.icon,
 		})
 	end
 	data.recipes = {}
