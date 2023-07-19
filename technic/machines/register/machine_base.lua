@@ -117,7 +117,8 @@ function technic.register_base_machine(nodename, data)
 			end
 			meta:set_int(tier.."_EU_demand", machine_demand[EU_upgrade+1])
 			technic.swap_node(pos, nodename.."_active")
-			meta:set_string("infotext", infotext_active)
+			meta:set_string("infotext", infotext_active .. "\n" ..
+			S("Demand: @1", technic.EU_string(machine_demand[EU_upgrade+1])))
 			if meta:get_int("src_time") < round(result.time*10) then
 				if not powered then
 					technic.swap_node(pos, nodename)
