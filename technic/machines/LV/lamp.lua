@@ -78,7 +78,8 @@ local function lamp_run(pos, node)
 	elseif node.name == "technic:lv_lamp" then
 		if eu_input >= demand then
 			technic.swap_node(pos, "technic:lv_lamp_active")
-			meta:set_string("infotext", active_desc)
+			meta:set_string("infotext", active_desc .. "\n" ..
+			S("Demand: @1", technic.EU_string(demand)))
 			set_random_timer(pos, 0.2, 2)
 		end
 	end

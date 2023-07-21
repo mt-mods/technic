@@ -74,7 +74,8 @@ local run = function(pos, node)
 	if eu_input < workshop_demand[EU_upgrade+1] then
 		meta:set_string("infotext", S("@1 Unpowered", machine_name))
 	elseif eu_input >= workshop_demand[EU_upgrade+1] then
-		meta:set_string("infotext", S("@1 Active", machine_name))
+		meta:set_string("infotext", S("@1 Active", machine_name) .. "\n" ..
+			S("Demand: @1", technic.EU_string(workshop_demand[EU_upgrade+1])))
 		srcstack:add_wear(-1000)
 		inv:set_stack("src", 1, srcstack)
 	end

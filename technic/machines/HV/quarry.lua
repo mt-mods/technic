@@ -227,7 +227,8 @@ local function quarry_run(pos, _, _, network)
 	elseif meta:get_int("enabled") == 1 then
 		-- Active
 		if meta:get_int("HV_EU_input") >= quarry_demand then
-			meta:set_string("infotext", infotext.active)
+			meta:set_string("infotext", infotext.active .. "\n" ..
+			S("Demand: @1", technic.EU_string(quarry_demand)))
 			do_digging(pos, meta, network.lag)
 		else
 			meta:set_string("infotext", infotext.unpowered)

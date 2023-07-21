@@ -19,7 +19,8 @@ local function led_run(pos, node)
 		meta:set_string("infotext", unpowered_desc)
 	elseif eu_input >= demand and node.name == "technic:lv_led" then
 		technic.swap_node(pos, "technic:lv_led_active")
-		meta:set_string("infotext", active_desc)
+		meta:set_string("infotext", active_desc .. "\n" ..
+		S("Demand: @1", technic.EU_string(demand)))
 	end
 end
 

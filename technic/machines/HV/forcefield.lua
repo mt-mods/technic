@@ -290,7 +290,8 @@ local function run(pos, node)
 	elseif eu_input >= power_requirement then
 		if node.name == "technic:forcefield_emitter_off" then
 			technic.swap_node(pos, "technic:forcefield_emitter_on")
-			meta:set_string("infotext", S("@1 Active", machine_name))
+			meta:set_string("infotext", S("@1 Active", machine_name) .. "\n" ..
+			S("Demand: @1", technic.EU_string(power_requirement)))
 		end
 		update_forcefield(pos, meta, true)
 	end
