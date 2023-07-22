@@ -13,7 +13,8 @@ local quarry_demand = 10000
 local network_time_limit = 30000
 
 local infotext = {
-	active    = S("@1 Active",        S("@1 Quarry", S("HV"))),
+	active    = S("@1 Active",        S("@1 Quarry", S("HV"))) .. "\n" ..
+	S("Demand: @1", technic.EU_string(quarry_demand)),
 	disabled  = S("@1 Disabled",      S("@1 Quarry", S("HV"))),
 	finished  = S("@1 Finished",      S("@1 Quarry", S("HV"))),
 	purge     = S("@1 Purging Cache", S("@1 Quarry", S("HV"))),
@@ -227,8 +228,7 @@ local function quarry_run(pos, _, _, network)
 	elseif meta:get_int("enabled") == 1 then
 		-- Active
 		if meta:get_int("HV_EU_input") >= quarry_demand then
-			meta:set_string("infotext", infotext.active .. "\n" ..
-			S("Demand: @1", technic.EU_string(quarry_demand)))
+			meta:set_string("infotext", infotext.active)
 			do_digging(pos, meta, network.lag)
 		else
 			meta:set_string("infotext", infotext.unpowered)
