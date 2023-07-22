@@ -50,7 +50,8 @@ local run = function(pos, node)
 			music_handle = nil
 		end
 	elseif eu_input >= demand then
-		meta:set_string("infotext", S("@1 Active", machine_name))
+		meta:set_string("infotext", S("@1 Active", machine_name) .. "\n" ..
+			S("Demand: @1", technic.EU_string(demand)))
 		if not music_handle then
 			music_handle = play_track(pos, current_track)
 		end

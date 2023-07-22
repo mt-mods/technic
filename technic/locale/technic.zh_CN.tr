@@ -94,6 +94,7 @@ Corium Source=镭射源
 Cube=立方体
 Current target:=目前的目标。
 Current track: @1=目前的轨道。@1
+Demand: @1=需求。 @1
 Diamond Drill Head=金刚石钻头
 Digging @1 m below machine=挖掘 @1 m以下的机器
 Digging finished=挖完

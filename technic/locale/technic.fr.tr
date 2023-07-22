@@ -94,6 +94,7 @@ Corium Source=Source de corium
 Cube=Cube
 Current target:=Cible actuelle :
 Current track: @1=Piste actuelle : @1
+Demand: @1=Demande : @1
 Diamond Drill Head=Tête de forage en diamant
 Digging @1 m below machine=Creusement à @1m en dessous de la machine
 Digging finished=Creusement terminé

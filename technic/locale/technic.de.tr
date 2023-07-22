@@ -94,6 +94,7 @@ Corium Source=Corium-Quelle
 Cube=Würfel
 Current target:=Aktuelles Ziel:
 Current track: @1=Aktueller Kurs: @1
+Demand: @1=Bedarf: @1
 Diamond Drill Head=Diamantbohrkopf
 Digging @1 m below machine=Graben @1 m unterhalb der Maschine
 Digging finished=Graben beendet

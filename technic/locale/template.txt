@@ -91,6 +91,7 @@ Corium Source=
 Cube=
 Current target:=
 Current track: @1=
+Demand: @1=
 Diamond Drill Head=
 Digging @1 m below machine=
 Digging finished=

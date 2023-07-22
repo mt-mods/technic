@@ -94,6 +94,7 @@ Corium Source=Sorgente di corium
 Cube=Cubo
 Current target:=Obiettivo attuale:
 Current track: @1=Traccia attuale: @1
+Demand: @1=Domanda: @1
 Diamond Drill Head=Trivella diamantata
 Digging @1 m below machine=Scavo di @1 m sotto la macchina
 Digging finished=Scavo finito

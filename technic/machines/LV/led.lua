@@ -5,9 +5,9 @@
 local S = technic.getter
 
 local desc = S("@1 LED", S("LV"))
-local active_desc = S("@1 Active", desc)
-local unpowered_desc = S("@1 Unpowered", desc)
 local demand = 5
+local active_desc = S("@1 Active", desc) .. "\n" .. S("Demand: @1", technic.EU_string(demand))
+local unpowered_desc = S("@1 Unpowered", desc)
 
 
 local function led_run(pos, node)
