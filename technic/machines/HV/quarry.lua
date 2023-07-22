@@ -325,13 +325,17 @@ local function quarry_receive_fields(pos, _, fields, sender)
 		meta:set_int("size", clamp(fields.size, 0, 8, 4))
 	end
 	if fields.max_depth then
-		meta:set_int("max_depth", clamp(fields.max_depth, 1, quarry_max_depth))
+		local depth = clamp(fields.max_depth, 1, quarry_max_depth)
+		meta:set_int("max_depth", depth)
+		local ymin = -math.min(10, depth - 1)
+		meta:set_int("offset_y", clamp(meta:get_int("offset_y"), ymin, 10, 0))
 	end
 	if fields.offset_x then
 		meta:set_int("offset_x", clamp(fields.offset_x, -10, 10, 0))
 	end
 	if fields.offset_y then
-		meta:set_int("offset_y", clamp(fields.offset_y, -10, 10, 0))
+		local ymin = -math.min(10, meta:get_int("max_depth") - 1)
+		meta:set_int("offset_y", clamp(fields.offset_y, ymin, 10, 0))
 	end
 	if fields.offset_z then
 		meta:set_int("offset_z", clamp(fields.offset_z, -10, 10, 0))
@@ -436,20 +440,25 @@ local function digiline_action(pos, _, channel, msg)
 			meta:set_int("size", clamp(msg.radius, 0, 8, 4))
 		end
 		if msg.max_depth then
-			meta:set_int("max_depth", clamp(msg.max_depth, 1, quarry_max_depth))
+			local depth = clamp(msg.max_depth, 1, quarry_max_depth)
+			meta:set_int("max_depth", depth)
+			local ymin = -math.min(10, depth - 1)
+			meta:set_int("offset_y", clamp(meta:get_int("offset_y"), ymin, 10, 0))
 		end
 		if msg.offset_x then
 			meta:set_int("offset_x", clamp(msg.offset_x, -10, 10, 0))
 		end
 		if msg.offset_y then
-			meta:set_int("offset_y", clamp(msg.offset_x, -10, 10, 0))
+			local ymin = -math.min(10, meta:get_int("max_depth") - 1)
+			meta:set_int("offset_y", clamp(msg.offset_y, ymin, 10, 0))
 		end
 		if msg.offset_z then
 			meta:set_int("offset_z", clamp(msg.offset_z, -10, 10, 0))
 		end
 		if msg.offset and type(msg.offset) == "table" then
+			local ymin = -math.min(10, meta:get_int("max_depth") - 1)
 			meta:set_int("offset_x", clamp(msg.offset.x, -10, 10, 0))
-			meta:set_int("offset_y", clamp(msg.offset.y, -10, 10, 0))
+			meta:set_int("offset_y", clamp(msg.offset.y, ymin, 10, 0))
 			meta:set_int("offset_z", clamp(msg.offset.z, -10, 10, 0))
 		end
 	end
