@@ -50,3 +50,11 @@ likely be revised.
 As with the chest of the basic Minetest game, each chest type comes
 in both locked and unlocked flavors.  All of the chests work with the
 pneumatic tubes of the pipeworks mod.
+
+## Sorting
+
+Chests can be sorted with one button with the following sort types : natural sort, by item, by quantity, by tipe or by wear. The chests can also be sorted automatically when its content changes.
+
+## Inventory move
+
+Chests have the ability to move all or a certain type of item with a button. All items that fit with that type will move from inventory to chest or the contrary.

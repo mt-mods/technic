@@ -42,6 +42,12 @@ The higher levels of the mining drill allow for drilling more blocks at once, su
 
 This electric tool is a substantial upgrade above the pickaxe that you start mining with. The laser works by drilling directly forward 7 blocks making a path that's roughly 1-block in diameter. The laser is electric, requiring charging in a battery box (any voltage). As soon as an LV electrical system is set up, this is a great next step.
 
+## Multimeter
+
+<img src="../textures/technic_multimeter.png"/>
+
+This electric tool is used for quick lookup at an electric network. It works by clicking on an electric node (cable, machine, generator, switchting station), and gives values about : the position of the attached switching station, its current status, the lag, the batteries, the supply and the demand, and the total of each type of node.
+
 ## Sonic screwdriver
 
 <img src="../textures/technic_sonic_screwdriver.png"/>
