@@ -53,7 +53,7 @@ pneumatic tubes of the pipeworks mod.
 
 ## Sorting
 
-Chests can be sorted with one button with the following sort types : natural sort, by item, by quantity, by tipe or by wear. The chests can also be sorted automatically when its content changes.
+Chests can be sorted with one button with the following sort types : natural sort, by item, by quantity, by type or by wear. The chests can also be sorted automatically when its content changes. On the UI, the three buttons are the following : toggle automatic sorting, toggle sorting type, sort
 
 ## Inventory move
 
