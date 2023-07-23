@@ -3,18 +3,18 @@ name: mineunit
 on: [push, pull_request]
 
 jobs:
-  build:
+  mineunit:
 
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - id: mineunit
-      uses: mt-mods/mineunit-actions@master
+      uses: mt-mods/mineunit-actions@docker
       with:
         working-directory: ./technic
-        mineunit-args: --fetch-core 5.4.1 --engine-version 5.4.1
+        mineunit-args: --engine-version 5.4.1
         badge-label: Test coverage
 
     - uses: RubbaBoy/BYOB@v1.3.0
@@ -27,7 +27,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - id: mineunit-cnc
-      uses: mt-mods/mineunit-actions@master
+      uses: mt-mods/mineunit-actions@docker
       with:
         working-directory: ./technic_cnc
         badge-name: coverage-cnc
@@ -43,7 +43,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - id: mineunit-chests
-      uses: mt-mods/mineunit-actions@master
+      uses: mt-mods/mineunit-actions@docker
       with:
         working-directory: ./technic_chests
         badge-name: coverage-chests
