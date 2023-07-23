@@ -60,7 +60,7 @@ This electric tool is used for quick lookup at an electric network. It works by 
 | Battery charge   | 2911956       | EU         | The total of energy stored in batteries                       |
 | Battery charge   | 97.07         | %          | The energy stored per the maximum that can be stored          |
 | Battery capacity | 3000000       | EU         | The maximum amount of energy that can be stored in batteries  |
-| Nodes            | 47            | count      | The number of nodes of the network                            |
+| Nodes            | 47            | count      | The number of nodes of the network, excluding switch stations |
 | Cables           | 32            | count      | The number of cables                                          |
 | Generators       | 8             | count      | The number of generators (supplying the network)              |
 | Consumers        | 4             | count      | The number of consumers (demanding power)                     |
