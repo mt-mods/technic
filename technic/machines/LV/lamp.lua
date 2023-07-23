@@ -4,9 +4,9 @@
 
 local S = technic.getter
 
-local desc = S("@1 Lamp", S("LV"))
 local demand = 50
-local active_desc = S("@1 Active", desc) .. "\n" .. S("Demand: @1", technic.EU_string(demand))
+local desc = S("@1 Lamp", S("LV"))
+local active_desc = S("@1 Active", desc).."\n"..S("Demand: @1", technic.EU_string(demand))
 local unpowered_desc = S("@1 Unpowered", desc)
 local off_desc = S("@1 Off", desc)
 

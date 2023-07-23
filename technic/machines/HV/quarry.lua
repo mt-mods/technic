@@ -12,14 +12,18 @@ local quarry_time_limit = technic.config:get_int("quarry_time_limit")
 local quarry_demand = 10000
 local network_time_limit = 30000
 
-local infotext = {
-	active    = S("@1 Active",        S("@1 Quarry", S("HV"))) .. "\n" ..
-	S("Demand: @1", technic.EU_string(quarry_demand)),
-	disabled  = S("@1 Disabled",      S("@1 Quarry", S("HV"))),
-	finished  = S("@1 Finished",      S("@1 Quarry", S("HV"))),
-	purge     = S("@1 Purging Cache", S("@1 Quarry", S("HV"))),
-	unpowered = S("@1 Unpowered",     S("@1 Quarry", S("HV"))),
-}
+local infotext
+do
+	local name = S("@1 Quarry", S("HV"))
+	local demand = S("Demand: @1", technic.EU_string(quarry_demand))
+	infotext = {
+		active = S("@1 Active", name).."\n"..demand,
+		disabled = S("@1 Disabled", name),
+		finished = S("@1 Finished", name),
+		purge = S("@1 Purging Cache", name),
+		unpowered = S("@1 Unpowered", name),
+	}
+end
 
 -- Hard-coded outward-spiral dig pattern for up to 17x17 dig area
 local dig_pattern = {
