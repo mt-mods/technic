@@ -58,3 +58,10 @@ Chests can be sorted with one button with the following sort types : natural sor
 ## Inventory move
 
 Chests have the ability to move all or a certain type of item with a button. All items that fit with that type will move from inventory to chest or the contrary.
+
+## Digilines
+
+Only mithril chests can send digilines logs. They can send messages of following types :
+* Player/pipeworks item taking
+* Player/pipeworks item putting
+* Pipeworks overflow (chest is full)
