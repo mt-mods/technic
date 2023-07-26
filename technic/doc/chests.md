@@ -65,3 +65,26 @@ Only mithril chests can send digilines logs. They can send messages of following
 * Player/pipeworks item taking
 * Player/pipeworks item putting
 * Pipeworks overflow (chest is full)
+
+Example of digiline message :
+```lua
+{
+	player = "singleplayer",
+	items = {
+		{
+			meta = {
+			},
+			metadata = "",
+			count = 99,
+			name = "technic:quarry",
+			wear = 0
+		}
+	},
+	pos = {
+		y = 19,
+		x = 67,
+		z = 57
+	},
+	event = "put"
+}
+```
