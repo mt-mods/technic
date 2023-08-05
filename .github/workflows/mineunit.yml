@@ -11,7 +11,7 @@ jobs:
     - uses: actions/checkout@v3
 
     - id: mineunit
-      uses: mt-mods/mineunit-actions@docker
+      uses: mt-mods/mineunit-actions@master
       with:
         working-directory: ./technic
         mineunit-args: --engine-version 5.4.1
@@ -27,7 +27,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - id: mineunit-cnc
-      uses: mt-mods/mineunit-actions@docker
+      uses: mt-mods/mineunit-actions@master
       with:
         working-directory: ./technic_cnc
         badge-name: coverage-cnc
@@ -43,7 +43,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - id: mineunit-chests
-      uses: mt-mods/mineunit-actions@docker
+      uses: mt-mods/mineunit-actions@master
       with:
         working-directory: ./technic_chests
         badge-name: coverage-chests
