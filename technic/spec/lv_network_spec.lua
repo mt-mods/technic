@@ -19,12 +19,6 @@ describe("LV machine network", function()
 	world.set_default_node("air")
 
 	local machines = {
-		"technic:lv_generator",
-		"technic:geothermal",
-		"technic:solar_panel",
-		"technic:lv_solar_array",
-		"technic:lv_solar_array",
-		"technic:lv_solar_array",
 		"technic:lv_battery_box0",
 		"technic:lv_electric_furnace",
 		"technic:lv_extractor",
@@ -34,22 +28,26 @@ describe("LV machine network", function()
 		"technic:lv_led",
 		"technic:lv_lamp",
 		"technic:water_mill",
+		"technic:lv_generator",
+		"technic:geothermal",
+		"technic:solar_panel",
+		"technic:lv_solar_array",
 	}
 
 	world.clear()
-	world.place_node({x=100,y=1,z=0}, "technic:switching_station", player)
-	for x = 1, 100 do
-		world.place_node({x=x,y=0,z=0}, "technic:lv_cable", player)
+	world.place_node({x=0,y=51,z=0}, "technic:switching_station", player)
+	for x = 0, 15 do
+		world.place_node({x=x,y=50,z=0}, "technic:lv_cable", player)
 	end
 	for x, name in ipairs(machines) do
-		world.place_node({x=x,y=1,z=0}, name, player)
+		world.place_node({x=x,y=51,z=0}, name, player)
 	end
 
 	-- Helper to destroy nodes in test world returning list of removed nodes indexed by coordinates
 	local function remove_nodes(nodes)
 		local removed = {}
-		for x = 1, 100 do
-			local pos = {x=x,y=1,z=0}
+		for x = 0, 15 do
+			local pos = {x=x,y=51,z=0}
 			local node = minetest.get_node(pos)
 			if nodes[node.name] then
 				removed[pos] = node
@@ -96,33 +94,33 @@ describe("LV machine network", function()
 		spy.on(technic, "network_run")
 		run_network(60)
 		assert.spy(technic.network_run).called(60)
-		local id = technic.pos2network({x=100,y=0,z=0})
+		local id = technic.pos2network({x=0,y=50,z=0})
 		assert.not_nil(technic.networks[id])
 		assert.gt(technic.networks[id].supply, 0)
 	end)
 
 	it("kills network when switching station disappear", function()
-		local id = technic.pos2network({x=100,y=0,z=0})
+		local id = technic.pos2network({x=0,y=50,z=0})
 		assert.not_nil(technic.networks[id])
 		-- Remove switching station and execute globalstep
-		world.remove_node({x=100,y=1,z=0})
+		world.remove_node({x=0,y=51,z=0})
 		run_network()
 		-- Network should be gone
 		assert.is_nil(technic.networks[id])
 		-- Build new switching station to restore network
-		world.place_node({x=100,y=1,z=0}, {name="technic:switching_station"})
+		world.place_node({x=0,y=51,z=0}, {name="technic:switching_station"})
 		run_network()
 		assert.not_nil(technic.networks[id])
 	end)
 
 	it("charges battery box", function()
-		local id = technic.pos2network({x=100,y=0,z=0})
+		local id = technic.pos2network({x=0,y=50,z=0})
 		local net = technic.networks[id]
 		assert.gt(net.battery_charge, 1000)
 	end)
 
 	it("smelts ores", function()
-		local machine_pos = {x=8,y=1,z=0}
+		local machine_pos = {x=2,y=51,z=0}
 		place_itemstack(machine_pos, "technic:lead_lump 99")
 		run_network(60)
 		-- Check results, at least 10 items processed and results in correct stuff
@@ -132,7 +130,7 @@ describe("LV machine network", function()
 	end)
 
 	it("grinds ores", function()
-		local machine_pos = {x=10,y=1,z=0}
+		local machine_pos = {x=4,y=51,z=0}
 		place_itemstack(machine_pos, "technic:lead_lump 99")
 		run_network(60)
 		-- Check results, at least 10 items processed and results in correct stuff
@@ -142,7 +140,7 @@ describe("LV machine network", function()
 	end)
 
 	it("comperess sand", function()
-		local machine_pos = {x=12,y=1,z=0}
+		local machine_pos = {x=6,y=51,z=0}
 		place_itemstack(machine_pos, "default:sand 99")
 		run_network(60)
 		-- Check results, at least 10 items processed and results in correct stuff
@@ -152,10 +150,10 @@ describe("LV machine network", function()
 	end)
 
 	it("cuts power when generators disappear", function()
-		place_itemstack({x=8,y=1,z=0}, "technic:lead_lump 99")
-		place_itemstack({x=10,y=1,z=0}, "technic:lead_lump 99")
-		place_itemstack({x=12,y=1,z=0}, "default:sand 99")
-		local id = technic.pos2network({x=100,y=0,z=0})
+		place_itemstack({x=2,y=51,z=0}, "technic:lead_lump 99")
+		place_itemstack({x=4,y=51,z=0}, "technic:lead_lump 99")
+		place_itemstack({x=6,y=51,z=0}, "default:sand 99")
+		local id = technic.pos2network({x=0,y=50,z=0})
 		assert.not_nil(technic.networks[id])
 
 		-- Remove generators and run network 60 times
