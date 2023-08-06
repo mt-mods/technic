@@ -20,26 +20,22 @@ describe("HV machine network", function()
 
 	local machines = {
 		"technic:hv_generator",
-		"technic:hv_solar_array",
-		"technic:hv_solar_array",
-		"technic:hv_solar_array",
-		"technic:hv_solar_array",
-		"technic:hv_solar_array",
 		"technic:hv_battery_box0",
 		"technic:hv_electric_furnace",
 		"technic:hv_grinder",
 		"technic:hv_compressor",
 		"technic:hv_nuclear_reactor_core",
 		"technic:quarry",
+		"technic:hv_solar_array",
 	}
 
 	world.clear()
-	world.place_node({x=100,y=1,z=0}, "technic:switching_station", player)
-	for x = 1, 100 do
-		world.place_node({x=x,y=0,z=0}, "technic:hv_cable", player)
+	world.place_node({x=0,y=51,z=0}, "technic:switching_station", player)
+	for x = 0, 10 do
+		world.place_node({x=x,y=50,z=0}, "technic:hv_cable", player)
 	end
 	for x, name in ipairs(machines) do
-		world.place_node({x=x,y=1,z=0}, name, player)
+		world.place_node({x=x,y=51,z=0}, name, player)
 	end
 
 	-- Helper function to execute netowork
@@ -72,33 +68,33 @@ describe("HV machine network", function()
 		spy.on(technic, "network_run")
 		run_network(60)
 		assert.spy(technic.network_run).called(60)
-		local id = technic.pos2network({x=100,y=0,z=0})
+		local id = technic.pos2network({x=0,y=50,z=0})
 		assert.not_nil(technic.networks[id])
 		assert.gt(technic.networks[id].supply, 0)
 	end)
 
 	it("kills network when switching station disappear", function()
-		local id = technic.pos2network({x=100,y=0,z=0})
+		local id = technic.pos2network({x=0,y=50,z=0})
 		assert.not_nil(technic.networks[id])
 		-- Remove switching station and execute globalstep
-		world.set_node({x=100,y=1,z=0}, {name="air"})
+		world.set_node({x=0,y=51,z=0}, {name="air"})
 		mineunit:execute_globalstep(1)
 		-- Network should be gone
 		assert.is_nil(technic.networks[id])
 		-- Build new switching station to restore network
-		world.place_node({x=100,y=1,z=0}, {name="technic:switching_station"})
+		world.place_node({x=0,y=51,z=0}, {name="technic:switching_station"})
 		mineunit:execute_globalstep(1)
 		assert.not_nil(technic.networks[id])
 	end)
 
 	it("charges battery box", function()
-		local id = technic.pos2network({x=100,y=0,z=0})
+		local id = technic.pos2network({x=0,y=50,z=0})
 		local net = technic.networks[id]
 		assert.gt(net.battery_charge, 1000)
 	end)
 
 	it("smelts ores", function()
-		local machine_pos = {x=8,y=1,z=0}
+		local machine_pos = {x=3,y=51,z=0}
 		place_itemstack(machine_pos, "technic:lead_lump 99")
 		run_network(60)
 		-- Check results, at least 10 items processed and results in correct stuff
@@ -108,7 +104,7 @@ describe("HV machine network", function()
 	end)
 
 	it("grinds ores", function()
-		local machine_pos = {x=9,y=1,z=0}
+		local machine_pos = {x=4,y=51,z=0}
 		place_itemstack(machine_pos, "technic:lead_lump 99")
 		run_network(60)
 		-- Check results, at least 10 items processed and results in correct stuff

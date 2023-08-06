@@ -1,6 +1,10 @@
 Technic chests
 ==============
 
+![luacheck](https://github.com/mt-mods/technic/workflows/luacheck/badge.svg)
+![mineunit](https://github.com/mt-mods/technic/workflows/mineunit/badge.svg)
+![](https://byob.yarr.is/mt-mods/technic/coverage-chests)
+
 License
 -------
 
