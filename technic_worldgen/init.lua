@@ -2,9 +2,6 @@
 local modpath = minetest.get_modpath("technic_worldgen")
 
 technic = rawget(_G, "technic") or {}
-technic.worldgen = {
-	gettext = minetest.get_translator(minetest.get_current_modname())
-}
 
 dofile(modpath.."/config.lua")
 dofile(modpath.."/nodes.lua")

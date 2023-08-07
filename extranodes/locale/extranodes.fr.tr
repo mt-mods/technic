@@ -6,7 +6,7 @@ Marble=Marbre
 Marble Bricks=Briques en marbre
 Granite=Granite
 Concrete=Béton
-
+Blast-resistant Concrete=
 Granite Bricks=Briques en granite
 Zinc Block=Bloc de zinc
 Cast Iron Block=Bloc de fonte
@@ -14,3 +14,5 @@ Carbon Steel Block=Bloc d'acier
 Stainless Steel Block=Bloc en acier inoxydable
 Insulator/cable clip=Isolateur
 Steel strut with insulator/cable clip=Isolateur avec support en acier
+Concrete Post Platform=Plateforme en béton
+Concrete Post=Pilier en béton

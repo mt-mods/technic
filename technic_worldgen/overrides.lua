@@ -1,5 +1,5 @@
 
-local S = technic.worldgen.gettext
+local S = minetest.get_translator("technic_worldgen")
 
 minetest.override_item("default:steel_ingot", {
 	description = S("Wrought Iron Ingot"),

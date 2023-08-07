@@ -1,5 +1,5 @@
 
-local S = technic.worldgen.gettext
+local S = minetest.get_translator("technic_worldgen")
 
 minetest.register_node(":technic:mineral_uranium", {
 	description = S("Uranium Ore"),
@@ -140,4 +140,17 @@ minetest.register_node(":technic:sulfur_block", {
 	is_ground_content = true,
 	groups = {cracky = 3},
 	sounds = default.node_sound_stone_defaults()
+})
+
+minetest.register_node(":technic:blast_resistant_concrete", {
+	description = S("Blast-resistant Concrete Block"),
+	tiles = {"technic_blast_resistant_concrete_block.png"},
+	groups = {cracky = 1, level = 3, concrete = 1},
+	sounds = default.node_sound_stone_defaults(),
+	on_blast = function(pos, intensity)
+		if intensity > 9 then
+			minetest.remove_node(pos)
+			return {"technic:blast_resistant_concrete"}
+		end
+	end
 })
