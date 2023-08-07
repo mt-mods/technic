@@ -98,11 +98,14 @@ Suitable for multiplayer environments.
 ## Compatibility
 
 This mod is meant as a **drop-in replacement** for the upstream `technic` mod.
+
 It also provides some additional machines and items, notably:
 
 * HV Grinder, Furnace, and Compressor
 * LV Lamp
 * LV, MV, and HV Digiline cables
+
+Note that the `wrench` mod has been separated from the modpack. It can now be found at [mt-mods/wrench](https://github.com/mt-mods/wrench).
 
 # Recommended mods
 
@@ -129,7 +132,6 @@ Recommended mods that build on the `technic mod`:
 | enable_mining_drill                          |                                                                                                                       |
 | enable_mining_laser                          |                                                                                                                       |
 | enable_flashlight                            |                                                                                                                       |
-| enable_wrench_crafting                       | enable recipe for wrench                                                                                              |
 | enable_wind_mill                             |                                                                                                                       |
 | enable_frames                                |                                                                                                                       |
 | enable_corium_griefing                       |                                                                                                                       |

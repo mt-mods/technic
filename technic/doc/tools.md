@@ -61,9 +61,3 @@ This manual tool allows for harvesting latex from rubber trees. Extracting latex
 The water can works similarly to the bucket tool from minetest_game, but it can hold 16 `water_source` (the water blocks that don't look like they're flowing) blocks instead of 1. To use, simply equip the water can and click on water source blocks (they will highlight in black). Then clicking anywhere where there isn't a `water_source` block with the water can equipped will place them.
 
 **Warning:** Be careful where you place these source blocks! Since you're placing water source blocks, water will flow out of them and may trap or drown you depending on where you are.
-
-## Wrench
-
-<img src="../../wrench/textures/technic_wrench.png"/>
-
-The manual tool allows for moving blocks which contain an inventory, like chests. A shift-right-click on a machine/chest will immediately add it to the inventory.

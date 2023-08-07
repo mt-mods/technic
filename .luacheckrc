@@ -6,7 +6,7 @@ exclude_files = {
 }
 
 globals = {
-	"technic", "technic_cnc", "minetest", "wrench"
+	"technic", "technic_cnc", "minetest"
 }
 
 read_globals = {
