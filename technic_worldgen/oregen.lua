@@ -1,3 +1,6 @@
+
+local stones = {"default:stone", "mcl_core:stone", "mcl_deepslate:deepslate"}
+
 local uranium_params = {
 	offset = 0,
 	scale = 1,
@@ -41,7 +44,7 @@ local lead_threshold = 0.3
 minetest.register_ore({
 	ore_type = "scatter",
 	ore = "technic:mineral_uranium",
-	wherein = "default:stone",
+	wherein = stones,
 	clust_scarcity = 8*8*8,
 	clust_num_ores = 4,
 	clust_size = 3,
@@ -54,7 +57,7 @@ minetest.register_ore({
 minetest.register_ore({
 	ore_type = "scatter",
 	ore = "technic:mineral_chromium",
-	wherein = "default:stone",
+	wherein = stones,
 	clust_scarcity = 8*8*8,
 	clust_num_ores = 2,
 	clust_size = 3,
@@ -67,7 +70,7 @@ minetest.register_ore({
 minetest.register_ore({
 	ore_type = "scatter",
 	ore = "technic:mineral_chromium",
-	wherein = "default:stone",
+	wherein = stones,
 	clust_scarcity = 6*6*6,
 	clust_num_ores = 2,
 	clust_size = 3,
@@ -81,7 +84,7 @@ minetest.register_ore({
 minetest.register_ore({
 	ore_type = "scatter",
 	ore = "technic:mineral_zinc",
-	wherein = "default:stone",
+	wherein = stones,
 	clust_scarcity = 8*8*8,
 	clust_num_ores = 5,
 	clust_size = 7,
@@ -94,7 +97,7 @@ minetest.register_ore({
 minetest.register_ore({
 	ore_type = "scatter",
 	ore = "technic:mineral_zinc",
-	wherein = "default:stone",
+	wherein = stones,
 	clust_scarcity = 6*6*6,
 	clust_num_ores = 4,
 	clust_size = 3,
@@ -108,7 +111,7 @@ minetest.register_ore({
 minetest.register_ore({
 	ore_type = "scatter",
 	ore = "technic:mineral_lead",
-	wherein = "default:stone",
+	wherein = stones,
 	clust_scarcity = 9*9*9,
 	clust_num_ores = 5,
 	clust_size = 3,
@@ -121,7 +124,7 @@ minetest.register_ore({
 minetest.register_ore({
 	ore_type = "scatter",
 	ore = "technic:mineral_lead",
-	wherein = "default:stone",
+	wherein = stones,
 	clust_scarcity = 8*8*8,
 	clust_num_ores = 5,
 	clust_size = 3,
@@ -134,7 +137,7 @@ minetest.register_ore({
 minetest.register_ore({
 	ore_type = "scatter",
 	ore = "technic:mineral_lead",
-	wherein = "default:stone",
+	wherein = stones,
 	clust_scarcity = 6*6*6,
 	clust_num_ores = 5,
 	clust_size = 3,
@@ -149,6 +152,8 @@ minetest.register_ore({
 local sulfur_buf = {}
 local sulfur_noise
 
+local has_mcl = minetest.get_modpath("mcl_core")
+
 minetest.register_on_generated(function(minp, maxp)
 	local vm, emin, emax = minetest.get_mapgen_object("voxelmanip")
 	local a = VoxelArea:new({MinEdge=emin, MaxEdge=emax})
@@ -156,9 +161,21 @@ minetest.register_on_generated(function(minp, maxp)
 	local pr = PseudoRandom(17 * minp.x + 42 * minp.y + 101 * minp.z)
 	sulfur_noise = sulfur_noise or minetest.get_perlin(9876, 3, 0.5, 100)
 
-	local c_lava = minetest.get_content_id("default:lava_source")
-	local c_lava_flowing = minetest.get_content_id("default:lava_flowing")
-	local c_stone = minetest.get_content_id("default:stone")
+	local lava = "default:lava_source"
+	local lava_flowing = "default:lava_flowing"
+	local stone = "default:stone"
+	if has_mcl then
+	   lava = "mcl_core:lava_source"
+	end
+	if has_mcl then
+	   lava_flowing = "mcl_core:lava_flowing"
+	end
+	if has_mcl then
+	   stone = "mcl_core:stone"
+	end
+	local c_lava = minetest.get_content_id(lava)
+	local c_lava_flowing = minetest.get_content_id(lava_flowing)
+	local c_stone = minetest.get_content_id(stone)
 	local c_sulfur = minetest.get_content_id("technic:mineral_sulfur")
 
 	local grid_size = 5
@@ -194,7 +211,7 @@ if technic.config:get_bool("enable_marble_generation") then
 	minetest.register_ore({
 		ore_type = "sheet",
 		ore = "technic:marble",
-		wherein = "default:stone",
+		wherein = stones,
 		clust_scarcity = 1,
 		clust_num_ores = 1,
 		clust_size = 3,
@@ -212,7 +229,7 @@ if technic.config:get_bool("enable_granite_generation") then
 	minetest.register_ore({
 		ore_type = "sheet",
 		ore = "technic:granite",
-		wherein = "default:stone",
+		wherein = stones,
 		clust_scarcity = 1,
 		clust_num_ores = 1,
 		clust_size = 4,
