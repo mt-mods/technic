@@ -161,18 +161,9 @@ minetest.register_on_generated(function(minp, maxp)
 	local pr = PseudoRandom(17 * minp.x + 42 * minp.y + 101 * minp.z)
 	sulfur_noise = sulfur_noise or minetest.get_perlin(9876, 3, 0.5, 100)
 
-	local lava = "default:lava_source"
-	local lava_flowing = "default:lava_flowing"
-	local stone = "default:stone"
-	if has_mcl then
-	   lava = "mcl_core:lava_source"
-	end
-	if has_mcl then
-	   lava_flowing = "mcl_core:lava_flowing"
-	end
-	if has_mcl then
-	   stone = "mcl_core:stone"
-	end
+	local lava = has_mcl and "mcl_core:lava_source" or "default:lava_source"
+	local lava_flowing = has_mcl and "mcl_core:lava_flowing" or "default:lava_flowing"
+	local stone = has_mcl and "mcl_core:stone" or "default:stone"
 	local c_lava = minetest.get_content_id(lava)
 	local c_lava_flowing = minetest.get_content_id(lava_flowing)
 	local c_stone = minetest.get_content_id(stone)
