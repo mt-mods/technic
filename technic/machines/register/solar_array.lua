@@ -50,7 +50,7 @@ function technic.register_solar_array(nodename, data)
 		snappy=2, choppy=2, oddly_breakable_by_hand=2, technic_machine=1, ["technic_"..ltier]=1
 	}
 	def.connect_sides = def.connect_sides or {"bottom"}
-	def.sounds = def.sounds or default.node_sound_wood_defaults()
+	def.sounds = def.sounds or technic.sounds.node_sound_wood_defaults()
 	def.description = def.description or S("Arrayed Solar @1 Generator", S(tier))
 	def.active = def.active or false
 	def.drawtype = def.drawtype or "nodebox"

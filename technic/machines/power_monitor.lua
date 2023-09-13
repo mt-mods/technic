@@ -61,7 +61,7 @@ minetest.register_node("technic:power_monitor",{
 	paramtype2 = "facedir",
 	groups = {snappy=2, choppy=2, oddly_breakable_by_hand=2, technic_all_tiers=1},
 	connect_sides = {"bottom", "back"},
-	sounds = default.node_sound_wood_defaults(),
+	sounds = technic.sounds.node_sound_wood_defaults(),
 	on_construct = function(pos)
 		local meta = minetest.get_meta(pos)
 		meta:set_string("infotext", S("Power Monitor"))

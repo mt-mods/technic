@@ -96,7 +96,7 @@ minetest.register_node("technic:tool_workshop", {
 	groups = {snappy=2, choppy=2, oddly_breakable_by_hand=2,
 		technic_machine=1, technic_mv=1, tubedevice=1, tubedevice_receiver=1},
 	connect_sides = {"bottom", "back", "left", "right"},
-	sounds = default.node_sound_wood_defaults(),
+	sounds = technic.sounds.node_sound_wood_defaults(),
 	on_construct = function(pos)
 		local meta = minetest.get_meta(pos)
 		meta:set_string("infotext", S("@1 Tool Workshop", S("MV")))

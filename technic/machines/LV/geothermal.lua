@@ -90,7 +90,7 @@ minetest.register_node("technic:geothermal", {
 		technic_machine=1, technic_lv=1},
 	paramtype2 = "facedir",
 	legacy_facedir_simple = true,
-	sounds = default.node_sound_wood_defaults(),
+	sounds = technic.sounds.node_sound_wood_defaults(),
 	on_construct = function(pos)
 		local meta = minetest.get_meta(pos)
 		meta:set_string("infotext", S("Geothermal @1 Generator", S("LV")))
@@ -107,7 +107,7 @@ minetest.register_node("technic:geothermal_active", {
 	groups = {snappy=2, choppy=2, oddly_breakable_by_hand=2,
 		technic_machine=1, technic_lv=1, not_in_creative_inventory=1},
 	legacy_facedir_simple = true,
-	sounds = default.node_sound_wood_defaults(),
+	sounds = technic.sounds.node_sound_wood_defaults(),
 	drop = "technic:geothermal",
 	technic_run = run,
 })

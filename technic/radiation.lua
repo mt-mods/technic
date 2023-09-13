@@ -494,7 +494,7 @@ minetest.register_node("technic:chernobylite_block", {
 	tiles = {"technic_chernobylite_block.png"},
 	is_ground_content = true,
 	groups = {cracky=1, radioactive=4, level=2},
-	sounds = default.node_sound_stone_defaults(),
+	sounds = technic.sounds.node_sound_stone_defaults(),
 	light_source = 2,
 })
 

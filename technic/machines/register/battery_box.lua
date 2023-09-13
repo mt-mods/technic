@@ -339,7 +339,7 @@ function technic.register_battery_box(nodename, data)
 			connect_sides = {"bottom"},
 			tube = def.tube and tube or nil,
 			paramtype2 = "facedir",
-			sounds = default.node_sound_wood_defaults(),
+			sounds = technic.sounds.node_sound_wood_defaults(),
 			drop = "technic:"..ltier.."_battery_box0",
 			on_construct = function(pos)
 				local meta = minetest.get_meta(pos)

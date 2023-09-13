@@ -54,7 +54,7 @@ local function cable_defaults(nodename, data)
 		["technic_"..ltier.."_cable"] = 1
 	}
 	def.drop = def.drop or nodename
-	def.sounds = def.sounds or default.node_sound_wood_defaults()
+	def.sounds = def.sounds or technic.sounds.node_sound_wood_defaults()
 	def.on_construct = def.on_construct or function(pos) place_network_node(pos, {tier}, nodename) end
 	def.on_destruct = def.on_destruct or function(pos) remove_network_node(pos, {tier}, nodename) end
 	def.paramtype = def.paramtype or "light"
