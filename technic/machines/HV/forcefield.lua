@@ -366,7 +366,7 @@ minetest.register_node("technic:forcefield", {
 	drawtype = "glasslike",
 	groups = {not_in_creative_inventory=1},
 	paramtype = "light",
-	light_source = default.LIGHT_MAX,
+	light_source = minetest.LIGHT_MAX,
 	diggable = false,
 	drop = '',
 	tiles = {{
