@@ -3,12 +3,6 @@ local S = minetest.get_translator("technic_worldgen")
 
 local has_mcl = minetest.get_modpath("mcl_core")
 
-local dig_level = 2
-
-if has_mcl then
-   dig_level = 0
-end
-
 minetest.register_node(":technic:mineral_uranium", {
 	description = S("Uranium Ore"),
 	tiles = {"default_stone.png^technic_mineral_uranium.png"},
@@ -109,7 +103,7 @@ minetest.register_node(":technic:uranium_block", {
 	description = S("Uranium Block"),
 	tiles = {"technic_uranium_block.png"},
 	is_ground_content = true,
-	groups = {uranium_block=1, cracky=1, level=dig_level, radioactive=2, pickaxey=4},
+	groups = {uranium_block=1, cracky=1, level=has_mcl and 0 or 2, radioactive=2, pickaxey=4},
 	_mcl_hardness = 1,
 	_mcl_blast_resistance = 1,
 	sounds = technic.sounds.node_sound_stone_defaults()
@@ -119,7 +113,7 @@ minetest.register_node(":technic:chromium_block", {
 	description = S("Chromium Block"),
 	tiles = {"technic_chromium_block.png"},
 	is_ground_content = true,
-	groups = {cracky=1, level=dig_level, pickaxey=4},
+	groups = {cracky=1, level=has_mcl and 0 or 2, pickaxey=4},
 	_mcl_hardness = 1,
 	_mcl_blast_resistance = 1,
 	sounds = technic.sounds.node_sound_stone_defaults()
@@ -129,7 +123,7 @@ minetest.register_node(":technic:zinc_block", {
 	description = S("Zinc Block"),
 	tiles = {"technic_zinc_block.png"},
 	is_ground_content = true,
-	groups = {cracky=1, level=dig_level, pickaxey=4},
+	groups = {cracky=1, level=has_mcl and 0 or 2, pickaxey=4},
 	_mcl_hardness = 1,
 	_mcl_blast_resistance = 1,
 	sounds = technic.sounds.node_sound_stone_defaults()
@@ -139,7 +133,7 @@ minetest.register_node(":technic:lead_block", {
 	description = S("Lead Block"),
 	tiles = {"technic_lead_block.png"},
 	is_ground_content = true,
-	groups = {cracky=1, level=dig_level, pickaxey=4},
+	groups = {cracky=1, level=has_mcl and 0 or 2, pickaxey=4},
 	_mcl_hardness = 1,
 	_mcl_blast_resistance = 1,
 	sounds = technic.sounds.node_sound_stone_defaults()
@@ -149,7 +143,7 @@ minetest.register_node(":technic:cast_iron_block", {
 	description = S("Cast Iron Block"),
 	tiles = {"technic_cast_iron_block.png"},
 	is_ground_content = true,
-	groups = {cracky=1, level=dig_level, pickaxey=4},
+	groups = {cracky=1, level=has_mcl and 0 or 2, pickaxey=4},
 	_mcl_hardness = 1,
 	_mcl_blast_resistance = 1,
 	sounds = technic.sounds.node_sound_stone_defaults()
@@ -159,7 +153,7 @@ minetest.register_node(":technic:carbon_steel_block", {
 	description = S("Carbon Steel Block"),
 	tiles = {"technic_carbon_steel_block.png"},
 	is_ground_content = true,
-	groups = {cracky=1, level=dig_level, pickaxey=4},
+	groups = {cracky=1, level=has_mcl and 0 or 2, pickaxey=4},
 	_mcl_hardness = 1,
 	_mcl_blast_resistance = 1,
 	sounds = technic.sounds.node_sound_stone_defaults()
@@ -169,7 +163,7 @@ minetest.register_node(":technic:stainless_steel_block", {
 	description = S("Stainless Steel Block"),
 	tiles = {"technic_stainless_steel_block.png"},
 	is_ground_content = true,
-	groups = {cracky=1, level=dig_level, pickaxey=4},
+	groups = {cracky=1, level=has_mcl and 0 or 2, pickaxey=4},
 	_mcl_hardness = 1,
 	_mcl_blast_resistance = 1,
 	sounds = technic.sounds.node_sound_stone_defaults()
@@ -185,16 +179,10 @@ minetest.register_node(":technic:sulfur_block", {
 	sounds = technic.sounds.node_sound_stone_defaults()
 })
 
-dig_level = 3
-
-if has_mcl then
-   dig_level = 0
-end
-
 minetest.register_node(":technic:blast_resistant_concrete", {
 	description = S("Blast-resistant Concrete Block"),
 	tiles = {"technic_blast_resistant_concrete_block.png"},
-	groups = {cracky = 1, level = dig_level, concrete = 1, pickaxey=5},
+	groups = {cracky = 1, level = has_mcl and 0 or 3, concrete = 1, pickaxey=5},
 	_mcl_hardness = 5,
 	_mcl_blast_resistance = 9,
 	sounds = technic.sounds.node_sound_stone_defaults(),
