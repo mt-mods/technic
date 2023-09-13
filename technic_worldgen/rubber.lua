@@ -128,7 +128,7 @@ if technic.config:get_bool("enable_rubber_tree_generation") then
 				y = (maxp.y - minp.y) / 2 + minp.y,
 				z = (maxp.z - minp.z) / 2 + minp.z}
 		local pos = minetest.find_node_near(tmp, maxp.x - minp.x,
-				{"default:dirt_with_grass", "mcl_core:dirt_with_grass"})
+				{has_mcl and "mcl_core:dirt_with_grass" or "default:dirt_with_grass"})
 		if pos ~= nil then
 			minetest.spawn_tree({x=pos.x, y=pos.y+1, z=pos.z}, technic.rubber_tree_model)
 		end
