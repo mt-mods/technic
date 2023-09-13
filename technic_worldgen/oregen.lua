@@ -225,7 +225,7 @@ if technic.config:get_bool("enable_marble_generation") then
 	})
 end
 
-if technic.config:get_bool("enable_granite_generation") then
+if technic.config:get_bool("enable_granite_generation") and not has_mcl then
 	minetest.register_ore({
 		ore_type = "sheet",
 		ore = "technic:granite",
