@@ -94,7 +94,7 @@ minetest.register_node("technic:tool_workshop", {
 		"technic_workshop_side.png"
 	},
 	groups = {snappy=2, choppy=2, oddly_breakable_by_hand=2,
-		  technic_machine=1, technic_mv=1, tubedevice=1, tubedevice_receiver=1, axey=2},
+		  technic_machine=1, technic_mv=1, tubedevice=1, tubedevice_receiver=1, axey=2, handy=1},
 	_mcl_blast_resistance = 1,
 	_mcl_hardness = 0.8,
 	connect_sides = {"bottom", "back", "left", "right"},
