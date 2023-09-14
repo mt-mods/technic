@@ -489,11 +489,15 @@ if rawget(_G, "bucket") and bucket.register_liquid then
 	)
 end
 
+local has_mcl = minetest.get_modpath("mcl_core")
+
 minetest.register_node("technic:chernobylite_block", {
 	description = S("Chernobylite Block"),
 	tiles = {"technic_chernobylite_block.png"},
 	is_ground_content = true,
-	groups = {cracky=1, radioactive=4, level=2},
+	groups = {cracky=1, radioactive=4, level= has_mcl and 0 or 2, pickaxey=5},
+	_mcl_blast_resistance = 30,
+	_mcl_hardness = 40,
 	sounds = technic.sounds.node_sound_stone_defaults(),
 	light_source = 2,
 })

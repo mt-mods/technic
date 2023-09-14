@@ -44,7 +44,7 @@ function technic.register_base_machine(nodename, data)
 	local infotext_active = S("@1 Active", def.description)
 	local infotext_unpowered = S("@1 Unpowered", def.description)
 
-	local groups = {cracky = 2, technic_machine = 1, ["technic_"..ltier] = 1}
+	local groups = {cracky = 2, technic_machine = 1, ["technic_"..ltier] = 1, pickaxey=2}
 	if def.tube then
 		groups.tubedevice = 1
 		groups.tubedevice_receiver = 1
@@ -172,6 +172,8 @@ function technic.register_base_machine(nodename, data)
 		},
 		paramtype2 = "facedir",
 		groups = groups,
+		_mcl_blast_resistance = 1,
+		_mcl_hardness = 0.8,
 		tube = def.tube and tube or nil,
 		connect_sides = def.connect_sides or connect_default,
 		legacy_facedir_simple = true,
@@ -244,6 +246,8 @@ function technic.register_base_machine(nodename, data)
 		paramtype2 = "facedir",
 		drop = nodename,
 		groups = active_groups,
+		_mcl_blast_resistance = 1,
+		_mcl_hardness = 0.8,
 		connect_sides = def.connect_sides or connect_default,
 		legacy_facedir_simple = true,
 		sounds = technic.sounds.node_sound_wood_defaults(),

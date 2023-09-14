@@ -122,7 +122,9 @@ function technic.register_cable_plate(nodename, data)
 				return item_place_override_node(itemstack, placer, pointed_thing, node)
 			end
 		else
-			def.groups.not_in_creative_inventory = 1
+		   def.groups.not_in_creative_inventory = 1
+		   def._mcl_blast_resistance = 1
+		   def._mcl_hardness = 0.8
 		end
 		def.on_rotate = function(pos, node, user, mode, new_param2)
 			-- mode 1 is left-click, mode 2 is right-click
@@ -142,6 +144,8 @@ function technic.register_cable(nodename, data)
 	def.tiles = def.tiles or {texture_basename..".png"}
 	def.inventory_image = def.inventory_image or def.inventory_image ~= false and texture_basename.."_wield.png" or nil
 	def.wield_image = def.wield_image or def.wield_image ~= false and texture_basename.."_wield.png" or nil
+	def._mcl_blast_resistance = 1
+	def._mcl_hardness = 0.8
 	minetest.register_node(nodename, def)
 	cable_tier[nodename] = def.tier
 end

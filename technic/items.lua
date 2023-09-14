@@ -1,6 +1,8 @@
 
 local S = technic.getter
 
+local has_mcl = minetest.get_modpath("mcl_core")
+
 minetest.register_craftitem("technic:silicon_wafer", {
 	description = S("Silicon Wafer"),
 	inventory_image = "technic_silicon_wafer.png",
@@ -108,7 +110,9 @@ minetest.register_craftitem("technic:carbon_cloth", {
 
 minetest.register_node("technic:machine_casing", {
 	description = S("Machine Casing"),
-	groups = {cracky=2},
+	groups = {cracky=2, pickaxey=2},
+	_mcl_blast_resistance = 1,
+	_mcl_hardness = 0.8,
 	sunlight_propagates = true,
 	paramtype = "light",
 	drawtype = "allfaces",
@@ -164,7 +168,9 @@ for p = 0, 35 do
 		tiles = {"technic_uranium_block.png"},
 		is_ground_content = true,
 		groups = {uranium_block=1, not_in_creative_inventory=nici,
-			cracky=1, level=2, radioactive=radioactivity},
+			  cracky=1, level=has_mcl and 0 or 2, radioactive=radioactivity, pickaxey=4},
+		_mcl_blast_resistance = 1,
+		_mcl_hardness = 1,
 		sounds = technic.sounds.node_sound_stone_defaults(),
 	});
 	if not ov then

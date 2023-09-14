@@ -70,7 +70,9 @@ minetest.register_node("technic:admin_anchor", {
 	drawtype = "normal",
 	tiles = {"technic_admin_anchor.png"},
 	is_ground_content = true,
-	groups = {cracky=3, not_in_creative_inventory=1},
+	groups = {cracky=3, not_in_creative_inventory=1, pickaxey=1},
+	_mcl_blast_resistance = 1,
+	_mcl_hardness = 0.8,
 	sounds = technic.sounds.node_sound_stone_defaults(),
 	after_place_node = function (pos, placer)
 		local meta = minetest.get_meta(pos)

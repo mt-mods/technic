@@ -53,7 +53,9 @@ minetest.register_node("technic:injector", {
 		"technic_injector_side.png"
 	},
 	paramtype2 = "facedir",
-	groups = {snappy=2, choppy=2, oddly_breakable_by_hand=2, tubedevice=1, tubedevice_receiver=1},
+	groups = {snappy=2, choppy=2, oddly_breakable_by_hand=2, tubedevice=1, tubedevice_receiver=1, axey=2, handy=1},
+	_mcl_blast_resistance = 1,
+	_mcl_hardness = 0.8,
 	tube = {
 		can_insert = function(pos, node, stack, direction)
 			local meta = minetest.get_meta(pos)

@@ -26,7 +26,7 @@ function technic.register_generator(data)
 	local ltier = string.lower(tier)
 
 	local groups = {snappy=2, choppy=2, oddly_breakable_by_hand=2,
-		technic_machine=1, ["technic_"..ltier]=1}
+		technic_machine=1, ["technic_"..ltier]=1, axey=2, handy=1}
 	if data.tube then
 		groups.tubedevice = 1
 		groups.tubedevice_receiver = 1
@@ -123,6 +123,8 @@ function technic.register_generator(data)
 		},
 		paramtype2 = "facedir",
 		groups = groups,
+		_mcl_blast_resistance = 1,
+		_mcl_hardness = 0.8,
 		connect_sides = {"bottom", "back", "left", "right"},
 		legacy_facedir_simple = true,
 		sounds = technic.sounds.node_sound_wood_defaults(),
@@ -190,6 +192,8 @@ function technic.register_generator(data)
 		},
 		paramtype2 = "facedir",
 		groups = active_groups,
+		_mcl_blast_resistance = 1,
+		_mcl_hardness = 0.8,
 		connect_sides = {"bottom"},
 		legacy_facedir_simple = true,
 		sounds = technic.sounds.node_sound_wood_defaults(),
