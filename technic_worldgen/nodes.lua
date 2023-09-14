@@ -69,7 +69,7 @@ else
 		groups = {cracky=1},
 		sounds = technic.sounds.node_sound_stone_defaults(),
 	})
-	
+
 	minetest.register_node(":technic:granite_bricks", {
 		description = S("Granite Bricks"),
 		tiles = {"technic_granite_bricks.png"},
