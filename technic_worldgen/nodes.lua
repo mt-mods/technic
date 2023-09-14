@@ -59,24 +59,24 @@ minetest.register_node(":technic:mineral_sulfur", {
 })
 
 if has_mcl then
-   minetest.register_alias("technic:granite", "mcl_core:granite")
-   minetest.register_alias("technic:granite_bricks", "mcl_core:granite_smooth")
+	minetest.register_alias("technic:granite", "mcl_core:granite")
+	minetest.register_alias("technic:granite_bricks", "mcl_core:granite_smooth")
 else
-   minetest.register_node(":technic:granite", {
-	description = S("Granite"),
-	tiles = {"technic_granite.png"},
-	is_ground_content = true,
-	groups = {cracky=1},
-	sounds = technic.sounds.node_sound_stone_defaults(),
-   })
-
-   minetest.register_node(":technic:granite_bricks", {
-	description = S("Granite Bricks"),
-	tiles = {"technic_granite_bricks.png"},
-	is_ground_content = true,
-	groups = {cracky=1},
-	sounds = technic.sounds.node_sound_stone_defaults(),
-   })
+	minetest.register_node(":technic:granite", {
+		description = S("Granite"),
+		tiles = {"technic_granite.png"},
+		is_ground_content = true,
+		groups = {cracky=1},
+		sounds = technic.sounds.node_sound_stone_defaults(),
+	})
+	
+	minetest.register_node(":technic:granite_bricks", {
+		description = S("Granite Bricks"),
+		tiles = {"technic_granite_bricks.png"},
+		is_ground_content = true,
+		groups = {cracky=1},
+		sounds = technic.sounds.node_sound_stone_defaults(),
+	})
 end
 
 minetest.register_node(":technic:marble", {
