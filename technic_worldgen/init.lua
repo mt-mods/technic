@@ -5,10 +5,10 @@ technic = rawget(_G, "technic") or {}
 
 technic.sounds = {}
 if minetest.get_modpath("default") then
-   technic.sounds = default
+	technic.sounds = default
 end
 if minetest.get_modpath("mcl_sounds") then
-   technic.sounds = mcl_sounds
+	technic.sounds = mcl_sounds
 end
 
 dofile(modpath.."/config.lua")
