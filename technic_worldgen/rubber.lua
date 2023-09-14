@@ -45,40 +45,20 @@ minetest.register_node(":moretrees:rubber_tree_trunk_empty", {
 })
 
 local leaves_drop = {
-   max_items = 1,
-   items = {
-      {
-	 items = {"moretrees:rubber_tree_sapling"},
-	 rarity = 20,
-      },
-      {
-	 items = {"moretrees:rubber_tree_leaves"},
-      }
-   }
+  max_items = 1,
+  items = {
+    {items = {"moretrees:rubber_tree_sapling"}, rarity = 20},
+    {items = {"moretrees:rubber_tree_leaves"}}
+  }
 }
 
 if has_mcl then
-   leaves_drop = {
-      max_items = 1,
-      items = {
-	 {
-	    items = {"moretrees:rubber_tree_sapling"},
-	    rarity = 20
-	 },
-	 {
-	    items = {"mcl_core:stick 1"},
-	    rarity = 30
-	 },
-	 {
-	    items = {"mcl_core:stick 2"},
-	    rarity = 40
-	 },
-	 {
-	    items = {"mcl_core:apple"},
-	    rarity = 50
-	 }
-      }
-   }
+  leaves_drop.items = {
+    {items = {"moretrees:rubber_tree_sapling"}, rarity = 20},
+    {items = {"mcl_core:stick 1"}, rarity = 30},
+    {items = {"mcl_core:stick 2"}, rarity = 40},
+    {items = {"mcl_core:apple"}, rarity = 50}
+  }
 end
 
 minetest.register_node(":moretrees:rubber_tree_leaves", {
@@ -128,7 +108,7 @@ if technic.config:get_bool("enable_rubber_tree_generation") then
 				y = (maxp.y - minp.y) / 2 + minp.y,
 				z = (maxp.z - minp.z) / 2 + minp.z}
 		local pos = minetest.find_node_near(tmp, maxp.x - minp.x,
-				{has_mcl and "mcl_core:dirt_with_grass" or "default:dirt_with_grass"})
+				{"mcl_core:dirt_with_grass", "default:dirt_with_grass"})
 		if pos ~= nil then
 			minetest.spawn_tree({x=pos.x, y=pos.y+1, z=pos.z}, technic.rubber_tree_model)
 		end
