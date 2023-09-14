@@ -96,7 +96,10 @@ minetest.register_globalstep(function(dtime)
 	end
 end)
 
-minetest.register_node("technic:light", {
+if minetest.get_modpath("mcl_core") then
+   minetest.register_alias("technic:light", "mcl_core:light_14")
+else
+   minetest.register_node("technic:light", {
 	drawtype = "glasslike",
 	tiles = {"technic_light.png"},
 	paramtype = "light",
@@ -107,4 +110,5 @@ minetest.register_node("technic:light", {
 	sunlight_propagates = true,
 	light_source = minetest.LIGHT_MAX,
 	pointable = false,
-})
+   })
+end
