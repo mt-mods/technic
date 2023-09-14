@@ -51,6 +51,9 @@ local function cable_defaults(nodename, data)
 		snappy = 2,
 		choppy = 2,
 		oddly_breakable_by_hand = 2,
+		swordy = 1,
+		axey = 1,
+		handy = 1,
 		["technic_"..ltier.."_cable"] = 1
 	}
 	def.drop = def.drop or nodename
