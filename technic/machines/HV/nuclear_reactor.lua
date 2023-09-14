@@ -14,6 +14,7 @@ local power_supply = 100000  -- EUs
 local fuel_type = "technic:uranium_fuel"  -- The reactor burns this
 local digiline_meltdown = technic.config:get_bool("enable_nuclear_reactor_digiline_selfdestruct")
 local has_digilines = minetest.get_modpath("digilines")
+local has_mcl = minetest.get_modpath("mcl_core")
 
 local S = technic.getter
 
@@ -146,11 +147,14 @@ local function reactor_structure_badness(pos)
 	local data = vm:get_data()
 	local area = VoxelArea:new({MinEdge=MinEdge, MaxEdge=MaxEdge})
 
+	local water_source = has_mcl and "mcl_core:water_source" or "default:water_source"
+	local water_flowing = has_mcl and "mcl_core:water_flowing" or "default:water_flowing"
+
 	local c_blast_concrete = minetest.get_content_id("technic:blast_resistant_concrete")
 	local c_lead = minetest.get_content_id("technic:lead_block")
 	local c_steel = minetest.get_content_id("technic:stainless_steel_block")
-	local c_water_source = minetest.get_content_id("default:water_source")
-	local c_water_flowing = minetest.get_content_id("default:water_flowing")
+	local c_water_source = minetest.get_content_id(water_source)
+	local c_water_flowing = minetest.get_content_id(water_flowing)
 
 	local blast_layer, steel_layer, lead_layer, water_layer = 0, 0, 0, 0
 
@@ -209,9 +213,21 @@ local function reactor_structure_badness(pos)
 	return (25 - water_layer) + (96 - lead_layer) + (216 - blast_layer)
 end
 
+local mcl_expl_info = {
+   drop_chance = 1.0,
+   max_blast_resistance = 10,
+   sound = true,
+   particles = true,
+   fire = true,
+   griefing = true,
+   grief_protected = true,
+}
 
 local function melt_down_reactor(pos)
-	minetest.log("action", "A reactor melted down at "..minetest.pos_to_string(pos))
+        minetest.log("action", "A reactor melted down at "..minetest.pos_to_string(pos))
+	if minetest.get_modpath("mcl_explosions") then
+	  mcl_explosions.explode(pos, 30, mcl_expl_info)
+	end
 	minetest.set_node(pos, {name = "technic:corium_source"})
 end
 
