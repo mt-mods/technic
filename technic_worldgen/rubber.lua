@@ -27,7 +27,7 @@ minetest.register_node(":moretrees:rubber_tree_trunk", {
 	tiles = {"default_tree_top.png", "default_tree_top.png",
 		"technic_rubber_tree_full.png"},
 	groups = {tree=1, snappy=1, choppy=2, oddly_breakable_by_hand=1,
-		  flammable=2, axey=1, handy=1},
+		flammable=2, axey=1, handy=1},
 	_mcl_blast_resistance = 2,
 	_mcl_hardness = 2,
 	sounds = technic.sounds.node_sound_wood_defaults(),
