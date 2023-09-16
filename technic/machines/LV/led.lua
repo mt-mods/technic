@@ -88,8 +88,9 @@ technic.register_machine("LV", "technic:lv_led_active", technic.receiver)
 minetest.register_craft({
 	output = "technic:lv_led 2",
 	recipe = {
-		{"", "homedecor:plastic_sheeting", ""},
-		{"homedecor:plastic_sheeting", "technic:doped_silicon_wafer", "homedecor:plastic_sheeting"},
-		{"", "technic:fine_silver_wire", ""},
-	}
+		{"", "basic_materials:plastic_sheet", ""},
+		{"basic_materials:plastic_sheet", "technic:doped_silicon_wafer", "basic_materials:plastic_sheet"},
+		{"", "basic_materials:silver_wire", ""},
+	},
+	replacements = {{"basic_materials:silver_wire", "basic_materials:empty_spool"}},
 })
