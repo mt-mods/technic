@@ -196,6 +196,19 @@ minetest.register_on_generated(function(minp, maxp)
 	vm:write_to_map(sulfur_buf)
 end)
 
+-- in MCL sulfur is generated in the nether
+if has_mcl then
+	minetest.register_ore({
+		ore_type = "scatter",
+		ore = "technic:mineral_sulfur",
+		wherein = {"mcl_nether:netherrack", "mcl_blackstone:blackstone"},
+		clust_scarcity = 830,
+		clust_num_ores = 5,
+		clust_size = 3,
+		y_min = mcl_vars.mg_nether_min,
+		y_max = mcl_vars.mg_nether_max,
+	})
+end
 
 if technic.config:get_bool("enable_marble_generation") then
 	minetest.register_ore({
