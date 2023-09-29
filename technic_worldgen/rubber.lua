@@ -2,6 +2,8 @@
 
 local S = minetest.get_translator("technic_worldgen")
 
+local has_mcl = minetest.get_modpath("mcl_core")
+
 minetest.register_node(":moretrees:rubber_tree_sapling", {
 	description = S("Rubber Tree Sapling"),
 	drawtype = "plantlike",
@@ -11,7 +13,7 @@ minetest.register_node(":moretrees:rubber_tree_sapling", {
 	paramtype = "light",
 	walkable = false,
 	groups = {dig_immediate=3, flammable=2, sapling=1},
-	sounds = default.node_sound_defaults(),
+	sounds = technic.sounds.node_sound_defaults(),
 })
 
 minetest.register_craft({
@@ -25,8 +27,10 @@ minetest.register_node(":moretrees:rubber_tree_trunk", {
 	tiles = {"default_tree_top.png", "default_tree_top.png",
 		"technic_rubber_tree_full.png"},
 	groups = {tree=1, snappy=1, choppy=2, oddly_breakable_by_hand=1,
-		flammable=2},
-	sounds = default.node_sound_wood_defaults(),
+		flammable=2, axey=1, handy=1},
+	_mcl_blast_resistance = 2,
+	_mcl_hardness = 2,
+	sounds = technic.sounds.node_sound_wood_defaults(),
 })
 
 minetest.register_node(":moretrees:rubber_tree_trunk_empty", {
@@ -34,28 +38,40 @@ minetest.register_node(":moretrees:rubber_tree_trunk_empty", {
 	tiles = {"default_tree_top.png", "default_tree_top.png",
 		"technic_rubber_tree_empty.png"},
 	groups = {tree=1, snappy=1, choppy=2, oddly_breakable_by_hand=1,
-			flammable=2, not_in_creative_inventory=1},
-	sounds = default.node_sound_wood_defaults(),
+		flammable=2, not_in_creative_inventory=1, axey=1, handy=1},
+	_mcl_blast_resistance = 2,
+	_mcl_hardness = 2,
+	sounds = technic.sounds.node_sound_wood_defaults(),
 })
+
+local leaves_drop = {
+  max_items = 1,
+  items = {
+    {items = {"moretrees:rubber_tree_sapling"}, rarity = 20},
+    {items = {"moretrees:rubber_tree_leaves"}}
+  }
+}
+
+if has_mcl then
+  leaves_drop.items = {
+    {items = {"moretrees:rubber_tree_sapling"}, rarity = 20},
+    {items = {"mcl_core:stick 1"}, rarity = 30},
+    {items = {"mcl_core:stick 2"}, rarity = 40},
+    {items = {"mcl_core:apple"}, rarity = 50}
+  }
+end
 
 minetest.register_node(":moretrees:rubber_tree_leaves", {
 	drawtype = "allfaces_optional",
 	description = S("Rubber Tree Leaves"),
 	tiles = {"technic_rubber_leaves.png"},
 	paramtype = "light",
-	groups = {snappy=3, leafdecay=3, flammable=2, leaves=1},
-	drop = {
-		max_items = 1,
-		items = {{
-			items = {"moretrees:rubber_tree_sapling"},
-			rarity = 20,
-		},
-		{
-			items = {"moretrees:rubber_tree_leaves"},
-		}
-		}
-	},
-	sounds = default.node_sound_leaves_defaults(),
+	groups = {snappy=3, leafdecay=3, flammable=2, leaves=1, swordy=1, handy=1},
+	_mcl_blast_resistance = 0.2,
+	_mcl_hardness = 0.2,
+	_mcl_silk_touch_drop = true,
+	drop = leaves_drop,
+	sounds = technic.sounds.node_sound_leaves_defaults(),
 })
 
 technic.rubber_tree_model={
@@ -92,7 +108,7 @@ if technic.config:get_bool("enable_rubber_tree_generation") then
 				y = (maxp.y - minp.y) / 2 + minp.y,
 				z = (maxp.z - minp.z) / 2 + minp.z}
 		local pos = minetest.find_node_near(tmp, maxp.x - minp.x,
-				{"default:dirt_with_grass"})
+				{has_mcl and "mcl_core:dirt_with_grass" or "default:dirt_with_grass"})
 		if pos ~= nil then
 			minetest.spawn_tree({x=pos.x, y=pos.y+1, z=pos.z}, technic.rubber_tree_model)
 		end

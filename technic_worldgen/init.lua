@@ -3,11 +3,21 @@ local modpath = minetest.get_modpath("technic_worldgen")
 
 technic = rawget(_G, "technic") or {}
 
+technic.sounds = {}
+if minetest.get_modpath("default") then
+	technic.sounds = default
+end
+if minetest.get_modpath("mcl_sounds") then
+	technic.sounds = mcl_sounds
+end
+
 dofile(modpath.."/config.lua")
 dofile(modpath.."/nodes.lua")
 dofile(modpath.."/oregen.lua")
 dofile(modpath.."/crafts.lua")
-dofile(modpath.."/overrides.lua")
+if minetest.get_modpath("default") then
+	dofile(modpath.."/overrides.lua")
+end
 
 -- Rubber trees, moretrees also supplies these
 if not minetest.get_modpath("moretrees") then
