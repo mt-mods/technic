@@ -28,7 +28,8 @@ read_globals = {
 	"unifieddyes", "digiline_remote",
 	"drawers", "mg",
 	"craftguide", "i3", "mtt",
-	"vizlib",
+	"vizlib", "mcl_sounds", "mcl_vars",
+	"mcl_worlds",
 
 	-- Only used in technic/machines/MV/lighting.lua (disabled)
 	"isprotect", "homedecor_expect_infinite_stacks",
