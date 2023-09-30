@@ -1,19 +1,34 @@
 -- check if we have the necessary dependencies to allow actually using these materials in the crafts
 local mesecons_materials = minetest.get_modpath("mesecons_materials")
+local has_mcl = minetest.get_modpath("mcl_core")
+local has_moreores = minetest.get_modpath("moreores")
+
+local mat = {}
+
+if has_moreores then
+	mat.mithril_ingot = "moreores:mithril_ingot"
+	mat.silver_ingot = "moreores:silver_ingot"
+elseif has_mcl then
+	mat.mithril_ingot = "mcl_core:lapis"
+	mat.silver_ingot = "mcl_core:gold_ingot"
+end
+
 
 -- Remove some recipes
 -- Bronze
-minetest.clear_craft({
-	type = "shapeless",
-	output = "default:bronze_ingot"
-})
--- Restore recipe for bronze block to ingots
-minetest.register_craft({
-	output = "default:bronze_ingot 9",
-	recipe = {
-		{"default:bronzeblock"}
-	}
-})
+if not has_mcl then
+	minetest.clear_craft({
+		type = "shapeless",
+		output = "default:bronze_ingot"
+	})
+	-- Restore recipe for bronze block to ingots
+	minetest.register_craft({
+		output = "default:bronze_ingot 9",
+		recipe = {
+			{"default:bronzeblock"}
+		}
+	})
+end
 
 -- Accelerator tube
 if pipeworks.enable_accelerator_tube then
