@@ -26,7 +26,7 @@ read_globals = {
 	"mesecon", "moretrees",
 	"unified_inventory", "protector",
 	"unifieddyes", "digiline_remote",
-	"drawers", "mg",
+	"drawers", "mg", "mcl_explosions",
 	"craftguide", "i3", "mtt",
 	"vizlib", "mcl_sounds", "mcl_vars",
 	"mcl_worlds", "mcl_buckets",
