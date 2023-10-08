@@ -490,17 +490,17 @@ if rawget(_G, "bucket") and bucket.register_liquid then
 end
 
 if minetest.get_modpath("mcl_buckets") then
-   mcl_buckets.register_liquid({
-	 bucketname = "technic:bucket_corium",
-	 source_place = "technic:corium_source",
-	 source_take = {"technic:corium_source"},
-	 inventory_image = "technic_bucket_corium.png",
-	 name = S("Corium Bucket"),
-	 longdesc = S("This bucket is filled with radioactive corium."),
-	 usagehelp = S("Place it to empty the bucket and create a radioactive liquid source."),
-	 tt_help = S("Danger Hight Radiation"),
-	 groups = { radioactive = 5 },
-   })
+	mcl_buckets.register_liquid({
+		bucketname = "technic:bucket_corium",
+		source_place = "technic:corium_source",
+		source_take = {"technic:corium_source"},
+		inventory_image = "technic_bucket_corium.png",
+		name = S("Corium Bucket"),
+		longdesc = S("This bucket is filled with radioactive corium."),
+		usagehelp = S("Place it to empty the bucket and create a radioactive liquid source."),
+		tt_help = S("Danger Hight Radiation"),
+		groups = { radioactive = 5 },
+	})
 end
 
 local has_mcl = minetest.get_modpath("mcl_core")
