@@ -1,6 +1,7 @@
 -- check if we have the necessary dependencies to allow actually using these materials in the crafts
 local mesecons_materials = minetest.get_modpath("mesecons_materials")
 local has_mcl = minetest.get_modpath("mcl_core")
+local has_mcl_dye = minetest.get_modpath("mcl_dye")
 local has_moreores = minetest.get_modpath("moreores")
 
 local mat = {}
@@ -13,6 +14,16 @@ elseif has_mcl then
 	mat.silver_ingot = "mcl_core:gold_ingot"
 end
 
+mat.gold_ingot = has_mcl and "mcl_core:gold_ingot" or "default:gold_ingot"
+mat.iron_ingot = has_mcl and "mcl_core:iron_ingot" or "default:iron_ingot"
+mat.diamond = has_mcl and "mcl_core:diamond" or "default:diamond"
+mat.dirt = has_mcl and "mcl_core:dirt" or "default:dirt"
+mat.tin_ingot = has_mcl and "mcl_core:iron_ingot" or "default:tin_ingot"
+mat.bronze_ingot = has_mcl and "mcl_copper:copper_ingot" or "default:bronze_ingot"
+mat.mese_crystal = has_mcl and "mesecons:redstone" or "default:mese_crystal"
+mat.dye_green = has_mcl_dye and "mcl_dye:green" or "dye:green"
+mat.dye_red = has_mcl_dye and "mcl_dye:red" or "dye:red"
+mat.dye_blue = has_mcl_dye and "mcl_dye:blue" or "dye:blue"
 
 -- Remove some recipes
 -- Bronze
@@ -53,9 +64,9 @@ if pipeworks.enable_teleport_tube then
 	minetest.register_craft({
 		output = 'pipeworks:teleport_tube_1',
 		recipe = {
-			{'default:mese_crystal', 'technic:copper_coil', 'default:mese_crystal'},
+			{mat.mese_crystal, 'technic:copper_coil', mat.mese_crystal},
 			{'pipeworks:tube_1', 'technic:control_logic_unit', 'pipeworks:tube_1'},
-			{'default:mese_crystal', 'technic:copper_coil', 'default:mese_crystal'},
+			{mat.mese_crystal, 'technic:copper_coil', mat.mese_crystal},
 			}
 	})
 end
@@ -77,36 +88,36 @@ minetest.register_craft( {
 minetest.register_craft({
 	output = 'technic:diamond_drill_head',
 	recipe = {
-		{'technic:stainless_steel_ingot', 'default:diamond', 'technic:stainless_steel_ingot'},
-		{'default:diamond',               '',                'default:diamond'},
-		{'technic:stainless_steel_ingot', 'default:diamond', 'technic:stainless_steel_ingot'},
+		{'technic:stainless_steel_ingot', mat.diamond, 'technic:stainless_steel_ingot'},
+		{mat.diamond,               '',                mat.diamond},
+		{'technic:stainless_steel_ingot', mat.diamond, 'technic:stainless_steel_ingot'},
 	}
 })
 
 minetest.register_craft({
 	output = 'technic:green_energy_crystal',
 	recipe = {
-		{'default:gold_ingot', 'technic:battery', 'dye:green'},
+		{mat.gold_ingot, 'technic:battery', mat.dye_green},
 		{'technic:battery', 'technic:red_energy_crystal', 'technic:battery'},
-		{'dye:green', 'technic:battery', 'default:gold_ingot'},
+		{mat.dye_green, 'technic:battery', mat.gold_ingot},
 	}
 })
 
 minetest.register_craft({
 	output = 'technic:blue_energy_crystal',
 	recipe = {
-		{'moreores:mithril_ingot', 'technic:battery', 'dye:blue'},
+		{mat.mithril_ingot, 'technic:battery', mat.dye_blue},
 		{'technic:battery', 'technic:green_energy_crystal', 'technic:battery'},
-		{'dye:blue', 'technic:battery', 'moreores:mithril_ingot'},
+		{mat.dye_blue, 'technic:battery', mat.mithril_ingot},
 	}
 })
 
 minetest.register_craft({
 	output = 'technic:red_energy_crystal',
 	recipe = {
-		{'moreores:silver_ingot', 'technic:battery', 'dye:red'},
+		{mat.silver_ingot, 'technic:battery', mat.dye_red},
 		{'technic:battery', 'basic_materials:energy_crystal_simple', 'technic:battery'},
-		{'dye:red', 'technic:battery', 'moreores:silver_ingot'},
+		{mat.dye_red, 'technic:battery', mat.silver_ingot},
 	}
 })
 
@@ -158,7 +169,7 @@ minetest.register_craft({
 	output = 'technic:control_logic_unit',
 	recipe = {
 		{'', 'basic_materials:gold_wire', ''},
-		{'default:copper_ingot', 'technic:silicon_wafer', 'default:copper_ingot'},
+		{mat.bronze_ingot, 'technic:silicon_wafer', mat.bronze_ingot},
 		{'', 'technic:chromium_ingot', ''},
 	},
 	replacements = { {"basic_materials:gold_wire", "basic_materials:empty_spool"}, },
@@ -168,8 +179,8 @@ minetest.register_craft({
 	output = 'technic:mixed_metal_ingot 9',
 	recipe = {
 		{'technic:stainless_steel_ingot', 'technic:stainless_steel_ingot', 'technic:stainless_steel_ingot'},
-		{'default:bronze_ingot',          'default:bronze_ingot',          'default:bronze_ingot'},
-		{'default:tin_ingot',             'default:tin_ingot',             'default:tin_ingot'},
+		{mat.bronze_ingot,          mat.bronze_ingot,          mat.bronze_ingot},
+		{mat.tin_ingot,             mat.tin_ingot,             mat.tin_ingot},
 	}
 })
 
@@ -191,7 +202,7 @@ minetest.register_craft({
 
 
 minetest.register_craft({
-	output = "default:dirt 2",
+	output = mat.dirt.." 2",
 	type = "shapeless",
 	replacements = {{"bucket:bucket_water","bucket:bucket_empty"}},
 	recipe = {
