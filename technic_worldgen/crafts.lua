@@ -1,5 +1,6 @@
 
 local S = minetest.get_translator("technic_worldgen")
+local has_underch = minetest.get_modpath("underch")
 
 minetest.register_craftitem(":technic:uranium_lump", {
 	description = S("Uranium Lump"),
@@ -136,13 +137,15 @@ minetest.register_craft({
 	output = "technic:wrought_iron_ingot",
 })
 
-minetest.register_craft({
-	output = "technic:marble_bricks 4",
-	recipe = {
-		{"technic:marble","technic:marble"},
-		{"technic:marble","technic:marble"}
-	}
-})
+if not has_underch then
+	minetest.register_craft({
+		output = "technic:marble_bricks 4",
+		recipe = {
+			{"technic:marble","technic:marble"},
+			{"technic:marble","technic:marble"}
+		}
+	})
+end
 
 minetest.register_craft({
 	output = "technic:granite_bricks 4",
