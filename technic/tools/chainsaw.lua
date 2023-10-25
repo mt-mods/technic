@@ -196,7 +196,8 @@ technic.register_power_tool("technic:chainsaw", {
 
 local mesecons_button = minetest.get_modpath("mesecons_button")
 local has_mcl = minetest.get_modpath("mcl_core")
-local trigger = has_mcl and mesecons_button and "mesecons_button:button_wood_off" or mesecons_button and "mesecons_button:button_off" or "default:mese_crystal_fragment"
+local trigger = has_mcl and mesecons_button and "mesecons_button:button_wood_off"
+	or mesecons_button and "mesecons_button:button_off" or "default:mese_crystal_fragment"
 
 minetest.register_craft({
 	output = "technic:chainsaw",
