@@ -15,6 +15,7 @@ local network_time_limit = 30000
 technic.unbreakable_nodes = {
 	"mcl_core:bedrock",
 	"mcl_core:barrier",
+	"mcl_core:void",
 	"df_underworld_items:slade",
 	"df_underworld_items:slade_brick",
 	"df_underworld_items:slade_wall",
