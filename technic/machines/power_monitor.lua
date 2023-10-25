@@ -3,6 +3,7 @@
 -- similarly to the old "slave" switching stations.
 
 local S = technic.getter
+local mat = technic.materials
 
 local cable_entry = "^technic_cable_connection_overlay.png"
 
@@ -43,7 +44,7 @@ minetest.register_craft({
 	output = "technic:power_monitor",
 	recipe = {
 		{"",                 "",                       ""},
-		{"",                 "technic:machine_casing", "default:copper_ingot"},
+		{"",                 "technic:machine_casing", mat.copper_ingot},
 		{"technic:lv_cable", "technic:lv_cable",       "technic:lv_cable"}
 	}
 })

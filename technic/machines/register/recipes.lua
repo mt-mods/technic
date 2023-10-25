@@ -133,6 +133,7 @@ function technic.get_recipe(typename, items)
 	if recipe then
 		local new_input = {}
 		for i, stack in ipairs(items) do
+			if not stack:get_count() or not recipe.input[stack:get_name()] then return end
 			if stack:get_count() < recipe.input[stack:get_name()] then
 				return
 			else

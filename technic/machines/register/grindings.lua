@@ -1,6 +1,7 @@
 local S = technic.getter
 local moretrees = minetest.get_modpath("moretrees")
 local dye = minetest.get_modpath("dye")
+local mat = technic.materials
 
 -- sawdust, the finest wood/tree grinding
 local sawdust = "technic:sawdust"
@@ -9,7 +10,7 @@ minetest.register_craftitem(sawdust, {
 	inventory_image = "technic_sawdust.png",
 })
 minetest.register_craft({ type = "fuel", recipe = sawdust, burntime = 6 })
-technic.register_compressor_recipe({ input = {sawdust .. " 4"}, output = "default:wood" })
+technic.register_compressor_recipe({ input = {sawdust .. " 4"}, output = mat.wood })
 
 -- tree/wood grindings
 local function register_tree_grinding(name, tree, wood, extract, grinding_color)
@@ -54,11 +55,11 @@ local acacia_extract = dye and "dye:brown 8"
 -- technic recipes don't support groups yet :/
 --register_tree_grinding("Common Tree", "group:tree", "group:wood", default_extract)
 
-register_tree_grinding("Acacia", "default:acacia_tree", "default:acacia_wood", acacia_extract)
-register_tree_grinding("Common Tree", "default:tree", "default:wood", default_extract)
-register_tree_grinding("Common Tree", "default:aspen_tree", "default:aspen_wood", default_extract)
-register_tree_grinding("Common Tree", "default:jungletree", "default:junglewood", default_extract)
-register_tree_grinding("Common Tree", "default:pine_tree", "default:pine_wood", default_extract)
+register_tree_grinding("Acacia", mat.acacia_tree, mat.acacia_wood, acacia_extract)
+register_tree_grinding("Common Tree", mat.tree, mat.wood, default_extract)
+register_tree_grinding("Common Tree", mat.aspen_tree, mat.aspen_wood, default_extract)
+register_tree_grinding("Common Tree", mat.jungletree, mat.junglewood, default_extract)
+register_tree_grinding("Common Tree", mat.pine_tree, mat.pine_wood, default_extract)
 register_tree_grinding("Rubber Tree", "moretrees:rubber_tree_trunk", rubber_tree_planks, "technic:raw_latex")
 register_tree_grinding("Rubber Tree", "moretrees:rubber_tree_trunk_empty", nil, "technic:raw_latex")
 

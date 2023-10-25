@@ -4,15 +4,16 @@ local digilines_path = minetest.get_modpath("digilines")
 local S = technic.getter
 local tube_entry = "^pipeworks_tube_connection_metallic.png"
 local cable_entry = "^technic_cable_connection_overlay.png"
+local mat = technic.materials
 
 -- Battery recipes:
 -- Tin-copper recipe:
 minetest.register_craft({
 	output = "technic:battery",
 	recipe = {
-		{"group:wood", "default:copper_ingot", "group:wood"},
-		{"group:wood", "default:tin_ingot",    "group:wood"},
-		{"group:wood", "default:copper_ingot", "group:wood"},
+		{"group:wood", mat.copper_ingot, "group:wood"},
+		{"group:wood", mat.tin_ingot,    "group:wood"},
+		{"group:wood", mat.copper_ingot, "group:wood"},
 	}
 })
 -- Sulfur-lead-water recipes:

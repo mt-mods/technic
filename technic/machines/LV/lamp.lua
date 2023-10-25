@@ -3,6 +3,7 @@
 -- Illuminates a 7x7x3(H) volume below itself with light bright as the sun.
 
 local S = technic.getter
+local mat = technic.materials
 
 local demand = 50
 local desc = S("@1 Lamp", S("LV"))
@@ -194,7 +195,7 @@ technic.register_machine("LV", "technic:lv_lamp_active", technic.receiver)
 minetest.register_craft({
 	output = "technic:lv_lamp",
 	recipe = {
-		{"default:glass", "default:glass", "default:glass"},
+		{mat.glass, mat.glass, mat.glass},
 		{"technic:lv_led", "technic:lv_led", "technic:lv_led"},
 		{"mesecons_materials:glue", "technic:lv_cable", "mesecons_materials:glue"},
 	}

@@ -4,15 +4,16 @@
 minetest.register_alias("tool_workshop", "technic:tool_workshop")
 
 local S = technic.getter
+local mat = technic.materials
 
 local tube_entry = "^pipeworks_tube_connection_wooden.png"
 
 minetest.register_craft({
 	output = 'technic:tool_workshop',
 	recipe = {
-		{'group:wood',                         'default:diamond',        'group:wood'},
+		{'group:wood',                         mat.diamond,        'group:wood'},
 		{'mesecons_pistons:piston_sticky_off', 'technic:machine_casing', 'technic:carbon_cloth'},
-		{'default:obsidian',                   'technic:mv_cable',       'default:obsidian'},
+		{mat.obsidian,                   'technic:mv_cable',       mat.obsidian},
 	}
 })
 

@@ -4,6 +4,7 @@ local mesecons_path = minetest.get_modpath("mesecons")
 local digilines_path = minetest.get_modpath("digilines")
 
 local S = technic.getter
+local mat = technic.materials
 
 local cable_entry = "^technic_cable_connection_overlay.png"
 
@@ -11,7 +12,7 @@ minetest.register_craft({
 	output = "technic:switching_station",
 	recipe = {
 		{"",                     "technic:lv_transformer", ""},
-		{"default:copper_ingot", "technic:machine_casing", "default:copper_ingot"},
+		{mat.copper_ingot, "technic:machine_casing", mat.copper_ingot},
 		{"technic:lv_cable",     "technic:lv_cable",       "technic:lv_cable"}
 	}
 })

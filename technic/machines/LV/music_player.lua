@@ -2,14 +2,15 @@
 -- The player can play music. But it is high ampage!
 
 local S = technic.getter
+local mat = technic.materials
 
 minetest.register_alias("music_player", "technic:music_player")
 minetest.register_craft({
 	output = 'technic:music_player',
 	recipe = {
-		{'technic:chromium_ingot', 'default:diamond',        'technic:chromium_ingot'},
-		{'default:diamond',        'technic:machine_casing', 'default:diamond'},
-		{'default:mossycobble',    'technic:lv_cable',       'default:mossycobble'},
+		{'technic:chromium_ingot', mat.diamond, 'technic:chromium_ingot'},
+		{mat.diamond,        'technic:machine_casing', mat.diamond},
+		{mat.mossycobble,    'technic:lv_cable',       mat.mossycobble},
 	}
 })
 

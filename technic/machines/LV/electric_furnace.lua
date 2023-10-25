@@ -6,9 +6,9 @@ local S = technic.getter
 minetest.register_craft({
 	output = 'technic:electric_furnace',
 	recipe = {
-		{'default:cobble', 'default:cobble',         'default:cobble'},
-		{'default:cobble', 'technic:machine_casing', 'default:cobble'},
-		{'default:cobble', 'technic:lv_cable',       'default:cobble'},
+		{'group:cobble', 'group:cobble',         'group:cobble'},
+		{'group:cobble', 'technic:machine_casing', 'group:cobble'},
+		{'group:cobble', 'technic:lv_cable',       'group:cobble'},
 	}
 })
 

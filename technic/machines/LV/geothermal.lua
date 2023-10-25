@@ -6,11 +6,12 @@
 minetest.register_alias("geothermal", "technic:geothermal")
 
 local S = technic.getter
+local mat = technic.materials
 
 minetest.register_craft({
 	output = 'technic:geothermal',
 	recipe = {
-		{'technic:granite',          'default:diamond',        'technic:granite'},
+		{'technic:granite',          mat.diamond,        'technic:granite'},
 		{'basic_materials:copper_wire', 'technic:machine_casing', 'basic_materials:copper_wire'},
 		{'technic:granite',          'technic:lv_cable',       'technic:granite'},
 	},
@@ -26,8 +27,8 @@ minetest.register_craftitem("technic:geothermal", {
 
 local check_node_around = function(pos)
 	local node = minetest.get_node(pos)
-	if node.name == "default:water_source" or node.name == "default:water_flowing" then return 1 end
-	if node.name == "default:lava_source"  or node.name == "default:lava_flowing"  then return 2 end
+	if node.name == "default:water_source" or node.name == "default:water_flowing" or node.name == "mcl_core:water_source" or node.name == "mcl_core:water_flowing" then return 1 end
+	if node.name == "default:lava_source"  or node.name == "default:lava_flowing" or node.name == "mcl_core:lava_source" or node.name == "mcl_core:lava_flowing" then return 2 end
 	return 0
 end
 

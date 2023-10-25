@@ -1,29 +1,7 @@
 -- check if we have the necessary dependencies to allow actually using these materials in the crafts
-local mesecons_materials = minetest.get_modpath("mesecons_materials")
+
+local mat = technic.materials
 local has_mcl = minetest.get_modpath("mcl_core")
-local has_mcl_dye = minetest.get_modpath("mcl_dye")
-local has_moreores = minetest.get_modpath("moreores")
-
-local mat = {}
-
-if has_moreores then
-	mat.mithril_ingot = "moreores:mithril_ingot"
-	mat.silver_ingot = "moreores:silver_ingot"
-elseif has_mcl then
-	mat.mithril_ingot = "mcl_core:lapis"
-	mat.silver_ingot = "mcl_core:gold_ingot"
-end
-
-mat.gold_ingot = has_mcl and "mcl_core:gold_ingot" or "default:gold_ingot"
-mat.iron_ingot = has_mcl and "mcl_core:iron_ingot" or "default:iron_ingot"
-mat.diamond = has_mcl and "mcl_core:diamond" or "default:diamond"
-mat.dirt = has_mcl and "mcl_core:dirt" or "default:dirt"
-mat.tin_ingot = has_mcl and "mcl_core:iron_ingot" or "default:tin_ingot"
-mat.bronze_ingot = has_mcl and "mcl_copper:copper_ingot" or "default:bronze_ingot"
-mat.mese_crystal = has_mcl and "mesecons:redstone" or "default:mese_crystal"
-mat.dye_green = has_mcl_dye and "mcl_dye:green" or "dye:green"
-mat.dye_red = has_mcl_dye and "mcl_dye:red" or "dye:red"
-mat.dye_blue = has_mcl_dye and "mcl_dye:blue" or "dye:blue"
 
 -- Remove some recipes
 -- Bronze
@@ -136,12 +114,10 @@ minetest.register_craft({
 	},
 })
 
-local isolation = mesecons_materials and "mesecons_materials:fiber" or "technic:rubber"
-
 minetest.register_craft({
 	output = 'technic:lv_transformer',
 	recipe = {
-		{isolation,                    'technic:wrought_iron_ingot', isolation},
+		{mat.isolation,                    'technic:wrought_iron_ingot', mat.isolation},
 		{'technic:copper_coil',        'technic:wrought_iron_ingot', 'technic:copper_coil'},
 		{'technic:wrought_iron_ingot', 'technic:wrought_iron_ingot', 'technic:wrought_iron_ingot'},
 	}
@@ -150,7 +126,7 @@ minetest.register_craft({
 minetest.register_craft({
 	output = 'technic:mv_transformer',
 	recipe = {
-		{isolation,                    'technic:carbon_steel_ingot', isolation},
+		{mat.isolation,                    'technic:carbon_steel_ingot', mat.isolation},
 		{'technic:copper_coil',        'technic:carbon_steel_ingot', 'technic:copper_coil'},
 		{'technic:carbon_steel_ingot', 'technic:carbon_steel_ingot', 'technic:carbon_steel_ingot'},
 	}
@@ -159,7 +135,7 @@ minetest.register_craft({
 minetest.register_craft({
 	output = 'technic:hv_transformer',
 	recipe = {
-		{isolation,                       'technic:stainless_steel_ingot', isolation},
+		{mat.isolation,                       'technic:stainless_steel_ingot', mat.isolation},
 		{'technic:copper_coil',           'technic:stainless_steel_ingot', 'technic:copper_coil'},
 		{'technic:stainless_steel_ingot', 'technic:stainless_steel_ingot', 'technic:stainless_steel_ingot'},
 	}

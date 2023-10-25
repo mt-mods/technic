@@ -5,7 +5,7 @@ minetest.register_craft({
 	output = 'technic:mv_freezer',
 	recipe = {
 		{'technic:stainless_steel_ingot', 'technic:motor',          'technic:stainless_steel_ingot'},
-		{'pipeworks:pipe_1_empty',        'technic:mv_transformer', 'pipeworks:pipe_1_empty'},
+		{'pipeworks:tube_1',        'technic:mv_transformer', 'pipeworks:tube_1'},
 		{'technic:stainless_steel_ingot', 'technic:mv_cable',       'technic:stainless_steel_ingot'},
 	}
 })

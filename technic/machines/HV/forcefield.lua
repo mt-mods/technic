@@ -14,12 +14,14 @@ local S = technic.getter
 
 local cable_entry = "^technic_cable_connection_overlay.png"
 
+local mat = technic.materials
+
 minetest.register_craft({
 	output = "technic:forcefield_emitter_off",
 	recipe = {
-		{"default:mese",         "basic_materials:motor",          "default:mese"        },
+		{mat.mese,         "basic_materials:motor",          mat.mese        },
 		{"technic:deployer_off", "technic:machine_casing", "technic:deployer_off"},
-		{"default:mese",         "technic:hv_cable",       "default:mese"        },
+		{mat.mese,         "technic:hv_cable",       mat.mese        },
 	}
 })
 

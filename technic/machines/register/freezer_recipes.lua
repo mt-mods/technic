@@ -1,5 +1,6 @@
 
 local S = technic.getter
+local mat = technic.materials
 
 technic.register_recipe_type("freezing", {
 	description = S("Freezing"),
@@ -12,10 +13,10 @@ function technic.register_freezer_recipe(data)
 end
 
 local recipes = {
-	{"bucket:bucket_water", { "default:ice", "bucket:bucket_empty" } },
-	{"bucket:bucket_river_water", { "default:ice", "bucket:bucket_empty" } },
-	{"default:dirt", "default:dirt_with_snow" },
-	{"bucket:bucket_lava", { "default:obsidian", "bucket:bucket_empty" } }
+	{mat.bucket_water, { mat.ice, mat.bucket_empty } },
+	{mat.bucket_river_water, { mat.ice, mat.bucket_empty } },
+	{mat.dirt, mat.dirt_with_snow },
+	{mat.bucket_lava, { mat.obsidian, mat.bucket_empty } }
 }
 
 for _, data in pairs(recipes) do

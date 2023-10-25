@@ -4,6 +4,7 @@
 local flashlight_max_charge = 30000
 
 local S = technic.getter
+local mat = technic.materials
 
 minetest.register_alias("technic:light_off", "air")
 
@@ -16,7 +17,7 @@ technic.register_power_tool("technic:flashlight", {
 minetest.register_craft({
 	output = "technic:flashlight",
 	recipe = {
-		{"technic:rubber",                "default:glass",   "technic:rubber"},
+		{"technic:rubber",                mat.glass,   "technic:rubber"},
 		{"technic:stainless_steel_ingot", "technic:battery", "technic:stainless_steel_ingot"},
 		{"",                              "technic:battery", ""}
 	}

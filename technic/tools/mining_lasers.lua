@@ -1,3 +1,6 @@
+
+local mat = technic.materials
+
 local mining_lasers_list = {
 --	{<num>, <range of the laser shots>, <max_charge>, <charge_per_shot>},
 	{"1", 7, 50000, 1000},
@@ -11,25 +14,25 @@ local S = technic.getter
 minetest.register_craft({
 	output = "technic:laser_mk1",
 	recipe = {
-		{"default:diamond", "basic_materials:brass_ingot",        "default:obsidian_glass"},
+		{mat.diamond, "basic_materials:brass_ingot",        mat.obsidian_glass},
 		{"",                "basic_materials:brass_ingot",        "technic:red_energy_crystal"},
-		{"",                "",                           "default:copper_ingot"},
+		{"",                "",                           mat.copper_ingot},
 	}
 })
 minetest.register_craft({
 	output = "technic:laser_mk2",
 	recipe = {
-		{"default:diamond", "technic:carbon_steel_ingot", "technic:laser_mk1"},
+		{mat.diamond, "technic:carbon_steel_ingot", "technic:laser_mk1"},
 		{"",                "technic:carbon_steel_ingot", "technic:green_energy_crystal"},
-		{"",                "",                           "default:copper_ingot"},
+		{"",                "",                           mat.copper_ingot},
 	}
 })
 minetest.register_craft({
 	output = "technic:laser_mk3",
 	recipe = {
-		{"default:diamond", "technic:carbon_steel_ingot", "technic:laser_mk2"},
+		{mat.diamond, "technic:carbon_steel_ingot", "technic:laser_mk2"},
 		{"",                "technic:carbon_steel_ingot", "technic:blue_energy_crystal"},
-		{"",                "",                           "default:copper_ingot"},
+		{"",                "",                           mat.copper_ingot},
 	}
 })
 

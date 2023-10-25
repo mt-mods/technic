@@ -3,6 +3,7 @@
 -- It is a little over half as good as the thermal generator.
 
 local S = technic.getter
+local mat = technic.materials
 
 local cable_entry = "^technic_cable_connection_overlay.png"
 
@@ -11,7 +12,7 @@ minetest.register_alias("water_mill", "technic:water_mill")
 minetest.register_craft({
 	output = 'technic:water_mill',
 	recipe = {
-		{'technic:marble', 'default:diamond',        'technic:marble'},
+		{'technic:marble', mat.diamond,        'technic:marble'},
 		{'group:wood',     'technic:machine_casing', 'group:wood'},
 		{'technic:marble', 'technic:lv_cable',       'technic:marble'},
 	}
@@ -20,7 +21,9 @@ minetest.register_craft({
 local function check_node_around_mill(pos)
 	local node = minetest.get_node(pos)
 	if node.name == "default:water_flowing"
-	  or node.name == "default:river_water_flowing" then
+		or node.name == "default:river_water_flowing"
+		or node.name == "mcl_core:water_flowing"
+		or node.name == "mclx_core:river_water_flowing" then
 		return node.param2 -- returns approx. water flow, if any
 	end
 	return false

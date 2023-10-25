@@ -1,4 +1,5 @@
 local S = technic.getter
+local mat = technic.materials
 
 technic.register_recipe_type("separating", {
 	description = S("Separating"),
@@ -15,8 +16,8 @@ local recipes = {
 	{ "technic:bronze_dust 8",             "technic:copper_dust 7",       "technic:tin_dust"      },
 	{ "technic:stainless_steel_dust 5",    "technic:wrought_iron_dust 4", "technic:chromium_dust" },
 	{ "technic:brass_dust 3",              "technic:copper_dust 2",       "technic:zinc_dust"     },
-	{ "technic:chernobylite_dust",         "default:sand",                "technic:uranium3_dust" },
-	{ "default:dirt 4",                    "default:sand",                "default:gravel",       "default:clay_lump 4" },
+	{ "technic:chernobylite_dust",         mat.sand,                "technic:uranium3_dust" },
+	{ mat.dirt.." 4",                    mat.sand,                mat.gravel,       mat.clay_lump.." 4" },
 }
 
 local function uranium_dust(p)
@@ -28,19 +29,19 @@ end
 
 if minetest.get_modpath("bushes_classic") then
 	for _, berry in ipairs({ "blackberry", "blueberry", "gooseberry", "raspberry", "strawberry" }) do
-		table.insert(recipes, { "bushes:"..berry.."_bush", "default:stick 20", "bushes:"..berry.." 4" })
+		table.insert(recipes, { "bushes:"..berry.."_bush", mat.stick.." 20", "bushes:"..berry.." 4" })
 	end
 end
 
-if minetest.get_modpath("farming") then
+if minetest.get_modpath("farming") or minetest.get_modpath("mcl_farming") then
 	if minetest.get_modpath("cottages") then
 		-- work as a mechanized threshing floor
 		table.insert(recipes, { "farming:wheat", "farming:seed_wheat", "cottages:straw_mat" })
 		table.insert(recipes, { "farming:barley", "farming:seed_barley", "cottages:straw_mat" })
 	else
 		-- work in a less fancy and less efficient manner
-		table.insert(recipes, { "farming:wheat 4", "farming:seed_wheat 3", "default:dry_shrub 1" })
-		table.insert(recipes, { "farming:barley 4", "farming:seed_barley 3", "default:dry_shrub 1" })
+		table.insert(recipes, { mat.wheat.." 4", mat.seed_wheat.." 3", mat.dry_shrub })
+		table.insert(recipes, { "farming:barley 4", "farming:seed_barley 3", mat.dry_shrub })
 	end
 end
 

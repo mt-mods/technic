@@ -2,13 +2,14 @@
 -- Fuel driven alloy furnace. This uses no EUs:
 
 local S = technic.getter
+local mat = technic.materials
 
 minetest.register_craft({
 	output = 'technic:coal_alloy_furnace',
 	recipe = {
-		{'default:brick', 'default:brick', 'default:brick'},
-		{'default:brick', '',              'default:brick'},
-		{'default:brick', 'default:brick', 'default:brick'},
+		{mat.brick, mat.brick, mat.brick},
+		{mat.brick, '',              mat.brick},
+		{mat.brick, mat.brick, mat.brick},
 	}
 })
 

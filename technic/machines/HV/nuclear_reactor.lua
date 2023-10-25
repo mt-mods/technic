@@ -15,6 +15,7 @@ local fuel_type = "technic:uranium_fuel"  -- The reactor burns this
 local digiline_meltdown = technic.config:get_bool("enable_nuclear_reactor_digiline_selfdestruct")
 local has_digilines = minetest.get_modpath("digilines")
 local has_mcl = minetest.get_modpath("mcl_core")
+local mat = technic.materials
 
 local S = technic.getter
 
@@ -25,7 +26,7 @@ local cable_entry = "^technic_cable_connection_overlay.png"
 minetest.register_craft({
 	output = 'technic:hv_nuclear_reactor_core',
 	recipe = {
-		{'technic:carbon_plate',          'default:obsidian_glass', 'technic:carbon_plate'},
+		{'technic:carbon_plate',          mat.obsidian_glass, 'technic:carbon_plate'},
 		{'technic:composite_plate',       'technic:machine_casing', 'technic:composite_plate'},
 		{'technic:stainless_steel_ingot', 'technic:hv_cable',       'technic:stainless_steel_ingot'},
 	}

@@ -5,6 +5,8 @@ local fs_helpers = pipeworks.fs_helpers
 
 local tube_entry = "^pipeworks_tube_connection_metallic.png"
 
+local mat = technic.materials
+
 local param2_to_under = {
 	[0] = {x= 0,y=-1,z= 0}, [1] = {x= 0,y= 0,z=-1},
 	[2] = {x= 0,y= 0,z= 1}, [3] = {x=-1,y= 0,z= 0},
@@ -142,7 +144,7 @@ minetest.register_craft({
 	output = "technic:injector 1",
 	recipe = {
 		{"", "technic:control_logic_unit",""},
-		{"", "default:chest",""},
+		{"", mat.chest,""},
 		{"", "pipeworks:tube_1",""},
 	}
 })
