@@ -13,9 +13,6 @@ local quarry_demand = 10000
 local network_time_limit = 30000
 
 technic.unbreakable_nodes = {
-	"mcl_core:bedrock",
-	"mcl_core:barrier",
-	"mcl_core:void",
 	"df_underworld_items:slade",
 	"df_underworld_items:slade_brick",
 	"df_underworld_items:slade_wall",
@@ -91,6 +88,9 @@ local function can_dig_node(pos, dig_pos, node_name, owner, digger)
 	end
 	local def = minetest.registered_nodes[node_name]
 	if not def or not def.diggable or (def.can_dig and not def.can_dig(dig_pos, digger)) then
+		return false
+	end
+	if def._mcl_hardness == -1 then
 		return false
 	end
 	for _, v in pairs(technic.unbreakable_nodes) do
