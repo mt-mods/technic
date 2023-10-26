@@ -138,13 +138,15 @@ minetest.register_craft({
 	output = "technic:wrought_iron_ingot",
 })
 
-minetest.register_craft({
-	output = "technic:marble_bricks 4",
-	recipe = {
-		{"technic:marble","technic:marble"},
-		{"technic:marble","technic:marble"}
-	}
-})
+if not minetest.get_modpath("underch") then
+	minetest.register_craft({
+		output = "technic:marble_bricks 4",
+		recipe = {
+			{"technic:marble","technic:marble"},
+			{"technic:marble","technic:marble"}
+		}
+	})
+end
 
 minetest.register_craft({
 	output = "technic:granite_bricks 4",

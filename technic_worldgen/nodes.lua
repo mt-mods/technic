@@ -79,25 +79,30 @@ else
 	})
 end
 
-minetest.register_node(":technic:marble", {
-	description = S("Marble"),
-	tiles = {"technic_marble.png"},
-	is_ground_content = true,
-	groups = {cracky=3, marble=1, pickaxey=1},
-	_mcl_hardness = 0.8,
-	_mcl_blast_resistance = 1,
-	sounds = technic.sounds.node_sound_stone_defaults(),
-})
+if minetest.get_modpath("underch") then
+	minetest.register_alias("technic:marble", "underch:marble")
+	minetest.register_alias("technic:marble_bricks", "underch:marble_brick")
+else
+	minetest.register_node(":technic:marble", {
+		description = S("Marble"),
+		tiles = {"technic_marble.png"},
+		is_ground_content = true,
+		groups = {cracky=3, marble=1, pickaxey=1},
+		_mcl_hardness = 0.8,
+		_mcl_blast_resistance = 1,
+		sounds = technic.sounds.node_sound_stone_defaults(),
+	})
 
-minetest.register_node(":technic:marble_bricks", {
-	description = S("Marble Bricks"),
-	tiles = {"technic_marble_bricks.png"},
-	is_ground_content = true,
-	groups = {cracky=3, pickaxey=1},
-	_mcl_hardness = 0.8,
-	_mcl_blast_resistance = 1,
-	sounds = technic.sounds.node_sound_stone_defaults(),
-})
+	minetest.register_node(":technic:marble_bricks", {
+		description = S("Marble Bricks"),
+		tiles = {"technic_marble_bricks.png"},
+		is_ground_content = true,
+		groups = {cracky=3, pickaxey=1},
+		_mcl_hardness = 0.8,
+		_mcl_blast_resistance = 1,
+		sounds = technic.sounds.node_sound_stone_defaults(),
+	})
+end
 
 minetest.register_node(":technic:uranium_block", {
 	description = S("Uranium Block"),
