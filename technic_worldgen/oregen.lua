@@ -1,6 +1,5 @@
 
 local has_mcl = minetest.get_modpath("mcl_core")
-local has_underch = minetest.get_modpath("underch")
 local stones = {"default:stone", "mcl_core:stone", "mcl_deepslate:deepslate"}
 
 local uranium_params = {
@@ -211,7 +210,8 @@ if has_mcl then
 	})
 end
 
-if technic.config:get_bool("enable_marble_generation") and not has_underch then
+if technic.config:get_bool("enable_marble_generation")
+	and not minetest.get_modpath("underch") then
 	minetest.register_ore({
 		ore_type = "sheet",
 		ore = "technic:marble",

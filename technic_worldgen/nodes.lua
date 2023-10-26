@@ -2,7 +2,6 @@
 local S = minetest.get_translator("technic_worldgen")
 
 local has_mcl = minetest.get_modpath("mcl_core")
-local has_underch = minetest.get_modpath("underch")
 
 minetest.register_node(":technic:mineral_uranium", {
 	description = S("Uranium Ore"),
@@ -80,7 +79,7 @@ else
 	})
 end
 
-if has_underch then
+if minetest.get_modpath("underch") then
 	minetest.register_alias("technic:marble", "underch:marble")
 	minetest.register_alias("technic:marble_bricks", "underch:marble_brick")
 else
