@@ -12,15 +12,6 @@ local quarry_time_limit = technic.config:get_int("quarry_time_limit")
 local quarry_demand = 10000
 local network_time_limit = 30000
 
-technic.unbreakable_nodes = {
-	"df_underworld_items:slade",
-	"df_underworld_items:slade_brick",
-	"df_underworld_items:slade_wall",
-	"df_underworld_items:slade_sand",
-	"df_underworld_items:slade_block",
-	"df_underworld_items:slade_seal",
-}
-
 local infotext
 do
 	local name = S("@1 Quarry", S("HV"))
@@ -92,11 +83,6 @@ local function can_dig_node(pos, dig_pos, node_name, owner, digger)
 	end
 	if def._mcl_hardness == -1 then
 		return false
-	end
-	for _, v in pairs(technic.unbreakable_nodes) do
-		if node_name == v then
-			return false
-		end
 	end
 	return not minetest.is_protected(dig_pos, owner)
 end
