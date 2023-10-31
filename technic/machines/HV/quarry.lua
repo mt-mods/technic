@@ -5,6 +5,7 @@ local has_digilines = minetest.get_modpath("digilines")
 local has_mesecons = minetest.get_modpath("mesecons")
 local has_vizlib = minetest.get_modpath("vizlib")
 local has_jumpdrive = minetest.get_modpath("jumpdrive")
+local has_mcl = minetest.get_modpath("mcl_formspec")
 
 local quarry_max_depth = technic.config:get_int("quarry_max_depth")
 local quarry_dig_particles = technic.config:get_bool("quarry_dig_particles")
@@ -258,11 +259,9 @@ local function reset_quarry(meta)
 	meta:set_int("finished", 0)
 end
 
-local base_formspec = "size[8,9]"..
+local base_formspec = "size[9,10]"..
 	"label[0,0;"..S("@1 Quarry", S("HV")).."]"..
 	"list[context;cache;0,0.7;4,3;]"..
-	"list[current_player;main;0,5.2;8,4;]"..
-	"listring[]"..
 	"button[6,0.6;2,1;restart;"..S("Restart").."]"..
 	"field[4.3,2.1;2,1;size;"..S("Radius")..";${size}]"..
 	"field[6.3,2.1;2,1;max_depth;"..S("Max Depth")..";${max_depth}]"..
@@ -273,6 +272,21 @@ local base_formspec = "size[8,9]"..
 if has_digilines then
 	base_formspec = base_formspec..
 	"field[4.3,4.2;4,1;channel;"..S("Digiline Channel")..";${channel}]"
+end
+
+if has_mcl then
+	base_formspec = base_formspec..
+	mcl_formspec.get_itemslot_bg(0,0.7,4,3)..
+	-- player inventory
+	"list[current_player;main;0,5.5;9,3;9]"..
+	mcl_formspec.get_itemslot_bg(0,5.5,9,3)..
+	"list[current_player;main;0,8.74;9,1;]"..
+	mcl_formspec.get_itemslot_bg(0,8.74,9,1)..
+	"listring[current_player;main]"
+else
+	base_formspec = base_formspec..
+	"list[current_player;main;0,5;8,4;]"..
+	"listring[]"
 end
 
 local function update_formspec(meta)

@@ -33,13 +33,25 @@ minetest.register_craft({
 })
 
 local function make_reactor_formspec(meta)
-	local f = "size[8,9]"..
-	"label[0,0;"..S("Nuclear Reactor Rod Compartment").."]"..
-	"list[context;src;2,1;3,2;]"..
-	"list[current_player;main;0,5;8,4;]"..
-	"listring[]"..
-	"button[5.5,1.5;2,1;start;"..S("Start").."]"..
-	"checkbox[5.5,2.5;autostart;"..S("Automatic Start")..";"..meta:get_string("autostart").."]"
+	local f = "size[9,9]"..
+		"label[0,0;"..S("Nuclear Reactor Rod Compartment").."]"..
+		"list[context;src;2,1;3,2;]"..
+		"button[5.5,1.5;2,1;start;"..S("Start").."]"..
+		"checkbox[5.5,2.5;autostart;"..S("Automatic Start")..";"..meta:get_string("autostart").."]"
+	if has_mcl then
+		f = f..
+		mcl_formspec.get_itemslot_bg(2,1,3,2)..
+		-- player inventory
+		"list[current_player;main;0,4.5;9,3;9]"..
+		mcl_formspec.get_itemslot_bg(0,4.5,9,3)..
+		"list[current_player;main;0,7.74;9,1;]"..
+		mcl_formspec.get_itemslot_bg(0,7.74,9,1)..
+		"listring[current_player;main]"
+	else
+		f = f..
+		"list[current_player;main;0,5;8,4;]"..
+		"listring[]"
+	end
 	if not has_digilines then
 		return f
 	end

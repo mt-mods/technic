@@ -13,11 +13,24 @@ local param2_to_under = {
 	[4] = {x= 1,y= 0,z= 0}, [5] = {x= 0,y= 1,z= 0}
 }
 
-local base_formspec = "size[8,9;]"..
+local base_formspec = "size[9,10;]"..
 	"label[0,0;"..S("Self-Contained Injector").."]"..
-	"list[context;main;0,2;8,2;]"..
+	"list[context;main;0,2;8,2;]"
+
+if minetest.get_modpath("mcl_formspec") then
+	base_formspec = base_formspec..
+	mcl_formspec.get_itemslot_bg(0,2,8,2)..
+	-- player inventory
+	"list[current_player;main;0,5.5;9,3;9]"..
+	mcl_formspec.get_itemslot_bg(0,5.5,9,3)..
+	"list[current_player;main;0,8.74;9,1;]"..
+	mcl_formspec.get_itemslot_bg(0,8.74,9,1)..
+	"listring[current_player;main]"
+else
+	base_formspec = base_formspec..
 	"list[current_player;main;0,5;8,4;]"..
 	"listring[]"
+end
 
 local function set_injector_formspec(pos)
 	local meta = minetest.get_meta(pos)

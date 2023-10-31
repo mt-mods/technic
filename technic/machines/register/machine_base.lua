@@ -53,10 +53,9 @@ function technic.register_base_machine(nodename, data)
 	active_groups.not_in_creative_inventory = 1
 
 	local formspec =
-		"size[8,9;]"..
+		"size[9,10;]"..
 		"list[context;src;"..(4-input_size)..",1;"..input_size..",1;]"..
 		"list[context;dst;5,1;2,2;]"..
-		"list[current_player;main;0,5;8,4;]"..
 		"label[0,0;"..def.description.."]"..
 		"listring[context;dst]"..
 		"listring[current_player;main]"..
@@ -70,6 +69,27 @@ function technic.register_base_machine(nodename, data)
 			"listring[context;upgrade1]"..
 			"listring[current_player;main]"..
 			"listring[context;upgrade2]"..
+			"listring[current_player;main]"
+	end
+
+	if minetest.get_modpath("mcl_formspec") then
+		formspec = formspec..
+			mcl_formspec.get_itemslot_bg(4-input_size,1,input_size,1)..
+			mcl_formspec.get_itemslot_bg(5,1,2,2)..
+			-- player inventory
+			"list[current_player;main;0,5.5;9,3;9]"..
+			mcl_formspec.get_itemslot_bg(0,5.5,9,3)..
+			"list[current_player;main;0,8.74;9,1;]"..
+			mcl_formspec.get_itemslot_bg(0,8.74,9,1)..
+			"listring[current_player;main]"
+		if def.upgrade then
+			formspec = formspec..
+			mcl_formspec.get_itemslot_bg(1,3,1,1)..
+			mcl_formspec.get_itemslot_bg(2,3,1,1)
+		end
+	else
+		formspec = formspec..
+			"list[current_player;main;0,5;8,4;]"..
 			"listring[current_player;main]"
 	end
 

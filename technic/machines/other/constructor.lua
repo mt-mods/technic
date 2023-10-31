@@ -149,15 +149,30 @@ local function make_constructor(mark, length)
 		sounds = technic.sounds.node_sound_stone_defaults(),
 		on_construct = function(pos)
 			local meta = minetest.get_meta(pos)
-			local formspec = "size[8,9;]"..
-				"label[0,0;"..S("Constructor Mk@1", mark).."]"..
-				"list[current_player;main;0,5;8,4;]"..
-				"listring[current_player;main]"
+			local formspec = "size[9,9;]"..
+				"label[0,0;"..S("Constructor Mk@1", mark).."]"
 			for i = 1, length do
 				formspec = formspec..
 					"label[5,"..(i - 1)..";"..S("Slot @1", i).."]"..
 					"list[context;slot"..i..";6,"..(i - 1)..";1,1;]"..
 					"listring[context;slot"..i.."]"
+			end
+			if minetest.get_modpath("mcl_formspec") then
+				for i = 1, length do
+					formspec = formspec..
+					mcl_formspec.get_itemslot_bg(6,i-1,1,1)
+				end
+				formspec = formspec..
+				-- player inventory
+				"list[current_player;main;0,4.5;9,3;9]"..
+				mcl_formspec.get_itemslot_bg(0,4.5,9,3)..
+				"list[current_player;main;0,7.74;9,1;]"..
+				mcl_formspec.get_itemslot_bg(0,7.74,9,1)..
+				"listring[current_player;main]"
+			else
+				formspec = formspec..
+				"list[current_player;main;0,5;8,4;]"..
+				"listring[current_player;main]"
 			end
 			meta:set_string("formspec", formspec)
 			meta:set_string("infotext", S("Constructor Mk@1", mark))

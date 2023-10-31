@@ -15,19 +15,34 @@ minetest.register_craft({
 
 local machine_name = S("Fuel-Fired Alloy Furnace")
 local formspec =
-	"size[8,9]"..
+	"size[9,9]"..
 	"label[0,0;"..machine_name.."]"..
 	"image[2,2;1,1;default_furnace_fire_bg.png]"..
 	"list[context;fuel;2,3;1,1;]"..
 	"list[context;src;2,1;2,1;]"..
 	"list[context;dst;5,1;2,2;]"..
-	"list[current_player;main;0,5;8,4;]"..
 	"listring[context;dst]"..
-	"listring[current_player;main]"..
 	"listring[context;src]"..
 	"listring[current_player;main]"..
 	"listring[context;fuel]"..
 	"listring[current_player;main]"
+
+if minetest.get_modpath("mcl_formspec") then
+	formspec = formspec..
+	mcl_formspec.get_itemslot_bg(2,3,1,1)..
+	mcl_formspec.get_itemslot_bg(2,1,2,1)..
+	mcl_formspec.get_itemslot_bg(5,1,2,2)..
+	-- player inventory
+	"list[current_player;main;0,4.5;9,3;9]"..
+	mcl_formspec.get_itemslot_bg(0,4.5,9,3)..
+	"list[current_player;main;0,7.74;9,1;]"..
+	mcl_formspec.get_itemslot_bg(0,7.74,9,1)..
+	"listring[current_player;main]"
+else
+	formspec = formspec..
+	"list[current_player;main;0,5;8,4;]"..
+	"listring[current_player;main]"
+end
 
 minetest.register_node("technic:coal_alloy_furnace", {
 	description = machine_name,

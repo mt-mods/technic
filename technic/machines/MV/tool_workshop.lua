@@ -20,20 +20,35 @@ minetest.register_craft({
 local workshop_demand = {5000, 3500, 2000}
 
 local workshop_formspec =
-	"size[8,9;]"..
+	"size[9,9;]"..
 	"list[context;src;3,1;1,1;]"..
 	"label[0,0;"..S("@1 Tool Workshop", S("MV")).."]"..
 	"list[context;upgrade1;1,3;1,1;]"..
 	"list[context;upgrade2;2,3;1,1;]"..
 	"label[1,4;"..S("Upgrade Slots").."]"..
-	"list[current_player;main;0,5;8,4;]"..
-	"listring[current_player;main]"..
 	"listring[context;src]"..
 	"listring[current_player;main]"..
 	"listring[context;upgrade1]"..
 	"listring[current_player;main]"..
 	"listring[context;upgrade2]"..
 	"listring[current_player;main]"
+
+if minetest.get_modpath("mcl_formspec") then
+	workshop_formspec = workshop_formspec..
+	mcl_formspec.get_itemslot_bg(3,1,1,1)..
+	mcl_formspec.get_itemslot_bg(1,3,1,1)..
+	mcl_formspec.get_itemslot_bg(2,3,1,1)..
+	-- player inventory
+	"list[current_player;main;0,4.5;9,3;9]"..
+	mcl_formspec.get_itemslot_bg(0,4.5,9,3)..
+	"list[current_player;main;0,7.74;9,1;]"..
+	mcl_formspec.get_itemslot_bg(0,7.74,9,1)..
+	"listring[current_player;main]"
+else
+	workshop_formspec = workshop_formspec..
+	"list[current_player;main;0,5;8,4;]"..
+	"listring[current_player;main]"
+end
 
 local run = function(pos, node)
 	local meta         = minetest.get_meta(pos)

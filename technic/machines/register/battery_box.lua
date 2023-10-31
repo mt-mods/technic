@@ -115,7 +115,7 @@ function technic.register_battery_box(nodename, data)
 	local ltier = string.lower(tier)
 
 	local formspec =
-		"size[8,9]"..
+		"size[9,9]"..
 		"image[1,1;1,2;technic_power_meter_bg.png]"..
 		"list[context;src;3,1;1,1;]"..
 		"image[4,1;1,1;technic_battery_reload.png]"..
@@ -124,7 +124,6 @@ function technic.register_battery_box(nodename, data)
 		"label[3,0;"..S("Charge").."]"..
 		"label[5,0;"..S("Discharge").."]"..
 		"label[1,3;"..S("Power level").."]"..
-		"list[current_player;main;0,5;8,4;]"..
 		"listring[context;dst]"..
 		"listring[current_player;main]"..
 		"listring[context;src]"..
@@ -137,7 +136,28 @@ function technic.register_battery_box(nodename, data)
 			"listring[current_player;main]"..
 			"listring[context;upgrade2]"..
 			"listring[current_player;main]"
-		or "")
+			or "")
+
+	if minetest.get_modpath("mcl_formspec") then
+		formspec = formspec..
+			mcl_formspec.get_itemslot_bg(3,1,1,1)..
+			mcl_formspec.get_itemslot_bg(5,1,1,1)..
+			-- player inventory
+			"list[current_player;main;0,4.5;9,3;9]"..
+			mcl_formspec.get_itemslot_bg(0,4.5,9,3)..
+			"list[current_player;main;0,7.74;9,1;]"..
+			mcl_formspec.get_itemslot_bg(0,7.74,9,1)..
+			"listring[current_player;main]"..
+			-- upgrade
+			(def.upgrade and
+				mcl_formspec.get_itemslot_bg(3.5,3,1,1)..
+				mcl_formspec.get_itemslot_bg(4.5,3,1,1)
+			or "")
+	else
+		formspec = formspec..
+		"list[current_player;main;0,5;8,4;]"
+	end
+
 
 	--
 	-- Generate formspec with power meter
