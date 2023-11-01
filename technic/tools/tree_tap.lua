@@ -2,6 +2,14 @@
 local S = technic.getter
 local mesecons_materials = minetest.get_modpath("mesecons_materials")
 
+local function drop_raw_latex(pointed_thing, user)
+	if minetest.get_modpath("mcl_core") then
+		minetest.add_item(user:get_pos(), "technic:raw_latex")
+	else
+		minetest.handle_node_drops(pointed_thing.above, {"technic:raw_latex"}, user)
+	end
+end
+
 minetest.register_tool("technic:treetap", {
 	description = S("Tree Tap"),
 	inventory_image = "technic_tree_tap.png",
@@ -21,7 +29,7 @@ minetest.register_tool("technic:treetap", {
 		end
 		node.name = "moretrees:rubber_tree_trunk_empty"
 		minetest.swap_node(pos, node)
-		minetest.handle_node_drops(pointed_thing.above, {"technic:raw_latex"}, user)
+		drop_raw_latex(pointed_thing, user)
 		if not technic.creative_mode then
 			local item_wear = tonumber(itemstack:get_wear())
 			item_wear = item_wear + 819
