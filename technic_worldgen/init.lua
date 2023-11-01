@@ -17,6 +17,8 @@ dofile(modpath.."/oregen.lua")
 dofile(modpath.."/crafts.lua")
 if minetest.get_modpath("default") then
 	dofile(modpath.."/overrides.lua")
+elseif minetest.get_modpath("mcl_core") then
+	minetest.register_alias("technic:wrought_iron_ingot", "mcl_core:iron_ingot")
 end
 
 -- Rubber trees, moretrees also supplies these
