@@ -1,6 +1,7 @@
 
 local have_ui = minetest.get_modpath("unified_inventory")
 local have_cg = minetest.get_modpath("craftguide")
+local have_mcl_cg = minetest.get_modpath("mcl_craftguide")
 local have_i3 = minetest.get_modpath("i3")
 
 technic.recipes = { cooking = { input_size = 1, output_size = 1 } }
@@ -19,6 +20,12 @@ function technic.register_recipe_type(typename, origdata)
 	end
 	if have_cg and craftguide.register_craft_type then
 		craftguide.register_craft_type(typename, {
+			description = data.description,
+			icon = data.icon,
+		})
+	end
+	if have_mcl_cg then
+		mcl_craftguide.register_craft_type(typename, {
 			description = data.description,
 			icon = data.icon,
 		})
@@ -86,6 +93,14 @@ local function register_recipe(typename, data)
 				items = {table.concat(data.input, ", ")},
 			})
 		end
+		if have_mcl_cg then
+			mcl_craftguide.register_craft({
+				type   = typename,
+				width  = 2,
+				output = output,
+				items = {table.concat(data.input, ", ")},
+			})
+		end
 		if have_i3 then
 			i3.register_craft({
 				type = typename,
@@ -133,7 +148,6 @@ function technic.get_recipe(typename, items)
 	if recipe then
 		local new_input = {}
 		for i, stack in ipairs(items) do
-			if not stack:get_count() or not recipe.input[stack:get_name()] then return end
 			if stack:get_count() < recipe.input[stack:get_name()] then
 				return
 			else
