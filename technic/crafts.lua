@@ -180,11 +180,11 @@ minetest.register_craft({
 minetest.register_craft({
 	output = mat.dirt.." 2",
 	type = "shapeless",
-	replacements = {{"bucket:bucket_water","bucket:bucket_empty"}},
+	replacements = {{mat.bucket_water,mat.bucket_empty}},
 	recipe = {
 		"technic:stone_dust",
 		"group:leaves",
-		"bucket:bucket_water",
+		mat.bucket_water,
 		"group:sand",
 	},
 })

@@ -23,11 +23,11 @@ minetest.register_craft({
 	output = "technic:battery",
 	recipe = {
 		{"group:wood",         "technic:sulfur_lump", "group:wood"},
-		{"technic:lead_ingot", "bucket:bucket_water", "technic:lead_ingot"},
+		{"technic:lead_ingot", mat.bucket_water, "technic:lead_ingot"},
 		{"group:wood",         "technic:sulfur_lump", "group:wood"},
 	},
 	replacements = {
-		{"bucket:bucket_water", "bucket:bucket_empty"}
+		{mat.bucket_water, mat.bucket_empty}
 	}
 })
 -- With oil extract:
@@ -45,11 +45,11 @@ minetest.register_craft({
 	output = "technic:battery",
 	recipe = {
 		{"group:wood",         "technic:sulfur_dust", "group:wood"},
-		{"technic:lead_ingot", "bucket:bucket_water", "technic:lead_ingot"},
+		{"technic:lead_ingot", mat.bucket_water, "technic:lead_ingot"},
 		{"group:wood",         "technic:sulfur_dust", "group:wood"},
 	},
 	replacements = {
-		{"bucket:bucket_water", "bucket:bucket_empty"}
+		{mat.bucket_water, mat.bucket_empty}
 	}
 })
 -- With oil extract:
