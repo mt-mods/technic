@@ -29,8 +29,8 @@ local recipes = {
 	-- "[Compounding a] pure gum vulcanizate … with 50% of its weight of carbon black
 	-- improves its tensile strength and wear resistance …"
 	{"technic:raw_latex 4",           "technic:coal_dust 2",        "technic:rubber 6", 2},
-	{mat.ice,                   "bucket:bucket_empty",        "bucket:bucket_water", 1 },
-	{"default:obsidian",              "bucket:bucket_empty",        "bucket:bucket_lava", 1 },
+	{mat.ice,                   mat.bucket_empty,        mat.bucket_water, 1 },
+	{mat.obsidian,              mat.bucket_empty,        mat.bucket_lava, 1 },
 }
 
 if minetest.get_modpath("ethereal") then
