@@ -95,10 +95,10 @@ local function register_recipe(typename, data)
 		end
 		if have_mcl_cg then
 			mcl_craftguide.register_craft({
-				type   = typename,
-				width  = 2,
+				type = typename,
 				output = output,
-				items = {table.concat(data.input, ", ")},
+				items = data.input,
+				width = 0,
 			})
 		end
 		if have_i3 then
