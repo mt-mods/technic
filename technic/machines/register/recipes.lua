@@ -112,7 +112,11 @@ local function register_recipe(typename, data)
 end
 
 function technic.register_recipe(typename, data)
-	minetest.after(0.01, register_recipe, typename, data) -- Handle aliases
+	if have_mcl_cg then
+		register_recipe(typename, data)
+	else
+		minetest.after(0.01, register_recipe, typename, data) -- Handle aliases
+	end
 end
 
 function technic.get_recipe(typename, items)
