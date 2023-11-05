@@ -50,3 +50,41 @@ likely be revised.
 As with the chest of the basic Minetest game, each chest type comes
 in both locked and unlocked flavors.  All of the chests work with the
 pneumatic tubes of the pipeworks mod.
+
+## Sorting
+
+Chests can be sorted with one button with the following sort types : natural sort, by item, by quantity, by type or by wear. The chests can also be sorted automatically when its content changes. On the UI, the three buttons are the following : toggle automatic sorting, toggle sorting type, sort
+
+## Inventory move
+
+Chests have the ability to move all or a certain type of item with a button. All items that fit with that type will move from inventory to chest or the contrary.
+
+## Digilines
+
+Only mithril chests can send digilines logs. They can send messages of following types :
+* Player/pipeworks item taking
+* Player/pipeworks item putting
+* Pipeworks overflow (chest is full)
+
+Example of digiline message :
+```lua
+{
+	player = "singleplayer",
+	items = {
+		{
+			meta = {
+			},
+			metadata = "",
+			count = 99,
+			name = "technic:quarry",
+			wear = 0
+		}
+	},
+	pos = {
+		y = 19,
+		x = 67,
+		z = 57
+	},
+	event = "put"
+}
+```
