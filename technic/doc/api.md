@@ -157,7 +157,7 @@ There are currently following types:
 Switching Station
 -----------------
 The switching station is required to start electric network and keep it running.
-Unlike in original mod this node does not handle power distribution logic but instead just resets network timeout.
+Unlike in original mod this node does not handle power distribution logic but instead just resets network timeout. The polyfuse system is activated when there is too much lag, which causes network to skip cycles (it works slower). It is shown in the infotext when activated.
 
 Network logic
 -----------------
@@ -173,6 +173,8 @@ If total demand is less than the available power they are all updated with the d
 If any surplus exists from the PR nodes the batteries will be charged evenly with excess power.
 If total demand exceeds generator supply then draw difference from batteries.
 If total demand is more than available power all RE nodes will be shut down.
+
+You can only have one network per machine, else the switching station will indicate you that several networks are trying to access the machine.
 
 ### Node meta usage
 Nodes connected to the network will have one or more of these parameters as meta data:

@@ -4,6 +4,10 @@
 This document describes the interaction of
 technic machines with the `digilines` mod (https://github.com/minetest-mods/digilines)
 
+## Digicables
+
+Digicables are a type of cable that carry both electric power and digiline messages. Like both original types of cable (electric cable and digiline), you just have to connect cables to each other in order to transmit power/information. They are needed to access nuclear reactor digiline information. The digicables are available in HV, MV and LV.
+
 ## Switching station
 
 **NOTE**: make sure the channel is set accordingly, "switch" in this case
