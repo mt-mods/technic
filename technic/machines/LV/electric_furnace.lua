@@ -4,7 +4,7 @@ local S = technic.getter
 
 -- FIXME: kpoppel I'd like to introduce an induction heating element here also
 minetest.register_craft({
-	output = 'technic:electric_furnace',
+	output = 'technic:lv_electric_furnace',
 	recipe = {
 		{'group:cobble', 'group:cobble',         'group:cobble'},
 		{'group:cobble', 'technic:machine_casing', 'group:cobble'},
