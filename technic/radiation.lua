@@ -32,6 +32,7 @@ local MP = minetest.get_modpath("technic")
 local throttle = dofile(MP .. "/util/throttle.lua")
 
 local S = technic.getter
+local has_mcl = minetest.get_modpath("mcl_core")
 
 local rad_resistance_node = {
 	["default:brick"] = 13,
@@ -503,8 +504,6 @@ if minetest.get_modpath("mcl_buckets") then
 	})
 end
 
-local has_mcl = minetest.get_modpath("mcl_core")
-
 minetest.register_node("technic:chernobylite_block", {
 	description = S("Chernobylite Block"),
 	tiles = {"technic_chernobylite_block.png"},
@@ -562,8 +561,17 @@ if griefing then
 				vector.new(0,0,-1),
 				vector.new(0,-1,0),
 			}) do
-				if math.random(8) == 1 then
-					minetest.dig_node(vector.add(pos, offset))
+				local vpos = vector.add(pos, offset)
+				local vnode = minetest.get_node(vpos)
+				local can_dig = true
+				if vnode and vnode.name and minetest.registered_nodes[vnode.name] then
+					local hardness = minetest.registered_nodes[vnode.name]._mcl_hardness
+					if hardness and type(hardness) == "number" then
+						can_dig = hardness > 0
+					end
+				end
+				if math.random(8) == 1 and can_dig then
+					minetest.dig_node(vpos)
 				end
 			end
 		end,
