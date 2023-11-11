@@ -561,17 +561,12 @@ if griefing then
 				vector.new(0,0,-1),
 				vector.new(0,-1,0),
 			}) do
-				local vpos = vector.add(pos, offset)
-				local vnode = minetest.get_node(vpos)
-				local can_dig = true
-				if vnode and vnode.name and minetest.registered_nodes[vnode.name] then
-					local hardness = minetest.registered_nodes[vnode.name]._mcl_hardness
-					if hardness and type(hardness) == "number" then
-						can_dig = hardness > 0
+				if math.random(8) == 1 then
+					local vpos = vector.add(pos, offset)
+					local def = minetest.registered_nodes[minetest.get_node(vpos).name]
+					if def and (not def._mcl_hardness or def._mcl_hardness > 0) then
+						minetest.dig_node(vpos)
 					end
-				end
-				if math.random(8) == 1 and can_dig then
-					minetest.dig_node(vpos)
 				end
 			end
 		end,
