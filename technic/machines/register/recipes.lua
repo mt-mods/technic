@@ -96,7 +96,12 @@ local function register_recipe(typename, data)
 	end
 end
 
+local has_exchangeclone = minetest.get_modpath("exchangeclone")
+
 function technic.register_recipe(typename, data)
+	if has_exchangeclone then
+		exchangeclone.register_technic_recipe(typename, data)
+	end
 	minetest.after(0.01, register_recipe, typename, data) -- Handle aliases
 end
 
