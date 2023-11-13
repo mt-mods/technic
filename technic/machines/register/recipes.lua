@@ -96,7 +96,8 @@ local function register_recipe(typename, data)
 	end
 end
 
-local has_exchangeclone = minetest.get_modpath("exchangeclone")
+-- Checks for "zzzz_exchangeclone_crafthook" mod so that it won't crash with older versions of ExchangeClone which don't have it.
+local has_exchangeclone = minetest.get_modpath("zzzz_exchangeclone_crafthook")
 
 function technic.register_recipe(typename, data)
 	if has_exchangeclone then
