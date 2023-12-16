@@ -142,7 +142,7 @@ local function make_constructor(mark, length)
 			"technic_constructor_front_off.png"},
 		paramtype2 = "facedir",
 		groups = {snappy=2, choppy=2, oddly_breakable_by_hand=2,
-			  mesecon = 2, technic_constructor = 1, axey=2, handy=1},
+			mesecon = 2, technic_constructor = 1, axey=2, handy=1},
 		_mcl_blast_resistance = 1,
 		_mcl_hardness = 0.8,
 		mesecons = {effector = {action_on = make_on(mark, length)}},
