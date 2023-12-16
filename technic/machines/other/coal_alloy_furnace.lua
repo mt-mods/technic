@@ -14,8 +14,9 @@ minetest.register_craft({
 })
 
 local machine_name = S("Fuel-Fired Alloy Furnace")
+local size = minetest.get_modpath("mcl_formspec") and "size[9,9]" or "size[8,9]"
 local formspec =
-	"size[9,9]"..
+	size..
 	"label[0,0;"..machine_name.."]"..
 	"image[2,2;1,1;default_furnace_fire_bg.png]"..
 	"list[context;fuel;2,3;1,1;]"..
@@ -143,7 +144,7 @@ minetest.register_abm({
 			meta:set_string("infotext", S("@1 Active", machine_name).." ("..percent.."%)")
 			technic.swap_node(pos, "technic:coal_alloy_furnace_active")
 			meta:set_string("formspec",
-					"size[8,9]"..
+					size..
 					"label[0,0;"..machine_name.."]"..
 					"image[2,2;1,1;default_furnace_fire_bg.png^[lowpart:"..
 					(100 - percent)..":default_furnace_fire_fg.png]"..

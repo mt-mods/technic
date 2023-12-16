@@ -149,7 +149,8 @@ local function make_constructor(mark, length)
 		sounds = technic.sounds.node_sound_stone_defaults(),
 		on_construct = function(pos)
 			local meta = minetest.get_meta(pos)
-			local formspec = "size[9,9;]"..
+			local size = minetest.get_modpath("mcl_formspec") and "size[9,9]" or "size[8,9]"
+			local formspec = size..
 				"label[0,0;"..S("Constructor Mk@1", mark).."]"
 			for i = 1, length do
 				formspec = formspec..

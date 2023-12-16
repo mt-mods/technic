@@ -52,8 +52,9 @@ function technic.register_base_machine(nodename, data)
 	local active_groups = table.copy(groups)
 	active_groups.not_in_creative_inventory = 1
 
+	local size = minetest.get_modpath("mcl_formspec") and "size[9,10]" or "size[8,9]"
 	local formspec =
-		"size[9,10;]"..
+		size..
 		"list[context;src;"..(4-input_size)..",1;"..input_size..",1;]"..
 		"list[context;dst;5,1;2,2;]"..
 		"label[0,0;"..def.description.."]"..

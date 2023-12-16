@@ -13,7 +13,8 @@ local param2_to_under = {
 	[4] = {x= 1,y= 0,z= 0}, [5] = {x= 0,y= 1,z= 0}
 }
 
-local base_formspec = "size[9,10;]"..
+local size = minetest.get_modpath("mcl_formspec") and "size[9,10]" or "size[8,9]"
+local base_formspec = size..
 	"label[0,0;"..S("Self-Contained Injector").."]"..
 	"list[context;main;0,2;8,2;]"
 

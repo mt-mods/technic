@@ -259,7 +259,8 @@ local function reset_quarry(meta)
 	meta:set_int("finished", 0)
 end
 
-local base_formspec = "size[9,10]"..
+local size = minetest.get_modpath("mcl_formspec") and "size[9,10]" or "size[8,9]"
+local base_formspec = size..
 	"label[0,0;"..S("@1 Quarry", S("HV")).."]"..
 	"list[context;cache;0,0.7;4,3;]"..
 	"button[6,0.6;2,1;restart;"..S("Restart").."]"..

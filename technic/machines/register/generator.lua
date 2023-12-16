@@ -20,8 +20,10 @@ local tube = {
 	connect_sides = {left=1, right=1, back=1, top=1, bottom=1},
 }
 
+local size = minetest.get_modpath("mcl_formspec") and "size[9,10]" or "size[8,9]"
+
 local function update_generator_formspec(meta, desc, percent, form_buttons)
-	local generator_formspec = "size[9,10]"..
+	local generator_formspec = size..
 		"label[0, 0;"..desc.."]"..
 		"list[context;src;3,1;1,1;]"..
 		"image[4,1;1,1;default_furnace_fire_bg.png^[lowpart:"..
@@ -60,7 +62,7 @@ function technic.register_generator(data)
 	for k, v in pairs(groups) do active_groups[k] = v end
 
 	local generator_formspec =
-		"size[9,10;]"..
+		size..
 		"label[0,0;"..S("Fuel-Fired @1 Generator", S(tier)).."]"..
 		"list[context;src;3,1;1,1;]"..
 		"image[4,1;1,1;default_furnace_fire_bg.png]"

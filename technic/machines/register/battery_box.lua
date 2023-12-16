@@ -114,8 +114,9 @@ function technic.register_battery_box(nodename, data)
 	local tier = def.tier
 	local ltier = string.lower(tier)
 
+	local size = minetest.get_modpath("mcl_formspec") and "size[9,9]" or "size[8,9]"
 	local formspec =
-		"size[9,9]"..
+		size..
 		"image[1,1;1,2;technic_power_meter_bg.png]"..
 		"list[context;src;3,1;1,1;]"..
 		"image[4,1;1,1;technic_battery_reload.png]"..

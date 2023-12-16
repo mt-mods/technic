@@ -32,8 +32,9 @@ minetest.register_craft({
 	}
 })
 
+local size = minetest.get_modpath("mcl_formspec") and "size[9,9]" or "size[8,9]"
 local function make_reactor_formspec(meta)
-	local f = "size[9,9]"..
+	local f = size..
 		"label[0,0;"..S("Nuclear Reactor Rod Compartment").."]"..
 		"list[context;src;2,1;3,2;]"..
 		"button[5.5,1.5;2,1;start;"..S("Start").."]"..

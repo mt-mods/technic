@@ -19,8 +19,9 @@ minetest.register_craft({
 
 local workshop_demand = {5000, 3500, 2000}
 
+local size = minetest.get_modpath("mcl_formspec") and "size[9,9;]" or "size[8,9;]"
 local workshop_formspec =
-	"size[9,9;]"..
+	size..
 	"list[context;src;3,1;1,1;]"..
 	"label[0,0;"..S("@1 Tool Workshop", S("MV")).."]"..
 	"list[context;upgrade1;1,3;1,1;]"..
