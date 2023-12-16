@@ -95,7 +95,7 @@ minetest.register_node("technic:hydro_turbine_active", {
 			"technic_hydro_turbine_side.png", "technic_hydro_turbine_side.png"},
 	paramtype2 = "facedir",
 	groups = {snappy=2, choppy=2, oddly_breakable_by_hand=2, axey=2, handy=1,
-		  technic_machine=1, technic_mv=1, not_in_creative_inventory=1},
+		technic_machine=1, technic_mv=1, not_in_creative_inventory=1},
 	_mcl_blast_resistance = 1,
 	_mcl_hardness = 0.8,
 	legacy_facedir_simple = true,
