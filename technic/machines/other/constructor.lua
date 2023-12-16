@@ -216,7 +216,7 @@ local function make_constructor(mark, length)
 		paramtype2 = "facedir",
 		drop = "technic:constructor_mk"..mark.."_off",
 		groups = {snappy=2, choppy=2, oddly_breakable_by_hand=2,
-			  mesecon=2, not_in_creative_inventory=1, technic_constructor=1, axey=2, handy=1},
+			mesecon=2, not_in_creative_inventory=1, technic_constructor=1, axey=2, handy=1},
 		_mcl_blast_resistance = 1,
 		_mcl_hardness = 0.8,
 		mesecons= {effector = {action_off = make_off(mark)}},
