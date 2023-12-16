@@ -10,9 +10,9 @@ minetest.register_alias("lv_generator", "technic:lv_generator")
 minetest.register_craft({
 	output = 'technic:lv_generator',
 	recipe = {
-		{'group:stone', mat.furnace,        'group:stone'},
-		{'group:stone', 'technic:machine_casing', 'group:stone'},
-		{'group:stone', 'technic:lv_cable',       'group:stone'},
+		{mat.stone, mat.furnace,        mat.stone},
+		{mat.stone, 'technic:machine_casing', mat.stone},
+		{mat.stone, 'technic:lv_cable',       mat.stone},
 	}
 })
 
