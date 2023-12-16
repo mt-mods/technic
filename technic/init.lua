@@ -4,12 +4,10 @@ technic = rawget(_G, "technic") or {}
 technic.plus = true
 technic.version = 1.2
 
-technic.sounds = {}
-if minetest.get_modpath("default") then
-	technic.sounds = default
-end
 if minetest.get_modpath("mcl_sounds") then
 	technic.sounds = mcl_sounds
+else
+	technic.sounds = default or {}
 end
 
 technic.creative_mode = minetest.settings:get_bool("creative_mode")
