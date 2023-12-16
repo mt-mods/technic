@@ -6,10 +6,10 @@ technic.version = 1.2
 
 technic.sounds = {}
 if minetest.get_modpath("default") then
-   technic.sounds = default
+	technic.sounds = default
 end
 if minetest.get_modpath("mcl_sounds") then
-   technic.sounds = mcl_sounds
+	technic.sounds = mcl_sounds
 end
 
 technic.creative_mode = minetest.settings:get_bool("creative_mode")
