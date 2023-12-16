@@ -4,7 +4,6 @@ local S = technic.getter
 minetest.register_craft({
 	output = 'technic:mv_freezer',
 	recipe = {
-
 		{'technic:stainless_steel_ingot', 'basic_materials:motor',          'technic:stainless_steel_ingot'},
 		{'pipeworks:pipe_1_empty',        'technic:mv_transformer', 'pipeworks:pipe_1_empty'},
 		{'technic:stainless_steel_ingot', 'technic:mv_cable',       'technic:stainless_steel_ingot'},
