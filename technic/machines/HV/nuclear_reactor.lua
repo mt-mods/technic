@@ -227,13 +227,13 @@ local function reactor_structure_badness(pos)
 end
 
 local mcl_expl_info = {
-   drop_chance = 1.0,
-   max_blast_resistance = 10,
-   sound = true,
-   particles = true,
-   fire = true,
-   griefing = true,
-   grief_protected = true,
+	drop_chance = 1.0,
+	max_blast_resistance = 10,
+	sound = true,
+	particles = true,
+	fire = true,
+	griefing = true,
+	grief_protected = true,
 }
 
 local function melt_down_reactor(pos)
