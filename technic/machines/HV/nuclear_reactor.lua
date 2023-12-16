@@ -239,7 +239,7 @@ local mcl_expl_info = {
 local function melt_down_reactor(pos)
         minetest.log("action", "A reactor melted down at "..minetest.pos_to_string(pos))
 	if minetest.get_modpath("mcl_explosions") then
-	  mcl_explosions.explode(pos, 30, mcl_expl_info)
+		mcl_explosions.explode(pos, 30, mcl_expl_info)
 	end
 	minetest.set_node(pos, {name = "technic:corium_source"})
 end
