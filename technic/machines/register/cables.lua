@@ -125,9 +125,9 @@ function technic.register_cable_plate(nodename, data)
 				return item_place_override_node(itemstack, placer, pointed_thing, node)
 			end
 		else
-		   def.groups.not_in_creative_inventory = 1
-		   def._mcl_blast_resistance = 1
-		   def._mcl_hardness = 0.8
+			def.groups.not_in_creative_inventory = 1
+			def._mcl_blast_resistance = 1
+			def._mcl_hardness = 0.8
 		end
 		def.on_rotate = function(pos, node, user, mode, new_param2)
 			-- mode 1 is left-click, mode 2 is right-click
