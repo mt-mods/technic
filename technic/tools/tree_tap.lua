@@ -1,5 +1,6 @@
 
 local S = technic.getter
+local mat = technic.materials
 local mesecons_materials = minetest.get_modpath("mesecons_materials")
 
 local function drop_raw_latex(pointed_thing, user)
@@ -46,8 +47,8 @@ minetest.register_tool("technic:treetap", {
 minetest.register_craft({
 	output = "technic:treetap",
 	recipe = {
-		{"pipeworks:tube_1", "group:wood",    "group:stick"},
-		{"",               "group:stick", "group:stick"}
+		{"pipeworks:tube_1", "group:wood",    mat.stick},
+		{"",               mat.stick, mat.stick}
 	},
 })
 
