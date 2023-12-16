@@ -90,7 +90,7 @@ minetest.register_node("technic:geothermal", {
 	tiles = {"technic_geothermal_top.png", "technic_machine_bottom.png", "technic_geothermal_side.png",
 	         "technic_geothermal_side.png", "technic_geothermal_side.png", "technic_geothermal_side.png"},
 	groups = {snappy=2, choppy=2, oddly_breakable_by_hand=2,
-		  technic_machine=1, technic_lv=1, axey=2, handy=1},
+		technic_machine=1, technic_lv=1, axey=2, handy=1},
 	_mcl_blast_resistance = 1,
 	_mcl_hardness = 0.8,
 	paramtype2 = "facedir",
