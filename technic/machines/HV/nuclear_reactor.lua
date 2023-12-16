@@ -491,7 +491,7 @@ minetest.register_node("technic:hv_nuclear_reactor_core_active", {
 	drawtype = "mesh",
 	mesh = "technic_reactor.obj",
 	groups = {cracky = 1, technic_machine = 1, technic_hv = 1, radioactive = 4,
-		  not_in_creative_inventory = 1, pickaxey = 3},
+		not_in_creative_inventory = 1, pickaxey = 3},
 	_mcl_blast_resistance = 1,
 	_mcl_hardness = 0.8,
 	legacy_facedir_simple = true,
