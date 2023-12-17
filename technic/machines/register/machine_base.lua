@@ -57,20 +57,12 @@ function technic.register_base_machine(nodename, data)
 		size..
 		"list[context;src;"..(4-input_size)..",1;"..input_size..",1;]"..
 		"list[context;dst;5,1;2,2;]"..
-		"label[0,0;"..def.description.."]"..
-		"listring[context;dst]"..
-		"listring[current_player;main]"..
-		"listring[context;src]"..
-		"listring[current_player;main]"
+		"label[0,0;"..def.description.."]"
 	if def.upgrade then
 		formspec = formspec..
 			"list[context;upgrade1;1,3;1,1;]"..
 			"list[context;upgrade2;2,3;1,1;]"..
-			"label[1,4;"..S("Upgrade Slots").."]"..
-			"listring[context;upgrade1]"..
-			"listring[current_player;main]"..
-			"listring[context;upgrade2]"..
-			"listring[current_player;main]"
+			"label[1,4;"..S("Upgrade Slots").."]"
 	end
 
 	if minetest.get_modpath("mcl_formspec") then
@@ -81,8 +73,7 @@ function technic.register_base_machine(nodename, data)
 			"list[current_player;main;0,5.5;9,3;9]"..
 			mcl_formspec.get_itemslot_bg(0,5.5,9,3)..
 			"list[current_player;main;0,8.74;9,1;]"..
-			mcl_formspec.get_itemslot_bg(0,8.74,9,1)..
-			"listring[current_player;main]"
+			mcl_formspec.get_itemslot_bg(0,8.74,9,1)
 		if def.upgrade then
 			formspec = formspec..
 			mcl_formspec.get_itemslot_bg(1,3,1,1)..
@@ -90,8 +81,21 @@ function technic.register_base_machine(nodename, data)
 		end
 	else
 		formspec = formspec..
-			"list[current_player;main;0,5;8,4;]"..
-			"listring[current_player;main]"
+			"list[current_player;main;0,5;8,4;]"
+	end
+
+	-- listrings
+	formspec = formspec..
+	"listring[context;dst]"..
+	"listring[current_player;main]"..
+	"listring[context;src]"..
+	"listring[current_player;main]"
+	if def.upgrade then
+		formspec = formspec..
+		"listring[context;upgrade1]"..
+		"listring[current_player;main]"..
+		"listring[context;upgrade2]"..
+		"listring[current_player;main]"
 	end
 
 	local tube = technic.new_default_tube()

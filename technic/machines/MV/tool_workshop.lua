@@ -26,13 +26,7 @@ local workshop_formspec =
 	"label[0,0;"..S("@1 Tool Workshop", S("MV")).."]"..
 	"list[context;upgrade1;1,3;1,1;]"..
 	"list[context;upgrade2;2,3;1,1;]"..
-	"label[1,4;"..S("Upgrade Slots").."]"..
-	"listring[context;src]"..
-	"listring[current_player;main]"..
-	"listring[context;upgrade1]"..
-	"listring[current_player;main]"..
-	"listring[context;upgrade2]"..
-	"listring[current_player;main]"
+	"label[1,4;"..S("Upgrade Slots").."]"
 
 if minetest.get_modpath("mcl_formspec") then
 	workshop_formspec = workshop_formspec..
@@ -43,13 +37,21 @@ if minetest.get_modpath("mcl_formspec") then
 	"list[current_player;main;0,4.5;9,3;9]"..
 	mcl_formspec.get_itemslot_bg(0,4.5,9,3)..
 	"list[current_player;main;0,7.74;9,1;]"..
-	mcl_formspec.get_itemslot_bg(0,7.74,9,1)..
-	"listring[current_player;main]"
+	mcl_formspec.get_itemslot_bg(0,7.74,9,1)
 else
 	workshop_formspec = workshop_formspec..
-	"list[current_player;main;0,5;8,4;]"..
-	"listring[current_player;main]"
+	"list[current_player;main;0,5;8,4;]"
 end
+
+-- listrings
+workshop_formspec = workshop_formspec..
+	"listring[current_player;main]"..
+	"listring[context;src]"..
+	"listring[current_player;main]"..
+	"listring[context;upgrade1]"..
+	"listring[current_player;main]"..
+	"listring[context;upgrade2]"..
+	"listring[current_player;main]"
 
 local run = function(pos, node)
 	local meta         = minetest.get_meta(pos)

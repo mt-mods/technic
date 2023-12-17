@@ -21,12 +21,7 @@ local formspec =
 	"image[2,2;1,1;default_furnace_fire_bg.png]"..
 	"list[context;fuel;2,3;1,1;]"..
 	"list[context;src;2,1;2,1;]"..
-	"list[context;dst;5,1;2,2;]"..
-	"listring[context;dst]"..
-	"listring[context;src]"..
-	"listring[current_player;main]"..
-	"listring[context;fuel]"..
-	"listring[current_player;main]"
+	"list[context;dst;5,1;2,2;]"
 
 if minetest.get_modpath("mcl_formspec") then
 	formspec = formspec..
@@ -37,13 +32,20 @@ if minetest.get_modpath("mcl_formspec") then
 	"list[current_player;main;0,4.5;9,3;9]"..
 	mcl_formspec.get_itemslot_bg(0,4.5,9,3)..
 	"list[current_player;main;0,7.74;9,1;]"..
-	mcl_formspec.get_itemslot_bg(0,7.74,9,1)..
-	"listring[current_player;main]"
+	mcl_formspec.get_itemslot_bg(0,7.74,9,1)
 else
 	formspec = formspec..
-	"list[current_player;main;0,5;8,4;]"..
-	"listring[current_player;main]"
+	"list[current_player;main;0,5;8,4;]"
 end
+
+-- listrings
+formspec = formspec..
+	"listring[context;dst]"..
+	"listring[current_player;main]"..
+	"listring[context;src]"..
+	"listring[current_player;main]"..
+	"listring[context;fuel]"..
+	"listring[current_player;main]"
 
 minetest.register_node("technic:coal_alloy_furnace", {
 	description = machine_name,
@@ -151,7 +153,19 @@ minetest.register_abm({
 					"list[context;fuel;2,3;1,1;]"..
 					"list[context;src;2,1;2,1;]"..
 					"list[context;dst;5,1;2,2;]"..
-					"list[current_player;main;0,5;8,4;]"..
+
+					(minetest.get_modpath("mcl_formspec") and
+						mcl_formspec.get_itemslot_bg(2,3,1,1)..
+						mcl_formspec.get_itemslot_bg(2,1,2,1)..
+						mcl_formspec.get_itemslot_bg(5,1,2,2)..
+						-- player inventory
+						"list[current_player;main;0,4.5;9,3;9]"..
+						mcl_formspec.get_itemslot_bg(0,4.5,9,3)..
+						"list[current_player;main;0,7.74;9,1;]"..
+						mcl_formspec.get_itemslot_bg(0,7.74,9,1)
+					or "list[current_player;main;0,5;8,4;]")..
+
+					-- listrings
 					"listring[context;dst]"..
 					"listring[current_player;main]"..
 					"listring[context;src]"..

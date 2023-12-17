@@ -263,6 +263,7 @@ local size = minetest.get_modpath("mcl_formspec") and "size[9,10]" or "size[8,9]
 local base_formspec = size..
 	"label[0,0;"..S("@1 Quarry", S("HV")).."]"..
 	"list[context;cache;0,0.7;4,3;]"..
+	"listring[context;cache]"..
 	"button[6,0.6;2,1;restart;"..S("Restart").."]"..
 	"field[4.3,2.1;2,1;size;"..S("Radius")..";${size}]"..
 	"field[6.3,2.1;2,1;max_depth;"..S("Max Depth")..";${max_depth}]"..
@@ -287,7 +288,7 @@ if has_mcl then
 else
 	base_formspec = base_formspec..
 	"list[current_player;main;0,5;8,4;]"..
-	"listring[]"
+	"listring[current_player;main]"
 end
 
 local function update_formspec(meta)

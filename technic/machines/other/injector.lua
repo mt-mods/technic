@@ -16,7 +16,8 @@ local param2_to_under = {
 local size = minetest.get_modpath("mcl_formspec") and "size[9,10]" or "size[8,9]"
 local base_formspec = size..
 	"label[0,0;"..S("Self-Contained Injector").."]"..
-	"list[context;main;0,2;8,2;]"
+	"list[context;main;0,2;8,2;]"..
+	"listring[context;main]"
 
 if minetest.get_modpath("mcl_formspec") then
 	base_formspec = base_formspec..
@@ -30,7 +31,7 @@ if minetest.get_modpath("mcl_formspec") then
 else
 	base_formspec = base_formspec..
 	"list[current_player;main;0,5;8,4;]"..
-	"listring[]"
+	"listring[current_player;main]"
 end
 
 local function set_injector_formspec(pos)

@@ -37,6 +37,7 @@ local function make_reactor_formspec(meta)
 	local f = size..
 		"label[0,0;"..S("Nuclear Reactor Rod Compartment").."]"..
 		"list[context;src;2,1;3,2;]"..
+		"listring[context;src]"..
 		"button[5.5,1.5;2,1;start;"..S("Start").."]"..
 		"checkbox[5.5,2.5;autostart;"..S("Automatic Start")..";"..meta:get_string("autostart").."]"
 	if has_mcl then
@@ -51,7 +52,7 @@ local function make_reactor_formspec(meta)
 	else
 		f = f..
 		"list[current_player;main;0,5;8,4;]"..
-		"listring[]"
+		"listring[current_player;main]"
 	end
 	if not has_digilines then
 		return f

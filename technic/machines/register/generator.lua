@@ -26,6 +26,7 @@ local function update_generator_formspec(meta, desc, percent, form_buttons)
 	local generator_formspec = size..
 		"label[0, 0;"..desc.."]"..
 		"list[context;src;3,1;1,1;]"..
+		"listring[context;src]"..
 		"image[4,1;1,1;default_furnace_fire_bg.png^[lowpart:"..
 		(percent)..":default_furnace_fire_fg.png]"..
 		form_buttons
@@ -65,6 +66,7 @@ function technic.register_generator(data)
 		size..
 		"label[0,0;"..S("Fuel-Fired @1 Generator", S(tier)).."]"..
 		"list[context;src;3,1;1,1;]"..
+		"listring[context;src]"..
 		"image[4,1;1,1;default_furnace_fire_bg.png]"
 
 	if minetest.get_modpath("mcl_formspec") then

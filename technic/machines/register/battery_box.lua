@@ -125,18 +125,10 @@ function technic.register_battery_box(nodename, data)
 		"label[3,0;"..S("Charge").."]"..
 		"label[5,0;"..S("Discharge").."]"..
 		"label[1,3;"..S("Power level").."]"..
-		"listring[context;dst]"..
-		"listring[current_player;main]"..
-		"listring[context;src]"..
-		"listring[current_player;main]"..
 		(def.upgrade and
 			"list[context;upgrade1;3.5,3;1,1;]"..
 			"list[context;upgrade2;4.5,3;1,1;]"..
-			"label[3.5,4;"..S("Upgrade Slots").."]"..
-			"listring[context;upgrade1]"..
-			"listring[current_player;main]"..
-			"listring[context;upgrade2]"..
-			"listring[current_player;main]"
+			"label[3.5,4;"..S("Upgrade Slots").."]"
 			or "")
 
 	if minetest.get_modpath("mcl_formspec") then
@@ -148,7 +140,6 @@ function technic.register_battery_box(nodename, data)
 			mcl_formspec.get_itemslot_bg(0,4.5,9,3)..
 			"list[current_player;main;0,7.74;9,1;]"..
 			mcl_formspec.get_itemslot_bg(0,7.74,9,1)..
-			"listring[current_player;main]"..
 			-- upgrade
 			(def.upgrade and
 				mcl_formspec.get_itemslot_bg(3.5,3,1,1)..
@@ -158,6 +149,20 @@ function technic.register_battery_box(nodename, data)
 		formspec = formspec..
 		"list[current_player;main;0,5;8,4;]"
 	end
+
+	-- listrings
+	formspec = formspec..
+	"listring[context;dst]"..
+	"listring[current_player;main]"..
+	"listring[context;src]"..
+	"listring[current_player;main]"..
+	(def.upgrade and
+	"listring[context;upgrade1]"..
+	"listring[current_player;main]"..
+	"listring[context;upgrade2]"..
+	"listring[current_player;main]"
+	or "")
+
 
 
 	--

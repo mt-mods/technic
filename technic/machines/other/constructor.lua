@@ -155,8 +155,7 @@ local function make_constructor(mark, length)
 			for i = 1, length do
 				formspec = formspec..
 					"label[5,"..(i - 1)..";"..S("Slot @1", i).."]"..
-					"list[context;slot"..i..";6,"..(i - 1)..";1,1;]"..
-					"listring[context;slot"..i.."]"
+					"list[context;slot"..i..";6,"..(i - 1)..";1,1;]"
 			end
 			if minetest.get_modpath("mcl_formspec") then
 				for i = 1, length do
@@ -168,13 +167,18 @@ local function make_constructor(mark, length)
 				"list[current_player;main;0,4.5;9,3;9]"..
 				mcl_formspec.get_itemslot_bg(0,4.5,9,3)..
 				"list[current_player;main;0,7.74;9,1;]"..
-				mcl_formspec.get_itemslot_bg(0,7.74,9,1)..
-				"listring[current_player;main]"
+				mcl_formspec.get_itemslot_bg(0,7.74,9,1)
 			else
 				formspec = formspec..
-				"list[current_player;main;0,5;8,4;]"..
-				"listring[current_player;main]"
+				"list[current_player;main;0,5;8,4;]"
 			end
+			-- listrings
+			for i = 1, length do
+				formspec = formspec..
+				"listring[current_player;main]"..
+				"listring[context;slot"..i.."]"
+			end
+
 			meta:set_string("formspec", formspec)
 			meta:set_string("infotext", S("Constructor Mk@1", mark))
 			local inv = meta:get_inventory()
