@@ -162,14 +162,11 @@ local function reactor_structure_badness(pos)
 	local data = vm:get_data()
 	local area = VoxelArea:new({MinEdge=MinEdge, MaxEdge=MaxEdge})
 
-	local water_source = has_mcl and "mcl_core:water_source" or "default:water_source"
-	local water_flowing = has_mcl and "mcl_core:water_flowing" or "default:water_flowing"
-
 	local c_blast_concrete = minetest.get_content_id("technic:blast_resistant_concrete")
 	local c_lead = minetest.get_content_id("technic:lead_block")
 	local c_steel = minetest.get_content_id("technic:stainless_steel_block")
-	local c_water_source = minetest.get_content_id(water_source)
-	local c_water_flowing = minetest.get_content_id(water_flowing)
+	local c_water_source = minetest.get_content_id(mat.water_source)
+	local c_water_flowing = minetest.get_content_id(mat.water_flowing)
 
 	local blast_layer, steel_layer, lead_layer, water_layer = 0, 0, 0, 0
 
