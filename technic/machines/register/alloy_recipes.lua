@@ -29,6 +29,7 @@ local recipes = {
 	-- "[Compounding a] pure gum vulcanizate … with 50% of its weight of carbon black
 	-- improves its tensile strength and wear resistance …"
 	{"technic:raw_latex 4",           "technic:coal_dust 2",        "technic:rubber 6", 2},
+	{"technic:raw_latex 2",           mat.coal_lump,        "technic:rubber 2", 2},
 	{mat.ice,                   mat.bucket_empty,        mat.bucket_water, 1 },
 	{mat.obsidian,              mat.bucket_empty,        mat.bucket_lava, 1 },
 }
