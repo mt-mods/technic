@@ -28,7 +28,7 @@ local function update_generator_formspec(meta, desc, percent, form_buttons)
 		"list[context;src;3,1;1,1;]"..
 		"listring[context;src]"..
 		"image[4,1;1,1;default_furnace_fire_bg.png^[lowpart:"..
-		(percent)..":default_furnace_fire_fg.png]"..
+		(percent or 0)..":default_furnace_fire_fg.png]"..
 		form_buttons
 
 	if minetest.get_modpath("mcl_formspec") then
@@ -61,28 +61,6 @@ function technic.register_generator(data)
 	end
 	local active_groups = {not_in_creative_inventory = 1}
 	for k, v in pairs(groups) do active_groups[k] = v end
-
-	local generator_formspec =
-		size..
-		"label[0,0;"..S("Fuel-Fired @1 Generator", S(tier)).."]"..
-		"list[context;src;3,1;1,1;]"..
-		"listring[context;src]"..
-		"image[4,1;1,1;default_furnace_fire_bg.png]"
-
-	if minetest.get_modpath("mcl_formspec") then
-		generator_formspec = generator_formspec..
-			mcl_formspec.get_itemslot_bg(3,1,1,1)..
-			-- player inventory
-			"list[current_player;main;0,5.5;9,3;9]"..
-			mcl_formspec.get_itemslot_bg(0,5.5,9,3)..
-			"list[current_player;main;0,8.74;9,1;]"..
-			mcl_formspec.get_itemslot_bg(0,8.74,9,1)..
-			"listring[current_player;main]"
-	else
-		generator_formspec = generator_formspec..
-			"list[current_player;main;0,5;8,4;]"..
-			"listring[current_player;main]"
-	end
 
 	local desc = S("Fuel-Fired @1 Generator", S(tier))
 
@@ -181,7 +159,7 @@ function technic.register_generator(data)
 						}
 					)..pipeworks.button_label
 			end
-			meta:set_string("formspec", generator_formspec..form_buttons)
+			update_generator_formspec(meta, desc, percent, form_buttons)
 			local inv = meta:get_inventory()
 			inv:set_size("src", 1)
 		end,
@@ -209,7 +187,7 @@ function technic.register_generator(data)
 						}
 					)..pipeworks.button_label
 			end
-			meta:set_string("formspec", generator_formspec..form_buttons)
+			update_generator_formspec(meta, desc, percent, form_buttons)
 		end,
 	})
 
