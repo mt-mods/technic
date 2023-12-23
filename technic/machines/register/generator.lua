@@ -28,7 +28,7 @@ local function update_generator_formspec(meta, desc, percent, form_buttons)
 		"list[context;src;3,1;1,1;]"..
 		"listring[context;src]"..
 		"image[4,1;1,1;default_furnace_fire_bg.png^[lowpart:"..
-		(percent or 0)..":default_furnace_fire_fg.png]"..
+		(percent)..":default_furnace_fire_fg.png]"..
 		form_buttons
 
 	if minetest.get_modpath("mcl_formspec") then
@@ -159,7 +159,7 @@ function technic.register_generator(data)
 						}
 					)..pipeworks.button_label
 			end
-			update_generator_formspec(meta, desc, percent, form_buttons)
+			update_generator_formspec(meta, desc, 0, form_buttons)
 			local inv = meta:get_inventory()
 			inv:set_size("src", 1)
 		end,
@@ -187,6 +187,9 @@ function technic.register_generator(data)
 						}
 					)..pipeworks.button_label
 			end
+			local burn_totaltime = meta:get_int("burn_totaltime") or 0
+			local burn_time = meta:get_int("burn_time")
+			local percent = math.floor(burn_time / burn_totaltime * 100)
 			update_generator_formspec(meta, desc, percent, form_buttons)
 		end,
 	})
