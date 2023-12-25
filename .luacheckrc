@@ -29,7 +29,7 @@ read_globals = {
 	"drawers", "mg",
 	"craftguide", "i3", "mtt",
 	"vizlib", "mcl_sounds", "mcl_vars",
-	"mcl_worlds",
+	"mcl_worlds", "exchangeclone",
 
 	-- Only used in technic/machines/MV/lighting.lua (disabled)
 	"isprotect", "homedecor_expect_infinite_stacks",
