@@ -117,7 +117,7 @@ minetest.register_craft({
 minetest.register_craft({
 	output = 'technic:lv_transformer',
 	recipe = {
-		{mat.isolation,                    'technic:wrought_iron_ingot', mat.isolation},
+		{mat.insulation,                    'technic:wrought_iron_ingot', mat.insulation},
 		{'technic:copper_coil',        'technic:wrought_iron_ingot', 'technic:copper_coil'},
 		{'technic:wrought_iron_ingot', 'technic:wrought_iron_ingot', 'technic:wrought_iron_ingot'},
 	}
@@ -126,7 +126,7 @@ minetest.register_craft({
 minetest.register_craft({
 	output = 'technic:mv_transformer',
 	recipe = {
-		{mat.isolation,                    'technic:carbon_steel_ingot', mat.isolation},
+		{mat.insulation,                    'technic:carbon_steel_ingot', mat.insulation},
 		{'technic:copper_coil',        'technic:carbon_steel_ingot', 'technic:copper_coil'},
 		{'technic:carbon_steel_ingot', 'technic:carbon_steel_ingot', 'technic:carbon_steel_ingot'},
 	}
@@ -135,7 +135,7 @@ minetest.register_craft({
 minetest.register_craft({
 	output = 'technic:hv_transformer',
 	recipe = {
-		{mat.isolation,                       'technic:stainless_steel_ingot', mat.isolation},
+		{mat.insulation,                       'technic:stainless_steel_ingot', mat.insulation},
 		{'technic:copper_coil',           'technic:stainless_steel_ingot', 'technic:copper_coil'},
 		{'technic:stainless_steel_ingot', 'technic:stainless_steel_ingot', 'technic:stainless_steel_ingot'},
 	}
