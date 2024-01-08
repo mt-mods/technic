@@ -7,7 +7,7 @@ technic.version = 1.2
 if minetest.get_modpath("mcl_sounds") then
 	technic.sounds = mcl_sounds
 else
-	technic.sounds = default or {}
+	technic.sounds = assert(default, "No suitable mod found for sounds")
 end
 
 technic.creative_mode = minetest.settings:get_bool("creative_mode")
