@@ -6,7 +6,6 @@ A mod for [minetest](http://www.minetest.net)
 ![integration-test](https://github.com/mt-mods/technic/workflows/integration-test/badge.svg)
 ![luacheck](https://github.com/mt-mods/technic/workflows/luacheck/badge.svg)
 ![mineunit](https://github.com/mt-mods/technic/workflows/mineunit/badge.svg)
-![mtinfo](https://github.com/mt-mods/technic/workflows/mtinfo/badge.svg)
 ![](https://byob.yarr.is/mt-mods/technic/coverage)
 
 [![License](https://img.shields.io/badge/license-LGPLv2.0%2B-purple.svg)](https://www.gnu.org/licenses/old-licenses/lgpl-2.0.en.html)
@@ -39,7 +38,6 @@ their own manuals:
 * [Pipeworks Documentation](https://github.com/mt-mods/pipeworks/-/wikis/home)
 * [Moreores Forum Post](https://forum.minetest.net/viewtopic.php?t=549)
 * [Basic materials Repository](https://github.com/mt-mods/basic_materials)
-* [mtinfo generated documentation](https://mt-mods.github.io/technic/#/mods/technic/items)
 
 Recipes for constructable items in technic are generally not guessable,
 and are also not specifically documented here.  You should use a
