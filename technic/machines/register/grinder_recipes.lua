@@ -1,5 +1,6 @@
 
 local S = technic.getter
+local mat = technic.materials
 
 technic.register_recipe_type("grinding", {
 	description = S("Grinding"),
@@ -13,30 +14,30 @@ end
 
 local recipes = {
 	-- Dusts
-	{"default:coal_lump",          "technic:coal_dust 2"},
-	{"default:copper_lump",        "technic:copper_dust 2"},
-	{"default:desert_stone",       "default:desert_sand"},
-	{"default:gold_lump",          "technic:gold_dust 2"},
-	{"default:iron_lump",          "technic:wrought_iron_dust 2"},
-	{"default:tin_lump",           "technic:tin_dust 2"},
+	{mat.coal_lump,          "technic:coal_dust 2"},
+	{mat.copper_lump,        "technic:copper_dust 2"},
+	{mat.desert_stone,       mat.desert_sand},
+	{mat.gold_lump,          "technic:gold_dust 2"},
+	{mat.iron_lump,          "technic:wrought_iron_dust 2"},
+	{mat.tin_lump,           "technic:tin_dust 2"},
 	{"technic:chromium_lump",      "technic:chromium_dust 2"},
 	{"technic:uranium_lump",       "technic:uranium_dust 2"},
 	{"technic:zinc_lump",          "technic:zinc_dust 2"},
 	{"technic:lead_lump",          "technic:lead_dust 2"},
 	{"technic:sulfur_lump",        "technic:sulfur_dust 2"},
-	{"default:stone",              "technic:stone_dust"},
-	{"default:sand",               "technic:stone_dust"},
-	{"default:desert_sand",        "technic:stone_dust"},
-	{"default:silver_sand",        "technic:stone_dust"},
+	{mat.stone,              "technic:stone_dust"},
+	{mat.sand,               "technic:stone_dust"},
+	{mat.desert_sand,        "technic:stone_dust"},
+	{mat.silver_sand,        "technic:stone_dust"},
 
 	-- Other
-	{"default:cobble",           "default:gravel"},
-	{"default:gravel",           "default:sand"},
-	{"default:sandstone",        "default:sand 2"}, -- reverse recipe can be found in the compressor
-	{"default:desert_sandstone", "default:desert_sand 2"}, -- reverse recipe can be found in the compressor
-	{"default:silver_sandstone", "default:silver_sand 2"}, -- reverse recipe can be found in the compressor
+	{mat.cobble,           mat.gravel},
+	{mat.gravel,           mat.sand},
+	{mat.sandstone,        mat.sand.." 2"}, -- reverse recipe can be found in the compressor
+	{mat.desert_sandstone, mat.desert_sand.." 2"}, -- reverse recipe can be found in the compressor
+	{mat.silver_sandstone, mat.silver_sand.." 2"}, -- reverse recipe can be found in the compressor
 
-	{"default:ice",              "default:snowblock"},
+	{mat.ice,              mat.snowblock},
 }
 
 if minetest.get_modpath("ethereal") then
@@ -47,22 +48,22 @@ end
 -- defuse the sandstone -> 4 sand recipe to avoid infinite sand bugs (also consult the inverse compressor recipe)
 minetest.clear_craft({
 	recipe = {
-		{"default:sandstone"}
+		{mat.sandstone}
 	},
 })
 minetest.clear_craft({
 	recipe = {
-		{"default:desert_sandstone"}
+		{mat.desert_sandstone}
 	},
 })
 minetest.clear_craft({
 	recipe = {
-		{"default:silver_sandstone"}
+		{mat.silver_sandstone}
 	},
 })
 
 if minetest.get_modpath("farming") then
-	table.insert(recipes, {"farming:seed_wheat",   "farming:flour 1"})
+	table.insert(recipes, {mat.seed_wheat,   "farming:flour 1"})
 end
 
 if minetest.get_modpath("moreores") then
@@ -106,21 +107,21 @@ end
 
 -- Sorted alphibeticaly
 register_dust("Brass",           "basic_materials:brass_ingot")
-register_dust("Bronze",          "default:bronze_ingot")
+register_dust("Bronze",          mat.bronze_ingot)
 register_dust("Carbon Steel",    "technic:carbon_steel_ingot")
 register_dust("Cast Iron",       "technic:cast_iron_ingot")
 register_dust("Chernobylite",    "technic:chernobylite_block")
 register_dust("Chromium",        "technic:chromium_ingot")
 register_dust("Coal",            nil)
-register_dust("Copper",          "default:copper_ingot")
+register_dust("Copper",          mat.copper_ingot)
 register_dust("Lead",            "technic:lead_ingot")
-register_dust("Gold",            "default:gold_ingot")
-register_dust("Mithril",         "moreores:mithril_ingot")
-register_dust("Silver",          "moreores:silver_ingot")
+register_dust("Gold",            mat.gold_ingot)
+register_dust("Mithril",         mat.mithril_ingot)
+register_dust("Silver",          mat.silver_ingot)
 register_dust("Stainless Steel", "technic:stainless_steel_ingot")
-register_dust("Stone",           "default:stone")
+register_dust("Stone",           mat.stone)
 register_dust("Sulfur",          nil)
-register_dust("Tin",             "default:tin_ingot")
+register_dust("Tin",             mat.tin_ingot)
 register_dust("Wrought Iron",    "technic:wrought_iron_ingot")
 register_dust("Zinc",            "technic:zinc_ingot")
 if minetest.get_modpath("gloopores") or minetest.get_modpath("glooptest") then

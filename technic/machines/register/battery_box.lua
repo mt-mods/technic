@@ -4,15 +4,16 @@ local digilines_path = minetest.get_modpath("digilines")
 local S = technic.getter
 local tube_entry = "^pipeworks_tube_connection_metallic.png"
 local cable_entry = "^technic_cable_connection_overlay.png"
+local mat = technic.materials
 
 -- Battery recipes:
 -- Tin-copper recipe:
 minetest.register_craft({
 	output = "technic:battery",
 	recipe = {
-		{"group:wood", "default:copper_ingot", "group:wood"},
-		{"group:wood", "default:tin_ingot",    "group:wood"},
-		{"group:wood", "default:copper_ingot", "group:wood"},
+		{"group:wood", mat.copper_ingot, "group:wood"},
+		{"group:wood", mat.tin_ingot,    "group:wood"},
+		{"group:wood", mat.copper_ingot, "group:wood"},
 	}
 })
 -- Sulfur-lead-water recipes:
@@ -22,11 +23,11 @@ minetest.register_craft({
 	output = "technic:battery",
 	recipe = {
 		{"group:wood",         "technic:sulfur_lump", "group:wood"},
-		{"technic:lead_ingot", "bucket:bucket_water", "technic:lead_ingot"},
+		{"technic:lead_ingot", mat.bucket_water, "technic:lead_ingot"},
 		{"group:wood",         "technic:sulfur_lump", "group:wood"},
 	},
 	replacements = {
-		{"bucket:bucket_water", "bucket:bucket_empty"}
+		{mat.bucket_water, mat.bucket_empty}
 	}
 })
 -- With oil extract:
@@ -44,11 +45,11 @@ minetest.register_craft({
 	output = "technic:battery",
 	recipe = {
 		{"group:wood",         "technic:sulfur_dust", "group:wood"},
-		{"technic:lead_ingot", "bucket:bucket_water", "technic:lead_ingot"},
+		{"technic:lead_ingot", mat.bucket_water, "technic:lead_ingot"},
 		{"group:wood",         "technic:sulfur_dust", "group:wood"},
 	},
 	replacements = {
-		{"bucket:bucket_water", "bucket:bucket_empty"}
+		{mat.bucket_water, mat.bucket_empty}
 	}
 })
 -- With oil extract:
@@ -113,8 +114,9 @@ function technic.register_battery_box(nodename, data)
 	local tier = def.tier
 	local ltier = string.lower(tier)
 
+	local size = minetest.get_modpath("mcl_formspec") and "size[9,9]" or "size[8,9]"
 	local formspec =
-		"size[8,9]"..
+		size..
 		"image[1,1;1,2;technic_power_meter_bg.png]"..
 		"list[context;src;3,1;1,1;]"..
 		"image[4,1;1,1;technic_battery_reload.png]"..
@@ -123,20 +125,45 @@ function technic.register_battery_box(nodename, data)
 		"label[3,0;"..S("Charge").."]"..
 		"label[5,0;"..S("Discharge").."]"..
 		"label[1,3;"..S("Power level").."]"..
-		"list[current_player;main;0,5;8,4;]"..
-		"listring[context;dst]"..
-		"listring[current_player;main]"..
-		"listring[context;src]"..
-		"listring[current_player;main]"..
 		(def.upgrade and
 			"list[context;upgrade1;3.5,3;1,1;]"..
 			"list[context;upgrade2;4.5,3;1,1;]"..
-			"label[3.5,4;"..S("Upgrade Slots").."]"..
-			"listring[context;upgrade1]"..
-			"listring[current_player;main]"..
-			"listring[context;upgrade2]"..
-			"listring[current_player;main]"
-		or "")
+			"label[3.5,4;"..S("Upgrade Slots").."]"
+			or "")
+
+	if minetest.get_modpath("mcl_formspec") then
+		formspec = formspec..
+			mcl_formspec.get_itemslot_bg(3,1,1,1)..
+			mcl_formspec.get_itemslot_bg(5,1,1,1)..
+			-- player inventory
+			"list[current_player;main;0,4.5;9,3;9]"..
+			mcl_formspec.get_itemslot_bg(0,4.5,9,3)..
+			"list[current_player;main;0,7.74;9,1;]"..
+			mcl_formspec.get_itemslot_bg(0,7.74,9,1)..
+			-- upgrade
+			(def.upgrade and
+				mcl_formspec.get_itemslot_bg(3.5,3,1,1)..
+				mcl_formspec.get_itemslot_bg(4.5,3,1,1)
+			or "")
+	else
+		formspec = formspec..
+		"list[current_player;main;0,5;8,4;]"
+	end
+
+	-- listrings
+	formspec = formspec..
+	"listring[context;dst]"..
+	"listring[current_player;main]"..
+	"listring[context;src]"..
+	"listring[current_player;main]"..
+	(def.upgrade and
+	"listring[context;upgrade1]"..
+	"listring[current_player;main]"..
+	"listring[context;upgrade2]"..
+	"listring[current_player;main]"
+	or "")
+
+
 
 	--
 	-- Generate formspec with power meter
@@ -306,7 +333,7 @@ function technic.register_battery_box(nodename, data)
 
 	for i = 0, 8 do
 		local groups = {snappy=2, choppy=2, oddly_breakable_by_hand=2,
-				technic_machine=1, ["technic_"..ltier]=1}
+				technic_machine=1, ["technic_"..ltier]=1, axey=2, handy=1}
 		if i ~= 0 then
 			groups.not_in_creative_inventory = 1
 		end
@@ -336,10 +363,12 @@ function technic.register_battery_box(nodename, data)
 				side_tex,
 				front_tex},
 			groups = groups,
+			_mcl_blast_resistance = 1,
+			_mcl_hardness = 0.8,
 			connect_sides = {"bottom"},
 			tube = def.tube and tube or nil,
 			paramtype2 = "facedir",
-			sounds = default.node_sound_wood_defaults(),
+			sounds = technic.sounds.node_sound_wood_defaults(),
 			drop = "technic:"..ltier.."_battery_box0",
 			on_construct = function(pos)
 				local meta = minetest.get_meta(pos)

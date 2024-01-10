@@ -181,9 +181,11 @@ minetest.register_node("technic:supply_converter", {
 		"technic_supply_converter_side.png"
 		},
 	groups = {snappy=2, choppy=2, oddly_breakable_by_hand=2,
-		technic_machine=1, technic_all_tiers=1},
+		technic_machine=1, technic_all_tiers=1, axey=2, handy=1},
+	_mcl_blast_resistance = 1,
+	_mcl_hardness = 0.8,
 	connect_sides = {"top", "bottom"},
-	sounds = default.node_sound_wood_defaults(),
+	sounds = technic.sounds.node_sound_wood_defaults(),
 	on_receive_fields = supply_converter_receive_fields,
 	on_construct = function(pos)
 		local meta = minetest.get_meta(pos)

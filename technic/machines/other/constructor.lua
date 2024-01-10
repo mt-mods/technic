@@ -142,21 +142,43 @@ local function make_constructor(mark, length)
 			"technic_constructor_front_off.png"},
 		paramtype2 = "facedir",
 		groups = {snappy=2, choppy=2, oddly_breakable_by_hand=2,
-			mesecon = 2, technic_constructor = 1},
+			mesecon = 2, technic_constructor = 1, axey=2, handy=1},
+		_mcl_blast_resistance = 1,
+		_mcl_hardness = 0.8,
 		mesecons = {effector = {action_on = make_on(mark, length)}},
-		sounds = default.node_sound_stone_defaults(),
+		sounds = technic.sounds.node_sound_stone_defaults(),
 		on_construct = function(pos)
 			local meta = minetest.get_meta(pos)
-			local formspec = "size[8,9;]"..
-				"label[0,0;"..S("Constructor Mk@1", mark).."]"..
-				"list[current_player;main;0,5;8,4;]"..
-				"listring[current_player;main]"
+			local size = minetest.get_modpath("mcl_formspec") and "size[9,9]" or "size[8,9]"
+			local formspec = size..
+				"label[0,0;"..S("Constructor Mk@1", mark).."]"
 			for i = 1, length do
 				formspec = formspec..
 					"label[5,"..(i - 1)..";"..S("Slot @1", i).."]"..
-					"list[context;slot"..i..";6,"..(i - 1)..";1,1;]"..
-					"listring[context;slot"..i.."]"
+					"list[context;slot"..i..";6,"..(i - 1)..";1,1;]"
 			end
+			if minetest.get_modpath("mcl_formspec") then
+				for i = 1, length do
+					formspec = formspec..
+					mcl_formspec.get_itemslot_bg(6,i-1,1,1)
+				end
+				formspec = formspec..
+				-- player inventory
+				"list[current_player;main;0,4.5;9,3;9]"..
+				mcl_formspec.get_itemslot_bg(0,4.5,9,3)..
+				"list[current_player;main;0,7.74;9,1;]"..
+				mcl_formspec.get_itemslot_bg(0,7.74,9,1)
+			else
+				formspec = formspec..
+				"list[current_player;main;0,5;8,4;]"
+			end
+			-- listrings
+			for i = 1, length do
+				formspec = formspec..
+				"listring[current_player;main]"..
+				"listring[context;slot"..i.."]"
+			end
+
 			meta:set_string("formspec", formspec)
 			meta:set_string("infotext", S("Constructor Mk@1", mark))
 			local inv = meta:get_inventory()
@@ -199,9 +221,11 @@ local function make_constructor(mark, length)
 		paramtype2 = "facedir",
 		drop = "technic:constructor_mk"..mark.."_off",
 		groups = {snappy=2, choppy=2, oddly_breakable_by_hand=2,
-			mesecon=2, not_in_creative_inventory=1, technic_constructor=1},
+			mesecon=2, not_in_creative_inventory=1, technic_constructor=1, axey=2, handy=1},
+		_mcl_blast_resistance = 1,
+		_mcl_hardness = 0.8,
 		mesecons= {effector = {action_off = make_off(mark)}},
-		sounds = default.node_sound_stone_defaults(),
+		sounds = technic.sounds.node_sound_stone_defaults(),
 		allow_metadata_inventory_put = allow_inventory_put,
 		allow_metadata_inventory_take = technic.machine_inventory_take,
 		allow_metadata_inventory_move = technic.machine_inventory_move,

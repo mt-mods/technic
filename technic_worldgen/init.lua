@@ -33,9 +33,20 @@ if minetest.get_modpath("mg") then
 	dofile(modpath.."/mg.lua")
 end
 
-minetest.register_alias("technic:wrought_iron_ingot", "default:steel_ingot")
 minetest.register_alias("technic:uranium", "technic:uranium_lump")
-minetest.register_alias("technic:wrought_iron_block", "default:steelblock")
-minetest.register_alias("technic:diamond_block", "default:diamondblock")
-minetest.register_alias("technic:diamond", "default:diamond")
-minetest.register_alias("technic:mineral_diamond", "default:stone_with_diamond")
+
+if minetest.get_modpath("default") then
+	minetest.register_alias("technic:wrought_iron_ingot", "default:steel_ingot")
+	minetest.register_alias("technic:wrought_iron_block", "default:steelblock")
+	minetest.register_alias("technic:diamond_block", "default:diamondblock")
+	minetest.register_alias("technic:diamond", "default:diamond")
+	minetest.register_alias("technic:mineral_diamond", "default:stone_with_diamond")
+end
+
+if minetest.get_modpath("mcl_core") then
+	minetest.register_alias("technic:wrought_iron_ingot", "mcl_core:iron_ingot")
+	minetest.register_alias("technic:wrought_iron_block", "mcl_core:ironblock")
+	minetest.register_alias("technic:diamond_block", "mcl_core:diamondblock")
+	minetest.register_alias("technic:diamond", "mcl_core:diamond")
+	minetest.register_alias("technic:mineral_diamond", "mcl_core:stone_with_diamond")
+end

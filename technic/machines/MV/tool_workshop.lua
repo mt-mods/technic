@@ -4,28 +4,47 @@
 minetest.register_alias("tool_workshop", "technic:tool_workshop")
 
 local S = technic.getter
+local mat = technic.materials
 
 local tube_entry = "^pipeworks_tube_connection_wooden.png"
 
 minetest.register_craft({
 	output = 'technic:tool_workshop',
 	recipe = {
-		{'group:wood',                         'default:diamond',        'group:wood'},
+		{'group:wood',                         mat.diamond,        'group:wood'},
 		{'mesecons_pistons:piston_sticky_off', 'technic:machine_casing', 'technic:carbon_cloth'},
-		{'default:obsidian',                   'technic:mv_cable',       'default:obsidian'},
+		{mat.obsidian,                   'technic:mv_cable',       mat.obsidian},
 	}
 })
 
 local workshop_demand = {5000, 3500, 2000}
 
+local size = minetest.get_modpath("mcl_formspec") and "size[9,9;]" or "size[8,9;]"
 local workshop_formspec =
-	"size[8,9;]"..
+	size..
 	"list[context;src;3,1;1,1;]"..
 	"label[0,0;"..S("@1 Tool Workshop", S("MV")).."]"..
 	"list[context;upgrade1;1,3;1,1;]"..
 	"list[context;upgrade2;2,3;1,1;]"..
-	"label[1,4;"..S("Upgrade Slots").."]"..
-	"list[current_player;main;0,5;8,4;]"..
+	"label[1,4;"..S("Upgrade Slots").."]"
+
+if minetest.get_modpath("mcl_formspec") then
+	workshop_formspec = workshop_formspec..
+	mcl_formspec.get_itemslot_bg(3,1,1,1)..
+	mcl_formspec.get_itemslot_bg(1,3,1,1)..
+	mcl_formspec.get_itemslot_bg(2,3,1,1)..
+	-- player inventory
+	"list[current_player;main;0,4.5;9,3;9]"..
+	mcl_formspec.get_itemslot_bg(0,4.5,9,3)..
+	"list[current_player;main;0,7.74;9,1;]"..
+	mcl_formspec.get_itemslot_bg(0,7.74,9,1)
+else
+	workshop_formspec = workshop_formspec..
+	"list[current_player;main;0,5;8,4;]"
+end
+
+-- listrings
+workshop_formspec = workshop_formspec..
 	"listring[current_player;main]"..
 	"listring[context;src]"..
 	"listring[current_player;main]"..
@@ -94,9 +113,11 @@ minetest.register_node("technic:tool_workshop", {
 		"technic_workshop_side.png"
 	},
 	groups = {snappy=2, choppy=2, oddly_breakable_by_hand=2,
-		technic_machine=1, technic_mv=1, tubedevice=1, tubedevice_receiver=1},
+		technic_machine=1, technic_mv=1, tubedevice=1, tubedevice_receiver=1, axey=2, handy=1},
+	_mcl_blast_resistance = 1,
+	_mcl_hardness = 0.8,
 	connect_sides = {"bottom", "back", "left", "right"},
-	sounds = default.node_sound_wood_defaults(),
+	sounds = technic.sounds.node_sound_wood_defaults(),
 	on_construct = function(pos)
 		local meta = minetest.get_meta(pos)
 		meta:set_string("infotext", S("@1 Tool Workshop", S("MV")))

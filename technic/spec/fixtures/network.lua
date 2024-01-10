@@ -29,8 +29,12 @@ _G.technic.digilines = {
 		{x =  0, y = -1, z = 0}, -- along y below
 	}
 }
+_G.technic.sounds = setmetatable({}, {
+	__index = function(...) return function(...) return "" end end,
+})
 
 sourcefile("config")
+sourcefile("materials")
 sourcefile("register")
 technic.register_tier("LV", "Busted LV")
 technic.register_tier("MV", "Busted MV")

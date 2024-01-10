@@ -1,6 +1,7 @@
 
 local have_ui = minetest.get_modpath("unified_inventory")
 local have_cg = minetest.get_modpath("craftguide")
+local have_mcl_cg = minetest.get_modpath("mcl_craftguide")
 local have_i3 = minetest.get_modpath("i3")
 
 technic.recipes = { cooking = { input_size = 1, output_size = 1 } }
@@ -19,6 +20,12 @@ function technic.register_recipe_type(typename, origdata)
 	end
 	if have_cg and craftguide.register_craft_type then
 		craftguide.register_craft_type(typename, {
+			description = data.description,
+			icon = data.icon,
+		})
+	end
+	if have_mcl_cg then
+		mcl_craftguide.register_craft_type(typename, {
 			description = data.description,
 			icon = data.icon,
 		})
@@ -86,6 +93,14 @@ local function register_recipe(typename, data)
 				items = {table.concat(data.input, ", ")},
 			})
 		end
+		if have_mcl_cg then
+			mcl_craftguide.register_craft({
+				type = typename,
+				output = output,
+				items = data.input,
+				width = 0,
+			})
+		end
 		if have_i3 then
 			i3.register_craft({
 				type = typename,
@@ -101,10 +116,14 @@ end
 local has_exchangeclone = minetest.get_modpath("zzzz_exchangeclone_init")
 
 function technic.register_recipe(typename, data)
-	if has_exchangeclone then
+  if has_exchangeclone then
 		exchangeclone.register_technic_recipe(typename, data)
 	end
-	minetest.after(0.01, register_recipe, typename, data) -- Handle aliases
+	if have_mcl_cg then
+		register_recipe(typename, data)
+	else
+		minetest.after(0.01, register_recipe, typename, data) -- Handle aliases
+	end
 end
 
 function technic.get_recipe(typename, items)

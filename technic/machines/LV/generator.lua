@@ -3,14 +3,16 @@
 -- Inefficient and expensive in fuel (200EU per tick)
 -- Also only allows for LV machinery to run.
 
+local mat = technic.materials
+
 minetest.register_alias("lv_generator", "technic:lv_generator")
 
 minetest.register_craft({
 	output = 'technic:lv_generator',
 	recipe = {
-		{'default:stone', 'default:furnace',        'default:stone'},
-		{'default:stone', 'technic:machine_casing', 'default:stone'},
-		{'default:stone', 'technic:lv_cable',       'default:stone'},
+		{mat.stone, mat.furnace,        mat.stone},
+		{mat.stone, 'technic:machine_casing', mat.stone},
+		{mat.stone, 'technic:lv_cable',       mat.stone},
 	}
 })
 

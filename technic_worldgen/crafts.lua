@@ -1,6 +1,8 @@
 
 local S = minetest.get_translator("technic_worldgen")
 
+local has_mcl = minetest.get_modpath("mcl_core")
+
 minetest.register_craftitem(":technic:uranium_lump", {
 	description = S("Uranium Lump"),
 	inventory_image = "technic_uranium_lump.png",
@@ -118,7 +120,7 @@ minetest.register_craft({
 
 minetest.register_craft({
 	type = "cooking",
-	recipe = "default:steel_ingot",
+	recipe = has_mcl and "mcl_core:iron_ingot" or "default:steel_ingot",
 	output = "technic:cast_iron_ingot",
 })
 

@@ -1,4 +1,5 @@
 local S = technic.getter
+local mat = technic.materials
 
 local function migrate_meta(meta)
 	local data = meta:get("")
@@ -139,7 +140,7 @@ end)
 minetest.register_craft({
 	output = "technic:prospector",
 	recipe = {
-		{"moreores:pick_silver", "moreores:mithril_block", "pipeworks:teleport_tube_1"},
+		{mat.pick_silver, mat.mithril_block, "pipeworks:teleport_tube_1"},
 		{"basic_materials:brass_ingot", "technic:control_logic_unit", "basic_materials:brass_ingot"},
 		{"", "technic:blue_energy_crystal", ""},
 	}

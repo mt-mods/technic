@@ -1,13 +1,14 @@
 -- LV Alloy furnace
 local S = technic.getter
+local mat = technic.materials
 
 -- FIXME: kpoppel: I'd like to introduce an induction heating element here...
 minetest.register_craft({
 	output = 'technic:lv_alloy_furnace',
 	recipe = {
-		{'default:brick', 'default:brick',          'default:brick'},
-		{'default:brick', 'technic:machine_casing', 'default:brick'},
-		{'default:brick', 'technic:lv_cable',       'default:brick'},
+		{mat.brick, mat.brick,          mat.brick},
+		{mat.brick, 'technic:machine_casing', mat.brick},
+		{mat.brick, 'technic:lv_cable',       mat.brick},
 	}
 })
 

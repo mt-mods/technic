@@ -51,10 +51,13 @@ local function cable_defaults(nodename, data)
 		snappy = 2,
 		choppy = 2,
 		oddly_breakable_by_hand = 2,
+		swordy = 1,
+		axey = 1,
+		handy = 1,
 		["technic_"..ltier.."_cable"] = 1
 	}
 	def.drop = def.drop or nodename
-	def.sounds = def.sounds or default.node_sound_wood_defaults()
+	def.sounds = def.sounds or technic.sounds.node_sound_wood_defaults()
 	def.on_construct = def.on_construct or function(pos) place_network_node(pos, {tier}, nodename) end
 	def.on_destruct = def.on_destruct or function(pos) remove_network_node(pos, {tier}, nodename) end
 	def.paramtype = def.paramtype or "light"
@@ -123,6 +126,8 @@ function technic.register_cable_plate(nodename, data)
 			end
 		else
 			def.groups.not_in_creative_inventory = 1
+			def._mcl_blast_resistance = 1
+			def._mcl_hardness = 0.8
 		end
 		def.on_rotate = function(pos, node, user, mode, new_param2)
 			-- mode 1 is left-click, mode 2 is right-click
@@ -142,6 +147,8 @@ function technic.register_cable(nodename, data)
 	def.tiles = def.tiles or {texture_basename..".png"}
 	def.inventory_image = def.inventory_image or def.inventory_image ~= false and texture_basename.."_wield.png" or nil
 	def.wield_image = def.wield_image or def.wield_image ~= false and texture_basename.."_wield.png" or nil
+	def._mcl_blast_resistance = 1
+	def._mcl_hardness = 0.8
 	minetest.register_node(nodename, def)
 	cable_tier[nodename] = def.tier
 end

@@ -44,7 +44,7 @@ function technic.register_base_machine(nodename, data)
 	local infotext_active = S("@1 Active", def.description)
 	local infotext_unpowered = S("@1 Unpowered", def.description)
 
-	local groups = {cracky = 2, technic_machine = 1, ["technic_"..ltier] = 1}
+	local groups = {cracky = 2, technic_machine = 1, ["technic_"..ltier] = 1, pickaxey=2}
 	if def.tube then
 		groups.tubedevice = 1
 		groups.tubedevice_receiver = 1
@@ -52,25 +52,50 @@ function technic.register_base_machine(nodename, data)
 	local active_groups = table.copy(groups)
 	active_groups.not_in_creative_inventory = 1
 
+	local size = minetest.get_modpath("mcl_formspec") and "size[9,10]" or "size[8,9]"
 	local formspec =
-		"size[8,9;]"..
+		size..
 		"list[context;src;"..(4-input_size)..",1;"..input_size..",1;]"..
 		"list[context;dst;5,1;2,2;]"..
-		"list[current_player;main;0,5;8,4;]"..
-		"label[0,0;"..def.description.."]"..
-		"listring[context;dst]"..
-		"listring[current_player;main]"..
-		"listring[context;src]"..
-		"listring[current_player;main]"
+		"label[0,0;"..def.description.."]"
 	if def.upgrade then
 		formspec = formspec..
 			"list[context;upgrade1;1,3;1,1;]"..
 			"list[context;upgrade2;2,3;1,1;]"..
-			"label[1,4;"..S("Upgrade Slots").."]"..
-			"listring[context;upgrade1]"..
-			"listring[current_player;main]"..
-			"listring[context;upgrade2]"..
-			"listring[current_player;main]"
+			"label[1,4;"..S("Upgrade Slots").."]"
+	end
+
+	if minetest.get_modpath("mcl_formspec") then
+		formspec = formspec..
+			mcl_formspec.get_itemslot_bg(4-input_size,1,input_size,1)..
+			mcl_formspec.get_itemslot_bg(5,1,2,2)..
+			-- player inventory
+			"list[current_player;main;0,5.5;9,3;9]"..
+			mcl_formspec.get_itemslot_bg(0,5.5,9,3)..
+			"list[current_player;main;0,8.74;9,1;]"..
+			mcl_formspec.get_itemslot_bg(0,8.74,9,1)
+		if def.upgrade then
+			formspec = formspec..
+			mcl_formspec.get_itemslot_bg(1,3,1,1)..
+			mcl_formspec.get_itemslot_bg(2,3,1,1)
+		end
+	else
+		formspec = formspec..
+			"list[current_player;main;0,5;8,4;]"
+	end
+
+	-- listrings
+	formspec = formspec..
+	"listring[context;dst]"..
+	"listring[current_player;main]"..
+	"listring[context;src]"..
+	"listring[current_player;main]"
+	if def.upgrade then
+		formspec = formspec..
+		"listring[context;upgrade1]"..
+		"listring[current_player;main]"..
+		"listring[context;upgrade2]"..
+		"listring[current_player;main]"
 	end
 
 	local tube = technic.new_default_tube()
@@ -172,10 +197,12 @@ function technic.register_base_machine(nodename, data)
 		},
 		paramtype2 = "facedir",
 		groups = groups,
+		_mcl_blast_resistance = 1,
+		_mcl_hardness = 0.8,
 		tube = def.tube and tube or nil,
 		connect_sides = def.connect_sides or connect_default,
 		legacy_facedir_simple = true,
-		sounds = default.node_sound_wood_defaults(),
+		sounds = technic.sounds.node_sound_wood_defaults(),
 		on_construct = function(pos)
 			local node = minetest.get_node(pos)
 			local meta = minetest.get_meta(pos)
@@ -244,9 +271,11 @@ function technic.register_base_machine(nodename, data)
 		paramtype2 = "facedir",
 		drop = nodename,
 		groups = active_groups,
+		_mcl_blast_resistance = 1,
+		_mcl_hardness = 0.8,
 		connect_sides = def.connect_sides or connect_default,
 		legacy_facedir_simple = true,
-		sounds = default.node_sound_wood_defaults(),
+		sounds = technic.sounds.node_sound_wood_defaults(),
 		tube = def.tube and tube or nil,
 		can_dig = technic.machine_can_dig,
 		allow_metadata_inventory_put = technic.machine_inventory_put,
