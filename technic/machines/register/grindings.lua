@@ -52,7 +52,7 @@ local default_extract = dye and "dye:brown 2"
 local acacia_extract = dye and "dye:brown 8"
 
 -- Specific recipes for acacia and rubber trees
-register_tree_grinding("Acacia", mat.acacia_wood, mat.acacia_wood, acacia_extract)
+register_tree_grinding("Acacia", mat.acacia_tree, mat.acacia_wood, acacia_extract)
 register_tree_grinding("Rubber Tree", "moretrees:rubber_tree_trunk", rubber_planks, "technic:raw_latex 2")
 register_tree_grinding("Rubber Tree", "moretrees:rubber_tree_trunk_empty", nil, "technic:raw_latex")
 
