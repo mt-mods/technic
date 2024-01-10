@@ -1,6 +1,7 @@
 local S = technic.getter
 local moretrees = minetest.get_modpath("moretrees")
 local dye = minetest.get_modpath("dye")
+local mat = technic.materials
 
 -- sawdust, the finest wood/tree grinding
 local sawdust = "technic:sawdust"
@@ -9,7 +10,7 @@ minetest.register_craftitem(sawdust, {
 	inventory_image = "technic_sawdust.png",
 })
 minetest.register_craft({ type = "fuel", recipe = sawdust, burntime = 6 })
-technic.register_compressor_recipe({ input = {sawdust .. " 4"}, output = "default:wood" })
+technic.register_compressor_recipe({ input = {sawdust .. " 4"}, output = mat.wood })
 
 -- tree/wood grindings
 local function register_tree_grinding(name, tree, wood, extract, grinding_color)
@@ -51,7 +52,7 @@ local default_extract = dye and "dye:brown 2"
 local acacia_extract = dye and "dye:brown 8"
 
 -- Specific recipes for acacia and rubber trees
-register_tree_grinding("Acacia", "default:acacia_tree", "default:acacia_wood", acacia_extract)
+register_tree_grinding("Acacia", mat.acacia_wood, mat.acacia_wood, acacia_extract)
 register_tree_grinding("Rubber Tree", "moretrees:rubber_tree_trunk", rubber_planks, "technic:raw_latex 2")
 register_tree_grinding("Rubber Tree", "moretrees:rubber_tree_trunk_empty", nil, "technic:raw_latex")
 
