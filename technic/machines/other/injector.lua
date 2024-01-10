@@ -5,17 +5,34 @@ local fs_helpers = pipeworks.fs_helpers
 
 local tube_entry = "^pipeworks_tube_connection_metallic.png"
 
+local mat = technic.materials
+
 local param2_to_under = {
 	[0] = {x= 0,y=-1,z= 0}, [1] = {x= 0,y= 0,z=-1},
 	[2] = {x= 0,y= 0,z= 1}, [3] = {x=-1,y= 0,z= 0},
 	[4] = {x= 1,y= 0,z= 0}, [5] = {x= 0,y= 1,z= 0}
 }
 
-local base_formspec = "size[8,9;]"..
+local size = minetest.get_modpath("mcl_formspec") and "size[9,10]" or "size[8,9]"
+local base_formspec = size..
 	"label[0,0;"..S("Self-Contained Injector").."]"..
 	"list[context;main;0,2;8,2;]"..
+	"listring[context;main]"
+
+if minetest.get_modpath("mcl_formspec") then
+	base_formspec = base_formspec..
+	mcl_formspec.get_itemslot_bg(0,2,8,2)..
+	-- player inventory
+	"list[current_player;main;0,5.5;9,3;9]"..
+	mcl_formspec.get_itemslot_bg(0,5.5,9,3)..
+	"list[current_player;main;0,8.74;9,1;]"..
+	mcl_formspec.get_itemslot_bg(0,8.74,9,1)..
+	"listring[current_player;main]"
+else
+	base_formspec = base_formspec..
 	"list[current_player;main;0,5;8,4;]"..
-	"listring[]"
+	"listring[current_player;main]"
+end
 
 local function set_injector_formspec(pos)
 	local meta = minetest.get_meta(pos)
@@ -53,7 +70,9 @@ minetest.register_node("technic:injector", {
 		"technic_injector_side.png"
 	},
 	paramtype2 = "facedir",
-	groups = {snappy=2, choppy=2, oddly_breakable_by_hand=2, tubedevice=1, tubedevice_receiver=1},
+	groups = {snappy=2, choppy=2, oddly_breakable_by_hand=2, tubedevice=1, tubedevice_receiver=1, axey=2, handy=1},
+	_mcl_blast_resistance = 1,
+	_mcl_hardness = 0.8,
 	tube = {
 		can_insert = function(pos, node, stack, direction)
 			local meta = minetest.get_meta(pos)
@@ -67,7 +86,7 @@ minetest.register_node("technic:injector", {
 		end,
 		connect_sides = {left=1, right=1, back=1, top=1, bottom=1},
 	},
-	sounds = default.node_sound_wood_defaults(),
+	sounds = technic.sounds.node_sound_wood_defaults(),
 	on_construct = function(pos)
 		local meta = minetest.get_meta(pos)
 		meta:set_string("infotext", S("Self-Contained Injector"))
@@ -140,7 +159,7 @@ minetest.register_craft({
 	output = "technic:injector 1",
 	recipe = {
 		{"", "technic:control_logic_unit",""},
-		{"", "default:chest",""},
+		{"", mat.chest,""},
 		{"", "pipeworks:tube_1",""},
 	}
 })

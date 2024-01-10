@@ -14,6 +14,8 @@ local power_supply = 100000  -- EUs
 local fuel_type = "technic:uranium_fuel"  -- The reactor burns this
 local digiline_meltdown = technic.config:get_bool("enable_nuclear_reactor_digiline_selfdestruct")
 local has_digilines = minetest.get_modpath("digilines")
+local has_mcl = minetest.get_modpath("mcl_core")
+local mat = technic.materials
 
 local S = technic.getter
 
@@ -24,20 +26,34 @@ local cable_entry = "^technic_cable_connection_overlay.png"
 minetest.register_craft({
 	output = 'technic:hv_nuclear_reactor_core',
 	recipe = {
-		{'technic:carbon_plate',          'default:obsidian_glass', 'technic:carbon_plate'},
+		{'technic:carbon_plate',          mat.obsidian_glass, 'technic:carbon_plate'},
 		{'technic:composite_plate',       'technic:machine_casing', 'technic:composite_plate'},
 		{'technic:stainless_steel_ingot', 'technic:hv_cable',       'technic:stainless_steel_ingot'},
 	}
 })
 
+local size = minetest.get_modpath("mcl_formspec") and "size[9,9]" or "size[8,9]"
 local function make_reactor_formspec(meta)
-	local f = "size[8,9]"..
-	"label[0,0;"..S("Nuclear Reactor Rod Compartment").."]"..
-	"list[context;src;2,1;3,2;]"..
-	"list[current_player;main;0,5;8,4;]"..
-	"listring[]"..
-	"button[5.5,1.5;2,1;start;"..S("Start").."]"..
-	"checkbox[5.5,2.5;autostart;"..S("Automatic Start")..";"..meta:get_string("autostart").."]"
+	local f = size..
+		"label[0,0;"..S("Nuclear Reactor Rod Compartment").."]"..
+		"list[context;src;2,1;3,2;]"..
+		"listring[context;src]"..
+		"button[5.5,1.5;2,1;start;"..S("Start").."]"..
+		"checkbox[5.5,2.5;autostart;"..S("Automatic Start")..";"..meta:get_string("autostart").."]"
+	if has_mcl then
+		f = f..
+		mcl_formspec.get_itemslot_bg(2,1,3,2)..
+		-- player inventory
+		"list[current_player;main;0,4.5;9,3;9]"..
+		mcl_formspec.get_itemslot_bg(0,4.5,9,3)..
+		"list[current_player;main;0,7.74;9,1;]"..
+		mcl_formspec.get_itemslot_bg(0,7.74,9,1)..
+		"listring[current_player;main]"
+	else
+		f = f..
+		"list[current_player;main;0,5;8,4;]"..
+		"listring[current_player;main]"
+	end
 	if not has_digilines then
 		return f
 	end
@@ -149,8 +165,8 @@ local function reactor_structure_badness(pos)
 	local c_blast_concrete = minetest.get_content_id("technic:blast_resistant_concrete")
 	local c_lead = minetest.get_content_id("technic:lead_block")
 	local c_steel = minetest.get_content_id("technic:stainless_steel_block")
-	local c_water_source = minetest.get_content_id("default:water_source")
-	local c_water_flowing = minetest.get_content_id("default:water_flowing")
+	local c_water_source = minetest.get_content_id(mat.water_source)
+	local c_water_flowing = minetest.get_content_id(mat.water_flowing)
 
 	local blast_layer, steel_layer, lead_layer, water_layer = 0, 0, 0, 0
 
@@ -209,9 +225,21 @@ local function reactor_structure_badness(pos)
 	return (25 - water_layer) + (96 - lead_layer) + (216 - blast_layer)
 end
 
+local mcl_expl_info = {
+	drop_chance = 1.0,
+	max_blast_resistance = 10,
+	sound = true,
+	particles = true,
+	fire = true,
+	griefing = true,
+	grief_protected = true,
+}
 
 local function melt_down_reactor(pos)
 	minetest.log("action", "A reactor melted down at "..minetest.pos_to_string(pos))
+	if minetest.get_modpath("mcl_explosions") then
+		mcl_explosions.explode(pos, 30, mcl_expl_info)
+	end
 	minetest.set_node(pos, {name = "technic:corium_source"})
 end
 
@@ -417,9 +445,11 @@ minetest.register_node("technic:hv_nuclear_reactor_core", {
 	},
 	drawtype = "mesh",
 	mesh = "technic_reactor.obj",
-	groups = {cracky = 1, technic_machine = 1, technic_hv = 1},
+	groups = {cracky = 1, technic_machine = 1, technic_hv = 1, pickaxey = 3},
+	_mcl_blast_resistance = 1,
+	_mcl_hardness = 0.8,
 	legacy_facedir_simple = true,
-	sounds = default.node_sound_wood_defaults(),
+	sounds = technic.sounds.node_sound_wood_defaults(),
 	paramtype = "light",
 	paramtype2 = "facedir",
 	stack_max = 1,
@@ -460,9 +490,11 @@ minetest.register_node("technic:hv_nuclear_reactor_core_active", {
 	drawtype = "mesh",
 	mesh = "technic_reactor.obj",
 	groups = {cracky = 1, technic_machine = 1, technic_hv = 1, radioactive = 4,
-		not_in_creative_inventory = 1},
+		not_in_creative_inventory = 1, pickaxey = 3},
+	_mcl_blast_resistance = 1,
+	_mcl_hardness = 0.8,
 	legacy_facedir_simple = true,
-	sounds = default.node_sound_wood_defaults(),
+	sounds = technic.sounds.node_sound_wood_defaults(),
 	drop = "technic:hv_nuclear_reactor_core",
 	light_source = 14,
 	paramtype = "light",

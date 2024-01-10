@@ -1,13 +1,14 @@
 local S = technic.getter
+local mat = technic.materials
 
 minetest.register_alias("lv_cable", "technic:lv_cable")
 
 minetest.register_craft({
 	output = 'technic:lv_cable 6',
 	recipe = {
-		{'default:paper',        'default:paper',        'default:paper'},
-		{'default:copper_ingot', 'default:copper_ingot', 'default:copper_ingot'},
-		{'default:paper',        'default:paper',        'default:paper'},
+		{mat.paper,        mat.paper,        mat.paper},
+		{mat.copper_ingot, mat.copper_ingot, mat.copper_ingot},
+		{mat.paper,        mat.paper,        mat.paper},
 	}
 })
 

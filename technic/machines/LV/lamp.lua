@@ -3,6 +3,7 @@
 -- Illuminates a 7x7x3(H) volume below itself with light bright as the sun.
 
 local S = technic.getter
+local mat = technic.materials
 
 local demand = 50
 local desc = S("@1 Lamp", S("LV"))
@@ -123,7 +124,9 @@ minetest.register_node("technic:lv_lamp", {
 		"technic_lv_lamp_side.png",
 		"technic_lv_lamp_side.png"
 	},
-	groups = {cracky = 2, technic_machine = 1, technic_lv = 1},
+	groups = {cracky = 2, technic_machine = 1, technic_lv = 1, pickaxey = 2},
+	_mcl_blast_resistance = 1,
+	_mcl_hardness = 0.8,
 	connect_sides = {"front", "back", "left", "right", "top"},
 	can_dig = technic.machine_can_dig,
 	technic_run = lamp_run,
@@ -166,7 +169,9 @@ minetest.register_node("technic:lv_lamp_active", {
 	paramtype = "light",
 	light_source = 14,
 	drop = "technic:lv_lamp",
-	groups = {cracky = 2, technic_machine = 1, technic_lv = 1, not_in_creative_inventory = 1},
+	groups = {cracky = 2, technic_machine = 1, technic_lv = 1, not_in_creative_inventory = 1, pickaxey = 2},
+	_mcl_blast_resistance = 1,
+	_mcl_hardness = 0.8,
 	connect_sides = {"front", "back", "left", "right", "top"},
 	can_dig = technic.machine_can_dig,
 	technic_run = lamp_run,
@@ -190,7 +195,7 @@ technic.register_machine("LV", "technic:lv_lamp_active", technic.receiver)
 minetest.register_craft({
 	output = "technic:lv_lamp",
 	recipe = {
-		{"default:glass", "default:glass", "default:glass"},
+		{mat.glass, mat.glass, mat.glass},
 		{"technic:lv_led", "technic:lv_led", "technic:lv_led"},
 		{"mesecons_materials:glue", "technic:lv_cable", "mesecons_materials:glue"},
 	}

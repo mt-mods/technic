@@ -20,27 +20,47 @@ local tube = {
 	connect_sides = {left=1, right=1, back=1, top=1, bottom=1},
 }
 
+local size = minetest.get_modpath("mcl_formspec") and "size[9,10]" or "size[8,9]"
+
+local function update_generator_formspec(meta, desc, percent, form_buttons)
+	local generator_formspec = size..
+		"label[0, 0;"..desc.."]"..
+		"list[context;src;3,1;1,1;]"..
+		"listring[context;src]"..
+		"image[4,1;1,1;default_furnace_fire_bg.png^[lowpart:"..
+		(percent)..":default_furnace_fire_fg.png]"..
+		form_buttons
+
+	if minetest.get_modpath("mcl_formspec") then
+		generator_formspec = generator_formspec..
+			mcl_formspec.get_itemslot_bg(3,1,1,1)..
+			-- player inventory
+			"list[current_player;main;0,5.5;9,3;9]"..
+			mcl_formspec.get_itemslot_bg(0,5.5,9,3)..
+			"list[current_player;main;0,8.74;9,1;]"..
+			mcl_formspec.get_itemslot_bg(0,8.74,9,1)..
+			"listring[current_player;main]"
+	else
+		generator_formspec = generator_formspec..
+			"list[current_player;main;0, 5;8, 4;]"..
+			"listring[current_player;main]"
+	end
+	return meta:set_string("formspec", generator_formspec)
+end
+
 function technic.register_generator(data)
 
 	local tier = data.tier
 	local ltier = string.lower(tier)
 
 	local groups = {snappy=2, choppy=2, oddly_breakable_by_hand=2,
-		technic_machine=1, ["technic_"..ltier]=1}
+		technic_machine=1, ["technic_"..ltier]=1, axey=2, handy=1}
 	if data.tube then
 		groups.tubedevice = 1
 		groups.tubedevice_receiver = 1
 	end
 	local active_groups = {not_in_creative_inventory = 1}
 	for k, v in pairs(groups) do active_groups[k] = v end
-
-	local generator_formspec =
-		"size[8,9;]"..
-		"label[0,0;"..S("Fuel-Fired @1 Generator", S(tier)).."]"..
-		"list[context;src;3,1;1,1;]"..
-		"image[4,1;1,1;default_furnace_fire_bg.png]"..
-		"list[current_player;main;0,5;8,4;]"..
-		"listring[]"
 
 	local desc = S("Fuel-Fired @1 Generator", S(tier))
 
@@ -96,16 +116,7 @@ function technic.register_generator(data)
 				}
 			)..pipeworks.button_label
 		end
-		meta:set_string("formspec",
-			"size[8, 9]"..
-			"label[0, 0;"..desc.."]"..
-			"list[context;src;3, 1;1, 1;]"..
-			"image[4, 1;1, 1;default_furnace_fire_bg.png^[lowpart:"..
-			(percent)..":default_furnace_fire_fg.png]"..
-			"list[current_player;main;0, 5;8, 4;]"..
-			"listring[]"..
-			form_buttons
-		)
+		update_generator_formspec(meta, desc, percent, form_buttons)
 	end
 
 	local tentry = tube_entry
@@ -123,9 +134,11 @@ function technic.register_generator(data)
 		},
 		paramtype2 = "facedir",
 		groups = groups,
+		_mcl_blast_resistance = 1,
+		_mcl_hardness = 0.8,
 		connect_sides = {"bottom", "back", "left", "right"},
 		legacy_facedir_simple = true,
-		sounds = default.node_sound_wood_defaults(),
+		sounds = technic.sounds.node_sound_wood_defaults(),
 		tube = data.tube and tube or nil,
 		on_construct = function(pos)
 			local meta = minetest.get_meta(pos)
@@ -146,7 +159,7 @@ function technic.register_generator(data)
 						}
 					)..pipeworks.button_label
 			end
-			meta:set_string("formspec", generator_formspec..form_buttons)
+			update_generator_formspec(meta, desc, 0, form_buttons)
 			local inv = meta:get_inventory()
 			inv:set_size("src", 1)
 		end,
@@ -174,7 +187,10 @@ function technic.register_generator(data)
 						}
 					)..pipeworks.button_label
 			end
-			meta:set_string("formspec", generator_formspec..form_buttons)
+			local burn_totaltime = meta:get_int("burn_totaltime") or 0
+			local burn_time = meta:get_int("burn_time")
+			local percent = math.floor(burn_time / burn_totaltime * 100)
+			update_generator_formspec(meta, desc, percent, form_buttons)
 		end,
 	})
 
@@ -190,9 +206,11 @@ function technic.register_generator(data)
 		},
 		paramtype2 = "facedir",
 		groups = active_groups,
+		_mcl_blast_resistance = 1,
+		_mcl_hardness = 0.8,
 		connect_sides = {"bottom"},
 		legacy_facedir_simple = true,
-		sounds = default.node_sound_wood_defaults(),
+		sounds = technic.sounds.node_sound_wood_defaults(),
 		tube = data.tube and tube or nil,
 		drop = "technic:"..ltier.."_generator",
 		can_dig = technic.machine_can_dig,
@@ -239,16 +257,7 @@ function technic.register_generator(data)
 					}
 				)..pipeworks.button_label
 			end
-			meta:set_string("formspec",
-				"size[8, 9]"..
-				"label[0, 0;"..desc.."]"..
-				"list[context;src;3, 1;1, 1;]"..
-				"image[4, 1;1, 1;default_furnace_fire_bg.png^[lowpart:"..
-				(percent)..":default_furnace_fire_fg.png]"..
-				"list[current_player;main;0, 5;8, 4;]"..
-				"listring[]"..
-				form_buttons
-			)
+			update_generator_formspec(meta, desc, percent, form_buttons)
 			return true
 		end,
 		on_receive_fields = function(pos, formname, fields, sender)
@@ -273,16 +282,7 @@ function technic.register_generator(data)
 			local burn_time = meta:get_int("burn_time")
 			local percent = math.floor(burn_time / burn_totaltime * 100)
 
-			meta:set_string("formspec",
-				"size[8, 9]"..
-				"label[0, 0;"..desc.."]"..
-				"list[context;src;3, 1;1, 1;]"..
-				"image[4, 1;1, 1;default_furnace_fire_bg.png^[lowpart:"..
-				(percent)..":default_furnace_fire_fg.png]"..
-				"list[current_player;main;0, 5;8, 4;]"..
-				"listring[]"..
-				form_buttons
-			)
+			update_generator_formspec(meta, desc, percent, form_buttons)
 		end,
 	})
 

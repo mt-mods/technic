@@ -3,6 +3,7 @@
 -- similarly to the old "slave" switching stations.
 
 local S = technic.getter
+local mat = technic.materials
 
 local cable_entry = "^technic_cable_connection_overlay.png"
 
@@ -43,7 +44,7 @@ minetest.register_craft({
 	output = "technic:power_monitor",
 	recipe = {
 		{"",                 "",                       ""},
-		{"",                 "technic:machine_casing", "default:copper_ingot"},
+		{"",                 "technic:machine_casing", mat.copper_ingot},
 		{"technic:lv_cable", "technic:lv_cable",       "technic:lv_cable"}
 	}
 })
@@ -59,9 +60,11 @@ minetest.register_node("technic:power_monitor",{
 		"technic_power_monitor_front.png"
 	},
 	paramtype2 = "facedir",
-	groups = {snappy=2, choppy=2, oddly_breakable_by_hand=2, technic_all_tiers=1},
+	groups = {snappy=2, choppy=2, oddly_breakable_by_hand=2, technic_all_tiers=1, axey=2, handy=1},
+	_mcl_blast_resistance = 1,
+	_mcl_hardness = 0.8,
 	connect_sides = {"bottom", "back"},
-	sounds = default.node_sound_wood_defaults(),
+	sounds = technic.sounds.node_sound_wood_defaults(),
 	on_construct = function(pos)
 		local meta = minetest.get_meta(pos)
 		meta:set_string("infotext", S("Power Monitor"))

@@ -6,11 +6,12 @@
 minetest.register_alias("geothermal", "technic:geothermal")
 
 local S = technic.getter
+local mat = technic.materials
 
 minetest.register_craft({
 	output = 'technic:geothermal',
 	recipe = {
-		{'technic:granite',          'default:diamond',        'technic:granite'},
+		{'technic:granite',          mat.diamond,        'technic:granite'},
 		{'basic_materials:copper_wire', 'technic:machine_casing', 'basic_materials:copper_wire'},
 		{'technic:granite',          'technic:lv_cable',       'technic:granite'},
 	},
@@ -26,8 +27,8 @@ minetest.register_craftitem("technic:geothermal", {
 
 local check_node_around = function(pos)
 	local node = minetest.get_node(pos)
-	if node.name == "default:water_source" or node.name == "default:water_flowing" then return 1 end
-	if node.name == "default:lava_source"  or node.name == "default:lava_flowing"  then return 2 end
+	if node.name == mat.water_source or node.name == mat.water_flowing then return 1 end
+	if node.name == mat.lava_source or node.name == mat.lava_flowing then return 2 end
 	return 0
 end
 
@@ -87,10 +88,12 @@ minetest.register_node("technic:geothermal", {
 	tiles = {"technic_geothermal_top.png", "technic_machine_bottom.png", "technic_geothermal_side.png",
 	         "technic_geothermal_side.png", "technic_geothermal_side.png", "technic_geothermal_side.png"},
 	groups = {snappy=2, choppy=2, oddly_breakable_by_hand=2,
-		technic_machine=1, technic_lv=1},
+		technic_machine=1, technic_lv=1, axey=2, handy=1},
+	_mcl_blast_resistance = 1,
+	_mcl_hardness = 0.8,
 	paramtype2 = "facedir",
 	legacy_facedir_simple = true,
-	sounds = default.node_sound_wood_defaults(),
+	sounds = technic.sounds.node_sound_wood_defaults(),
 	on_construct = function(pos)
 		local meta = minetest.get_meta(pos)
 		meta:set_string("infotext", S("Geothermal @1 Generator", S("LV")))
@@ -105,9 +108,11 @@ minetest.register_node("technic:geothermal_active", {
 	         "technic_geothermal_side.png", "technic_geothermal_side.png", "technic_geothermal_side.png"},
 	paramtype2 = "facedir",
 	groups = {snappy=2, choppy=2, oddly_breakable_by_hand=2,
-		technic_machine=1, technic_lv=1, not_in_creative_inventory=1},
+		technic_machine=1, technic_lv=1, not_in_creative_inventory=1, axey=2, handy=1},
+	_mcl_blast_resistance = 1,
+	_mcl_hardness = 0.8,
 	legacy_facedir_simple = true,
-	sounds = default.node_sound_wood_defaults(),
+	sounds = technic.sounds.node_sound_wood_defaults(),
 	drop = "technic:geothermal",
 	technic_run = run,
 })

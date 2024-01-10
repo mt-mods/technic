@@ -32,6 +32,7 @@ local MP = minetest.get_modpath("technic")
 local throttle = dofile(MP .. "/util/throttle.lua")
 
 local S = technic.getter
+local has_mcl = minetest.get_modpath("mcl_core")
 
 local rad_resistance_node = {
 	["default:brick"] = 13,
@@ -489,12 +490,28 @@ if rawget(_G, "bucket") and bucket.register_liquid then
 	)
 end
 
+if minetest.get_modpath("mcl_buckets") then
+	mcl_buckets.register_liquid({
+		bucketname = "technic:bucket_corium",
+		source_place = "technic:corium_source",
+		source_take = {"technic:corium_source"},
+		inventory_image = "technic_bucket_corium.png",
+		name = S("Corium Bucket"),
+		longdesc = S("This bucket is filled with radioactive corium."),
+		usagehelp = S("Place it to empty the bucket and create a radioactive liquid source."),
+		tt_help = S("Danger Hight Radiation"),
+		groups = { radioactive = 5 },
+	})
+end
+
 minetest.register_node("technic:chernobylite_block", {
 	description = S("Chernobylite Block"),
 	tiles = {"technic_chernobylite_block.png"},
 	is_ground_content = true,
-	groups = {cracky=1, radioactive=4, level=2},
-	sounds = default.node_sound_stone_defaults(),
+	groups = {cracky=1, radioactive=4, level= has_mcl and 0 or 2, pickaxey=5},
+	_mcl_blast_resistance = 30,
+	_mcl_hardness = 40,
+	sounds = technic.sounds.node_sound_stone_defaults(),
 	light_source = 2,
 })
 
@@ -545,7 +562,11 @@ if griefing then
 				vector.new(0,-1,0),
 			}) do
 				if math.random(8) == 1 then
-					minetest.dig_node(vector.add(pos, offset))
+					local vpos = vector.add(pos, offset)
+					local def = minetest.registered_nodes[minetest.get_node(vpos).name]
+					if def and (not def._mcl_hardness or def._mcl_hardness > 0) then
+						minetest.dig_node(vpos)
+					end
 				end
 			end
 		end,

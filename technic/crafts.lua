@@ -1,19 +1,23 @@
 -- check if we have the necessary dependencies to allow actually using these materials in the crafts
-local mesecons_materials = minetest.get_modpath("mesecons_materials")
+
+local mat = technic.materials
+local has_mcl = minetest.get_modpath("mcl_core")
 
 -- Remove some recipes
 -- Bronze
-minetest.clear_craft({
-	type = "shapeless",
-	output = "default:bronze_ingot"
-})
--- Restore recipe for bronze block to ingots
-minetest.register_craft({
-	output = "default:bronze_ingot 9",
-	recipe = {
-		{"default:bronzeblock"}
-	}
-})
+if not has_mcl then
+	minetest.clear_craft({
+		type = "shapeless",
+		output = "default:bronze_ingot"
+	})
+	-- Restore recipe for bronze block to ingots
+	minetest.register_craft({
+		output = "default:bronze_ingot 9",
+		recipe = {
+			{"default:bronzeblock"}
+		}
+	})
+end
 
 -- Accelerator tube
 if pipeworks.enable_accelerator_tube then
@@ -38,9 +42,9 @@ if pipeworks.enable_teleport_tube then
 	minetest.register_craft({
 		output = 'pipeworks:teleport_tube_1',
 		recipe = {
-			{'default:mese_crystal', 'technic:copper_coil', 'default:mese_crystal'},
+			{mat.mese_crystal, 'technic:copper_coil', mat.mese_crystal},
 			{'pipeworks:tube_1', 'technic:control_logic_unit', 'pipeworks:tube_1'},
-			{'default:mese_crystal', 'technic:copper_coil', 'default:mese_crystal'},
+			{mat.mese_crystal, 'technic:copper_coil', mat.mese_crystal},
 			}
 	})
 end
@@ -62,36 +66,36 @@ minetest.register_craft( {
 minetest.register_craft({
 	output = 'technic:diamond_drill_head',
 	recipe = {
-		{'technic:stainless_steel_ingot', 'default:diamond', 'technic:stainless_steel_ingot'},
-		{'default:diamond',               '',                'default:diamond'},
-		{'technic:stainless_steel_ingot', 'default:diamond', 'technic:stainless_steel_ingot'},
+		{'technic:stainless_steel_ingot', mat.diamond, 'technic:stainless_steel_ingot'},
+		{mat.diamond,               '',                mat.diamond},
+		{'technic:stainless_steel_ingot', mat.diamond, 'technic:stainless_steel_ingot'},
 	}
 })
 
 minetest.register_craft({
 	output = 'technic:green_energy_crystal',
 	recipe = {
-		{'default:gold_ingot', 'technic:battery', 'dye:green'},
+		{mat.gold_ingot, 'technic:battery', mat.dye_green},
 		{'technic:battery', 'technic:red_energy_crystal', 'technic:battery'},
-		{'dye:green', 'technic:battery', 'default:gold_ingot'},
+		{mat.dye_green, 'technic:battery', mat.gold_ingot},
 	}
 })
 
 minetest.register_craft({
 	output = 'technic:blue_energy_crystal',
 	recipe = {
-		{'moreores:mithril_ingot', 'technic:battery', 'dye:blue'},
+		{mat.mithril_ingot, 'technic:battery', mat.dye_blue},
 		{'technic:battery', 'technic:green_energy_crystal', 'technic:battery'},
-		{'dye:blue', 'technic:battery', 'moreores:mithril_ingot'},
+		{mat.dye_blue, 'technic:battery', mat.mithril_ingot},
 	}
 })
 
 minetest.register_craft({
 	output = 'technic:red_energy_crystal',
 	recipe = {
-		{'moreores:silver_ingot', 'technic:battery', 'dye:red'},
+		{mat.silver_ingot, 'technic:battery', mat.dye_red},
 		{'technic:battery', 'basic_materials:energy_crystal_simple', 'technic:battery'},
-		{'dye:red', 'technic:battery', 'moreores:silver_ingot'},
+		{mat.dye_red, 'technic:battery', mat.silver_ingot},
 	}
 })
 
@@ -110,12 +114,10 @@ minetest.register_craft({
 	},
 })
 
-local isolation = mesecons_materials and "mesecons_materials:fiber" or "technic:rubber"
-
 minetest.register_craft({
 	output = 'technic:lv_transformer',
 	recipe = {
-		{isolation,                    'technic:wrought_iron_ingot', isolation},
+		{mat.insulation,                    'technic:wrought_iron_ingot', mat.insulation},
 		{'technic:copper_coil',        'technic:wrought_iron_ingot', 'technic:copper_coil'},
 		{'technic:wrought_iron_ingot', 'technic:wrought_iron_ingot', 'technic:wrought_iron_ingot'},
 	}
@@ -124,7 +126,7 @@ minetest.register_craft({
 minetest.register_craft({
 	output = 'technic:mv_transformer',
 	recipe = {
-		{isolation,                    'technic:carbon_steel_ingot', isolation},
+		{mat.insulation,                    'technic:carbon_steel_ingot', mat.insulation},
 		{'technic:copper_coil',        'technic:carbon_steel_ingot', 'technic:copper_coil'},
 		{'technic:carbon_steel_ingot', 'technic:carbon_steel_ingot', 'technic:carbon_steel_ingot'},
 	}
@@ -133,7 +135,7 @@ minetest.register_craft({
 minetest.register_craft({
 	output = 'technic:hv_transformer',
 	recipe = {
-		{isolation,                       'technic:stainless_steel_ingot', isolation},
+		{mat.insulation,                       'technic:stainless_steel_ingot', mat.insulation},
 		{'technic:copper_coil',           'technic:stainless_steel_ingot', 'technic:copper_coil'},
 		{'technic:stainless_steel_ingot', 'technic:stainless_steel_ingot', 'technic:stainless_steel_ingot'},
 	}
@@ -143,7 +145,7 @@ minetest.register_craft({
 	output = 'technic:control_logic_unit',
 	recipe = {
 		{'', 'basic_materials:gold_wire', ''},
-		{'default:copper_ingot', 'technic:silicon_wafer', 'default:copper_ingot'},
+		{mat.bronze_ingot, 'technic:silicon_wafer', mat.bronze_ingot},
 		{'', 'technic:chromium_ingot', ''},
 	},
 	replacements = { {"basic_materials:gold_wire", "basic_materials:empty_spool"}, },
@@ -153,8 +155,8 @@ minetest.register_craft({
 	output = 'technic:mixed_metal_ingot 9',
 	recipe = {
 		{'technic:stainless_steel_ingot', 'technic:stainless_steel_ingot', 'technic:stainless_steel_ingot'},
-		{'default:bronze_ingot',          'default:bronze_ingot',          'default:bronze_ingot'},
-		{'default:tin_ingot',             'default:tin_ingot',             'default:tin_ingot'},
+		{mat.bronze_ingot,          mat.bronze_ingot,          mat.bronze_ingot},
+		{mat.tin_ingot,             mat.tin_ingot,             mat.tin_ingot},
 	}
 })
 
@@ -176,13 +178,13 @@ minetest.register_craft({
 
 
 minetest.register_craft({
-	output = "default:dirt 2",
+	output = mat.dirt.." 2",
 	type = "shapeless",
-	replacements = {{"bucket:bucket_water","bucket:bucket_empty"}},
+	replacements = {{mat.bucket_water,mat.bucket_empty}},
 	recipe = {
 		"technic:stone_dust",
 		"group:leaves",
-		"bucket:bucket_water",
+		mat.bucket_water,
 		"group:sand",
 	},
 })

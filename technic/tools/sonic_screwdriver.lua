@@ -1,6 +1,7 @@
 local sonic_screwdriver_max_charge = 15000
 
 local S = technic.getter
+local mat = technic.materials
 
 -- screwdriver handler code reused from minetest/minetest_game screwdriver @a9ac480
 local ROTATE_FACE = 1
@@ -78,8 +79,8 @@ technic.register_power_tool("technic:sonic_screwdriver", {
 minetest.register_craft({
 	output = "technic:sonic_screwdriver",
 	recipe = {
-		{"",                         "default:diamond",        ""},
+		{"",                         mat.diamond,        ""},
 		{"mesecons_materials:fiber", "technic:battery",        "mesecons_materials:fiber"},
-		{"mesecons_materials:fiber", "moreores:mithril_ingot", "mesecons_materials:fiber"}
+		{"mesecons_materials:fiber", mat.mithril_ingot, "mesecons_materials:fiber"}
 	}
 })

@@ -14,12 +14,14 @@ local S = technic.getter
 
 local cable_entry = "^technic_cable_connection_overlay.png"
 
+local mat = technic.materials
+
 minetest.register_craft({
 	output = "technic:forcefield_emitter_off",
 	recipe = {
-		{"default:mese",         "basic_materials:motor",          "default:mese"        },
+		{mat.mese,         "basic_materials:motor",          mat.mese        },
 		{"technic:deployer_off", "technic:machine_casing", "technic:deployer_off"},
-		{"default:mese",         "technic:hv_cable",       "default:mese"        },
+		{mat.mese,         "technic:hv_cable",       mat.mese        },
 	}
 })
 
@@ -307,7 +309,9 @@ minetest.register_node("technic:forcefield_emitter_off", {
 		"technic_forcefield_emitter_off.png",
 		"technic_forcefield_emitter_off.png"
 	},
-	groups = {cracky = 1, technic_machine = 1, technic_hv = 1},
+	groups = {cracky = 1, technic_machine = 1, technic_hv = 1, pickaxey = 3},
+	_mcl_blast_resistance = 1,
+	_mcl_hardness = 0.8,
 	on_receive_fields = forcefield_receive_fields,
 	on_construct = function(pos)
 		local meta = minetest.get_meta(pos)
@@ -339,7 +343,9 @@ minetest.register_node("technic:forcefield_emitter_on", {
 		"technic_forcefield_emitter_on.png"
 	},
 	groups = {cracky = 1, technic_machine = 1, technic_hv = 1,
-			not_in_creative_inventory=1},
+		  not_in_creative_inventory=1, pickaxey = 3},
+	_mcl_blast_resistance = 1,
+	_mcl_hardness = 0.8,
 	drop = "technic:forcefield_emitter_off",
 	on_receive_fields = forcefield_receive_fields,
 	on_destruct = function(pos)
@@ -366,7 +372,7 @@ minetest.register_node("technic:forcefield", {
 	drawtype = "glasslike",
 	groups = {not_in_creative_inventory=1},
 	paramtype = "light",
-	light_source = default.LIGHT_MAX,
+	light_source = minetest.LIGHT_MAX,
 	diggable = false,
 	drop = '',
 	tiles = {{
