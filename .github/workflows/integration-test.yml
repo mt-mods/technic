@@ -9,7 +9,13 @@ jobs:
     timeout-minutes: 10
     strategy:
       matrix:
-        ENGINE_VERSION: [5.3.0, 5.6.1, latest]
+        include:
+          - ENGINE_IMAGE: registry.gitlab.com/minetest/minetest/server:5.5.0
+            MTG_VERSION: "5.5.0"
+          - ENGINE_IMAGE: ghcr.io/minetest-hosting/minetest-docker:5.8.0
+            MTG_VERSION: "5.8.0"
+          - ENGINE_IMAGE: ghcr.io/minetest-hosting/minetest-docker:main
+            MTG_VERSION: master
 
     steps:
     - uses: actions/checkout@v2
