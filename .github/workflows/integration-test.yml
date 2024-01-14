@@ -12,10 +12,6 @@ jobs:
         include:
           - ENGINE_IMAGE: registry.gitlab.com/minetest/minetest/server:5.5.0
             MTG_VERSION: "5.5.0"
-          - ENGINE_IMAGE: registry.gitlab.com/minetest/minetest/server:5.6.0
-            MTG_VERSION: "5.6.0"
-          - ENGINE_IMAGE: registry.gitlab.com/minetest/minetest/server:5.7.0
-            MTG_VERSION: "5.7.0"
           - ENGINE_IMAGE: ghcr.io/minetest-hosting/minetest-docker:5.8.0
             MTG_VERSION: "5.8.0"
           - ENGINE_IMAGE: ghcr.io/minetest-hosting/minetest-docker:main
