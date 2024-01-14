@@ -32,7 +32,7 @@ describe("Technic CNC", function()
 		local meta = minetest.get_meta(pos)
 		local inv = meta:get_inventory()
 		if not inv:room_for_item(listname or "src", itemstack) then
-			inv:set_stack(listname or "src", 1, ItemStack())
+			inv:set_stack(listname or "src", 1, ItemStack(nil))
 		end
 		inv:add_item(listname or "src", itemstack)
 	end
@@ -48,7 +48,7 @@ describe("Technic CNC", function()
 		local meta = minetest.get_meta(pos)
 		local inv = meta:get_inventory()
 		for index=1, inv:get_size(listname or "dst") do
-			inv:set_stack(listname or "dst", index, ItemStack())
+			inv:set_stack(listname or "dst", index, ItemStack(nil))
         end
 	end
 

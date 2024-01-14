@@ -59,8 +59,8 @@ describe("Technic power tool compatibility", function()
 			end)
 
 			before_each(function()
-				set_charge_stack(ItemStack())
-				set_discharge_stack(ItemStack())
+				set_charge_stack(ItemStack(nil))
+				set_discharge_stack(ItemStack(nil))
 			end)
 
 			it("is registered", function()

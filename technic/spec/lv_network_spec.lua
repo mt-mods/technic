@@ -78,7 +78,7 @@ describe("LV machine network", function()
 		local meta = minetest.get_meta(pos)
 		local inv = meta:get_inventory()
 		if not inv:room_for_item(listname or "src", itemstack) then
-			inv:set_stack(listname or "src", 1, ItemStack())
+			inv:set_stack(listname or "src", 1, ItemStack(nil))
 		end
 		inv:add_item(listname or "src", itemstack)
 	end
