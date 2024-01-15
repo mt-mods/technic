@@ -64,7 +64,7 @@ describe("CNC API", function()
 			local meta = minetest.get_meta(pos)
 			local inventory = meta:get_inventory()
 			inventory:set_stack("src", 1, "default:stone 42")
-			inventory:set_stack("dst", 1, ItemStack())
+			inventory:set_stack("dst", 1, ItemStack(nil))
 			local materialstack = inventory:get_stack("src", 1)
 
 			-- Test CNC cutting process
@@ -82,7 +82,7 @@ describe("CNC API", function()
 			local meta = minetest.get_meta(pos)
 			local inventory = meta:get_inventory()
 			inventory:set_stack("src", 1, "default:badstone 42")
-			inventory:set_stack("dst", 1, ItemStack())
+			inventory:set_stack("dst", 1, ItemStack(nil))
 			local materialstack = inventory:get_stack("src", 1)
 
 			-- Test CNC cutting process
