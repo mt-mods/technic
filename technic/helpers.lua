@@ -272,3 +272,16 @@ function technic.can_insert_unique_stack(pos, node, incoming_stack, direction)
 	end
 	return technic.default_can_insert(pos, node, incoming_stack, direction)
 end
+
+function technic.process_recipe(recipe, inv)
+	local dst_copy = inv:get_list("dst")
+	for _,item in ipairs(recipe.output) do
+		if not inv:room_for_item("dst", ItemStack(item)) then
+			inv:set_list("dst", dst_copy)
+			return false
+		end
+		inv:add_item("dst", item)
+	end
+	inv:set_list("src", recipe.new_input)
+	return true
+end

@@ -118,22 +118,18 @@ minetest.register_abm({
 		end
 
 		-- Get what to cook if anything
-		local result = technic.get_recipe("alloy", inv:get_list("src"))
+		local recipe = technic.get_recipe("alloy", inv:get_list("src"))
 
 		local was_active = false
 
 		if meta:get_float("fuel_time") < meta:get_float("fuel_totaltime") then
 			was_active = true
 			meta:set_int("fuel_time", meta:get_int("fuel_time") + 1)
-			if result then
+			if recipe then
 				meta:set_int("src_time", meta:get_int("src_time") + 1)
-				if meta:get_int("src_time") >= result.time then
+				if meta:get_int("src_time") >= recipe.time then
 					meta:set_int("src_time", 0)
-					local result_stack = ItemStack(result.output)
-					if inv:room_for_item("dst", result_stack) then
-						inv:set_list("src", result.new_input)
-						inv:add_item("dst", result_stack)
-					end
+					technic.process_recipe(recipe, inv)
 				end
 			else
 				meta:set_int("src_time", 0)
@@ -175,9 +171,7 @@ minetest.register_abm({
 			return
 		end
 
-		local recipe = technic.get_recipe("alloy", inv:get_list("src"))
-
-		if not recipe then
+		if not technic.get_recipe("alloy", inv:get_list("src")) then
 			if was_active then
 				meta:set_string("infotext", S("@1 is empty", machine_name))
 				technic.swap_node(pos, "technic:coal_alloy_furnace")
