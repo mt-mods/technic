@@ -132,8 +132,8 @@ function technic.register_base_machine(nodename, data)
 			meta:set_int("src_time", meta:get_int("src_time") + round(def.speed*10))
 		end
 		while true do
-			local result = inv:get_list("src") and technic.get_recipe(typename, inv:get_list("src"))
-			if not result then
+			local recipe = inv:get_list("src") and technic.get_recipe(typename, inv:get_list("src"))
+			if not recipe then
 				technic.swap_node(pos, nodename)
 				meta:set_string("infotext", infotext_idle)
 				meta:set_int(tier.."_EU_demand", 0)
@@ -144,39 +144,21 @@ function technic.register_base_machine(nodename, data)
 			technic.swap_node(pos, nodename.."_active")
 			meta:set_string("infotext", infotext_active .. "\n" ..
 			S("Demand: @1", technic.EU_string(machine_demand[EU_upgrade+1])))
-			if meta:get_int("src_time") < round(result.time*10) then
+			if meta:get_int("src_time") < round(recipe.time*10) then
 				if not powered then
 					technic.swap_node(pos, nodename)
 					meta:set_string("infotext", infotext_unpowered)
 				end
 				return
 			end
-			local output = result.output
-			if type(output) ~= "table" then output = { output } end
-			local output_stacks = {}
-			for _, o in ipairs(output) do
-				table.insert(output_stacks, ItemStack(o))
-			end
-			local room_for_output = true
-			inv:set_size("dst_tmp", inv:get_size("dst"))
-			inv:set_list("dst_tmp", inv:get_list("dst"))
-			for _, o in ipairs(output_stacks) do
-				if not inv:room_for_item("dst_tmp", o) then
-					room_for_output = false
-					break
-				end
-				inv:add_item("dst_tmp", o)
-			end
-			if not room_for_output then
+			if not technic.process_recipe(recipe, inv) then
 				technic.swap_node(pos, nodename)
 				meta:set_string("infotext", infotext_idle)
 				meta:set_int(tier.."_EU_demand", 0)
-				meta:set_int("src_time", round(result.time*10))
+				meta:set_int("src_time", round(recipe.time*10))
 				return
 			end
-			meta:set_int("src_time", meta:get_int("src_time") - round(result.time*10))
-			inv:set_list("src", result.new_input)
-			inv:set_list("dst", inv:get_list("dst_tmp"))
+			meta:set_int("src_time", meta:get_int("src_time") - round(recipe.time*10))
 		end
 	end
 
