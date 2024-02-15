@@ -1,3 +1,4 @@
+std = "minetest+max"
 unused_args = false
 
 -- Exclude regression tests / unit tests
@@ -6,19 +7,10 @@ exclude_files = {
 }
 
 globals = {
-	"technic", "technic_cnc", "minetest"
+	"technic", "technic_cnc"
 }
 
 read_globals = {
-	-- Lua
-	string = {fields = {"split", "trim"}},
-	table = {fields = {"copy", "getn"}},
-
-	-- Minetest
-	"PseudoRandom", "ItemStack",
-	"VoxelArea", "VoxelManip",
-	"Settings", "vector",
-
 	-- Mods
 	"default", "stairsplus",
 	"screwdriver", "bucket",

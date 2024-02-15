@@ -5,6 +5,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@master
+        uses: actions/checkout@main
       - name: Luacheck
-        uses: lunarmodules/luacheck@master
+        uses: S-S-X/minecheck@master
