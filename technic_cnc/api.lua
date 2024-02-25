@@ -35,6 +35,7 @@ function technic_cnc.register_program(recipeitem, suffix, model, groups, images,
 		use_texture_alpha = ALPHA_CLIP,
 		walkable      = true,
 		groups        = groups,
+		is_ground_content = false,
 		selection_box = sbox,
 		collision_box = cbox
 	})
@@ -390,6 +391,7 @@ function technic_cnc.register_cnc_machine(nodename, def)
 		connect_sides = {"bottom", "back", "left", "right"},
 		paramtype2  = "facedir",
 		legacy_facedir_simple = true,
+		is_ground_content = false,
 		on_construct = function(pos)
 			local meta = minetest.get_meta(pos)
 			meta:set_string("infotext", def.description)
