@@ -48,6 +48,7 @@ function technic.register_solar_array(nodename, data)
 	}
 	def.groups = def.groups or {snappy=2, choppy=2, oddly_breakable_by_hand=2,
 		technic_machine=1, ["technic_"..ltier]=1, axey=2, handy=1}
+	def.is_ground_content = false
 	def._mcl_blast_resistance = 1
 	def._mcl_hardness = 0.8
 	def.connect_sides = def.connect_sides or {"bottom"}
