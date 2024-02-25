@@ -125,6 +125,7 @@ minetest.register_node("technic:lv_lamp", {
 		"technic_lv_lamp_side.png"
 	},
 	groups = {cracky = 2, technic_machine = 1, technic_lv = 1, pickaxey = 2},
+	is_ground_content = false,
 	_mcl_blast_resistance = 1,
 	_mcl_hardness = 0.8,
 	connect_sides = {"front", "back", "left", "right", "top"},
@@ -170,6 +171,7 @@ minetest.register_node("technic:lv_lamp_active", {
 	light_source = 14,
 	drop = "technic:lv_lamp",
 	groups = {cracky = 2, technic_machine = 1, technic_lv = 1, not_in_creative_inventory = 1, pickaxey = 2},
+	is_ground_content = false,
 	_mcl_blast_resistance = 1,
 	_mcl_hardness = 0.8,
 	connect_sides = {"front", "back", "left", "right", "top"},
