@@ -310,6 +310,7 @@ minetest.register_node("technic:forcefield_emitter_off", {
 		"technic_forcefield_emitter_off.png"
 	},
 	groups = {cracky = 1, technic_machine = 1, technic_hv = 1, pickaxey = 3},
+	is_ground_content = false,
 	_mcl_blast_resistance = 1,
 	_mcl_hardness = 0.8,
 	on_receive_fields = forcefield_receive_fields,
@@ -344,6 +345,7 @@ minetest.register_node("technic:forcefield_emitter_on", {
 	},
 	groups = {cracky = 1, technic_machine = 1, technic_hv = 1,
 		  not_in_creative_inventory=1, pickaxey = 3},
+	is_ground_content = false,
 	_mcl_blast_resistance = 1,
 	_mcl_hardness = 0.8,
 	drop = "technic:forcefield_emitter_off",
