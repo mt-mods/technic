@@ -58,7 +58,6 @@ minetest.register_node("technic:solar_panel", {
 	active = false,
 	drawtype = "nodebox",
 	paramtype = "light",
-	is_ground_content = true,
 	node_box = {
 		type = "fixed",
 		fixed = {-0.5, -0.5, -0.5, 0.5, 0, 0.5},
