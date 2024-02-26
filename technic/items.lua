@@ -111,6 +111,7 @@ minetest.register_craftitem("technic:carbon_cloth", {
 minetest.register_node("technic:machine_casing", {
 	description = S("Machine Casing"),
 	groups = {cracky=2, pickaxey=2},
+	is_ground_content = false,
 	_mcl_blast_resistance = 1,
 	_mcl_hardness = 0.8,
 	sunlight_propagates = true,
