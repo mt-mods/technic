@@ -10,6 +10,7 @@ RUN apk add git &&\
     git clone --recurse-submodules --depth 1 https://github.com/mt-mods/basic_materials.git &&\
     git clone --depth 1 https://github.com/mt-mods/pipeworks.git &&\
     git clone --depth 1 https://github.com/minetest-mods/moreores.git &&\
+    git clone --depth 1 https://github.com/mt-mods/xcompat.git &&\
     mkdir /root/.minetest/games &&\
     git clone https://github.com/minetest/minetest_game.git /root/.minetest/games/minetest &&\
     cd /root/.minetest/games/minetest &&\
