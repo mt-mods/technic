@@ -69,7 +69,7 @@ minetest.register_node("technic:admin_anchor", {
 	description = desc,
 	drawtype = "normal",
 	tiles = {"technic_admin_anchor.png"},
-	is_ground_content = true,
+	is_ground_content = false,
 	groups = {cracky=3, not_in_creative_inventory=1, pickaxey=1},
 	_mcl_blast_resistance = 1,
 	_mcl_hardness = 0.8,

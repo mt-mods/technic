@@ -62,6 +62,7 @@ function technic.chests.register_chest(nodename, data)
 		description = data.description,
 		tiles = data.tiles or get_tiles(data),
 		paramtype2 = "facedir",
+		is_ground_content = false,
 		legacy_facedir_simple = true,
 		groups = node_groups,
 		sounds = default.node_sound_wood_defaults(),

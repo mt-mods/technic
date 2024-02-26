@@ -49,6 +49,7 @@ minetest.register_node("technic:solar_panel", {
 	         "technic_solar_panel_side.png", "technic_solar_panel_side.png",   "technic_solar_panel_side.png"},
 	groups = {snappy=2, choppy=2, oddly_breakable_by_hand=2,
 		technic_machine=1, technic_lv=1, axey=2, handy=1},
+	is_ground_content = false,
 	_mcl_blast_resistance = 1,
 	_mcl_hardness = 0.8,
 	connect_sides = {"bottom"},
@@ -57,7 +58,6 @@ minetest.register_node("technic:solar_panel", {
 	active = false,
 	drawtype = "nodebox",
 	paramtype = "light",
-	is_ground_content = true,
 	node_box = {
 		type = "fixed",
 		fixed = {-0.5, -0.5, -0.5, 0.5, 0, 0.5},

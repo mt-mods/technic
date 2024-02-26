@@ -363,6 +363,7 @@ function technic.register_battery_box(nodename, data)
 				side_tex,
 				front_tex},
 			groups = groups,
+			is_ground_content = false,
 			_mcl_blast_resistance = 1,
 			_mcl_hardness = 0.8,
 			connect_sides = {"bottom"},

@@ -48,6 +48,7 @@ minetest.register_node("technic:switching_station",{
 		"technic_water_mill_top_active.png",
 		"technic_water_mill_top_active.png"},
 	groups = {snappy=2, choppy=2, oddly_breakable_by_hand=2, technic_all_tiers=1, axey=2, handy=1},
+	is_ground_content = false,
 	_mcl_blast_resistance = 1,
 	_mcl_hardness = 0.8,
 	connect_sides = {"bottom"},

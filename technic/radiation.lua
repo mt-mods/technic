@@ -470,6 +470,7 @@ for _, state in pairs({"flowing", "source"}) do
 		liquid_renewable = false,
 		damage_per_second = 6,
 		post_effect_color = {a=192, r=80, g=160, b=80},
+		is_ground_content = state == "flowing",
 		groups = {
 			liquid = 2,
 			hot = 3,
@@ -507,7 +508,7 @@ end
 minetest.register_node("technic:chernobylite_block", {
 	description = S("Chernobylite Block"),
 	tiles = {"technic_chernobylite_block.png"},
-	is_ground_content = true,
+	is_ground_content = false,
 	groups = {cracky=1, radioactive=4, level= has_mcl and 0 or 2, pickaxey=5},
 	_mcl_blast_resistance = 30,
 	_mcl_hardness = 40,

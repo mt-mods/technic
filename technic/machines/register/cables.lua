@@ -56,6 +56,7 @@ local function cable_defaults(nodename, data)
 		handy = 1,
 		["technic_"..ltier.."_cable"] = 1
 	}
+	def.is_ground_content = false
 	def.drop = def.drop or nodename
 	def.sounds = def.sounds or technic.sounds.node_sound_wood_defaults()
 	def.on_construct = def.on_construct or function(pos) place_network_node(pos, {tier}, nodename) end

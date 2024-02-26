@@ -73,7 +73,7 @@ else
 	minetest.register_node(":technic:granite_bricks", {
 		description = S("Granite Bricks"),
 		tiles = {"technic_granite_bricks.png"},
-		is_ground_content = true,
+		is_ground_content = false,
 		groups = {cracky=1},
 		sounds = technic.sounds.node_sound_stone_defaults(),
 	})
@@ -96,7 +96,7 @@ else
 	minetest.register_node(":technic:marble_bricks", {
 		description = S("Marble Bricks"),
 		tiles = {"technic_marble_bricks.png"},
-		is_ground_content = true,
+		is_ground_content = false,
 		groups = {cracky=3, pickaxey=1},
 		_mcl_hardness = 0.8,
 		_mcl_blast_resistance = 1,
@@ -107,7 +107,7 @@ end
 minetest.register_node(":technic:uranium_block", {
 	description = S("Uranium Block"),
 	tiles = {"technic_uranium_block.png"},
-	is_ground_content = true,
+	is_ground_content = false,
 	groups = {uranium_block=1, cracky=1, level=has_mcl and 0 or 2, radioactive=2, pickaxey=4},
 	_mcl_hardness = 1,
 	_mcl_blast_resistance = 1,
@@ -117,7 +117,7 @@ minetest.register_node(":technic:uranium_block", {
 minetest.register_node(":technic:chromium_block", {
 	description = S("Chromium Block"),
 	tiles = {"technic_chromium_block.png"},
-	is_ground_content = true,
+	is_ground_content = false,
 	groups = {cracky=1, level=has_mcl and 0 or 2, pickaxey=4},
 	_mcl_hardness = 1,
 	_mcl_blast_resistance = 1,
@@ -127,7 +127,7 @@ minetest.register_node(":technic:chromium_block", {
 minetest.register_node(":technic:zinc_block", {
 	description = S("Zinc Block"),
 	tiles = {"technic_zinc_block.png"},
-	is_ground_content = true,
+	is_ground_content = false,
 	groups = {cracky=1, level=has_mcl and 0 or 2, pickaxey=4},
 	_mcl_hardness = 1,
 	_mcl_blast_resistance = 1,
@@ -137,7 +137,7 @@ minetest.register_node(":technic:zinc_block", {
 minetest.register_node(":technic:lead_block", {
 	description = S("Lead Block"),
 	tiles = {"technic_lead_block.png"},
-	is_ground_content = true,
+	is_ground_content = false,
 	groups = {cracky=1, level=has_mcl and 0 or 2, pickaxey=4},
 	_mcl_hardness = 1,
 	_mcl_blast_resistance = 1,
@@ -147,7 +147,7 @@ minetest.register_node(":technic:lead_block", {
 minetest.register_node(":technic:cast_iron_block", {
 	description = S("Cast Iron Block"),
 	tiles = {"technic_cast_iron_block.png"},
-	is_ground_content = true,
+	is_ground_content = false,
 	groups = {cracky=1, level=has_mcl and 0 or 2, pickaxey=4},
 	_mcl_hardness = 1,
 	_mcl_blast_resistance = 1,
@@ -157,7 +157,7 @@ minetest.register_node(":technic:cast_iron_block", {
 minetest.register_node(":technic:carbon_steel_block", {
 	description = S("Carbon Steel Block"),
 	tiles = {"technic_carbon_steel_block.png"},
-	is_ground_content = true,
+	is_ground_content = false,
 	groups = {cracky=1, level=has_mcl and 0 or 2, pickaxey=4},
 	_mcl_hardness = 1,
 	_mcl_blast_resistance = 1,
@@ -167,7 +167,7 @@ minetest.register_node(":technic:carbon_steel_block", {
 minetest.register_node(":technic:stainless_steel_block", {
 	description = S("Stainless Steel Block"),
 	tiles = {"technic_stainless_steel_block.png"},
-	is_ground_content = true,
+	is_ground_content = false,
 	groups = {cracky=1, level=has_mcl and 0 or 2, pickaxey=4},
 	_mcl_hardness = 1,
 	_mcl_blast_resistance = 1,
@@ -177,7 +177,7 @@ minetest.register_node(":technic:stainless_steel_block", {
 minetest.register_node(":technic:sulfur_block", {
 	description = S("Sulfur Block"),
 	tiles = {"technic_sulfur_block.png"},
-	is_ground_content = true,
+	is_ground_content = false,
 	groups = {cracky = 3, pickaxey=1, handy=1},
 	_mcl_hardness = 1,
 	_mcl_blast_resistance = 1,
@@ -187,6 +187,7 @@ minetest.register_node(":technic:sulfur_block", {
 minetest.register_node(":technic:blast_resistant_concrete", {
 	description = S("Blast-resistant Concrete Block"),
 	tiles = {"technic_blast_resistant_concrete_block.png"},
+	is_ground_content = false,
 	groups = {cracky = 1, level = has_mcl and 0 or 3, concrete = 1, pickaxey=5},
 	_mcl_hardness = 5,
 	_mcl_blast_resistance = 9,
