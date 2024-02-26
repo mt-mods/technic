@@ -167,7 +167,7 @@ for p = 0, 35 do
 	(ov or minetest.register_node)(block, {
 		description = S("@1%-Fissile Uranium Block", string.format("%.1f", p/10)),
 		tiles = {"technic_uranium_block.png"},
-		is_ground_content = true,
+		is_ground_content = false,
 		groups = {uranium_block=1, not_in_creative_inventory=nici,
 			  cracky=1, level=has_mcl and 0 or 2, radioactive=radioactivity, pickaxey=4},
 		_mcl_blast_resistance = 1,
