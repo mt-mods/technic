@@ -373,6 +373,7 @@ minetest.register_node("technic:forcefield", {
 	sunlight_propagates = true,
 	drawtype = "glasslike",
 	groups = {not_in_creative_inventory=1},
+	is_ground_content = false,
 	paramtype = "light",
 	light_source = minetest.LIGHT_MAX,
 	diggable = false,
