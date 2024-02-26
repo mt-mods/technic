@@ -383,6 +383,7 @@ minetest.register_node(":technic:concrete_post_platform", {
 	description = S("Concrete Post Platform"),
 	tiles = {"basic_materials_concrete_block.png",},
 	groups={cracky=1, level=2},
+	is_ground_content = false,
 	sounds = default.node_sound_stone_defaults(),
 	paramtype = "light",
 	drawtype = "nodebox",
@@ -415,6 +416,7 @@ for platform = 0, 1 do
 		description = S("Concrete Post"),
 		tiles = {"basic_materials_concrete_block.png"},
 		groups = {cracky=1, level=2, concrete_post=1, not_in_creative_inventory=platform},
+		is_ground_content = false,
 		sounds = default.node_sound_stone_defaults(),
 		drop = (platform == 1 and "technic:concrete_post_platform" or
 				"technic:concrete_post"),
