@@ -187,6 +187,7 @@ minetest.register_node(":technic:sulfur_block", {
 minetest.register_node(":technic:blast_resistant_concrete", {
 	description = S("Blast-resistant Concrete Block"),
 	tiles = {"technic_blast_resistant_concrete_block.png"},
+	is_ground_content = false,
 	groups = {cracky = 1, level = has_mcl and 0 or 3, concrete = 1, pickaxey=5},
 	_mcl_hardness = 5,
 	_mcl_blast_resistance = 9,
