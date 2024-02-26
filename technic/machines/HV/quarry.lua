@@ -498,6 +498,7 @@ minetest.register_node("technic:quarry", {
 		"technic_carbon_steel_block.png^technic_cable_connection_overlay.png"
 	},
 	groups = {cracky = 2, tubedevice = 1, technic_machine = 1, technic_hv = 1, pickaxey = 2},
+	is_ground_content = false,
 	_mcl_blast_resistance = 1,
 	_mcl_hardness = 0.8,
 	connect_sides = {"front", "back", "left", "right"},
