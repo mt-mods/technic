@@ -428,6 +428,7 @@ function technic_cnc.register_cnc_machine(nodename, def)
 			paramtype2 = "facedir",
 			drop = nodename,
 			legacy_facedir_simple = true,
+			is_ground_content = false,
 			after_dig_node = def.after_dig_node or after_dig_node,
 			tube = def.tube,
 			digilines = def.digilines,
