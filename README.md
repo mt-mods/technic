@@ -131,7 +131,6 @@ Recommended mods that build on the `technic mod`:
 | enable_mining_laser                          |                                                                                                                       |
 | enable_flashlight                            |                                                                                                                       |
 | enable_wind_mill                             |                                                                                                                       |
-| enable_frames                                |                                                                                                                       |
 | enable_corium_griefing                       |                                                                                                                       |
 | enable_radiation_protection                  |                                                                                                                       |
 | enable_radiation_throttling                  | enable lag- and per-second-throttling of radiation damage                                                             |
