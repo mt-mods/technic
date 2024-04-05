@@ -104,6 +104,7 @@ function technic.register_cable_plate(nodename, data)
 					local fine_pointed = minetest.pointed_thing_to_face_pos(placer, pointed_thing)
 					fine_pointed = vector.subtract(fine_pointed, pointed_thing.above)
 					index = index < 0 and -index or index
+					-- Normalize direction to prevent `xyz` index overflow with oversize nodes
 					index = (index-1)%3+1
 					fine_pointed[xyz[index]] = nil
 					local key_a, a = next(fine_pointed)
