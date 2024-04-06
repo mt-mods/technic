@@ -96,16 +96,15 @@ function technic.register_cable_plate(nodename, data)
 		def.node_box["connect_"..notconnects[i]] = nil
 		if i == 1 then
 			def.on_place = function(itemstack, placer, pointed_thing)
-				local pointed_thing_diff = vector.subtract(pointed_thing.above, pointed_thing.under)
+				local pointed_thing_diff = vector.direction(pointed_thing.under, pointed_thing.above)
 				local index = pointed_thing_diff.x + (pointed_thing_diff.y*2) + (pointed_thing_diff.z*3)
 				local num = index < 0 and -index + 3 or index
 				local crtl = placer:get_player_control()
 				if (crtl.aux1 or crtl.sneak) and not (crtl.aux1 and crtl.sneak) and index ~= 0 then
 					local fine_pointed = minetest.pointed_thing_to_face_pos(placer, pointed_thing)
-					fine_pointed = vector.subtract(fine_pointed, pointed_thing.above)
-					index = index < 0 and -index or index
+					fine_pointed = vector.direction(pointed_thing.above,fine_pointed)
 					-- Normalize direction to prevent `xyz` index overflow with oversize nodes
-					index = (index-1)%3+1
+					index = (math.abs(index)-1)%3+1
 					fine_pointed[xyz[index]] = nil
 					local key_a, a = next(fine_pointed)
 					local key_b, b = next(fine_pointed, key_a)
