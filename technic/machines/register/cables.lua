@@ -103,9 +103,7 @@ function technic.register_cable_plate(nodename, data)
 				if (crtl.aux1 or crtl.sneak) and not (crtl.aux1 and crtl.sneak) and index ~= 0 then
 					local fine_pointed = minetest.pointed_thing_to_face_pos(placer, pointed_thing)
 					fine_pointed = vector.direction(pointed_thing.above,fine_pointed)
-					-- Normalize direction to prevent `xyz` index overflow with oversize nodes
-					index = (math.abs(index)-1)%3+1
-					fine_pointed[xyz[index]] = nil
+					fine_pointed[xyz[index < 0 and -index or index]] = nil
 					local key_a, a = next(fine_pointed)
 					local key_b, b = next(fine_pointed, key_a)
 					local far_key = math.abs(a) > math.abs(b) and key_a or key_b
