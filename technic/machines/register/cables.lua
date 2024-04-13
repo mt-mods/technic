@@ -96,6 +96,13 @@ function technic.register_cable_plate(nodename, data)
 		def.node_box["connect_"..notconnects[i]] = nil
 		if i == 1 then
 			def.on_place = function(itemstack, placer, pointed_thing)
+				local count = 0
+				for axis in pairs(xyz) do
+					count = count + (pointed_thing.under[axis] == pointed_thing.above[axis] and 0 or 1)
+					if count > 1 then
+						return itemstack
+					end
+				end
 				local pointed_thing_diff = vector.direction(pointed_thing.under, pointed_thing.above)
 				local index = pointed_thing_diff.x + (pointed_thing_diff.y*2) + (pointed_thing_diff.z*3)
 				local num = index < 0 and -index + 3 or index
