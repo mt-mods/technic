@@ -166,6 +166,11 @@ function technic.chests.move_inv(from_inv, to_inv, filter)
 	return moved_items
 end
 
+-- DEPRECATED: use technic.machine_on_inventory_* instead.
+---@deprecated
+---@see technic.machine_on_inventory_put
+---@see technic.machine_on_inventory_take
+---@see technic.machine_on_inventory_move
 function technic.chests.log_inv_change(pos, name, change, items)
 	local spos = minetest.pos_to_string(pos)
 	if change == "move" then
@@ -174,5 +179,25 @@ function technic.chests.log_inv_change(pos, name, change, items)
 		minetest.log("action", name.." puts "..items.." into chest at "..spos)
 	elseif change == "take" then
 		minetest.log("action", name.." takes "..items.." from chest at "..spos)
+	end
+end
+
+function technic.chests.log_fast_move(pos, name, nodename, change, items)
+	local spos = minetest.pos_to_string(pos)
+	local itemlist = ""
+	for _, stack in ipairs(items) do
+		itemlist = itemlist .. " " .. stack.name .. " " .. stack.count
+	end
+
+	if change == "put" then
+		minetest.log("action", string.format(
+			"%s fast-moved the following item from their inventory into %s at %s:",
+			name, nodename, spos
+		) .. itemlist)
+	elseif change == "take" then
+		minetest.log("action", string.format(
+			"%s fast-moved the following item from %s at %s into their inventory:",
+			name, nodename, spos
+		) .. itemlist)
 	end
 end

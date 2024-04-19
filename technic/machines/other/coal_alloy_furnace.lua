@@ -47,6 +47,10 @@ formspec = formspec..
 	"listring[context;fuel]"..
 	"listring[current_player;main]"
 
+local on_metadata_inventory_move = technic.machine_on_inventory_move("technic:coal_alloy_furnace")
+local on_metadata_inventory_put  = technic.machine_on_inventory_put("technic:coal_alloy_furnace")
+local on_metadata_inventory_take = technic.machine_on_inventory_take("technic:coal_alloy_furnace")
+
 minetest.register_node("technic:coal_alloy_furnace", {
 	description = machine_name,
 	tiles = {"technic_coal_alloy_furnace_top.png",  "technic_coal_alloy_furnace_bottom.png",
@@ -72,6 +76,9 @@ minetest.register_node("technic:coal_alloy_furnace", {
 	allow_metadata_inventory_put = technic.machine_inventory_put,
 	allow_metadata_inventory_take = technic.machine_inventory_take,
 	allow_metadata_inventory_move = technic.machine_inventory_move,
+	on_metadata_inventory_move = on_metadata_inventory_move,
+	on_metadata_inventory_put = on_metadata_inventory_put,
+	on_metadata_inventory_take = on_metadata_inventory_take,
 })
 
 minetest.register_node("technic:coal_alloy_furnace_active", {
@@ -92,6 +99,9 @@ minetest.register_node("technic:coal_alloy_furnace_active", {
 	allow_metadata_inventory_put = technic.machine_inventory_put,
 	allow_metadata_inventory_take = technic.machine_inventory_take,
 	allow_metadata_inventory_move = technic.machine_inventory_move,
+	on_metadata_inventory_move = on_metadata_inventory_move,
+	on_metadata_inventory_put = on_metadata_inventory_put,
+	on_metadata_inventory_take = on_metadata_inventory_take,
 })
 
 minetest.register_abm({

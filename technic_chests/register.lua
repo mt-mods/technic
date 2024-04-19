@@ -57,6 +57,10 @@ function technic.chests.register_chest(nodename, data)
 		data.digilines = nil
 	end
 
+	local on_metadata_inventory_move = technic.machine_on_inventory_move(nodename)
+	local on_metadata_inventory_put  = technic.machine_on_inventory_put(nodename)
+	local on_metadata_inventory_take = technic.machine_on_inventory_take(nodename)
+
 	data.formspec = technic.chests.get_formspec(data)
 	local def = {
 		description = data.description,
@@ -144,7 +148,7 @@ function technic.chests.register_chest(nodename, data)
 				if data.digilines and meta:get_int("send_take") == 1 then
 					technic.chests.send_digiline_message(pos, "take", player, moved_items)
 				end
-				technic.chests.log_inv_change(pos, player:get_player_name(), "take", "stuff")
+				technic.chests.log_fast_move(pos, player:get_player_name(), nodename, "take", moved_items)
 				return 0
 			end
 			return count
@@ -160,7 +164,7 @@ function technic.chests.register_chest(nodename, data)
 				if data.digilines and meta:get_int("send_put") == 1 then
 					technic.chests.send_digiline_message(pos, "put", player, moved_items)
 				end
-				technic.chests.log_inv_change(pos, player:get_player_name(), "put", "stuff")
+				technic.chests.log_fast_move(pos, player:get_player_name(), nodename, "put", moved_items)
 				return 0
 			end
 			return stack:get_count()
@@ -171,21 +175,9 @@ function technic.chests.register_chest(nodename, data)
 			end
 			return stack:get_count()
 		end,
-		on_metadata_inventory_move = function(pos, from_list, from_index, to_list, to_index, count, player)
-			technic.chests.log_inv_change(pos, player:get_player_name(), "move", "stuff")
-		end,
-		on_metadata_inventory_put = function(pos, listname, index, stack, player)
-			if data.digilines and minetest.get_meta(pos):get_int("send_put") == 1 then
-				technic.chests.send_digiline_message(pos, "put", player, {stack:to_table()})
-			end
-			technic.chests.log_inv_change(pos, player:get_player_name(), "put", stack:get_name())
-		end,
-		on_metadata_inventory_take = function(pos, listname, index, stack, player)
-			if data.digilines and minetest.get_meta(pos):get_int("send_take") == 1 then
-				technic.chests.send_digiline_message(pos, "take", player, {stack:to_table()})
-			end
-			technic.chests.log_inv_change(pos, player:get_player_name(), "take", stack:get_name())
-		end,
+		on_metadata_inventory_move = on_metadata_inventory_move,
+		on_metadata_inventory_put = on_metadata_inventory_put,
+		on_metadata_inventory_take = on_metadata_inventory_take,
 		on_blast = function(pos)
 			if data.locked or data.protected then
 				return
