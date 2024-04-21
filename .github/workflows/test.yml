@@ -13,4 +13,3 @@ jobs:
           https://github.com/mt-mods/pipeworks.git
           https://github.com/minetest-mods/moreores.git
           https://github.com/mt-mods/xcompat.git
-    - uses: coverallsapp/github-action@v1
