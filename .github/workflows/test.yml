@@ -1,0 +1,16 @@
+name: test
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: buckaroobanzay/mtt@main
+      with:
+        modname: technic
+        git_dependencies: |
+          https://github.com/mt-mods/basic_materials.git
+          https://github.com/mt-mods/pipeworks.git
+          https://github.com/minetest-mods/moreores.git
+          https://github.com/mt-mods/xcompat.git
+    - uses: coverallsapp/github-action@v1
