@@ -3,7 +3,7 @@ Technic
 
 A mod for [minetest](http://www.minetest.net)
 
-![integration-test](https://github.com/mt-mods/technic/workflows/test/badge.svg)
+![mtt](https://github.com/mt-mods/technic/workflows/mtt/badge.svg)
 ![luacheck](https://github.com/mt-mods/technic/workflows/luacheck/badge.svg)
 ![mineunit](https://github.com/mt-mods/technic/workflows/mineunit/badge.svg)
 ![](https://byob.yarr.is/mt-mods/technic/coverage)
