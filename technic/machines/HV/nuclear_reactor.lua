@@ -437,10 +437,6 @@ local digiline_def = function(pos, _, channel, msg)
 	end
 end
 
-local on_metadata_inventory_move = technic.machine_on_inventory_move("technic:hv_nuclear_reactor_core")
-local on_metadata_inventory_put  = technic.machine_on_inventory_put("technic:hv_nuclear_reactor_core")
-local on_metadata_inventory_take = technic.machine_on_inventory_take("technic:hv_nuclear_reactor_core")
-
 minetest.register_node("technic:hv_nuclear_reactor_core", {
 	description = reactor_desc,
 	tiles = {
@@ -484,9 +480,9 @@ minetest.register_node("technic:hv_nuclear_reactor_core", {
 	allow_metadata_inventory_put = technic.machine_inventory_put,
 	allow_metadata_inventory_take = technic.machine_inventory_take,
 	allow_metadata_inventory_move = technic.machine_inventory_move,
-	on_metadata_inventory_move = on_metadata_inventory_move,
-	on_metadata_inventory_put = on_metadata_inventory_put,
-	on_metadata_inventory_take = on_metadata_inventory_take,
+	on_metadata_inventory_move = technic.machine_on_inventory_move,
+	on_metadata_inventory_put = technic.machine_on_inventory_put,
+	on_metadata_inventory_take = technic.machine_on_inventory_take,
 	technic_run = run,
 })
 
@@ -528,9 +524,9 @@ minetest.register_node("technic:hv_nuclear_reactor_core_active", {
 	allow_metadata_inventory_put = technic.machine_inventory_put,
 	allow_metadata_inventory_take = technic.machine_inventory_take,
 	allow_metadata_inventory_move = technic.machine_inventory_move,
-	on_metadata_inventory_move = on_metadata_inventory_move,
-	on_metadata_inventory_put = on_metadata_inventory_put,
-	on_metadata_inventory_take = on_metadata_inventory_take,
+	on_metadata_inventory_move = technic.machine_on_inventory_move,
+	on_metadata_inventory_put = technic.machine_on_inventory_put,
+	on_metadata_inventory_take = technic.machine_on_inventory_take,
 	technic_run = run,
 	technic_on_disable = function(pos, node)
 		local timer = minetest.get_node_timer(pos)

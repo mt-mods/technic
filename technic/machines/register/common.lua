@@ -191,41 +191,38 @@ function technic.machine_inventory_move(pos, from_list, from_index,
 	return inv_change(pos, player, count, from_list, to_list, stack)
 end
 
-function technic.machine_on_inventory_put(nodename)
-	return function(pos, listname, index, stack, player)
-		minetest.log("action", string.format(
-			"%s put %s into %s[%u] of %s at %s",
-			player:is_player() and player:get_player_name() or "A mod",
-			stack:to_string(),
-			listname, index,
-			nodename,
-			minetest.pos_to_string(pos)
-		))
-	end
+function technic.machine_on_inventory_put(pos, listname, index, stack, player)
+	local nodename = minetest.get_node(pos).name
+	minetest.log("action", string.format(
+		"%s put %s into %s[%u] of %s at %s",
+		player:is_player() and player:get_player_name() or "A mod",
+		stack:to_string(),
+		listname, index,
+		nodename,
+		minetest.pos_to_string(pos)
+	))
 end
 
-function technic.machine_on_inventory_take(nodename)
-	return function(pos, listname, index, stack, player)
-		minetest.log("action", string.format(
-			"%s took %s from %s[%u] of %s at %s",
-			player:is_player() and player:get_player_name() or "A mod",
-			stack:to_string(),
-			listname, index,
-			nodename,
-			minetest.pos_to_string(pos)
-		))
-	end
+function technic.machine_on_inventory_take(pos, listname, index, stack, player)
+	local nodename = minetest.get_node(pos).name
+	minetest.log("action", string.format(
+		"%s took %s from %s[%u] of %s at %s",
+		player:is_player() and player:get_player_name() or "A mod",
+		stack:to_string(),
+		listname, index,
+		nodename,
+		minetest.pos_to_string(pos)
+	))
 end
 
-function technic.machine_on_inventory_move(nodename)
-	return function(pos, from_list, from_index, to_list, to_index, count, player)
-		minetest.log("action", string.format(
-			"%s moved item from %s[%u] to %s[%u] of %s at %s",
-			player:is_player() and player:get_player_name() or "A mod",
-			from_list, from_index,
-			to_list, to_index,
-			nodename,
-			minetest.pos_to_string(pos)
-		))
-	end
+function technic.machine_on_inventory_move(pos, from_list, from_index, to_list, to_index, count, player)
+	local nodename = minetest.get_node(pos).name
+	minetest.log("action", string.format(
+		"%s moved item from %s[%u] to %s[%u] of %s at %s",
+		player:is_player() and player:get_player_name() or "A mod",
+		from_list, from_index,
+		to_list, to_index,
+		nodename,
+		minetest.pos_to_string(pos)
+	))
 end

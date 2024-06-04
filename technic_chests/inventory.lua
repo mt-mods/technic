@@ -166,11 +166,6 @@ function technic.chests.move_inv(from_inv, to_inv, filter)
 	return moved_items
 end
 
--- DEPRECATED: use technic.machine_on_inventory_* instead.
----@deprecated
----@see technic.machine_on_inventory_put
----@see technic.machine_on_inventory_take
----@see technic.machine_on_inventory_move
 function technic.chests.log_inv_change(pos, name, change, items)
 	local spos = minetest.pos_to_string(pos)
 	if change == "move" then

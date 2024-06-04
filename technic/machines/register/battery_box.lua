@@ -331,11 +331,6 @@ function technic.register_battery_box(nodename, data)
 		return true
 	end
 
-	-- This nodename is not an actual nodename - it is the base nodename.
-	local on_metadata_inventory_move = technic.machine_on_inventory_move(nodename)
-	local on_metadata_inventory_put  = technic.machine_on_inventory_put(nodename)
-	local on_metadata_inventory_take = technic.machine_on_inventory_take(nodename)
-
 	for i = 0, 8 do
 		local groups = {snappy=2, choppy=2, oddly_breakable_by_hand=2,
 				technic_machine=1, ["technic_"..ltier]=1, axey=2, handy=1}
@@ -394,9 +389,9 @@ function technic.register_battery_box(nodename, data)
 			allow_metadata_inventory_put = technic.machine_inventory_put,
 			allow_metadata_inventory_take = technic.machine_inventory_take,
 			allow_metadata_inventory_move = technic.machine_inventory_move,
-			on_metadata_inventory_move = on_metadata_inventory_move,
-			on_metadata_inventory_put = on_metadata_inventory_put,
-			on_metadata_inventory_take = on_metadata_inventory_take,
+			on_metadata_inventory_move = technic.machine_on_inventory_move,
+			on_metadata_inventory_put = technic.machine_on_inventory_put,
+			on_metadata_inventory_take = technic.machine_on_inventory_take,
 			technic_run = run,
 			on_timer = on_timer,
 			on_rightclick = function(pos) update_node(pos, true) end,
