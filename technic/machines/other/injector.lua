@@ -152,9 +152,9 @@ minetest.register_node("technic:injector", {
 	allow_metadata_inventory_put = technic.machine_inventory_put,
 	allow_metadata_inventory_take = technic.machine_inventory_take,
 	allow_metadata_inventory_move = technic.machine_inventory_move,
-	on_metadata_inventory_move = technic.machine_on_inventory_move("technic:injector"),
-	on_metadata_inventory_put = technic.machine_on_inventory_put("technic:injector"),
-	on_metadata_inventory_take = technic.machine_on_inventory_take("technic:injector"),
+	on_metadata_inventory_move = technic.machine_on_inventory_move,
+	on_metadata_inventory_put = technic.machine_on_inventory_put,
+	on_metadata_inventory_take = technic.machine_on_inventory_take,
 	after_place_node = pipeworks.after_place,
 	after_dig_node = pipeworks.after_dig
 })
