@@ -60,6 +60,6 @@ dofile(modpath.."/effects.lua")
 -- Chat commands
 dofile(modpath.."/chatcommands.lua")
 
-if minetest.get_modpath("mtt") then
-	dofile(modpath.."/integration_test.lua")
+if minetest.get_modpath("mtt") and mtt.enabled then
+	dofile(modpath.."/mtt.lua")
 end
