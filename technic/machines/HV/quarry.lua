@@ -554,9 +554,9 @@ minetest.register_node("technic:quarry", {
 	allow_metadata_inventory_take = function(pos, listname, index, stack, player)
 		return player_allowed(pos, player:get_player_name()) and stack:get_count() or 0
 	end,
-	on_metadata_inventory_move = technic.machine_on_inventory_move("technic:quarry"),
-	on_metadata_inventory_put = technic.machine_on_inventory_put("technic:quarry"),
-	on_metadata_inventory_take = technic.machine_on_inventory_take("technic:quarry"),
+	on_metadata_inventory_move = technic.machine_on_inventory_move,
+	on_metadata_inventory_put = technic.machine_on_inventory_put,
+	on_metadata_inventory_take = technic.machine_on_inventory_take,
 	mesecons = {
 		effector = {
 			action_on = function(pos)
