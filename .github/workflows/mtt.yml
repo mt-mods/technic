@@ -11,5 +11,6 @@ jobs:
         git_dependencies: |
           https://github.com/mt-mods/basic_materials.git
           https://github.com/mt-mods/pipeworks.git
+          https://github.com/OgelGames/fakelib.git
           https://github.com/minetest-mods/moreores.git
           https://github.com/mt-mods/xcompat.git
