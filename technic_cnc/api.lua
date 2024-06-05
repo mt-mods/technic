@@ -383,10 +383,10 @@ function technic_cnc.register_cnc_machine(nodename, def)
 		groups.tubedevice_receiver = 1
 	end
 
-	-- Only do logging when technic is loaded... I don't wanna duplicate code
-	local on_metadata_inventory_move = technic_cnc.use_technic and technic.machine_on_inventory_move
-	local on_metadata_inventory_put  = technic_cnc.use_technic and technic.machine_on_inventory_put
-	local on_metadata_inventory_take = technic_cnc.use_technic and technic.machine_on_inventory_take
+	-- Only do logging when technic is enabled to avoid duplicating code
+	local on_metadata_inventory_move = technic_cnc.use_technic and technic.machine_on_inventory_move or nil
+	local on_metadata_inventory_put  = technic_cnc.use_technic and technic.machine_on_inventory_put or nil
+	local on_metadata_inventory_take = technic_cnc.use_technic and technic.machine_on_inventory_take or nil
 
 	-- Inactive state CNC machine
 	minetest.register_node(":" .. nodename, {
