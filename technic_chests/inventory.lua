@@ -185,9 +185,9 @@ function technic.chests.log_fast_move(pos, name, change, items)
 	end
 	if change == "put" then
 		minetest.log("action", string.format("%s puts items into chest at %s: %s",
-			name, spos, table.concat(itemlist, ", "))
+			name, spos, table.concat(itemlist, ", ")))
 	elseif change == "take" then
 		minetest.log("action", string.format("%s takes items from chest at %s: %s",
-			name, spos, table.concat(itemlist, ", "))
+			name, spos, table.concat(itemlist, ", ")))
 	end
 end
