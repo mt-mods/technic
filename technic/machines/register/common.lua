@@ -192,37 +192,29 @@ function technic.machine_inventory_move(pos, from_list, from_index,
 end
 
 function technic.machine_on_inventory_put(pos, listname, index, stack, player)
-	local nodename = minetest.get_node(pos).name
-	minetest.log("action", string.format(
-		"%s put %s into %s[%u] of %s at %s",
-		player:is_player() and player:get_player_name() or "A mod",
+	minetest.log("action", string.format("%s puts %s into %s at %s",
+		player:get_player_name(),
 		stack:to_string(),
-		listname, index,
-		nodename,
+		minetest.get_node(pos).name,
 		minetest.pos_to_string(pos)
 	))
 end
 
 function technic.machine_on_inventory_take(pos, listname, index, stack, player)
-	local nodename = minetest.get_node(pos).name
-	minetest.log("action", string.format(
-		"%s took %s from %s[%u] of %s at %s",
-		player:is_player() and player:get_player_name() or "A mod",
+	minetest.log("action", string.format("%s takes %s from %s at %s",
+		player:get_player_name(),
 		stack:to_string(),
-		listname, index,
-		nodename,
+		minetest.get_node(pos).name,
 		minetest.pos_to_string(pos)
 	))
 end
 
 function technic.machine_on_inventory_move(pos, from_list, from_index, to_list, to_index, count, player)
-	local nodename = minetest.get_node(pos).name
-	minetest.log("action", string.format(
-		"%s moved item from %s[%u] to %s[%u] of %s at %s",
-		player:is_player() and player:get_player_name() or "A mod",
-		from_list, from_index,
-		to_list, to_index,
-		nodename,
+	local stack = minetest.get_meta(pos):get_inventory():get_stack(to_list, to_index)
+	minetest.log("action", string.format("%s moves %s in %s at %s",
+		player:get_player_name(),
+		stack:to_string(),
+		minetest.get_node(pos).name,
 		minetest.pos_to_string(pos)
 	))
 end
