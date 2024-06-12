@@ -383,6 +383,11 @@ function technic_cnc.register_cnc_machine(nodename, def)
 		groups.tubedevice_receiver = 1
 	end
 
+	-- Only do logging when technic is enabled to avoid duplicating code
+	local on_metadata_inventory_move = technic_cnc.use_technic and technic.machine_on_inventory_move or nil
+	local on_metadata_inventory_put  = technic_cnc.use_technic and technic.machine_on_inventory_put or nil
+	local on_metadata_inventory_take = technic_cnc.use_technic and technic.machine_on_inventory_take or nil
+
 	-- Inactive state CNC machine
 	minetest.register_node(":" .. nodename, {
 		description = def.description,
@@ -412,6 +417,9 @@ function technic_cnc.register_cnc_machine(nodename, def)
 		allow_metadata_inventory_put = def.allow_metadata_inventory_put or allow_metadata_inventory_put,
 		allow_metadata_inventory_take = def.allow_metadata_inventory_take or allow_metadata_inventory_take,
 		allow_metadata_inventory_move = def.allow_metadata_inventory_move or allow_metadata_inventory_move,
+		on_metadata_inventory_move = on_metadata_inventory_move,
+		on_metadata_inventory_put = on_metadata_inventory_put,
+		on_metadata_inventory_take = on_metadata_inventory_take,
 		on_receive_fields = on_receive_fields,
 		technic_run = def.technic_run or technic_run,
 	})
@@ -436,6 +444,9 @@ function technic_cnc.register_cnc_machine(nodename, def)
 			allow_metadata_inventory_put = def.allow_metadata_inventory_put or allow_metadata_inventory_put,
 			allow_metadata_inventory_take = def.allow_metadata_inventory_take or allow_metadata_inventory_take,
 			allow_metadata_inventory_move = def.allow_metadata_inventory_move or allow_metadata_inventory_move,
+			on_metadata_inventory_move = on_metadata_inventory_move,
+			on_metadata_inventory_put = on_metadata_inventory_put,
+			on_metadata_inventory_take = on_metadata_inventory_take,
 			on_receive_fields = on_receive_fields,
 			technic_run = def.technic_run or technic_run,
 			technic_disabled_machine_name = nodename,

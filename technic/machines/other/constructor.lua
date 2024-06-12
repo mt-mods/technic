@@ -205,6 +205,9 @@ local function make_constructor(mark, length)
 		allow_metadata_inventory_put = allow_inventory_put,
 		allow_metadata_inventory_take = technic.machine_inventory_take,
 		allow_metadata_inventory_move = technic.machine_inventory_move,
+		on_metadata_inventory_move = technic.machine_on_inventory_move,
+		on_metadata_inventory_put = technic.machine_on_inventory_put,
+		on_metadata_inventory_take = technic.machine_on_inventory_take,
 		on_rotate = function(pos, node, user, mode, new_param2)
 			if mode ~= 1 then
 				return false
@@ -231,6 +234,9 @@ local function make_constructor(mark, length)
 		allow_metadata_inventory_put = allow_inventory_put,
 		allow_metadata_inventory_take = technic.machine_inventory_take,
 		allow_metadata_inventory_move = technic.machine_inventory_move,
+		on_metadata_inventory_move = technic.machine_on_inventory_move,
+		on_metadata_inventory_put = technic.machine_on_inventory_put,
+		on_metadata_inventory_take = technic.machine_on_inventory_take,
 		on_rotate = false
 	})
 end
