@@ -1,5 +1,13 @@
 name: mtt
-on: [push, pull_request]
+on: 
+  push:
+    paths:
+      - '**.lua'
+      - '.github/workflows/**.yml'
+  pull_request:
+    paths:
+      - '**.lua'
+      - '.github/workflows/**.yml'
 jobs:
   mtt:
     runs-on: ubuntu-latest

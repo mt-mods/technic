@@ -1,6 +1,14 @@
 name: mineunit
 
-on: [push, pull_request]
+on: 
+  push:
+    paths:
+      - '**.lua'
+      - '.github/workflows/**.yml'
+  pull_request:
+    paths:
+      - '**.lua'
+      - '.github/workflows/**.yml'
 
 jobs:
   mineunit:
