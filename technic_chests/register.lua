@@ -144,7 +144,7 @@ function technic.chests.register_chest(nodename, data)
 				if data.digilines and meta:get_int("send_take") == 1 then
 					technic.chests.send_digiline_message(pos, "take", player, moved_items)
 				end
-				technic.chests.log_inv_change(pos, player:get_player_name(), "take", "stuff")
+				technic.chests.log_fast_move(pos, player:get_player_name(), "take", moved_items)
 				return 0
 			end
 			return count
@@ -160,7 +160,7 @@ function technic.chests.register_chest(nodename, data)
 				if data.digilines and meta:get_int("send_put") == 1 then
 					technic.chests.send_digiline_message(pos, "put", player, moved_items)
 				end
-				technic.chests.log_inv_change(pos, player:get_player_name(), "put", "stuff")
+				technic.chests.log_fast_move(pos, player:get_player_name(), "put", moved_items)
 				return 0
 			end
 			return stack:get_count()

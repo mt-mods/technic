@@ -176,3 +176,18 @@ function technic.chests.log_inv_change(pos, name, change, items)
 		minetest.log("action", name.." takes "..items.." from chest at "..spos)
 	end
 end
+
+function technic.chests.log_fast_move(pos, name, change, items)
+	local spos = minetest.pos_to_string(pos)
+	local itemlist = {}
+	for _, stack in ipairs(items) do
+		table.insert(itemlist, stack.name.." "..stack.count)
+	end
+	if change == "put" then
+		minetest.log("action", string.format("%s puts items into chest at %s: %s",
+			name, spos, table.concat(itemlist, ", ")))
+	elseif change == "take" then
+		minetest.log("action", string.format("%s takes items from chest at %s: %s",
+			name, spos, table.concat(itemlist, ", ")))
+	end
+end

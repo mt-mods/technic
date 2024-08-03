@@ -72,6 +72,9 @@ minetest.register_node("technic:coal_alloy_furnace", {
 	allow_metadata_inventory_put = technic.machine_inventory_put,
 	allow_metadata_inventory_take = technic.machine_inventory_take,
 	allow_metadata_inventory_move = technic.machine_inventory_move,
+	on_metadata_inventory_move = technic.machine_on_inventory_move,
+	on_metadata_inventory_put = technic.machine_on_inventory_put,
+	on_metadata_inventory_take = technic.machine_on_inventory_take,
 })
 
 minetest.register_node("technic:coal_alloy_furnace_active", {
@@ -92,6 +95,9 @@ minetest.register_node("technic:coal_alloy_furnace_active", {
 	allow_metadata_inventory_put = technic.machine_inventory_put,
 	allow_metadata_inventory_take = technic.machine_inventory_take,
 	allow_metadata_inventory_move = technic.machine_inventory_move,
+	on_metadata_inventory_move = technic.machine_on_inventory_move,
+	on_metadata_inventory_put = technic.machine_on_inventory_put,
+	on_metadata_inventory_take = technic.machine_on_inventory_take,
 })
 
 minetest.register_abm({
