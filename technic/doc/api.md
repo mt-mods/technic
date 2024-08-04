@@ -63,7 +63,7 @@ Power tool API
 		* `technic_get_charge = function(itemstack) ...`:
 			* Callback will be used to get itemstack charge and max\_charge.
 			* Have to return values `charge, max_charge`.
-			* Etc. `local charge, maxcharge = itemdef.technic_get_charge(itemstack)`.
+			* E.g. `local charge, maxcharge = itemdef.technic_get_charge(itemstack)`.
 			* Defaults to `technic.get_RE_charge` which handles tool wear and charge values.
 		* `technic_set_charge = function(itemstack, charge) ...`:
 			* Callback will be used to set itemstack charge.
