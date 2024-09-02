@@ -1,0 +1,9 @@
+# Used to disable technic features
+technic_cnc_use_technic (Use technic features) bool true
+
+# Used to disable digilines features
+technic_cnc_use_digilines (Use digilines features) bool true
+
+# Used to disable pipeworks features
+technic_cnc_use_pipeworks (Use pipeworks features) bool true
+
