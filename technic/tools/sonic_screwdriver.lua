@@ -44,7 +44,7 @@ local function screwdriver_handler(itemstack, user, pointed_thing, mode)
 		return
 	end
 
-	minetest.sound_play("technic_sonic_screwdriver", {pos = pos, gain = 0.3, max_hear_distance = 10}, true)
+	minetest.sound_play("technic_sonic_screwdriver", {pos = pos, gain = 0.5, max_hear_distance = 10}, true)
 
 	-- Set param2
 	local rotationPart = node.param2 % 32 -- get first 4 bits
