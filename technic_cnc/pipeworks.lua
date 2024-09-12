@@ -42,7 +42,7 @@ end
 local function on_receive_fields(pos, meta, fields, sender, update_formspec)
 	-- https://github.com/mt-mods/pipeworks/-/blob/master/common.lua#L115
 	for field,_ in pairs(fields) do
-		if pipeworks.string_startswith(field, "fs_helpers_cycling:") then
+		if string.sub(field, 1, 19) == "fs_helpers_cycling:" then
 			if pipeworks.may_configure(pos, sender) then
 				pipeworks_on_receive_fields(pos, fields)
 				update_formspec(meta)
