@@ -53,9 +53,9 @@
 @1 is absent in @2 region=@1 est absent dans la région @2
 @1 is empty=@1 est vide
 @1 is present in @2 region=Le bloc @1 est présent dans la région @2
-@1%-Fissile Uranium Block=Bloc d'uranium fissile à 1 %.
-@1%-Fissile Uranium Dust=Poussière d'uranium fissile à 1 %.
-@1%-Fissile Uranium Ingot=Lingot d'uranium fissile à 1 %.
+@1%-Fissile Uranium Block=Bloc d'uranium fissile à @1%.
+@1%-Fissile Uranium Dust=Poussière d'uranium fissile à @1%.
+@1%-Fissile Uranium Ingot=Lingot d'uranium fissile à @1%.
 @1. Supply: @2 Demand: @3=Offre @1 : @2 Demande : @3
 Acacia=Acacia
 Accuracy:=Précision :
