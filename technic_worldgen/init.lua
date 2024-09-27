@@ -15,7 +15,7 @@ dofile(modpath.."/config.lua")
 dofile(modpath.."/nodes.lua")
 dofile(modpath.."/oregen.lua")
 dofile(modpath.."/crafts.lua")
-if minetest.get_modpath("default") then
+if minetest.get_modpath("default") and technic.config:get_bool("enable_steel_override") then
 	dofile(modpath.."/overrides.lua")
 end
 
