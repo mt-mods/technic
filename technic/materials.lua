@@ -71,3 +71,8 @@ technic.materials = {
 	pick_silver = has_moreores and "moreores:pick_silver" or has_mcl and "mcl_tools:pick_gold" or "default:gold_pickaxe",
 	mithril_block = has_moreores and "moreores:mithril_block" or has_mcl and "mcl_core:lapisblock" or "default:goldblock",
 }
+
+if has_mcl and has_moreores then
+	technic.materials.tin_ingot = "moreores:tin_ingot"
+	technic.materials.tin_lump = "moreores:tin_lump"
+end
