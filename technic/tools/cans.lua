@@ -1,5 +1,5 @@
 local S = technic.getter
-local mat = technic.materials
+local mat = xcompat.materials
 
 local function set_can_wear(itemstack, level, max_level)
 	local temp

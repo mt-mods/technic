@@ -1,5 +1,5 @@
 local S = technic.getter
-local mat = technic.materials
+local mat = xcompat.materials
 
 technic.register_recipe_type("separating", {
 	description = S("Separating"),
@@ -40,7 +40,7 @@ if minetest.get_modpath("farming") or minetest.get_modpath("mcl_farming") then
 		table.insert(recipes, { "farming:barley", "farming:seed_barley", "cottages:straw_mat" })
 	else
 		-- work in a less fancy and less efficient manner
-		table.insert(recipes, { mat.wheat.." 4", mat.seed_wheat.." 3", mat.dry_shrub })
+		table.insert(recipes, { mat.wheat.." 4", mat.wheat_seed.." 3", mat.dry_shrub })
 		table.insert(recipes, { "farming:barley 4", "farming:seed_barley 3", mat.dry_shrub })
 	end
 end

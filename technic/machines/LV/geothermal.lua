@@ -6,7 +6,7 @@
 minetest.register_alias("geothermal", "technic:geothermal")
 
 local S = technic.getter
-local mat = technic.materials
+local mat = xcompat.materials
 
 minetest.register_craft({
 	output = 'technic:geothermal',

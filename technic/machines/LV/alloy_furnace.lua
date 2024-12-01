@@ -1,6 +1,6 @@
 -- LV Alloy furnace
 local S = technic.getter
-local mat = technic.materials
+local mat = xcompat.materials
 
 -- FIXME: kpoppel: I'd like to introduce an induction heating element here...
 minetest.register_craft({

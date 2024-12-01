@@ -1,6 +1,6 @@
 
 local S = technic.getter
-local mat = technic.materials
+local mat = xcompat.materials
 
 technic.register_recipe_type("freezing", {
 	description = S("Freezing"),
@@ -13,10 +13,10 @@ function technic.register_freezer_recipe(data)
 end
 
 local recipes = {
-	{mat.bucket_water, { mat.ice, mat.bucket_empty } },
-	{mat.bucket_river_water, { mat.ice, mat.bucket_empty } },
+	{mat.water_bucket, { mat.ice, mat.empty_bucket } },
+	{mat.river_water_bucket, { mat.ice, mat.empty_bucket  } },
 	{mat.dirt, mat.dirt_with_snow },
-	{mat.bucket_lava, { mat.obsidian, mat.bucket_empty } }
+	{mat.lava_bucket, { mat.obsidian, mat.empty_bucket  } }
 }
 
 for _, data in pairs(recipes) do

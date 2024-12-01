@@ -4,7 +4,7 @@ local digilines_path = minetest.get_modpath("digilines")
 local S = technic.getter
 local tube_entry = "^pipeworks_tube_connection_metallic.png"
 local cable_entry = "^technic_cable_connection_overlay.png"
-local mat = technic.materials
+local mat = xcompat.materials
 
 -- Battery recipes:
 -- Tin-copper recipe:
@@ -23,11 +23,11 @@ minetest.register_craft({
 	output = "technic:battery",
 	recipe = {
 		{"group:wood",         "technic:sulfur_lump", "group:wood"},
-		{"technic:lead_ingot", mat.bucket_water, "technic:lead_ingot"},
+		{"technic:lead_ingot", mat.water_bucket, "technic:lead_ingot"},
 		{"group:wood",         "technic:sulfur_lump", "group:wood"},
 	},
 	replacements = {
-		{mat.bucket_water, mat.bucket_empty}
+		{mat.water_bucket, mat.empty_bucket}
 	}
 })
 -- With oil extract:
@@ -45,11 +45,11 @@ minetest.register_craft({
 	output = "technic:battery",
 	recipe = {
 		{"group:wood",         "technic:sulfur_dust", "group:wood"},
-		{"technic:lead_ingot", mat.bucket_water, "technic:lead_ingot"},
+		{"technic:lead_ingot", mat.water_bucket, "technic:lead_ingot"},
 		{"group:wood",         "technic:sulfur_dust", "group:wood"},
 	},
 	replacements = {
-		{mat.bucket_water, mat.bucket_empty}
+		{mat.empty_bucket, mat.empty_bucket}
 	}
 })
 -- With oil extract:

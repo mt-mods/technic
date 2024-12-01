@@ -1,7 +1,7 @@
 local S = technic.getter
 local moretrees = minetest.get_modpath("moretrees")
 local dye = minetest.get_modpath("dye")
-local mat = technic.materials
+local mat = xcompat.materials
 
 -- sawdust, the finest wood/tree grinding
 local sawdust = "technic:sawdust"

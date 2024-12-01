@@ -3,7 +3,7 @@
 -- It is a little over half as good as the thermal generator.
 
 local S = technic.getter
-local mat = technic.materials
+local mat = xcompat.materials
 
 local cable_entry = "^technic_cable_connection_overlay.png"
 
