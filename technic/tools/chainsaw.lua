@@ -43,6 +43,10 @@ if minetest.get_modpath("trunks") then
 	end
 end
 
+if minetest.get_modpath("ethereal") then
+	timber_nodenames["ethereal:bamboo"] = true
+end
+
 local S = technic.getter
 
 -- Table for saving what was sawed down
