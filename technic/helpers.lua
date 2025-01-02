@@ -77,6 +77,45 @@ function technic.refill_RE_charge(stack)
 	return stack
 end
 
+function technic.set_RE_charge(stack, charge)
+	local max_charge = technic.power_tools[stack:get_name()]
+	if max_charge then
+		technic.set_RE_wear(stack, charge, max_charge)
+		local meta = minetest.deserialize(stack:get_metadata()) or {}
+		meta.charge = math.min(math.max(0, charge), max_charge)
+		stack:set_metadata(minetest.serialize(meta))
+	end
+end
+
+technic.set_charge = technic.set_RE_charge
+
+function technic.get_RE_charge(stack)
+	local max_charge = technic.power_tools[stack:get_name()]
+	if max_charge then
+		local meta = minetest.deserialize(stack:get_metadata()) or {}
+		return meta.charge or 0, max_charge
+	end
+	return 0, 0
+end
+
+technic.get_charge = technic.get_RE_charge
+
+function technic.use_RE_charge(stack, amount)
+	if technic.creative_mode or amount <= 0 then
+		-- Do not check charge in creative mode or when trying to use zero amount
+		return true
+	end
+	local charge = technic.get_RE_charge(stack)
+	if charge < amount then
+		-- Not enough energy available
+		return false
+	end
+	technic.set_RE_charge(stack, charge - amount)
+	-- Charge used successfully
+	return true
+end
+
+technic.use_charge = technic.use_RE_charge
 
 -- If the node is loaded, returns it.  If it isn't loaded, load it and return nil.
 function technic.get_or_load_node(pos)

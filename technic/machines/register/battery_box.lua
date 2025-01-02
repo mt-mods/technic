@@ -200,59 +200,62 @@ function technic.register_battery_box(data)
 		if inventory:is_empty(listname) then
 			return
 		end
-		-- Get itemstack and check if it is registered tool
 		local toolstack = inventory:get_stack(listname, 1)
 		local toolname = toolstack:get_name()
 		if technic.power_tools[toolname] == nil then
 			return
 		end
-		-- Load and check tool metadata
-		local toolmeta = minetest.deserialize(toolstack:get_metadata()) or {}
-		if not toolmeta.charge then
-			toolmeta.charge = 0
+		local tooldef = toolstack:get_definition()
+		if not tooldef then
+			return
 		end
-		return toolstack, toolmeta, technic.power_tools[toolname]
+		return toolstack, tooldef
 	end
 
 	local function charge_tools(meta, batt_charge, charge_step)
-		-- Get tool metadata
-		local inv = meta:get_inventory()
-		local toolstack, toolmeta, max_charge = get_tool(inv, "src")
-		if not toolstack then return batt_charge, false end
-		-- Do the charging
-		if toolmeta.charge >= max_charge then
-			return batt_charge, true
-		elseif batt_charge <= 0 then
+		if batt_charge <= 0 then
 			return batt_charge, false
 		end
+		-- Get tool stack and definition
+		local inv = meta:get_inventory()
+		local toolstack, tooldef = get_tool(inv, "src")
+		if not toolstack then return batt_charge, false end
+		-- Do the charging, get and check
+		local get_charge = tooldef.technic_get_charge or technic.get_charge
+		local tool_charge, max_charge = get_charge(toolstack)
+		if tool_charge >= max_charge then
+			return batt_charge, true
+		end
+		-- Do the charging, set charge and replace stack
+		local set_charge = tooldef.technic_set_charge or technic.set_charge
 		charge_step = math.min(charge_step, batt_charge)
-		charge_step = math.min(charge_step, max_charge - toolmeta.charge)
-		toolmeta.charge = toolmeta.charge + charge_step
-		technic.set_RE_wear(toolstack, toolmeta.charge, max_charge)
-		toolmeta.charge = toolmeta.charge
-		toolstack:set_metadata(minetest.serialize(toolmeta))
+		charge_step = math.min(charge_step, max_charge - tool_charge)
+		tool_charge = tool_charge + charge_step
+		set_charge(toolstack, tool_charge)
 		inv:set_stack("src", 1, toolstack)
-		return batt_charge - charge_step, (toolmeta.charge == max_charge)
+		return batt_charge - charge_step, (tool_charge == max_charge)
 	end
 
 	local function discharge_tools(meta, batt_charge, charge_step, batt_max_charge)
-		-- Get tool metadata
-		local inv = meta:get_inventory()
-		local toolstack, toolmeta, max_charge = get_tool(inv, "dst")
-		if not toolstack then return batt_charge, false end
-		-- Do the discharging
-		local tool_charge = toolmeta.charge
-		if tool_charge <= 0 then
-			return batt_charge, true
-		elseif batt_charge >= batt_max_charge then
+		if batt_charge >= batt_max_charge then
 			return batt_charge, false
 		end
+		-- Get tool stack and definition
+		local inv = meta:get_inventory()
+		local toolstack, tooldef = get_tool(inv, "dst")
+		if not toolstack then return batt_charge, false end
+		-- Do the discharging, get and check
+		local get_charge = tooldef.technic_get_charge or technic.get_charge
+		local tool_charge = get_charge(toolstack)
+		if tool_charge <= 0 then
+			return batt_charge, true
+		end
+		-- Do the discharging, set charge and replace stack
+		local set_charge = tooldef.technic_set_charge or technic.set_charge
 		charge_step = math.min(charge_step, batt_max_charge - batt_charge)
 		charge_step = math.min(charge_step, tool_charge)
 		tool_charge = tool_charge - charge_step
-		technic.set_RE_wear(toolstack, tool_charge, max_charge)
-		toolmeta.charge = tool_charge
-		toolstack:set_metadata(minetest.serialize(toolmeta))
+		set_charge(toolstack, tool_charge)
 		inv:set_stack("dst", 1, toolstack)
 		return batt_charge + charge_step, (tool_charge == 0)
 	end
