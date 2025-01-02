@@ -14,10 +14,10 @@ local function set_can_wear(itemstack, level, max_level)
 end
 
 local function get_can_level(itemstack)
-	if itemstack:get_metadata() == "" then
+	if itemstack:get_meta():get_string("") == "" then
 		return 0
 	else
-		return tonumber(itemstack:get_metadata())
+		return tonumber(itemstack:get_meta():get_string(""))
 	end
 end
 

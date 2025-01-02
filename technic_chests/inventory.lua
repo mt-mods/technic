@@ -20,7 +20,7 @@ function technic.chests.sort_inv(inv, mode)
 			if not stack:is_empty() then
 				local name = stack:get_name()
 				local wear = stack:get_wear()
-				local meta = stack:get_metadata()
+				local meta = stack:get_meta():get_string("")
 				local count = stack:get_count()
 				local def = minetest.registered_items[name]
 				local itemtype = (def and itemtypes[def.type]) and def.type or "none"
