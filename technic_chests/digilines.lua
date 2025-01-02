@@ -19,7 +19,7 @@ local function item_matches(item, stack)
 			and (not item.wear or (type(item.wear) == "number" and wear == item.wear) or (type(item.wear) == "table"
 			and (not item.wear[1] or (type(item.wear[1]) == "number" and item.wear[1] <= wear))
 			and (not item.wear[2] or (type(item.wear[2]) == "number" and wear < item.wear[2]))))
-			and (not item.metadata or (type(item.metadata) == "string" and stack:get_metadata() == item.metadata))
+			and (not item.metadata or (type(item.metadata) == "string" and stack:get_meta():get_string("") == item.metadata))
 end
 
 function technic.chests.digiline_effector(pos, _, channel, msg)
