@@ -87,6 +87,8 @@ function technic.set_RE_charge(stack, charge)
 	end
 end
 
+technic.set_charge = technic.set_RE_charge
+
 function technic.get_RE_charge(stack)
 	local max_charge = technic.power_tools[stack:get_name()]
 	if max_charge then
@@ -95,6 +97,8 @@ function technic.get_RE_charge(stack)
 	end
 	return 0, 0
 end
+
+technic.get_charge = technic.get_RE_charge
 
 function technic.use_RE_charge(stack, amount)
 	if technic.creative_mode or amount <= 0 then
