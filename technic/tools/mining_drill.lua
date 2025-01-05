@@ -2,7 +2,7 @@ local max_charge = {50000, 200000, 300000}
 local power_usage_per_node = {200, 500, 600}
 
 local S = technic.getter
-local mat = technic.materials
+local mat = xcompat.materials
 
 minetest.register_craft({
 	output = 'technic:mining_drill',
