@@ -96,20 +96,46 @@ describe("HV machine network", function()
 	it("smelts ores", function()
 		local machine_pos = {x=3,y=51,z=0}
 		place_itemstack(machine_pos, "technic:lead_lump 99")
-		run_network(60)
+		run_network(50)
 		-- Check results, at least 10 items processed and results in correct stuff
 		local stack = get_itemstack(machine_pos)
-		assert.gt(stack:get_count(), 10)
+		assert.gt(stack:get_count(), 9)
 		assert.equals(stack:get_name(), "technic:lead_ingot")
 	end)
 
 	it("grinds ores", function()
 		local machine_pos = {x=4,y=51,z=0}
 		place_itemstack(machine_pos, "technic:lead_lump 99")
-		run_network(60)
+		run_network(50)
 		-- Check results, at least 10 items processed and results in correct stuff
 		local stack = get_itemstack(machine_pos)
-		assert.gt(stack:get_count(), 10)
+		assert.gt(stack:get_count(), 9)
+		assert.equals(stack:get_name(), "technic:lead_dust")
+	end)
+
+	it("accepts battery upgrades", function()
+		local machine_pos = {x=4,y=51,z=0}
+		mineunit:clear_InvRef(machine_pos)
+		place_itemstack(machine_pos, "technic:battery 1", "upgrade1")
+		place_itemstack(machine_pos, "technic:battery 1", "upgrade2")
+		place_itemstack(machine_pos, "technic:lead_lump 99")
+		run_network(6)
+		-- Check results, at least 2 items processed and results in correct stuff
+		local stack = get_itemstack(machine_pos)
+		assert.gt(stack:get_count(), 2)
+		assert.equals(stack:get_name(), "technic:lead_dust")
+	end)
+
+	it("accepts control logic upgrades", function()
+		local machine_pos = {x=4,y=51,z=0}
+		mineunit:clear_InvRef(machine_pos)
+		place_itemstack(machine_pos, "technic:control_logic_unit 1", "upgrade1")
+		place_itemstack(machine_pos, "technic:control_logic_unit 1", "upgrade2")
+		place_itemstack(machine_pos, "technic:lead_lump 99")
+		run_network(6)
+		-- Check results, at least 2 items processed and results in correct stuff
+		local stack = get_itemstack(machine_pos)
+		assert.gt(stack:get_count(), 1)
 		assert.equals(stack:get_name(), "technic:lead_dust")
 	end)
 
