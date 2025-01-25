@@ -47,6 +47,13 @@ Helper functions
 	* Some configuration function
 * `technic.tube_inject_item(pos, start_pos, velocity, item)`
 	* Same as `pipeworks.tube_inject_item`
+* `technic.get_charge(itemstack)` (alias `technic.get_RE_charge`)
+	* Returns current charge level of tool.
+* `technic.set_charge(itemstack, charge)` (alias `technic.set_RE_charge`)
+	* Sets tool charge level.
+* `technic.use_charge(itemstack, charge)` (alias `technic.use_RE_charge`)
+	* Attempt to use charge and return `true`/`false` indicating success.
+	* Always succeeds without checking charge level if creative is enabled.
 
 Registration functions
 ----------------------
