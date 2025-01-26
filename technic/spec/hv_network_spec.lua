@@ -14,9 +14,24 @@ describe("HV machine network", function()
 
 	-- Execute on mods loaded callbacks to finish loading.
 	mineunit:mods_loaded()
-	-- Tell mods that 1 minute passed already to execute all weird minetest.after hacks.
+	-- Tell mods that 1 minute passed already to execute all weird core.after hacks.
 	mineunit:execute_globalstep(60)
 	world.set_default_node("air")
+
+	-- Execute multiple globalsteps: run_network(times = 1, dtime = 1)
+	local run_network = spec_utility.run_globalsteps
+
+	-- Place itemstack into inventory slot 1: place_itemstack(pos, itemstack, listname = "src")
+	local place_itemstack = spec_utility.place_itemstack
+
+	-- Get itemstack for inspection without removing it: get_itemstack(pos, listname = "dst", index = 1)
+	local get_itemstack = spec_utility.get_itemstack
+
+	-- Execute this many 1 second glopbalstep cycles for each RE machine
+	local RUN_CYCLES = 4
+	-- Function to calculate amount of items produced by base machines within completed network cycles
+	-- usage: base_machine_expected_amount(machine_speed, recipe_time, output_amount)
+	local base_machine_expected_amount = spec_utility.base_machine_output_calculator(RUN_CYCLES)
 
 	local machines = {
 		"technic:hv_generator",
@@ -29,45 +44,23 @@ describe("HV machine network", function()
 		"technic:hv_solar_array",
 	}
 
+	local function reset_machine(pos)
+		world.place_node(pos, machines[pos.x], player)
+	end
+
 	world.clear()
 	world.place_node({x=0,y=51,z=0}, "technic:switching_station", player)
 	for x = 0, 10 do
 		world.place_node({x=x,y=50,z=0}, "technic:hv_cable", player)
 	end
-	for x, name in ipairs(machines) do
-		world.place_node({x=x,y=51,z=0}, name, player)
-	end
-
-	-- Helper function to execute netowork
-	local function run_network(times)
-		times = times or 1
-		for i=1, times do
-			-- Globalstep every second instead of every 0.1 seconds
-			mineunit:execute_globalstep(1)
-		end
-	end
-
-	-- Helper function to place itemstack into machine inventory
-	local function place_itemstack(pos, itemstack, listname)
-		local meta = minetest.get_meta(pos)
-		local inv = meta:get_inventory()
-		if not inv:room_for_item(listname or "src", itemstack) then
-			inv:set_stack(listname or "src", 1, ItemStack(nil))
-		end
-		inv:add_item(listname or "src", itemstack)
-	end
-
-	-- Get itemstack in inventory for inspection without removing it
-	local function get_itemstack(pos, listname, index)
-		local meta = minetest.get_meta(pos)
-		local inv = meta:get_inventory()
-		return inv:get_stack(listname or "dst", index or 1)
+	for x = 1, #machines do
+		reset_machine({x=x,y=51,z=0})
 	end
 
 	it("executes network", function()
 		spy.on(technic, "network_run")
-		run_network(60)
-		assert.spy(technic.network_run).called(60)
+		run_network(4)
+		assert.spy(technic.network_run).called(4)
 		local id = technic.pos2network({x=0,y=50,z=0})
 		assert.not_nil(technic.networks[id])
 		assert.gt(technic.networks[id].supply, 0)
@@ -95,22 +88,61 @@ describe("HV machine network", function()
 
 	it("smelts ores", function()
 		local machine_pos = {x=3,y=51,z=0}
+		reset_machine(machine_pos)
 		place_itemstack(machine_pos, "technic:lead_lump 99")
-		run_network(60)
-		-- Check results, at least 10 items processed and results in correct stuff
+		-- Extra cycle: powers up the machine but wont produce anything
+		run_network(RUN_CYCLES + 1)
+		-- Check results
 		local stack = get_itemstack(machine_pos)
-		assert.gt(stack:get_count(), 10)
 		assert.equals(stack:get_name(), "technic:lead_ingot")
+		-- Expected amount of items produced: machine speed, recipe time, items per cycle
+		assert.equals(base_machine_expected_amount(12, 3, 1), stack:get_count())
 	end)
 
 	it("grinds ores", function()
 		local machine_pos = {x=4,y=51,z=0}
+		reset_machine(machine_pos)
 		place_itemstack(machine_pos, "technic:lead_lump 99")
-		run_network(60)
-		-- Check results, at least 10 items processed and results in correct stuff
+		-- Extra cycle: powers up the machine but wont produce anything
+		run_network(RUN_CYCLES + 1)
+		-- Check results
 		local stack = get_itemstack(machine_pos)
-		assert.gt(stack:get_count(), 10)
 		assert.equals(stack:get_name(), "technic:lead_dust")
+		-- Expected amount of items produced: machine speed, recipe time, items per cycle
+		assert.equals(base_machine_expected_amount(5, 3, 2), stack:get_count())
+	end)
+
+	it("accepts battery upgrades", function()
+		local machine_pos = {x=4,y=51,z=0}
+		reset_machine(machine_pos)
+		place_itemstack(machine_pos, "technic:battery 1", "upgrade1")
+		place_itemstack(machine_pos, "technic:battery 1", "upgrade2")
+		place_itemstack(machine_pos, "technic:lead_lump 99")
+		-- Extra cycle: powers up the machine but wont produce anything
+		run_network(RUN_CYCLES + 1)
+		-- Check results
+		local stack = get_itemstack(machine_pos)
+		assert.equals(stack:get_name(), "technic:lead_dust")
+		-- Expected amount of items produced: machine speed, recipe time, items per cycle
+		assert.equals(base_machine_expected_amount(5, 3, 2), stack:get_count())
+	end)
+
+	it("accepts control logic upgrades", function()
+		local machine_pos = {x=4,y=51,z=0}
+		reset_machine(machine_pos)
+		place_itemstack(machine_pos, "technic:control_logic_unit 1", "upgrade1")
+		place_itemstack(machine_pos, "technic:control_logic_unit 1", "upgrade2")
+		place_itemstack(machine_pos, "technic:lead_lump 99")
+		-- Extra cycle: powers up the machine but wont produce anything
+		run_network(RUN_CYCLES + 1)
+		-- Check results
+		local stack = get_itemstack(machine_pos)
+		assert.equals(stack:get_name(), "technic:lead_dust")
+		-- Expected amount of items produced: machine speed, recipe time, items per cycle
+		-- Minus items sent away by CLUs: single item per cycle except first cycle which only produces
+		local expected_amount = base_machine_expected_amount(5, 3, 2) - RUN_CYCLES + 1
+		assert.equals(expected_amount, stack:get_count())
+		-- Pipeworks isn't loaded and tubes are handled with no-op functions, sent items are lost
 	end)
 
 end)

@@ -264,22 +264,22 @@ describe("technic.merge_networks", function()
 
 	describe("network building behavior", function()
 
-		-- Hijack `minetest.get_us_time` for this test set.
+		-- Hijack `core.get_us_time` for this test set.
 		-- insulate(...) does not seem to work here and finally(...) can apparently
 		-- only be used inside it(...) so we go with strict_setup/strict_teardown.
 
-		local old_minetest_get_us_time = _G.minetest.get_us_time
+		local old_core_get_us_time = _G.core.get_us_time
 		strict_setup(function()
 			local fake_us_time = 0
 			local fake_us_time_increment = 1000 * 1000 * 10 -- 10 seconds
-			_G.minetest.get_us_time = function()
+			_G.core.get_us_time = function()
 				fake_us_time = fake_us_time + fake_us_time_increment
 				return fake_us_time
 			end
 		end)
 
 		strict_teardown(function()
-			_G.minetest.get_us_time = old_minetest_get_us_time
+			_G.core.get_us_time = old_core_get_us_time
 		end)
 
 		local layout = {
