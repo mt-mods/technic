@@ -31,8 +31,8 @@ describe("Technic power tool compatibility", function()
 
 	-- Some helpers to make stack access simpler
 	local player = Player("SX")
-	local charge_inv = minetest.get_meta(BB_Charge_POS):get_inventory()
-	local discharge_inv = minetest.get_meta(BB_Discharge_POS):get_inventory()
+	local charge_inv = core.get_meta(BB_Charge_POS):get_inventory()
+	local discharge_inv = core.get_meta(BB_Discharge_POS):get_inventory()
 	local function set_charge_stack(stack) charge_inv:set_stack("src", 1, stack) end
 	local function get_charge_stack() return charge_inv:get_stack("src", 1) end
 	local function set_discharge_stack(stack) discharge_inv:set_stack("dst", 1, stack) end
@@ -42,13 +42,13 @@ describe("Technic power tool compatibility", function()
 
 	-- Execute on mods loaded callbacks to finish loading.
 	mineunit:mods_loaded()
-	-- Tell mods that 1 minute passed already to execute all weird minetest.after hacks.
+	-- Tell mods that 1 minute passed already to execute all weird core.after hacks.
 	mineunit:execute_globalstep(60)
 
 	local function test(itemname, callback)
 		describe(itemname, function()
 
-			local itemdef = minetest.registered_items[itemname]
+			local itemdef = core.registered_items[itemname]
 
 			setup(function()
 				mineunit:execute_on_joinplayer(player)

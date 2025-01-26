@@ -12,20 +12,20 @@ local USE_CHARGE = 1000
 -- No updates for compatibility
 doregister("oldlegacy", function()
 	technic.register_power_tool("oldlegacy:powertool", MAX_CHARGE)
-	minetest.register_tool("oldlegacy:powertool", {
+	core.register_tool("oldlegacy:powertool", {
 		description = "Powertool",
 		inventory_image = "powertool.png",
 		stack_max = 1,
 		wear_represents = "technic_RE_charge",
 		on_refill = technic.refill_RE_charge,
 		on_use = function(itemstack, user, pointed_thing)
-			local meta = minetest.deserialize(itemstack:get_meta():get_string(""))
+			local meta = core.deserialize(itemstack:get_meta():get_string(""))
 			if not meta or not meta.charge or meta.charge < USE_CHARGE then
 				return
 			end
 			meta.charge = meta.charge - USE_CHARGE
 			technic.set_RE_wear(itemstack, meta.charge, MAX_CHARGE)
-			itemstack:get_meta():set_string("", minetest.serialize(meta))
+			itemstack:get_meta():set_string("", core.serialize(meta))
 			return itemstack
 		end,
 	})
@@ -34,7 +34,7 @@ end)
 -- Previously suggested minimal compatibility workaround added
 doregister("oldminimal", function()
 	technic.register_power_tool("oldminimal:powertool", MAX_CHARGE)
-	minetest.register_tool("oldminimal:powertool", {
+	core.register_tool("oldminimal:powertool", {
 		description = "Powertool",
 		inventory_image = "powertool.png",
 		stack_max = 1,
@@ -48,7 +48,7 @@ doregister("oldminimal", function()
 			end
 			meta.charge = meta.charge - USE_CHARGE
 			technic.set_RE_wear(itemstack, meta.charge, MAX_CHARGE)
-			itemstack:get_meta():set_string("", minetest.serialize(meta))
+			itemstack:get_meta():set_string("", core.serialize(meta))
 			return itemstack
 		end,
 	})
@@ -63,7 +63,7 @@ doregister("oldhalfway", function()
 		error("Wrong set_charge handler called for oldhalfway:powertool")
 	end
 	technic.register_power_tool("oldhalfway:powertool", MAX_CHARGE)
-	minetest.register_tool("oldhalfway:powertool", {
+	core.register_tool("oldhalfway:powertool", {
 		description = "Powertool",
 		inventory_image = "powertool.png",
 		stack_max = 1,

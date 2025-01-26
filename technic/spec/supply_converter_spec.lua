@@ -49,7 +49,7 @@ describe("Supply converter", function()
 		end)
 
 		it("is added to network without duplicates", function()
-			assert.same(build_pos, net.all_nodes[minetest.hash_node_position(build_pos)])
+			assert.same(build_pos, net.all_nodes[core.hash_node_position(build_pos)])
 			assert.equals(6, count(net.all_nodes))
 			assert.equals(2, #net.PR_nodes)
 			assert.equals(2, #net.RE_nodes)
@@ -61,7 +61,7 @@ describe("Supply converter", function()
 		end)
 
 		it("does not remove connected machines from network", function()
-			assert.same({x=101,y=821,z=100},net.all_nodes[minetest.hash_node_position({x=101,y=821,z=100})])
+			assert.same({x=101,y=821,z=100},net.all_nodes[core.hash_node_position({x=101,y=821,z=100})])
 		end)
 
 		it("does not remove networks", function()
@@ -70,8 +70,8 @@ describe("Supply converter", function()
 		end)
 
 		it("does not add cables to network", function()
-			assert.is_nil(net.all_nodes[minetest.hash_node_position({x=102,y=821,z=99})])
-			assert.is_nil(net.all_nodes[minetest.hash_node_position({x=102,y=821,z=101})])
+			assert.is_nil(net.all_nodes[core.hash_node_position({x=102,y=821,z=99})])
+			assert.is_nil(net.all_nodes[core.hash_node_position({x=102,y=821,z=101})])
 		end)
 
 		it("overloads network", function()
@@ -109,8 +109,8 @@ describe("Supply converter", function()
 
 		it("is removed from network", function()
 			assert.is_nil(technic.pos2network(build_pos))
-			assert.is_nil(technic.cables[minetest.hash_node_position(build_pos)])
-			assert.is_nil(net.all_nodes[minetest.hash_node_position(build_pos)])
+			assert.is_nil(technic.cables[core.hash_node_position(build_pos)])
+			assert.is_nil(net.all_nodes[core.hash_node_position(build_pos)])
 		end)
 
 		it("does not remove other nodes from network", function()
@@ -129,7 +129,7 @@ describe("Supply converter", function()
 			local pos = {x=-10,y=-10,z=-10}
 			local Sam = Player("Sam", { interact = 1 })
 			local SX = Player("SX", { interact = 1 })
-			local def = minetest.registered_nodes["technic:supply_converter"]
+			local def = core.registered_nodes["technic:supply_converter"]
 
 			-- Build supply converter to pos and protect it for Sam
 			world.set_node(pos, "technic:supply_converter")
@@ -137,7 +137,7 @@ describe("Supply converter", function()
 			mineunit:protect(pos, "Sam")
 
 			-- Read current metadata for validation
-			local meta = minetest.get_meta(pos)
+			local meta = core.get_meta(pos)
 			local power = meta:get_int("power")
 			local enabled = meta:get_int("enabled")
 

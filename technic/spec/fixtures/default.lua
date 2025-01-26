@@ -8,11 +8,11 @@ local function register_node(name, groups, additional_definition)
 		groups = groups,
 	}
 	for k,v in pairs(additional_definition or {}) do definition[k] = v end
-	minetest.register_node(":default:"..name, definition)
+	core.register_node(":default:"..name, definition)
 end
 
 local function register_item(name)
-	minetest.register_craftitem(":default:"..name, {
+	core.register_craftitem(":default:"..name, {
 		description = name.." description",
 	})
 end
