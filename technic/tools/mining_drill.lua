@@ -284,7 +284,7 @@ local function mining_drill_mk2_handler(itemstack, user, pointed_thing)
 		return
 	end
 	local charge_to_take = cost_to_use(2, mode)
-	if technic.use_RE_charge(itemstack, charge_to_take) then
+	if technic.use_charge(itemstack, charge_to_take) then
 		local pos = minetest.get_pointed_thing_position(pointed_thing, false)
 		drill_dig_it(pos, user, mode)
 	end
@@ -302,7 +302,7 @@ local function mining_drill_mk3_handler(itemstack, user, pointed_thing)
 		return
 	end
 	local charge_to_take = cost_to_use(3, mode)
-	if technic.use_RE_charge(itemstack, charge_to_take) then
+	if technic.use_charge(itemstack, charge_to_take) then
 		local pos = minetest.get_pointed_thing_position(pointed_thing, false)
 		drill_dig_it(pos, user, mode)
 	end
@@ -319,7 +319,7 @@ technic.register_power_tool("technic:mining_drill", {
 			return itemstack
 		end
 		local charge_to_take = cost_to_use(1, 1)
-		if technic.use_RE_charge(itemstack, charge_to_take) then
+		if technic.use_charge(itemstack, charge_to_take) then
 			local pos = minetest.get_pointed_thing_position(pointed_thing, false)
 			drill_dig_it(pos, user, 1)
 		end

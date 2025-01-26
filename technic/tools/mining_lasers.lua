@@ -101,7 +101,7 @@ for _, m in pairs(mining_lasers_list) do
 		range = 0,
 		max_charge = m[3],
 		on_use = function(itemstack, user)
-			local charge = technic.get_RE_charge(itemstack)
+			local charge = technic.get_charge(itemstack)
 			if charge > 0 then
 				local range = m[2]
 				if charge < m[4] then
@@ -111,7 +111,7 @@ for _, m in pairs(mining_lasers_list) do
 					-- If charge is too low, give the laser a shorter range
 					range = range * charge / m[4]
 				end
-				technic.use_RE_charge(itemstack, math.min(m[4], charge))
+				technic.use_charge(itemstack, math.min(m[4], charge))
 				laser_shoot(user, range, "technic_laser_beam_mk" .. m[1] .. ".png", "technic_laser_mk" .. m[1])
 				return itemstack
 			end

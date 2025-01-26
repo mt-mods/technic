@@ -35,7 +35,7 @@ technic.register_power_tool("technic:prospector", {
 		local look_depth, look_radius = get_field(meta)
 		local look_diameter = look_radius * 2 + 1
 		local charge_to_take = look_depth * (look_depth + 1) * look_diameter * look_diameter
-		if not technic.use_RE_charge(toolstack, charge_to_take) then
+		if not technic.use_charge(toolstack, charge_to_take) then
 			return toolstack
 		end
 		local start_pos = pointed_thing.under

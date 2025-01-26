@@ -62,7 +62,7 @@ function technic.swap_node(pos, name)
 	end
 end
 
-function technic.set_RE_charge(stack, charge)
+function technic.set_charge(stack, charge)
 	local wear_factor = stack:get_definition().technic_wear_factor
 	if wear_factor then
 		local wear = math.floor(charge * wear_factor + 0.5)
@@ -70,7 +70,7 @@ function technic.set_RE_charge(stack, charge)
 	end
 end
 
-function technic.get_RE_charge(stack)
+function technic.get_charge(stack)
 	local def = stack:get_definition()
 	if def.technic_wear_factor then
 		local wear = stack:get_wear()
@@ -79,12 +79,12 @@ function technic.get_RE_charge(stack)
 	return 0, 0
 end
 
-function technic.use_RE_charge(stack, amount)
+function technic.use_charge(stack, amount)
 	if technic.creative_mode or amount <= 0 then
 		-- Do not check charge in creative mode or when trying to use zero amount
 		return true
 	end
-	local charge = technic.get_RE_charge(stack)
+	local charge = technic.get_charge(stack)
 	if charge < amount then
 		-- Not enough energy available
 		return false

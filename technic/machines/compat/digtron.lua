@@ -36,14 +36,14 @@ local function tap_batteries(battery_positions, target, test)
 		end
 
 		for i, itemstack in pairs(invlist) do
-			local charge = technic.get_RE_charge(itemstack)
+			local charge = technic.get_charge(itemstack)
 			local power_available = math.floor(charge / digtron.config.power_ratio)
 			if power_available ~= 0 then
 				local actual_burned = power_available -- we just take all we have from the battery, since they aren't stackable
 				-- don't bother recording the items if we're just testing, nothing is actually being removed.
 				if test ~= true then
 					-- since we are taking everything, the wear and charge can both be set to 0
-					technic.set_RE_charge(itemstack, 0)
+					technic.set_charge(itemstack, 0)
 				end
 				current_burned = current_burned + actual_burned
 			end
@@ -83,7 +83,7 @@ local function battery_holder_compat()
 	-- Override battery holder
 	local tube = minetest.registered_nodes["digtron:battery_holder"].tube
 	tube.can_insert = function(pos, node, stack, direction)
-		if technic.get_RE_charge(stack) > 0 then
+		if technic.get_charge(stack) > 0 then
 			local inv = minetest.get_meta(pos):get_inventory()
 			return inv:room_for_item("batteries", stack)
 		end
@@ -91,7 +91,7 @@ local function battery_holder_compat()
 	end
 	minetest.override_item("digtron:battery_holder",{
 		allow_metadata_inventory_put = function(pos, listname, index, stack, player)
-			return (listname == "batteries" and technic.get_RE_charge(stack) > 0) and stack:get_count() or 0
+			return (listname == "batteries" and technic.get_charge(stack) > 0) and stack:get_count() or 0
 		end,
 		tube = tube,
 	})

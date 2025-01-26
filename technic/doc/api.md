@@ -64,17 +64,17 @@ Power tool API
 			* Callback will be used to get itemstack charge and max\_charge.
 			* Have to return values `charge, max_charge`.
 			* E.g. `local charge, maxcharge = itemdef.technic_get_charge(itemstack)`.
-			* Defaults to `technic.get_RE_charge` which handles tool wear and charge values.
+			* Defaults to `technic.get_charge` which handles tool wear and charge values.
 		* `technic_set_charge = function(itemstack, charge) ...`:
 			* Callback will be used to set itemstack charge.
-			* Defaults to `technic.set_RE_charge` which handles tool wear and charge values.
-* `technic.get_RE_charge(itemstack)`
+			* Defaults to `technic.set_charge` which handles tool wear and charge values.
+* `technic.get_charge(itemstack)`
 	* Returns current charge level of tool.
 	* For tool charger mods it is recommended to use `<tooldef>.technic_get_charge(stack)` instead.
-* `technic.set_RE_charge(itemstack, charge)`
+* `technic.set_charge(itemstack, charge)`
 	* Sets tool charge level.
 	* For tool charger mods it is recommended to use `<tooldef>.technic_set_charge(stack, charge)` instead.
-* `technic.use_RE_charge(itemstack, charge)`
+* `technic.use_charge(itemstack, charge)`
 	* Attempt to use charge and return `true`/`false` indicating success.
 	* Always succeeds without checking charge level if creative is enabled.
 
