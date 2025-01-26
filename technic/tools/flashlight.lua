@@ -33,7 +33,7 @@ local function check_for_flashlight(player)
 	local inv = player:get_inventory()
 	local hotbar = inv:get_list("main")
 	for i = 1, 8 do
-		if hotbar[i]:get_name() == "technic:flashlight" and technic.use_RE_charge(hotbar[i], 2) then
+		if hotbar[i]:get_name() == "technic:flashlight" and technic.use_charge(hotbar[i], 2) then
 			-- See https://github.com/minetest/minetest/issues/9377 for wield item animation
 			inv:set_stack("main", i, hotbar[i])
 			return true

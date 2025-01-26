@@ -34,8 +34,8 @@ function technic.register_power_tool(itemname, itemdef)
 	itemdef.wear_represents = itemdef.wear_represents or "technic_RE_charge"
 	itemdef.technic_max_charge = max_charge
 	itemdef.technic_wear_factor = 65535 / max_charge
-	itemdef.technic_get_charge = itemdef.technic_get_charge or technic.get_RE_charge
-	itemdef.technic_set_charge = itemdef.technic_set_charge or technic.set_RE_charge
+	itemdef.technic_get_charge = itemdef.technic_get_charge or technic.get_charge
+	itemdef.technic_set_charge = itemdef.technic_set_charge or technic.set_charge
 	itemdef.on_refill = itemdef.on_refill or function(stack)
 		local def = stack:get_definition()
 		def.technic_set_charge(stack, def.technic_max_charge)

@@ -287,11 +287,11 @@ describe("Technic power tool", function()
 			set_player_stack(stack)
 
 			-- Use item, flashlight charge is used every globalstep and there's no on_use definition
-			spy.on(technic, "use_RE_charge")
+			spy.on(technic, "use_charge")
 			for i=1, 100 do
 				mineunit:execute_globalstep(1)
 			end
-			assert.spy(technic.use_RE_charge).called(100)
+			assert.spy(technic.use_charge).called(100)
 
 			-- Check that item charge was actually used and error is acceptable
 			local charge_used = itemdef.technic_max_charge - technic.get_RE_charge(get_player_stack())

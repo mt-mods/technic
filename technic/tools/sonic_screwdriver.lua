@@ -40,7 +40,7 @@ local function screwdriver_handler(itemstack, user, pointed_thing, mode)
 	-- contrary to the default screwdriver, do not check for can_dig, to allow rotating machines with CLU's in them
 	-- this is consistent with the previous sonic screwdriver
 
-	if not technic.use_RE_charge(itemstack, 100) then
+	if not technic.use_charge(itemstack, 100) then
 		return
 	end
 

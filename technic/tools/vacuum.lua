@@ -10,7 +10,7 @@ technic.register_power_tool("technic:vacuum", {
 	inventory_image = "technic_vacuum.png",
 	max_charge = vacuum_max_charge,
 	on_use = function(itemstack, user, pointed_thing)
-		local original_charge = technic.get_RE_charge(itemstack)
+		local original_charge = technic.get_charge(itemstack)
 		if original_charge < vacuum_charge_per_object then
 			return
 		end
@@ -34,7 +34,7 @@ technic.register_power_tool("technic:vacuum", {
 			end
 		end
 		if not technic.creative_mode and charge ~= original_charge then
-			technic.set_RE_charge(itemstack, charge)
+			technic.set_charge(itemstack, charge)
 			return itemstack
 		end
 	end,
