@@ -20,6 +20,9 @@ describe("Technic power tool", function()
 		mineunit:restore_current_modname()
 	end
 
+	-- Execute multiple globalsteps: run_network(times = 1, dtime = 1)
+	local run_network = spec_utility.run_globalsteps
+
 	world.set_default_node("air")
 
 	-- Test node, HV battery box and some HV solar arrays for charging
@@ -209,7 +212,7 @@ describe("Technic power tool", function()
 			set_charge_stack(ItemStack("mymod:t1_65535"))
 			-- Test charging, 10kEU / cycle
 			assert.equals(0, technic.get_RE_charge(get_charge_stack()))
-			for i=1,6 do mineunit:execute_globalstep(1) end
+			run_network(6)
 			assert.equals(60000, technic.get_RE_charge(get_charge_stack()))
 			mineunit:execute_globalstep(1)
 			assert.equals(65535, technic.get_RE_charge(get_charge_stack()))
@@ -220,7 +223,7 @@ describe("Technic power tool", function()
 			set_charge_stack(ItemStack("mymod:t1_65536"))
 			-- Test charging, 10kEU / cycle
 			assert.equals(0, technic.get_RE_charge(get_charge_stack()))
-			for i=1,6 do mineunit:execute_globalstep(1) end
+			run_network(6)
 			assert.equals(60000, technic.get_RE_charge(get_charge_stack()))
 			mineunit:execute_globalstep(1)
 			assert.equals(65536, technic.get_RE_charge(get_charge_stack()))
@@ -231,7 +234,7 @@ describe("Technic power tool", function()
 			set_charge_stack(ItemStack("mymod:t100_6553500"))
 			-- Test charging, 10kEU / cycle
 			assert.equals(0, technic.get_RE_charge(get_charge_stack()))
-			for i=1,6 do mineunit:execute_globalstep(1) end
+			run_network(6)
 			assert.equals(60000, technic.get_RE_charge(get_charge_stack()))
 			mineunit:execute_globalstep(1)
 			assert.equals(70000, technic.get_RE_charge(get_charge_stack()))
@@ -242,7 +245,7 @@ describe("Technic power tool", function()
 			set_charge_stack(ItemStack("mymod:t100_6553600"))
 			-- Test charging, 10kEU / cycle
 			assert.equals(0, technic.get_RE_charge(get_charge_stack()))
-			for i=1,7 do mineunit:execute_globalstep(1) end
+			run_network(7)
 			-- This tool already has small charge error and it is acceptable as long as error stays small
 			-- Charge value must be 69999-70001 after 7 charge cycles
 			assert.lt(69998, technic.get_RE_charge(get_charge_stack()))
@@ -250,7 +253,7 @@ describe("Technic power tool", function()
 		end)
 
 		it("t100_6553600 can be used", function()
-			-- Add tool to battery box
+			-- Create tool and set its charge to 700
 			local stack = ItemStack("mymod:t100_6553600")
 			technic.set_RE_charge(stack, 700)
 			set_player_stack(stack)
@@ -294,14 +297,12 @@ describe("Technic power tool", function()
 
 			-- Use item, flashlight charge is used every globalstep and there's no on_use definition
 			spy.on(technic, "use_charge")
-			for i=1, 100 do
-				mineunit:execute_globalstep(1)
-			end
-			assert.spy(technic.use_charge).called(100)
+			run_network(20)
+			assert.spy(technic.use_charge).called(20)
 
 			-- Check that item charge was actually used and error is acceptable
 			local charge_used = itemdef.technic_max_charge - technic.get_RE_charge(get_player_stack())
-			local exact_use = 2 * 100 -- 2 per cycle / 100 cycles
+			local exact_use = 2 * 20 -- 2 per cycle / 20 cycles
 			assert.lt(0.9, charge_used / exact_use)
 			assert.gt(1.1, charge_used / exact_use)
 		end)
@@ -350,11 +351,9 @@ describe("Technic power tool", function()
 			-- Put item from player inventory to battery box src inventory
 			player:do_metadata_inventory_put(BB_Charge_POS, "src", 1)
 
-			-- Verify that item charge is empty and charge in battery box for 30 seconds
+			-- Verify that item charge is empty and charge in battery box for capacity/10k seconds
 			assert.equals(0, technic.get_RE_charge(get_charge_stack()))
-			for i=1, 30 do
-				mineunit:execute_globalstep(1)
-			end
+			run_network(math.ceil(itemdef.technic_max_charge / 10000))
 
 			-- Take item from battery box and check charge / wear values
 			player:do_metadata_inventory_take(BB_Charge_POS, "src", 1)
@@ -381,9 +380,7 @@ describe("Technic power tool", function()
 
 			-- Verify that item is charged and discharge in battery box for 3 seconds
 			assert.lt(itemdef.technic_max_charge / 2, technic.get_RE_charge(get_discharge_stack()))
-			for i=1, 3 do
-				mineunit:execute_globalstep(1)
-			end
+			run_network(3)
 
 			-- Take item from battery box and check charge / wear values
 			player:do_metadata_inventory_take(BB_Discharge_POS, "dst", 1)
@@ -435,11 +432,9 @@ describe("Technic power tool", function()
 			-- Put item from player inventory to battery box src inventory
 			player:do_metadata_inventory_put(BB_Charge_POS, "src", 1)
 
-			-- Verify that item charge is empty and charge in battery box for 30 seconds
+			-- Verify that item charge is empty and charge in battery box for capacity/10k seconds
 			assert.equals(0, technic.get_RE_charge(get_charge_stack()))
-			for i=1, 30 do
-				mineunit:execute_globalstep(1)
-			end
+			run_network(math.ceil(itemdef.technic_max_charge / 10000))
 
 			-- Take item from battery box and check charge / wear values
 			player:do_metadata_inventory_take(BB_Charge_POS, "src", 1)
@@ -477,9 +472,7 @@ describe("Technic power tool", function()
 
 			-- Verify that item is charged and discharge in battery box for 8 seconds
 			assert.lt(itemdef.technic_max_charge / 2, technic.get_RE_charge(get_discharge_stack()))
-			for i=1, 8 do
-				mineunit:execute_globalstep(1)
-			end
+			run_network(8)
 
 			-- Take item from battery box and check charge / wear values
 			player:do_metadata_inventory_take(BB_Discharge_POS, "dst", 1)
@@ -539,11 +532,9 @@ describe("Technic power tool", function()
 			-- Put item from player inventory to battery box src inventory
 			player:do_metadata_inventory_put(BB_Charge_POS, "src", 1)
 
-			-- Verify that item charge is empty and charge in battery box for 30 seconds
+			-- Verify that item charge is empty and charge in battery box for capacity/10k seconds
 			assert.equals(0, technic.get_RE_charge(get_charge_stack()))
-			for i=0, math.ceil(itemdef.technic_max_charge / 10000) do
-				mineunit:execute_globalstep(1)
-			end
+			run_network(math.ceil(itemdef.technic_max_charge / 10000))
 
 			-- Take item from battery box and check charge / wear values
 			player:do_metadata_inventory_take(BB_Charge_POS, "src", 1)
