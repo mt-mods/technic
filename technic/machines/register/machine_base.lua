@@ -27,10 +27,6 @@ end
 
 local connect_default = {"bottom", "back", "left", "right"}
 
-local function round(v)
-	return math.floor(v + 0.5)
-end
-
 function technic.register_base_machine(nodename, data)
 	local colon, modname, name, def = technic.register_compat_v1_to_v2(nodename, data)
 	local texture_prefix = modname.."_"..name
@@ -138,7 +134,7 @@ function technic.register_base_machine(nodename, data)
 		local powered = eu_input >= demand
 		local src_time = meta:get_int("src_time")
 		if powered then
-			src_time = src_time + round(def.speed * 10)
+			src_time = src_time + math.floor(def.speed * 10 + 0.5)
 		end
 		while true do
 			local recipe = inv:get_list("src") and technic.get_recipe(typename, inv:get_list("src"))
@@ -146,7 +142,7 @@ function technic.register_base_machine(nodename, data)
 				update_node(pos, meta, nodename, infotext_idle, 0, 0)
 				return
 			end
-			local recipe_time = round(recipe.time * 10)
+			local recipe_time = math.floor(recipe.time * 10 + 0.5)
 			if src_time < recipe_time then
 				if powered then
 					local infotext = infotext_active .. "\n" .. S("Demand: @1", technic.EU_string(demand))
