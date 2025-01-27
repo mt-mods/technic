@@ -106,9 +106,15 @@ function technic.register_base_machine(nodename, data)
 		tube.insert_object = def.insert_object
 	end
 
+	local update_node = function(pos, meta, newnode, infotext, demand, src_time)
+		technic.swap_node(pos, newnode)
+		meta:set_string("infotext", infotext)
+		meta:set_int(tier.."_EU_demand", demand)
+		meta:set_int("src_time", src_time)
+	end
+
 	local run = function(pos, node)
 		local meta = minetest.get_meta(pos)
-		local inv = meta:get_inventory()
 		local eu_input = meta:get_int(tier.."_EU_input")
 		local machine_demand = def.demand
 
@@ -127,38 +133,33 @@ function technic.register_base_machine(nodename, data)
 			technic.handle_machine_pipeworks(pos, tube_upgrade)
 		end
 
-		local powered = eu_input >= machine_demand[EU_upgrade+1]
+		local inv = meta:get_inventory()
+		local demand = machine_demand[EU_upgrade+1]
+		local powered = eu_input >= demand
+		local src_time = meta:get_int("src_time")
 		if powered then
-			meta:set_int("src_time", meta:get_int("src_time") + round(def.speed*10))
+			src_time = src_time + round(def.speed * 10)
 		end
 		while true do
 			local recipe = inv:get_list("src") and technic.get_recipe(typename, inv:get_list("src"))
 			if not recipe then
-				technic.swap_node(pos, nodename)
-				meta:set_string("infotext", infotext_idle)
-				meta:set_int(tier.."_EU_demand", 0)
-				meta:set_int("src_time", 0)
+				update_node(pos, meta, nodename, infotext_idle, 0, 0)
 				return
 			end
-			meta:set_int(tier.."_EU_demand", machine_demand[EU_upgrade+1])
-			technic.swap_node(pos, nodename.."_active")
-			meta:set_string("infotext", infotext_active .. "\n" ..
-			S("Demand: @1", technic.EU_string(machine_demand[EU_upgrade+1])))
-			if meta:get_int("src_time") < round(recipe.time*10) then
-				if not powered then
-					technic.swap_node(pos, nodename)
-					meta:set_string("infotext", infotext_unpowered)
+			local recipe_time = round(recipe.time * 10)
+			if src_time < recipe_time then
+				if powered then
+					local infotext = infotext_active .. "\n" .. S("Demand: @1", technic.EU_string(demand))
+					update_node(pos, meta, nodename.."_active", infotext, demand, src_time)
+				else
+					update_node(pos, meta, nodename, infotext_unpowered, demand, src_time)
 				end
 				return
-			end
-			if not technic.process_recipe(recipe, inv) then
-				technic.swap_node(pos, nodename)
-				meta:set_string("infotext", infotext_idle)
-				meta:set_int(tier.."_EU_demand", 0)
-				meta:set_int("src_time", round(recipe.time*10))
+			elseif not technic.process_recipe(recipe, inv) then
+				update_node(pos, meta, nodename, infotext_idle, 0, recipe_time)
 				return
 			end
-			meta:set_int("src_time", meta:get_int("src_time") - round(recipe.time*10))
+			src_time = src_time - recipe_time
 		end
 	end
 
