@@ -41,13 +41,16 @@ function spec_utility.run_globalsteps(times, dtime)
 end
 
 -- Helper function to place itemstack into machine inventory, default listname = src
-function spec_utility.place_itemstack(pos, itemstack, listname)
+function spec_utility.place_itemstack(pos, itemstack, listname, index)
 	local meta = core.get_meta(pos)
 	local inv = meta:get_inventory()
 	if not inv:room_for_item(listname or "src", itemstack) then
-		inv:set_stack(listname or "src", 1, ItemStack(nil))
+		inv:set_stack(listname or "src", index or 1, itemstack)
+	elseif index then
+		inv:set_stack(listname or "src", index, itemstack)
+	else
+		inv:add_item(listname or "src", itemstack)
 	end
-	inv:add_item(listname or "src", itemstack)
 end
 
 -- Get itemstack in inventory for inspection without removing it, default listname = dst
