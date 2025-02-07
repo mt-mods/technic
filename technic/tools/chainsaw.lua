@@ -177,7 +177,7 @@ technic.register_power_tool("technic:chainsaw", {
 			return
 		end
 
-		local charge = technic.get_RE_charge(itemstack)
+		local charge = technic.get_charge(itemstack)
 		if charge < chainsaw_charge_per_node then
 			return
 		end
@@ -192,7 +192,7 @@ technic.register_power_tool("technic:chainsaw", {
 		-- chainsaw will stop after digging a number of nodes
 		charge = chainsaw_dig(pointed_thing.under, charge)
 		if not technic.creative_mode then
-			technic.set_RE_charge(itemstack, charge)
+			technic.set_charge(itemstack, charge)
 		end
 		return itemstack
 	end,

@@ -63,7 +63,7 @@ minetest.register_craft({
 })
 
 local function use_charge(itemstack, multiplier)
-	return technic.use_RE_charge(itemstack, power_usage * (multiplier or 1))
+	return technic.use_charge(itemstack, power_usage * (multiplier or 1))
 end
 
 local function async_itemstack_get(player, refstack)
