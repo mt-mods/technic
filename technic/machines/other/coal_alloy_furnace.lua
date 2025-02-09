@@ -108,7 +108,7 @@ minetest.register_abm({
 	action = function(pos, node, active_object_count, active_object_count_wider)
 		local meta = minetest.get_meta(pos)
 		local inv = meta:get_inventory()
-		local src_list = not inv:get_list("src")
+		local src_list = inv:get_list("src")
 		if not src_list then
 			return
 		end
