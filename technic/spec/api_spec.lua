@@ -63,16 +63,21 @@ describe("Technic API", function()
 				tiles = tiles,
 				tiles_active = tiles_active,
 				technic_run = function(pos)
-					local meta = minetest.get_meta(pos)
+					local meta = core.get_meta(pos)
 					meta:set_int("MV_EU_supply", 4242)
 				end,
 			}
 			-- Make sure that original definition will not be changed during registration
-			setmetatable(data, { __newindex = function() error("Attempt to modify original definition") end })
+			setmetatable(data, {
+				__newindex = function(self, key, value)
+					assert(self ~= data, "Attempt to modify original definition")
+					rawset(self, key, value)
+				end
+			})
 			technic.register_solar_array("my_mod:my_solar_array", data)
 
 			-- Verify node registration
-			local nodedef = minetest.registered_nodes["my_mod:my_solar_array"]
+			local nodedef = core.registered_nodes["my_mod:my_solar_array"]
 			assert.is_table(nodedef)
 			-- Input definition should not be same as actual definition
 			assert.not_equals(data, nodedef)
@@ -113,7 +118,7 @@ describe("Technic API", function()
 				tiles = tiles,
 				tiles_active = tiles_active,
 				technic_run = function(pos, node, run_state, network)
-					local meta = minetest.get_meta(pos)
+					local meta = core.get_meta(pos)
 					meta:set_int("MV_EU_demand", 4242)
 					network:update_battery(1337, 1337, 0, 0)
 				end,
@@ -123,7 +128,7 @@ describe("Technic API", function()
 			technic.register_battery_box("my_mod:my_battery", data)
 
 			-- Verify node registration
-			local nodedef = minetest.registered_nodes["my_mod:my_battery0"]
+			local nodedef = core.registered_nodes["my_mod:my_battery0"]
 			assert.is_table(nodedef)
 			-- Input definition should not be same as actual definition
 			assert.not_equals(data, nodedef)
@@ -170,7 +175,7 @@ describe("Technic API", function()
 				tiles = tiles,
 				tiles_active = tiles_active,
 				technic_run = function(pos, node, run_state, network)
-					local meta = minetest.get_meta(pos)
+					local meta = core.get_meta(pos)
 					meta:set_int("MV_EU_demand", 4242)
 					network:update_battery(1337, 1337, 0, 0)
 				end,
@@ -180,7 +185,7 @@ describe("Technic API", function()
 			technic.register_base_machine("my_mod:machine_base", data)
 
 			-- Verify node registration
-			local nodedef = minetest.registered_nodes["my_mod:machine_base"]
+			local nodedef = core.registered_nodes["my_mod:machine_base"]
 			assert.is_table(nodedef)
 			-- Input definition should not be same as actual definition
 			assert.not_equals(data, nodedef)
@@ -269,8 +274,8 @@ describe("Technic API internals", function()
 		for tier, machines in pairs(technic.machines) do
 			assert.is_hashed(machines)
 			for nodename, machine_type in pairs(machines) do
-				assert.is_hashed(minetest.registered_nodes[nodename])
-				local groups = minetest.registered_nodes[nodename].groups
+				assert.is_hashed(core.registered_nodes[nodename])
+				local groups = core.registered_nodes[nodename].groups
 				local tier_group
 				for group,_ in pairs(groups) do
 					assert.is_nil(group:find("technic_.*_cable$"), "Cable in machines table: "..tostring(nodename))

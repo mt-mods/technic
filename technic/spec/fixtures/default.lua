@@ -8,11 +8,11 @@ local function register_node(name, groups, additional_definition)
 		groups = groups,
 	}
 	for k,v in pairs(additional_definition or {}) do definition[k] = v end
-	minetest.register_node(":default:"..name, definition)
+	core.register_node(":default:"..name, definition)
 end
 
 local function register_item(name)
-	minetest.register_craftitem(":default:"..name, {
+	core.register_craftitem(":default:"..name, {
 		description = name.." description",
 	})
 end
@@ -27,5 +27,7 @@ register_node("sandstone", {crumbly = 1, cracky = 3})
 register_node("steelblock", {cracky = 1, level = 2})
 register_node("furnace", {cracky=2})
 register_node("furnace_active", {cracky=2, not_in_creative_inventory=1}, {drop = "default:furnace"})
+register_node("water_flowing", {water = 3, liquid = 3})
+register_node("water_source", {water = 3, liquid = 3})
 
 register_item("steel_ingot")
