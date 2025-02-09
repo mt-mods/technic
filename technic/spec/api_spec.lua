@@ -68,7 +68,12 @@ describe("Technic API", function()
 				end,
 			}
 			-- Make sure that original definition will not be changed during registration
-			setmetatable(data, { __newindex = function() error("Attempt to modify original definition") end })
+			setmetatable(data, {
+				__newindex = function(self, key, value)
+					assert(self ~= data, "Attempt to modify original definition")
+					rawset(self, key, value)
+				end
+			})
 			technic.register_solar_array("my_mod:my_solar_array", data)
 
 			-- Verify node registration
