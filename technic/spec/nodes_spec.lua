@@ -23,11 +23,11 @@ describe("Technic node placement", function()
 
 	-- Execute on mods loaded callbacks to finish loading.
 	mineunit:mods_loaded()
-	-- Tell mods that 1 minute passed already to execute all weird minetest.after hacks.
+	-- Tell mods that 1 minute passed already to execute all weird core.after hacks.
 	mineunit:execute_globalstep(60)
 
 	local nodes = {}
-	for nodename, def in pairs(minetest.registered_nodes) do
+	for nodename, def in pairs(core.registered_nodes) do
 		if not (def.groups and def.groups.not_in_creative_inventory) and nodename:find("^technic:") then
 			table.insert(nodes, nodename)
 		end
@@ -66,7 +66,7 @@ describe("Technic node placement", function()
 					under = {y = 10,x = 10,z = 10}
 				}
 				player:do_place(pointed_thing)
-				assert.equals("technic:hv_cable_plate_1", minetest.get_node(pointed_thing.above).name)
+				assert.equals("technic:hv_cable_plate_1", core.get_node(pointed_thing.above).name)
 			end)
 
 			it("plate_2", function()
@@ -76,7 +76,7 @@ describe("Technic node placement", function()
 					under = {y = 10,x = 10,z = 10}
 				}
 				player:do_place(pointed_thing)
-				assert.equals("technic:hv_cable_plate_2", minetest.get_node(pointed_thing.above).name)
+				assert.equals("technic:hv_cable_plate_2", core.get_node(pointed_thing.above).name)
 			end)
 
 			it("plate_3", function()
@@ -86,7 +86,7 @@ describe("Technic node placement", function()
 					under = {y = 10,x = 10,z = 10}
 				}
 				player:do_place(pointed_thing)
-				assert.equals("technic:hv_cable_plate_3", minetest.get_node(pointed_thing.above).name)
+				assert.equals("technic:hv_cable_plate_3", core.get_node(pointed_thing.above).name)
 			end)
 
 			it("plate_4", function()
@@ -96,7 +96,7 @@ describe("Technic node placement", function()
 					under = {y = 10,x = 10,z = 10}
 				}
 				player:do_place(pointed_thing)
-				assert.equals("technic:hv_cable_plate_4", minetest.get_node(pointed_thing.above).name)
+				assert.equals("technic:hv_cable_plate_4", core.get_node(pointed_thing.above).name)
 
 			end)
 
@@ -107,7 +107,7 @@ describe("Technic node placement", function()
 					under = {y = 10,x = 10,z = 10}
 				}
 				player:do_place(pointed_thing)
-				assert.equals("technic:hv_cable_plate_5", minetest.get_node(pointed_thing.above).name)
+				assert.equals("technic:hv_cable_plate_5", core.get_node(pointed_thing.above).name)
 
 			end)
 
@@ -118,7 +118,7 @@ describe("Technic node placement", function()
 					under = {y = 10,x = 10,z = 10}
 				}
 				player:do_place(pointed_thing)
-				assert.equals("technic:hv_cable_plate_6", minetest.get_node(pointed_thing.above).name)
+				assert.equals("technic:hv_cable_plate_6", core.get_node(pointed_thing.above).name)
 			end)
 
 		end)
@@ -135,7 +135,7 @@ describe("Technic node placement", function()
 				player:do_set_pos_fp(vector.add(pos, {y=0, x=2, z=0}))
 				player:do_set_look_xyz("X-")
 				player:do_place(pos)
-				assert.equals("technic:hv_cable_plate_4", minetest.get_node(pos).name)
+				assert.equals("technic:hv_cable_plate_4", core.get_node(pos).name)
 			end)
 
 			it("heading Y-", function()
@@ -143,7 +143,7 @@ describe("Technic node placement", function()
 				player:do_set_pos_fp(vector.add(pos, {y=2, x=0, z=0}))
 				player:do_set_look_xyz("Y-")
 				player:do_place(pos)
-				assert.equals("technic:hv_cable_plate_5", minetest.get_node(pos).name)
+				assert.equals("technic:hv_cable_plate_5", core.get_node(pos).name)
 			end)
 
 			it("heading Z-", function()
@@ -151,7 +151,7 @@ describe("Technic node placement", function()
 				player:do_set_pos_fp(vector.add(pos, {y=0, x=0, z=2}))
 				player:do_set_look_xyz("Z-")
 				player:do_place(pos)
-				assert.equals("technic:hv_cable_plate_6", minetest.get_node(pos).name)
+				assert.equals("technic:hv_cable_plate_6", core.get_node(pos).name)
 			end)
 
 			it("heading X+", function()
@@ -159,7 +159,7 @@ describe("Technic node placement", function()
 				player:do_set_pos_fp(vector.add(pos, {y=0, x=-2, z=0}))
 				player:do_set_look_xyz("X+")
 				player:do_place(pos)
-				assert.equals("technic:hv_cable_plate_1", minetest.get_node(pos).name)
+				assert.equals("technic:hv_cable_plate_1", core.get_node(pos).name)
 
 			end)
 
@@ -168,7 +168,7 @@ describe("Technic node placement", function()
 				player:do_set_pos_fp(vector.add(pos, {y=-2, x=0, z=0}))
 				player:do_set_look_xyz("Y+")
 				player:do_place(pos)
-				assert.equals("technic:hv_cable_plate_2", minetest.get_node(pos).name)
+				assert.equals("technic:hv_cable_plate_2", core.get_node(pos).name)
 			end)
 
 			it("heading Z+", function()
@@ -176,7 +176,7 @@ describe("Technic node placement", function()
 				player:do_set_pos_fp(vector.add(pos, {y=0, x=0, z=-2}))
 				player:do_set_look_xyz("Z+")
 				player:do_place(pos)
-				assert.equals("technic:hv_cable_plate_3", minetest.get_node(pos).name)
+				assert.equals("technic:hv_cable_plate_3", core.get_node(pos).name)
 			end)
 
 		end)
@@ -193,7 +193,7 @@ describe("Technic node placement", function()
 				player:do_set_pos_fp(vector.add(pos, {y=0, x=0.4, z=-2}))
 				player:do_set_look_xyz("Z+")
 				player:do_place(pos)
-				assert.equals("technic:hv_cable_plate_4", minetest.get_node(pos).name)
+				assert.equals("technic:hv_cable_plate_4", core.get_node(pos).name)
 			end)
 
 			it("heading Y-", function()
@@ -201,7 +201,7 @@ describe("Technic node placement", function()
 				player:do_set_pos_fp(vector.add(pos, {y=2, x=0.4, z=0}))
 				player:do_set_look_xyz("Y-")
 				player:do_place(pos)
-				assert.equals("technic:hv_cable_plate_4", minetest.get_node(pos).name)
+				assert.equals("technic:hv_cable_plate_4", core.get_node(pos).name)
 			end)
 
 		end)
@@ -218,7 +218,7 @@ describe("Technic node placement", function()
 				player:do_set_pos_fp(vector.add(pos, {y=0, x=2, z=0.4}))
 				player:do_set_look_xyz("X-")
 				player:do_place(pos)
-				assert.equals("technic:hv_cable_plate_6", minetest.get_node(pos).name)
+				assert.equals("technic:hv_cable_plate_6", core.get_node(pos).name)
 			end)
 
 			it("heading Y-", function()
@@ -226,7 +226,7 @@ describe("Technic node placement", function()
 				player:do_set_pos_fp(vector.add(pos, {y=2, x=0, z=0.4}))
 				player:do_set_look_xyz("Y-")
 				player:do_place(pos)
-				assert.equals("technic:hv_cable_plate_6", minetest.get_node(pos).name)
+				assert.equals("technic:hv_cable_plate_6", core.get_node(pos).name)
 			end)
 
 			it("heading X+", function()
@@ -234,7 +234,7 @@ describe("Technic node placement", function()
 				player:do_set_pos_fp(vector.add(pos, {y=0, x=-2, z=0.4}))
 				player:do_set_look_xyz("X+")
 				player:do_place(pos)
-				assert.equals("technic:hv_cable_plate_6", minetest.get_node(pos).name)
+				assert.equals("technic:hv_cable_plate_6", core.get_node(pos).name)
 			end)
 
 			it("heading Y+", function()
@@ -242,7 +242,7 @@ describe("Technic node placement", function()
 				player:do_set_pos_fp(vector.add(pos, {y=-2, x=0, z=0.4}))
 				player:do_set_look_xyz("Y+")
 				player:do_place(pos)
-				assert.equals("technic:hv_cable_plate_6", minetest.get_node(pos).name)
+				assert.equals("technic:hv_cable_plate_6", core.get_node(pos).name)
 			end)
 
 		end)

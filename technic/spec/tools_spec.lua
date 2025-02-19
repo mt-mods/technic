@@ -20,12 +20,18 @@ describe("Technic power tool", function()
 		mineunit:restore_current_modname()
 	end
 
+	-- Execute multiple globalsteps: run_network(times = 1, dtime = 1)
+	local run_network = spec_utility.run_globalsteps
+
 	world.set_default_node("air")
 
-	-- HV battery box and some HV solar arrays for charging
+	-- Test node, HV battery box and some HV solar arrays for charging
+	local Stone_POS = {x=10,y=10,z=10}
 	local BB_Charge_POS = {x=0,y=51,z=0}
 	local BB_Discharge_POS = {x=0,y=51,z=2}
 	world.layout({
+		-- Test node
+		{Stone_POS, "default:stone"},
 		-- Network with generators for charging tools in battery box
 		{BB_Charge_POS, "technic:hv_battery_box0"},
 		{{x=1,y=51,z=0}, "technic:switching_station"},
@@ -37,10 +43,13 @@ describe("Technic power tool", function()
 		{{{x=0,y=50,z=2},{x=1,y=50,z=2}}, "technic:hv_cable"},
 	})
 
+	-- Matchers
+	local M = function(s) return require("luassert.match").matches(s) end
+
 	-- Some helpers to make stack access simpler
 	local player = Player("SX")
-	local charge_inv = minetest.get_meta(BB_Charge_POS):get_inventory()
-	local discharge_inv = minetest.get_meta(BB_Discharge_POS):get_inventory()
+	local charge_inv = core.get_meta(BB_Charge_POS):get_inventory()
+	local discharge_inv = core.get_meta(BB_Discharge_POS):get_inventory()
 	local function set_charge_stack(stack) charge_inv:set_stack("src", 1, stack) end
 	local function get_charge_stack() return charge_inv:get_stack("src", 1) end
 	local function set_discharge_stack(stack) discharge_inv:set_stack("dst", 1, stack) end
@@ -50,7 +59,7 @@ describe("Technic power tool", function()
 
 	-- Execute on mods loaded callbacks to finish loading.
 	mineunit:mods_loaded()
-	-- Tell mods that 1 minute passed already to execute all weird minetest.after hacks.
+	-- Tell mods that 1 minute passed already to execute all weird core.after hacks.
 	mineunit:execute_globalstep(60)
 
 	describe("API", function()
@@ -79,7 +88,7 @@ describe("Technic power tool", function()
 					return itemstack
 				end,
 			})
-			local itemdef = minetest.registered_items["mymod:powertool"]
+			local itemdef = core.registered_items["mymod:powertool"]
 			assert.is_hashed(itemdef)
 			assert.is_function(itemdef.on_use)
 			assert.is_function(itemdef.on_refill)
@@ -203,7 +212,7 @@ describe("Technic power tool", function()
 			set_charge_stack(ItemStack("mymod:t1_65535"))
 			-- Test charging, 10kEU / cycle
 			assert.equals(0, technic.get_RE_charge(get_charge_stack()))
-			for i=1,6 do mineunit:execute_globalstep(1) end
+			run_network(6)
 			assert.equals(60000, technic.get_RE_charge(get_charge_stack()))
 			mineunit:execute_globalstep(1)
 			assert.equals(65535, technic.get_RE_charge(get_charge_stack()))
@@ -214,7 +223,7 @@ describe("Technic power tool", function()
 			set_charge_stack(ItemStack("mymod:t1_65536"))
 			-- Test charging, 10kEU / cycle
 			assert.equals(0, technic.get_RE_charge(get_charge_stack()))
-			for i=1,6 do mineunit:execute_globalstep(1) end
+			run_network(6)
 			assert.equals(60000, technic.get_RE_charge(get_charge_stack()))
 			mineunit:execute_globalstep(1)
 			assert.equals(65536, technic.get_RE_charge(get_charge_stack()))
@@ -225,7 +234,7 @@ describe("Technic power tool", function()
 			set_charge_stack(ItemStack("mymod:t100_6553500"))
 			-- Test charging, 10kEU / cycle
 			assert.equals(0, technic.get_RE_charge(get_charge_stack()))
-			for i=1,6 do mineunit:execute_globalstep(1) end
+			run_network(6)
 			assert.equals(60000, technic.get_RE_charge(get_charge_stack()))
 			mineunit:execute_globalstep(1)
 			assert.equals(70000, technic.get_RE_charge(get_charge_stack()))
@@ -236,7 +245,7 @@ describe("Technic power tool", function()
 			set_charge_stack(ItemStack("mymod:t100_6553600"))
 			-- Test charging, 10kEU / cycle
 			assert.equals(0, technic.get_RE_charge(get_charge_stack()))
-			for i=1,7 do mineunit:execute_globalstep(1) end
+			run_network(7)
 			-- This tool already has small charge error and it is acceptable as long as error stays small
 			-- Charge value must be 69999-70001 after 7 charge cycles
 			assert.lt(69998, technic.get_RE_charge(get_charge_stack()))
@@ -244,7 +253,7 @@ describe("Technic power tool", function()
 		end)
 
 		it("t100_6553600 can be used", function()
-			-- Add tool to battery box
+			-- Create tool and set its charge to 700
 			local stack = ItemStack("mymod:t100_6553600")
 			technic.set_RE_charge(stack, 700)
 			set_player_stack(stack)
@@ -260,7 +269,7 @@ describe("Technic power tool", function()
 	describe("Flashlight", function()
 
 		local itemname = "technic:flashlight"
-		local itemdef = minetest.registered_items[itemname]
+		local itemdef = core.registered_items[itemname]
 
 		setup(function()
 			set_charge_stack(ItemStack(nil))
@@ -288,14 +297,12 @@ describe("Technic power tool", function()
 
 			-- Use item, flashlight charge is used every globalstep and there's no on_use definition
 			spy.on(technic, "use_charge")
-			for i=1, 100 do
-				mineunit:execute_globalstep(1)
-			end
-			assert.spy(technic.use_charge).called(100)
+			run_network(20)
+			assert.spy(technic.use_charge).called(20)
 
 			-- Check that item charge was actually used and error is acceptable
 			local charge_used = itemdef.technic_max_charge - technic.get_RE_charge(get_player_stack())
-			local exact_use = 2 * 100 -- 2 per cycle / 100 cycles
+			local exact_use = 2 * 20 -- 2 per cycle / 20 cycles
 			assert.lt(0.9, charge_used / exact_use)
 			assert.gt(1.1, charge_used / exact_use)
 		end)
@@ -305,7 +312,7 @@ describe("Technic power tool", function()
 	describe("Multimeter", function()
 
 		local itemname = "technic:multimeter"
-		local itemdef = minetest.registered_items[itemname]
+		local itemdef = core.registered_items[itemname]
 
 		setup(function()
 			set_charge_stack(ItemStack(nil))
@@ -344,11 +351,9 @@ describe("Technic power tool", function()
 			-- Put item from player inventory to battery box src inventory
 			player:do_metadata_inventory_put(BB_Charge_POS, "src", 1)
 
-			-- Verify that item charge is empty and charge in battery box for 30 seconds
+			-- Verify that item charge is empty and charge in battery box for capacity/10k seconds
 			assert.equals(0, technic.get_RE_charge(get_charge_stack()))
-			for i=1, 30 do
-				mineunit:execute_globalstep(1)
-			end
+			run_network(math.ceil(itemdef.technic_max_charge / 10000))
 
 			-- Take item from battery box and check charge / wear values
 			player:do_metadata_inventory_take(BB_Charge_POS, "src", 1)
@@ -375,9 +380,99 @@ describe("Technic power tool", function()
 
 			-- Verify that item is charged and discharge in battery box for 3 seconds
 			assert.lt(itemdef.technic_max_charge / 2, technic.get_RE_charge(get_discharge_stack()))
-			for i=1, 3 do
-				mineunit:execute_globalstep(1)
-			end
+			run_network(3)
+
+			-- Take item from battery box and check charge / wear values
+			player:do_metadata_inventory_take(BB_Discharge_POS, "dst", 1)
+			assert.gt(itemdef.technic_max_charge, 0)
+			assert.equals(0, technic.get_RE_charge(get_player_stack()))
+		end)
+
+	end)
+
+	describe("Prospector", function()
+
+		local itemname = "technic:prospector"
+		local itemdef = core.registered_items[itemname]
+
+		setup(function()
+			set_charge_stack(ItemStack(nil))
+			set_discharge_stack(ItemStack(nil))
+			mineunit:execute_on_joinplayer(player)
+			player:get_inventory():set_stack("main", 1, itemname)
+		end)
+
+		teardown(function()
+			mineunit:execute_on_leaveplayer(player)
+		end)
+
+		it("is registered", function()
+			assert.is_hashed(itemdef)
+			assert.is_function(itemdef.on_use)
+			assert.is_function(itemdef.on_refill)
+			assert.equals("technic_RE_charge", itemdef.wear_represents)
+			assert.is_number(itemdef.technic_max_charge)
+			assert.gt(itemdef.technic_max_charge, 0)
+		end)
+
+		it("new item can be used", function()
+			spy.on(itemdef, "on_use")
+			player:do_use({x=0, y=0, z=0})
+			assert.spy(itemdef.on_use).called(1)
+		end)
+
+		it("has zero charge", function()
+			local stack = player:get_wielded_item()
+			assert.is_ItemStack(stack)
+			assert.is_false(stack:is_empty())
+			assert.equals(0, technic.get_RE_charge(stack))
+		end)
+
+		it("can be charged", function()
+			-- Put item from player inventory to battery box src inventory
+			player:do_metadata_inventory_put(BB_Charge_POS, "src", 1)
+
+			-- Verify that item charge is empty and charge in battery box for capacity/10k seconds
+			assert.equals(0, technic.get_RE_charge(get_charge_stack()))
+			run_network(math.ceil(itemdef.technic_max_charge / 10000))
+
+			-- Take item from battery box and check charge / wear values
+			player:do_metadata_inventory_take(BB_Charge_POS, "src", 1)
+			assert.gt(itemdef.technic_max_charge, 0)
+			assert.equals(itemdef.technic_max_charge, technic.get_RE_charge(get_player_stack()))
+		end)
+
+		it("charge is used", function()
+			-- Start prospector configuration and make sure formspec was sent
+			spy.on(itemdef, "on_place")
+			spy.on(core, "show_formspec")
+			player:do_place_from_above(Stone_POS)
+			assert.spy(itemdef.on_place).called(1)
+			assert.spy(core.show_formspec).called_with("SX", "technic:prospector_control", M("target_default:stone"))
+
+			-- Configure prospector and use tool
+			mineunit:execute_on_player_receive_fields(player, "technic:prospector_control", {
+				["target_default:stone"] = "true",
+				["look_radius_0"] = "true",
+				["look_depth_7"] = "true",
+				["quit"] = "true",
+			})
+			player:do_use_from_above(Stone_POS)
+
+			-- Check that item charge was actually used and is not zero
+			local charge = technic.get_RE_charge(get_player_stack())
+			assert.is_number(charge)
+			assert.gt(charge, 0)
+			assert.lt(charge, itemdef.technic_max_charge)
+		end)
+
+		it("can be discharged", function()
+			-- Put item from player inventory to battery box src inventory
+			player:do_metadata_inventory_put(BB_Discharge_POS, "dst", 1)
+
+			-- Verify that item is charged and discharge in battery box for 8 seconds
+			assert.lt(itemdef.technic_max_charge / 2, technic.get_RE_charge(get_discharge_stack()))
+			run_network(8)
 
 			-- Take item from battery box and check charge / wear values
 			player:do_metadata_inventory_take(BB_Discharge_POS, "dst", 1)
@@ -394,7 +489,7 @@ describe("Technic power tool", function()
 		if not RUN_TECHNIC_ADDONS_CHAINSAWMK3_TESTS then return end
 
 		local itemname = "technic_addons:chainsawmk3"
-		local itemdef = minetest.registered_items[itemname]
+		local itemdef = core.registered_items[itemname]
 
 		setup(function()
 			world.add_layout({
@@ -437,11 +532,9 @@ describe("Technic power tool", function()
 			-- Put item from player inventory to battery box src inventory
 			player:do_metadata_inventory_put(BB_Charge_POS, "src", 1)
 
-			-- Verify that item charge is empty and charge in battery box for 30 seconds
+			-- Verify that item charge is empty and charge in battery box for capacity/10k seconds
 			assert.equals(0, technic.get_RE_charge(get_charge_stack()))
-			for i=0, math.ceil(itemdef.technic_max_charge / 10000) do
-				mineunit:execute_globalstep(1)
-			end
+			run_network(math.ceil(itemdef.technic_max_charge / 10000))
 
 			-- Take item from battery box and check charge / wear values
 			player:do_metadata_inventory_take(BB_Charge_POS, "src", 1)
