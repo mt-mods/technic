@@ -45,7 +45,9 @@ describe("Coal alloy furnace", function()
 	it("wont crash without placement callbacks", function()
 		local node = { name = "technic:coal_alloy_furnace", param1 = 0, param2 = 0 }
 		world.nodes[core.hash_node_position(furnace_pos)] = node
-		run_globalstep(1)
+		assert.no_error(function()
+			run_globalstep(1)
+		end)
 	end)
 
 	it("alloys dusts", function()
