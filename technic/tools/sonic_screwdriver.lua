@@ -1,7 +1,7 @@
 local sonic_screwdriver_max_charge = 15000
 
 local S = technic.getter
-local mat = technic.materials
+local mat = xcompat.materials
 
 -- screwdriver handler code reused from minetest/minetest_game screwdriver @a9ac480
 local ROTATE_FACE = 1

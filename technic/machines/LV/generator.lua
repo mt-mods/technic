@@ -3,7 +3,7 @@
 -- Inefficient and expensive in fuel (200EU per tick)
 -- Also only allows for LV machinery to run.
 
-local mat = technic.materials
+local mat = xcompat.materials
 
 minetest.register_alias("lv_generator", "technic:lv_generator")
 
