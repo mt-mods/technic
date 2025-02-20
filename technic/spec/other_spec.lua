@@ -43,6 +43,7 @@ describe("Coal alloy furnace", function()
 	end
 
 	it("wont crash without placement callbacks", function()
+		pending("Waiting for #400 to be merged")
 		local node = { name = "technic:coal_alloy_furnace", param1 = 0, param2 = 0 }
 		world.nodes[core.hash_node_position(furnace_pos)] = node
 		assert.no_error(function()
