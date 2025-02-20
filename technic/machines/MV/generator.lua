@@ -1,5 +1,3 @@
-minetest.register_alias("generator_mv", "technic:generator_mv")
-
 minetest.register_craft({
 	output = 'technic:mv_generator',
 	recipe = {
