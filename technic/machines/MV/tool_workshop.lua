@@ -145,7 +145,8 @@ minetest.register_node("technic:tool_workshop", {
 	},
 	technic_run = run,
 	after_place_node = pipeworks.after_place,
-	after_dig_node = technic.machine_after_dig_node
+	after_dig_node = technic.machine_after_dig_node,
+	on_rotate = technic.on_rotate,
 })
 
 technic.register_machine("MV", "technic:tool_workshop", technic.receiver)

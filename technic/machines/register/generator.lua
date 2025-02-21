@@ -193,6 +193,7 @@ function technic.register_generator(data)
 			local percent = math.floor(burn_time / burn_totaltime * 100)
 			update_generator_formspec(meta, desc, percent, form_buttons)
 		end,
+		on_rotate = technic.on_rotate,
 	})
 
 	minetest.register_node("technic:"..ltier.."_generator_active", {
@@ -286,6 +287,7 @@ function technic.register_generator(data)
 
 			update_generator_formspec(meta, desc, percent, form_buttons)
 		end,
+		on_rotate = technic.on_rotate,
 	})
 
 	technic.register_machine(tier, "technic:"..ltier.."_generator",        technic.producer)

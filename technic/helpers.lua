@@ -62,6 +62,14 @@ function technic.swap_node(pos, name)
 	end
 end
 
+-- MTG compatible screwdriver API nodedef.on_rotate compatibility
+function technic.on_rotate(pos, node, user, mode, new_param2)
+	node.param2 = new_param2
+	minetest.swap_node(pos, node)
+	pipeworks.scan_for_tube_objects(pos)
+	return true
+end
+
 function technic.set_charge(stack, charge)
 	local wear_factor = stack:get_definition().technic_wear_factor
 	if wear_factor then
