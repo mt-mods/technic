@@ -239,6 +239,7 @@ function technic.register_base_machine(nodename, data)
 			end
 			meta:set_string("formspec", formspec..form_buttons)
 		end,
+		on_rotate = technic.on_rotate,
 	})
 
 	minetest.register_node(colon..nodename.."_active",{
@@ -290,6 +291,7 @@ function technic.register_base_machine(nodename, data)
 			end
 			meta:set_string("formspec", formspec..form_buttons)
 		end,
+		on_rotate = technic.on_rotate,
 	})
 
 	technic.register_machine(tier, nodename,            technic.receiver)

@@ -582,6 +582,7 @@ minetest.register_node("technic:quarry", {
 			action = digiline_action,
 		}
 	},
+	on_rotate = technic.on_rotate,
 })
 
 minetest.register_craft({
