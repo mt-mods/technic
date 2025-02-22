@@ -3,9 +3,9 @@ Technic
 
 A mod for [minetest](http://www.minetest.net)
 
-![mtt](https://github.com/mt-mods/technic/workflows/mtt/badge.svg)
-![luacheck](https://github.com/mt-mods/technic/workflows/luacheck/badge.svg)
-![mineunit](https://github.com/mt-mods/technic/workflows/mineunit/badge.svg)
+[![mtt](https://github.com/mt-mods/technic/actions/workflows/mtt.yml/badge.svg)](https://github.com/mt-mods/technic/actions/workflows/mtt.yml?query=branch%3Amaster)
+[![luacheck](https://github.com/mt-mods/technic/actions/workflows/luacheck.yml/badge.svg)](https://github.com/mt-mods/technic/actions/workflows/luacheck.yml?query=branch%3Amaster)
+[![mineunit](https://github.com/mt-mods/technic/actions/workflows/mineunit.yml/badge.svg)](https://github.com/mt-mods/technic/actions/workflows/mineunit.yml?query=branch%3Amaster)
 ![](https://byob.yarr.is/mt-mods/technic/coverage)
 
 [![License](https://img.shields.io/badge/license-LGPLv2.0%2B-purple.svg)](https://www.gnu.org/licenses/old-licenses/lgpl-2.0.en.html)
