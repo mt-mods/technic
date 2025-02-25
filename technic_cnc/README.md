@@ -3,9 +3,9 @@ Technic CNC
 
 Provides CNC machines that allow cutting nodes to selected shapes.
 
-![luacheck](https://github.com/mt-mods/technic/workflows/luacheck/badge.svg)
-![mineunit](https://github.com/mt-mods/technic/workflows/mineunit/badge.svg)
-![](https://byob.yarr.is/mt-mods/technic/coverage-cnc)
+[![luacheck](https://github.com/mt-mods/technic/actions/workflows/luacheck.yml/badge.svg)](https://github.com/mt-mods/technic/actions/workflows/luacheck.yml?query=branch%3Amaster)
+[![mineunit](https://github.com/mt-mods/technic/actions/workflows/mineunit.yml/badge.svg)](https://github.com/mt-mods/technic/actions/workflows/mineunit.yml?query=branch%3Amaster)
+[![mineunit](https://byob.yarr.is/mt-mods/technic/coverage-cnc)](https://github.com/mt-mods/technic/actions/workflows/mineunit.yml?query=branch%3Amaster+is%3Asuccess)
 
 # Machines
 
