@@ -3,10 +3,10 @@ Technic
 
 A mod for [minetest](http://www.minetest.net)
 
-![mtt](https://github.com/mt-mods/technic/workflows/mtt/badge.svg)
-![luacheck](https://github.com/mt-mods/technic/workflows/luacheck/badge.svg)
-![mineunit](https://github.com/mt-mods/technic/workflows/mineunit/badge.svg)
-![](https://byob.yarr.is/mt-mods/technic/coverage)
+[![mtt](https://github.com/mt-mods/technic/actions/workflows/mtt.yml/badge.svg)](https://github.com/mt-mods/technic/actions/workflows/mtt.yml?query=branch%3Amaster)
+[![luacheck](https://github.com/mt-mods/technic/actions/workflows/luacheck.yml/badge.svg)](https://github.com/mt-mods/technic/actions/workflows/luacheck.yml?query=branch%3Amaster)
+[![mineunit](https://github.com/mt-mods/technic/actions/workflows/mineunit.yml/badge.svg)](https://github.com/mt-mods/technic/actions/workflows/mineunit.yml?query=branch%3Amaster)
+[![mineunit](https://byob.yarr.is/mt-mods/technic/coverage)](https://github.com/mt-mods/technic/actions/workflows/mineunit.yml?query=branch%3Amaster+is%3Asuccess)
 
 [![License](https://img.shields.io/badge/license-LGPLv2.0%2B-purple.svg)](https://www.gnu.org/licenses/old-licenses/lgpl-2.0.en.html)
 [![ContentDB](https://content.minetest.net/packages/mt-mods/technic_plus/shields/downloads/)](https://content.minetest.net/packages/mt-mods/technic_plus/)
