@@ -3,20 +3,28 @@ local S = technic.getter
 -- Registration compatibility shim to transform Technic 1.x arguments to 2.x
 -- This could be made stricter for new style API by utilizing `assert`
 
+local function shallow_copy(t)
+	local result = {}
+	for k, v in pairs(t) do
+		result[k] = v
+	end
+	return setmetatable(result, getmetatable(t))
+end
+
 function technic.register_compat_v1_to_v2(name, data, default_name)
 	local modname = minetest.get_current_modname()
 	local colon, def
 	if type(name) == "table" then
 		-- Log old API usage, swap name to def and set name from def table
 		local msg = "Deprecated Technic registration API call: %s (%s)"
-		def = table.copy(name)
+		def = shallow_copy(name)
 		name = def.machine_name or default_name
 		def.machine_name = nil
 		def.description = def.machine_desc
 		def.machine_desc = nil
 		minetest.log("warning", msg:format(tostring(name), tostring(modname)))
 	else
-		def = table.copy(data)
+		def = shallow_copy(data)
 	end
 	-- Input name can be "modname:nodename", ":modname:nodename" or "nodename".
 	-- If name is presented as "nodename" then check for old def.modname field.
