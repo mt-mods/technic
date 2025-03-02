@@ -118,3 +118,22 @@ function technic.set_RE_wear(stack, charge)
 	minetest.log("warning", "Use of deprecated function technic.set_RE_wear with stack: "..stack:get_name())
 	compat_set_RE_wear(stack, charge)
 end
+
+-- Old utility function to recharge tools
+local function charge_tools(meta, batt_charge, charge_step)
+	local src_stack = meta:get_inventory():get_stack("src", 1)
+	local def = src_stack:get_definition()
+	if not def or not def.technic_max_charge or src_stack:is_empty() then
+		return batt_charge, false
+	end
+	local new_charge = math.min(def.technic_max_charge, def.technic_get_charge(src_stack) + charge_step)
+	def.technic_set_charge(src_stack, new_charge)
+	meta:get_inventory():set_stack("src", 1, src_stack)
+	return batt_charge, (def.technic_max_charge == new_charge)
+end
+
+function technic.charge_tools(...)
+	minetest.log("warning", "Use of deprecated function technic.charge_tools")
+	technic.charge_tools = charge_tools
+	return charge_tools(...)
+end
