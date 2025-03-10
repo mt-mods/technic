@@ -1,5 +1,5 @@
 local S = technic.getter
-local mat = technic.materials
+local mat = xcompat.materials
 
 local function migrate_meta(meta)
 	local data = meta:get("")

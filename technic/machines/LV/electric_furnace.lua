@@ -1,7 +1,7 @@
 -- LV Electric Furnace
 -- This is a faster version of the stone furnace which runs on EUs
 local S = technic.getter
-local mat = technic.materials
+local mat = xcompat.materials
 
 -- FIXME: kpoppel I'd like to introduce an induction heating element here also
 minetest.register_craft({

@@ -5,7 +5,7 @@ local fs_helpers = pipeworks.fs_helpers
 
 local tube_entry = "^pipeworks_tube_connection_metallic.png"
 
-local mat = technic.materials
+local mat = xcompat.materials
 
 local param2_to_under = {
 	[0] = {x= 0,y=-1,z= 0}, [1] = {x= 0,y= 0,z=-1},

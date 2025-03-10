@@ -1,6 +1,6 @@
 
 local S = technic.getter
-local mat = technic.materials
+local mat = xcompat.materials
 local has_mcl = minetest.get_modpath("mcl_core")
 
 technic.register_recipe_type("compressing", {

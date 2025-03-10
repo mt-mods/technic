@@ -3,7 +3,7 @@
 -- Illuminates a 7x7x3(H) volume below itself with light bright as the sun.
 
 local S = technic.getter
-local mat = technic.materials
+local mat = xcompat.materials
 
 local demand = 50
 local desc = S("@1 Lamp", S("LV"))
