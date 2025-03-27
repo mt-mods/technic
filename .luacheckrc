@@ -30,7 +30,7 @@ read_globals = {
 	"craftguide", "i3", "mtt",
 	"vizlib", "mcl_sounds", "mcl_vars",
 	"mcl_worlds", "mcl_buckets", "mcl_formspec",
-	"mcl_craftguide",
+	"mcl_craftguide", "xcompat",
 
 	-- Only used in technic/machines/MV/lighting.lua (disabled)
 	"isprotect", "homedecor_expect_infinite_stacks",

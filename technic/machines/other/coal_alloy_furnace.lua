@@ -2,7 +2,7 @@
 -- Fuel driven alloy furnace. This uses no EUs:
 
 local S = technic.getter
-local mat = technic.materials
+local mat = xcompat.materials
 
 minetest.register_craft({
 	output = 'technic:coal_alloy_furnace',

@@ -4,7 +4,7 @@
 minetest.register_alias("tool_workshop", "technic:tool_workshop")
 
 local S = technic.getter
-local mat = technic.materials
+local mat = xcompat.materials
 
 local tube_entry = "^pipeworks_tube_connection_wooden.png"
 

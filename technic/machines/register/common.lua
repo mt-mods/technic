@@ -1,6 +1,6 @@
 
 local S = technic.getter
-local mat = technic.materials
+local mat = xcompat.materials
 
 -- handles the machine upgrades every tick
 function technic.handle_machine_upgrades(meta)

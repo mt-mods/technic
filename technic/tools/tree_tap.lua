@@ -1,6 +1,6 @@
 
 local S = technic.getter
-local mat = technic.materials
+local mat = xcompat.materials
 local mesecons_materials = minetest.get_modpath("mesecons_materials")
 
 local function drop_raw_latex(pointed_thing, user)
