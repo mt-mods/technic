@@ -1,6 +1,6 @@
 -- check if we have the necessary dependencies to allow actually using these materials in the crafts
 
-local mat = technic.materials
+local mat = xcompat.materials
 local has_mcl = minetest.get_modpath("mcl_core")
 
 -- Remove some recipes
@@ -180,11 +180,11 @@ minetest.register_craft({
 minetest.register_craft({
 	output = mat.dirt.." 2",
 	type = "shapeless",
-	replacements = {{mat.bucket_water,mat.bucket_empty}},
+	replacements = {{mat.water_bucket,mat.empty_bucket}},
 	recipe = {
 		"technic:stone_dust",
 		"group:leaves",
-		mat.bucket_water,
+		mat.water_bucket,
 		"group:sand",
 	},
 })
