@@ -589,11 +589,11 @@ minetest.register_on_mods_loaded(function()
 	end
 end)
 
-local function run_nodes(list, vm, run_stage, network)
+local function run_nodes(list, run_stage, network)
 	for _, pos in ipairs(list) do
 		local node = minetest.get_node_or_nil(pos)
 		if not node then
-			vm:read_from_map(pos, pos)
+			minetest.load_area(pos, pos)
 			node = minetest.get_node_or_nil(pos)
 		end
 		if node and node.name and node_technic_run[node.name] then
@@ -635,10 +635,9 @@ function technic.network_run(network_id)
 	network.BA_count_active = 0
 	network.BA_charge_active = 0
 
-	local vm = VoxelManip()
-	run_nodes(PR_nodes, vm, technic.producer, network)
-	run_nodes(RE_nodes, vm, technic.receiver, network)
-	run_nodes(BA_nodes, vm, technic.battery, network)
+	run_nodes(PR_nodes, technic.producer, network)
+	run_nodes(RE_nodes, technic.receiver, network)
+	run_nodes(BA_nodes, technic.battery, network)
 
 	-- Strings for the meta data
 	local eu_demand_str = network.tier.."_EU_demand"
