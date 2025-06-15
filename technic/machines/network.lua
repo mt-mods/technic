@@ -151,9 +151,8 @@ function technic.network_infotext(network_id, text)
 			local count = 0
 			for _ in pairs(network.all_nodes) do count = count + 1 end
 			return S("Building Network: @1 Nodes", count)
-		else
-			return network.infotext
 		end
+		return network.infotext
 	end
 end
 
