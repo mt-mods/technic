@@ -7,6 +7,7 @@ local S = technic.getter
 local mat = technic.materials
 
 local cable_entry = "^technic_cable_connection_overlay.png"
+local no_network_infotext = S("@1 Has No Network", S("Switching Station"))
 
 minetest.register_craft({
 	output = "technic:switching_station",
@@ -21,7 +22,7 @@ local function start_network(pos)
 	local tier = technic.sw_pos2tier(pos)
 	if not tier then
 		local meta = minetest.get_meta(pos)
-		meta:set_string("infotext", S("@1 Has No Network", S("Switching Station")))
+		meta:set_string("infotext", no_network_infotext)
 	else
 		local network_id = technic.sw_pos2network(pos) or technic.create_network(pos)
 		local network = network_id and technic.networks[network_id]
@@ -116,7 +117,7 @@ minetest.register_node("technic:switching_station",{
 					end
 				end
 			end
-			meta:set_string("infotext", infotext)
+			meta:set_string("infotext", infotext or no_network_infotext)
 		else
 			-- Network does not exist yet, attempt to create new network here
 			start_network(pos)
