@@ -4,7 +4,7 @@ local mesecons_path = minetest.get_modpath("mesecons")
 local digilines_path = minetest.get_modpath("digilines")
 
 local S = technic.getter
-local mat = technic.materials
+local mat = xcompat.materials
 
 local cable_entry = "^technic_cable_connection_overlay.png"
 local no_network_infotext = S("@1 Has No Network", S("Switching Station"))
