@@ -134,3 +134,6 @@ if minetest.get_modpath("dye") then
 		})
 	end
 end
+
+-- [extract]or recipe for oil [extract]
+technic.register_extractor_recipe({input = {"group:leaves 1"}, output = "basic_materials:oil_extract 1"})
