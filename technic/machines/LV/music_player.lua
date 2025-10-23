@@ -2,7 +2,7 @@
 -- The player can play music. But it is high ampage!
 
 local S = technic.getter
-local mat = technic.materials
+local mat = xcompat.materials
 
 minetest.register_alias("music_player", "technic:music_player")
 minetest.register_craft({

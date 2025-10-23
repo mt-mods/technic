@@ -18,9 +18,6 @@ technic.modpath = modpath
 local S = minetest.get_translator("technic")
 technic.getter = S
 
--- Read materials file
-dofile(modpath.."/materials.lua")
-
 -- Read configuration file
 dofile(modpath.."/config.lua")
 
