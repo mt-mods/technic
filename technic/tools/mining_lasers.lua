@@ -1,5 +1,5 @@
 
-local mat = technic.materials
+local mat = xcompat.materials
 
 local mining_lasers_list = {
 --	{<num>, <range of the laser shots>, <max_charge>, <charge_per_shot>},

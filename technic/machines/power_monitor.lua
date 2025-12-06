@@ -3,7 +3,7 @@
 -- similarly to the old "slave" switching stations.
 
 local S = technic.getter
-local mat = technic.materials
+local mat = xcompat.materials
 
 local cable_entry = "^technic_cable_connection_overlay.png"
 

@@ -1,6 +1,6 @@
 
 local S = technic.getter
-local mat = technic.materials
+local mat = xcompat.materials
 
 technic.register_recipe_type("alloy", {
 	description = S("Alloying"),
@@ -30,8 +30,8 @@ local recipes = {
 	-- improves its tensile strength and wear resistance …"
 	{"technic:raw_latex 4",           "technic:coal_dust 2",        "technic:rubber 6", 2},
 	{"technic:raw_latex 2",           mat.coal_lump,        "technic:rubber 2", 2},
-	{mat.ice,                   mat.bucket_empty,        mat.bucket_water, 1 },
-	{mat.obsidian,              mat.bucket_empty,        mat.bucket_lava, 1 },
+	{mat.ice,                   mat.empty_bucket,        mat.water_bucket, 1 },
+	{mat.obsidian,              mat.empty_bucket,        mat.lava_bucket, 1 },
 }
 
 if minetest.get_modpath("ethereal") then

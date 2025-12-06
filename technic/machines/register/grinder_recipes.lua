@@ -1,6 +1,6 @@
 
 local S = technic.getter
-local mat = technic.materials
+local mat = xcompat.materials
 
 technic.register_recipe_type("grinding", {
 	description = S("Grinding"),
@@ -63,7 +63,7 @@ minetest.clear_craft({
 })
 
 if minetest.get_modpath("farming") then
-	table.insert(recipes, {mat.seed_wheat,   "farming:flour 1"})
+	table.insert(recipes, {mat.wheat_seed,   "farming:flour 1"})
 end
 
 if minetest.get_modpath("moreores") then

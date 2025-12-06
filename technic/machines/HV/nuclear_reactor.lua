@@ -15,7 +15,7 @@ local fuel_type = "technic:uranium_fuel"  -- The reactor burns this
 local digiline_meltdown = technic.config:get_bool("enable_nuclear_reactor_digiline_selfdestruct")
 local has_digilines = minetest.get_modpath("digilines")
 local has_mcl = minetest.get_modpath("mcl_core")
-local mat = technic.materials
+local mat = xcompat.materials
 
 local S = technic.getter
 

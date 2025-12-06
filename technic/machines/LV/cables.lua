@@ -1,5 +1,5 @@
 local S = technic.getter
-local mat = technic.materials
+local mat = xcompat.materials
 
 minetest.register_alias("lv_cable", "technic:lv_cable")
 

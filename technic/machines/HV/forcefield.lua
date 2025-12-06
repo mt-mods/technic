@@ -14,7 +14,7 @@ local S = technic.getter
 
 local cable_entry = "^technic_cable_connection_overlay.png"
 
-local mat = technic.materials
+local mat = xcompat.materials
 
 minetest.register_craft({
 	output = "technic:forcefield_emitter_off",
