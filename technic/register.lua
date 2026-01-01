@@ -42,6 +42,6 @@ function technic.register_power_tool(itemname, itemdef)
 		return stack
 	end
 	itemdef.tool_capabilities = itemdef.tool_capabilities or { punch_attack_uses = 0 }
-	minetest.register_tool(itemname, itemdef)
+	core.register_tool(itemname, itemdef)
 	technic.power_tools[itemname] = max_charge
 end
