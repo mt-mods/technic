@@ -1,4 +1,4 @@
-local config_file = minetest.get_worldpath() .. "/technic.conf"
+local config_file = core.get_worldpath() .. "/technic.conf"
 
 local defaults = {
 	-- Power tools enabled
