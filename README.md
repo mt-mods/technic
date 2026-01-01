@@ -1,7 +1,7 @@
 Technic
 -----------------
 
-A mod for [minetest](http://www.minetest.net)
+A mod for [Luanti](http://www.luanti.org)
 
 [![mtt](https://github.com/mt-mods/technic/actions/workflows/mtt.yml/badge.svg)](https://github.com/mt-mods/technic/actions/workflows/mtt.yml?query=branch%3Amaster)
 [![luacheck](https://github.com/mt-mods/technic/actions/workflows/luacheck.yml/badge.svg)](https://github.com/mt-mods/technic/actions/workflows/luacheck.yml?query=branch%3Amaster)
@@ -9,7 +9,7 @@ A mod for [minetest](http://www.minetest.net)
 [![mineunit](https://byob.yarr.is/mt-mods/technic/coverage)](https://github.com/mt-mods/technic/actions/workflows/mineunit.yml?query=branch%3Amaster+is%3Asuccess)
 
 [![License](https://img.shields.io/badge/license-LGPLv2.0%2B-purple.svg)](https://www.gnu.org/licenses/old-licenses/lgpl-2.0.en.html)
-[![ContentDB](https://content.minetest.net/packages/mt-mods/technic_plus/shields/downloads/)](https://content.minetest.net/packages/mt-mods/technic_plus/)
+[![ContentDB](https://content.luanti.org/packages/mt-mods/technic_plus/shields/downloads/)](https://content.luanti.org/packages/mt-mods/technic_plus/)
 
 
 # Overview
@@ -33,10 +33,9 @@ The technic modpack depends on some other modpacks:
 This manual doesn't explain how to use these other modpacks, which have
 their own manuals:
 
-* [Minetest Game Documentation](https://wiki.minetest.net/Main_Page)
 * [Mesecons Documentation](http://mesecons.net/items.html)
 * [Pipeworks Documentation](https://github.com/mt-mods/pipeworks/-/wikis/home)
-* [Moreores Forum Post](https://forum.minetest.net/viewtopic.php?t=549)
+* [Moreores Forum Post](https://forum.luanti.org/viewtopic.php?t=549)
 * [Basic materials Repository](https://github.com/mt-mods/basic_materials)
 
 Recipes for constructable items in technic are generally not guessable,
