@@ -1,4 +1,6 @@
 
+local offset = vector.offset
+
 local maxvel = vector.new( 0.8, 0.8, 0.8)
 local minvel = vector.new(-0.8,-0.8,-0.8)
 local acceleration = vector.new(0, 0, 0)
@@ -11,8 +13,8 @@ core.register_abm({
     core.add_particlespawner({
       amount = 50,
       time = 10,
-      minpos = pos:offset(-0.5, -0.5, -0.5),
-      maxpos = pos:offset(0.5, 0.5, 0.5),
+      minpos = offset(pos,-0.5,-0.5,-0.5),
+      maxpos = offset(pos, 0.5, 0.5, 0.5),
       minvel = minvel,
       maxvel = maxvel,
       minacc = acceleration,
