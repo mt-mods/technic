@@ -42,7 +42,7 @@ end
 
 function def.effector.action(pos, node, channel, msg)
 	-- Validate message contents,
-	local meta = minetest.get_meta(pos)
+	local meta = core.get_meta(pos)
 	if not check_message(meta, channel, msg) then
 		return
 	end

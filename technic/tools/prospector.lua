@@ -4,7 +4,7 @@ local mat = technic.materials
 local function migrate_meta(meta)
 	local data = meta:get("")
 	if data then
-		local fields = minetest.deserialize(data, true)
+		local fields = core.deserialize(data, true)
 		if type(fields) == "table" then
 			meta:set_string("target", fields.target)
 			meta:set_int("look_radius", fields.look_radius or 1)
@@ -29,7 +29,7 @@ technic.register_power_tool("technic:prospector", {
 		local meta = toolstack:get_meta()
 		local target = meta:get("target") or migrate_meta(meta)
 		if not target then
-			minetest.chat_send_player(user:get_player_name(), S("Right-click to set target block type"))
+			core.chat_send_player(user:get_player_name(), S("Right-click to set target block type"))
 			return toolstack
 		end
 		local look_depth, look_radius = get_field(meta)
@@ -39,7 +39,7 @@ technic.register_power_tool("technic:prospector", {
 			return toolstack
 		end
 		local start_pos = pointed_thing.under
-		local forward = minetest.facedir_to_dir(minetest.dir_to_facedir(user:get_look_dir(), true))
+		local forward = core.facedir_to_dir(core.dir_to_facedir(user:get_look_dir(), true))
 		local right = forward.x ~= 0 and { x=0, y=1, z=0 } or (forward.y ~= 0 and { x=0, y=0, z=1 } or { x=1, y=0, z=0 })
 		local up = forward.x ~= 0 and { x=0, y=0, z=1 } or (forward.y ~= 0 and { x=1, y=0, z=0 } or { x=0, y=1, z=0 })
 		local base_pos = vector.add(start_pos, vector.multiply(vector.add(right, up), - look_radius))
@@ -47,7 +47,7 @@ technic.register_power_tool("technic:prospector", {
 		for f = 0, look_depth-1 do
 			for r = 0, look_diameter-1 do
 				for u = 0, look_diameter-1 do
-					if minetest.get_node(vector.add(vector.add(vector.add(base_pos, vector.multiply(forward, f)),
+					if core.get_node(vector.add(vector.add(vector.add(base_pos, vector.multiply(forward, f)),
 								vector.multiply(right, r)), vector.multiply(up, u))).name == target then
 						found = true
 					end
@@ -55,11 +55,11 @@ technic.register_power_tool("technic:prospector", {
 			end
 		end
 		if math.random() < 0.02 then found = not found end
-		minetest.chat_send_player(user:get_player_name(),
+		core.chat_send_player(user:get_player_name(),
 			S("@1 is "..(found and "present" or "absent").." in @2 region",
-				minetest.registered_nodes[target].description,
+				core.registered_nodes[target].description,
 				look_diameter.."x"..look_diameter.."x"..look_depth))
-		minetest.sound_play("technic_prospector_"..(found and "hit" or "miss"),
+		core.sound_play("technic_prospector_"..(found and "hit" or "miss"),
 				{ pos = vector.add(user:get_pos(), { x = 0, y = 1, z = 0 }), gain = 1.0, max_hear_distance = 10 }, true)
 		return toolstack
 	end,
@@ -72,25 +72,25 @@ technic.register_power_tool("technic:prospector", {
 		local look_depth, look_radius = get_field(meta)
 		local pointed
 		if pointed_thing.type == "node" then
-			local pname = minetest.get_node(pointed_thing.under).name
-			local pdef = minetest.registered_nodes[pname]
+			local pname = core.get_node(pointed_thing.under).name
+			local pdef = core.registered_nodes[pname]
 			if pdef and (pdef.groups.not_in_creative_inventory or 0) == 0 and pname ~= target then
 				pointed = pname
 			end
 		end
 		local look_diameter = look_radius * 2 + 1
-		minetest.show_formspec(user:get_player_name(), "technic:prospector_control",
+		core.show_formspec(user:get_player_name(), "technic:prospector_control",
 			"size[7,8.5]"..
 			"item_image[0,0;1,1;"..toolstack:get_name().."]"..
-			"label[1,0;"..minetest.formspec_escape(toolstack:get_description()).."]"..
+			"label[1,0;"..core.formspec_escape(toolstack:get_description()).."]"..
 			(target and
 				"label[0,1.5;"..S("Current target:").."]"..
-				"label[0,2;"..minetest.formspec_escape(minetest.registered_nodes[target].description).."]"..
+				"label[0,2;"..core.formspec_escape(core.registered_nodes[target].description).."]"..
 				"item_image[0,2.5;1,1;"..target.."]" or
 				"label[0,1.5;"..S("No target set").."]")..
 			(pointed and
 				"label[3.5,1.5;"..S("May set new target:").."]"..
-				"label[3.5,2;"..minetest.formspec_escape(minetest.registered_nodes[pointed].description).."]"..
+				"label[3.5,2;"..core.formspec_escape(core.registered_nodes[pointed].description).."]"..
 				"item_image[3.5,2.5;1,1;"..pointed.."]"..
 				"button_exit[3.5,3.65;2,0.5;target_"..pointed..";"..S("Set target").."]" or
 				"label[3.5,1.5;"..S("No new target available").."]")..
@@ -112,7 +112,7 @@ technic.register_power_tool("technic:prospector", {
 	end,
 })
 
-minetest.register_on_player_receive_fields(function(user, formname, fields)
+core.register_on_player_receive_fields(function(user, formname, fields)
 	if formname ~= "technic:prospector_control" then
 		return false
 	end
@@ -137,7 +137,7 @@ minetest.register_on_player_receive_fields(function(user, formname, fields)
 	return true
 end)
 
-minetest.register_craft({
+core.register_craft({
 	output = "technic:prospector",
 	recipe = {
 		{mat.pick_silver, mat.mithril_block, "pipeworks:teleport_tube_1"},

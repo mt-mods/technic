@@ -20,14 +20,14 @@ timber_nodenames["default:bush_stem"] = true
 timber_nodenames["default:acacia_bush_stem"] = true
 timber_nodenames["default:pine_bush_stem"] = true
 
-if minetest.get_modpath("growing_trees") then
+if core.get_modpath("growing_trees") then
 	timber_nodenames["growing_trees:branch_sprout"] = true
 	if chainsaw_leaves then
 		timber_nodenames["growing_trees:leaves"] = true
 	end
 end
 
-if minetest.get_modpath("snow") then
+if core.get_modpath("snow") then
 	if chainsaw_leaves then
 		timber_nodenames["snow:needles"] = true
 		timber_nodenames["snow:needles_decorated"] = true
@@ -35,7 +35,7 @@ if minetest.get_modpath("snow") then
 	end
 end
 
-if minetest.get_modpath("trunks") then
+if core.get_modpath("trunks") then
 	if chainsaw_leaves then
 		timber_nodenames["trunks:moss"] = true
 		timber_nodenames["trunks:moss_fungus"] = true
@@ -43,7 +43,7 @@ if minetest.get_modpath("trunks") then
 	end
 end
 
-if minetest.get_modpath("ethereal") then
+if core.get_modpath("ethereal") then
 	timber_nodenames["ethereal:bamboo"] = true
 end
 
@@ -72,19 +72,19 @@ local function recursive_dig(pos, origin, remaining_charge)
 	if remaining_charge < chainsaw_charge_per_node then
 		return remaining_charge
 	end
-	local node = minetest.get_node(pos)
+	local node = core.get_node(pos)
 
 	if not timber_nodenames[node.name] then
 		return remaining_charge
 	end
 
 	-- Wood found - cut it
-	handle_drops(minetest.get_node_drops(node.name, ""))
-	minetest.remove_node(pos)
+	handle_drops(core.get_node_drops(node.name, ""))
+	core.remove_node(pos)
 	remaining_charge = remaining_charge - chainsaw_charge_per_node
 
 	-- Check for snow on pine trees, sand/gravel on leaves, etc
-	minetest.check_for_falling(pos)
+	core.check_for_falling(pos)
 
 	-- Check surroundings and run recursively if any charge left
 	for y=-1, 1 do
@@ -93,11 +93,11 @@ local function recursive_dig(pos, origin, remaining_charge)
 				if (pos.x + x) <= (origin.x + max_saw_radius) and (pos.x + x) >= (origin.x - max_saw_radius) then
 					for z=-1, 1 do
 						if (pos.z + z) <= (origin.z + max_saw_radius) and (pos.z + z) >= (origin.z - max_saw_radius) then
-							local npos = {x=pos.x+x, y=pos.y+y, z=pos.z+z}
+							local npos = vector.offset(pos, x, y, z)
 							if remaining_charge < chainsaw_charge_per_node then
 								return remaining_charge
 							end
-							if timber_nodenames[minetest.get_node(npos).name] then
+							if timber_nodenames[core.get_node(npos).name] then
 								remaining_charge = recursive_dig(npos, origin, remaining_charge)
 							end
 						end
@@ -123,7 +123,7 @@ local function get_drop_pos(pos)
 		-- the node is air or unloaded.
 		for y = drop_pos.y, drop_pos.y + 5 do
 			drop_pos.y = y
-			local node = minetest.get_node_or_nil(drop_pos)
+			local node = core.get_node_or_nil(drop_pos)
 
 			if not node then
 				-- If the node is not loaded yet simply drop
@@ -147,7 +147,7 @@ end
 local function chainsaw_dig(pos, current_charge)
 	-- Start sawing things down
 	local remaining_charge = recursive_dig(pos, pos, current_charge)
-	minetest.sound_play("chainsaw", {pos = pos, gain = 1.0, max_hear_distance = 10}, true)
+	core.sound_play("chainsaw", {pos = pos, gain = 1.0, max_hear_distance = 10}, true)
 
 	-- Now drop items for the player
 	for name, stack in pairs(produced) do
@@ -155,11 +155,11 @@ local function chainsaw_dig(pos, current_charge)
 		local count, max = stack:get_count(), stack:get_stack_max()
 		stack:set_count(max)
 		while count > max do
-			minetest.add_item(get_drop_pos(pos), stack)
+			core.add_item(get_drop_pos(pos), stack)
 			count = count - max
 		end
 		stack:set_count(count)
-		minetest.add_item(get_drop_pos(pos), stack)
+		core.add_item(get_drop_pos(pos), stack)
 	end
 
 	-- Clean up
@@ -183,8 +183,8 @@ technic.register_power_tool("technic:chainsaw", {
 		end
 
 		local name = user:get_player_name()
-		if minetest.is_protected(pointed_thing.under, name) then
-			minetest.record_protection_violation(pointed_thing.under, name)
+		if core.is_protected(pointed_thing.under, name) then
+			core.record_protection_violation(pointed_thing.under, name)
 			return
 		end
 
@@ -198,12 +198,12 @@ technic.register_power_tool("technic:chainsaw", {
 	end,
 })
 
-local mesecons_button = minetest.get_modpath("mesecons_button")
-local has_mcl = minetest.get_modpath("mcl_core")
+local mesecons_button = core.get_modpath("mesecons_button")
+local has_mcl = core.get_modpath("mcl_core")
 local trigger = has_mcl and mesecons_button and "mesecons_button:button_wood_off"
 	or mesecons_button and "mesecons_button:button_off" or "default:mese_crystal_fragment"
 
-minetest.register_craft({
+core.register_craft({
 	output = "technic:chainsaw",
 	recipe = {
 		{"technic:stainless_steel_ingot", trigger,                      "technic:battery"},
@@ -215,8 +215,8 @@ minetest.register_craft({
 })
 
 -- Add cuttable nodes after all mods loaded
-minetest.after(0, function ()
-	for k, v in pairs(minetest.registered_nodes) do
+core.after(0, function ()
+	for k, v in pairs(core.registered_nodes) do
 		if v.groups.tree then
 			timber_nodenames[k] = true
 		elseif chainsaw_leaves and (v.groups.leaves or v.groups.leafdecay or v.groups.leafdecay_drop) then

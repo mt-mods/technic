@@ -1,9 +1,9 @@
 
-local S = minetest.get_translator("technic_worldgen")
+local S = core.get_translator("technic_worldgen")
 
-local has_mcl = minetest.get_modpath("mcl_core")
+local has_mcl = core.get_modpath("mcl_core")
 
-minetest.register_node(":technic:mineral_uranium", {
+core.register_node(":technic:mineral_uranium", {
 	description = S("Uranium Ore"),
 	tiles = {"default_stone.png^technic_mineral_uranium.png"},
 	is_ground_content = true,
@@ -14,7 +14,7 @@ minetest.register_node(":technic:mineral_uranium", {
 	drop = "technic:uranium_lump",
 })
 
-minetest.register_node(":technic:mineral_chromium", {
+core.register_node(":technic:mineral_chromium", {
 	description = S("Chromium Ore"),
 	tiles = {"default_stone.png^technic_mineral_chromium.png"},
 	is_ground_content = true,
@@ -25,7 +25,7 @@ minetest.register_node(":technic:mineral_chromium", {
 	drop = "technic:chromium_lump",
 })
 
-minetest.register_node(":technic:mineral_zinc", {
+core.register_node(":technic:mineral_zinc", {
 	description = S("Zinc Ore"),
 	tiles = {"default_stone.png^technic_mineral_zinc.png"},
 	is_ground_content = true,
@@ -36,7 +36,7 @@ minetest.register_node(":technic:mineral_zinc", {
 	drop = "technic:zinc_lump",
 })
 
-minetest.register_node(":technic:mineral_lead", {
+core.register_node(":technic:mineral_lead", {
 	description = S("Lead Ore"),
 	tiles = {"default_stone.png^technic_mineral_lead.png"},
 	is_ground_content = true,
@@ -47,7 +47,7 @@ minetest.register_node(":technic:mineral_lead", {
 	drop = "technic:lead_lump",
 })
 
-minetest.register_node(":technic:mineral_sulfur", {
+core.register_node(":technic:mineral_sulfur", {
 	description = S("Sulfur Ore"),
 	tiles = {"default_stone.png^technic_mineral_sulfur.png"},
 	is_ground_content = true,
@@ -59,10 +59,10 @@ minetest.register_node(":technic:mineral_sulfur", {
 })
 
 if has_mcl then
-	minetest.register_alias("technic:granite", "mcl_core:granite")
-	minetest.register_alias("technic:granite_bricks", "mcl_core:granite_smooth")
+	core.register_alias("technic:granite", "mcl_core:granite")
+	core.register_alias("technic:granite_bricks", "mcl_core:granite_smooth")
 else
-	minetest.register_node(":technic:granite", {
+	core.register_node(":technic:granite", {
 		description = S("Granite"),
 		tiles = {"technic_granite.png"},
 		is_ground_content = true,
@@ -70,7 +70,7 @@ else
 		sounds = technic.sounds.node_sound_stone_defaults(),
 	})
 
-	minetest.register_node(":technic:granite_bricks", {
+	core.register_node(":technic:granite_bricks", {
 		description = S("Granite Bricks"),
 		tiles = {"technic_granite_bricks.png"},
 		is_ground_content = false,
@@ -79,11 +79,11 @@ else
 	})
 end
 
-if minetest.get_modpath("underch") then
-	minetest.register_alias("technic:marble", "underch:marble")
-	minetest.register_alias("technic:marble_bricks", "underch:marble_brick")
+if core.get_modpath("underch") then
+	core.register_alias("technic:marble", "underch:marble")
+	core.register_alias("technic:marble_bricks", "underch:marble_brick")
 else
-	minetest.register_node(":technic:marble", {
+	core.register_node(":technic:marble", {
 		description = S("Marble"),
 		tiles = {"technic_marble.png"},
 		is_ground_content = true,
@@ -93,7 +93,7 @@ else
 		sounds = technic.sounds.node_sound_stone_defaults(),
 	})
 
-	minetest.register_node(":technic:marble_bricks", {
+	core.register_node(":technic:marble_bricks", {
 		description = S("Marble Bricks"),
 		tiles = {"technic_marble_bricks.png"},
 		is_ground_content = false,
@@ -104,7 +104,7 @@ else
 	})
 end
 
-minetest.register_node(":technic:uranium_block", {
+core.register_node(":technic:uranium_block", {
 	description = S("Uranium Block"),
 	tiles = {"technic_uranium_block.png"},
 	is_ground_content = false,
@@ -114,7 +114,7 @@ minetest.register_node(":technic:uranium_block", {
 	sounds = technic.sounds.node_sound_stone_defaults()
 })
 
-minetest.register_node(":technic:chromium_block", {
+core.register_node(":technic:chromium_block", {
 	description = S("Chromium Block"),
 	tiles = {"technic_chromium_block.png"},
 	is_ground_content = false,
@@ -124,7 +124,7 @@ minetest.register_node(":technic:chromium_block", {
 	sounds = technic.sounds.node_sound_stone_defaults()
 })
 
-minetest.register_node(":technic:zinc_block", {
+core.register_node(":technic:zinc_block", {
 	description = S("Zinc Block"),
 	tiles = {"technic_zinc_block.png"},
 	is_ground_content = false,
@@ -134,7 +134,7 @@ minetest.register_node(":technic:zinc_block", {
 	sounds = technic.sounds.node_sound_stone_defaults()
 })
 
-minetest.register_node(":technic:lead_block", {
+core.register_node(":technic:lead_block", {
 	description = S("Lead Block"),
 	tiles = {"technic_lead_block.png"},
 	is_ground_content = false,
@@ -144,7 +144,7 @@ minetest.register_node(":technic:lead_block", {
 	sounds = technic.sounds.node_sound_stone_defaults()
 })
 
-minetest.register_node(":technic:cast_iron_block", {
+core.register_node(":technic:cast_iron_block", {
 	description = S("Cast Iron Block"),
 	tiles = {"technic_cast_iron_block.png"},
 	is_ground_content = false,
@@ -154,7 +154,7 @@ minetest.register_node(":technic:cast_iron_block", {
 	sounds = technic.sounds.node_sound_stone_defaults()
 })
 
-minetest.register_node(":technic:carbon_steel_block", {
+core.register_node(":technic:carbon_steel_block", {
 	description = S("Carbon Steel Block"),
 	tiles = {"technic_carbon_steel_block.png"},
 	is_ground_content = false,
@@ -164,7 +164,7 @@ minetest.register_node(":technic:carbon_steel_block", {
 	sounds = technic.sounds.node_sound_stone_defaults()
 })
 
-minetest.register_node(":technic:stainless_steel_block", {
+core.register_node(":technic:stainless_steel_block", {
 	description = S("Stainless Steel Block"),
 	tiles = {"technic_stainless_steel_block.png"},
 	is_ground_content = false,
@@ -174,7 +174,7 @@ minetest.register_node(":technic:stainless_steel_block", {
 	sounds = technic.sounds.node_sound_stone_defaults()
 })
 
-minetest.register_node(":technic:sulfur_block", {
+core.register_node(":technic:sulfur_block", {
 	description = S("Sulfur Block"),
 	tiles = {"technic_sulfur_block.png"},
 	is_ground_content = false,
@@ -184,7 +184,7 @@ minetest.register_node(":technic:sulfur_block", {
 	sounds = technic.sounds.node_sound_stone_defaults()
 })
 
-minetest.register_node(":technic:blast_resistant_concrete", {
+core.register_node(":technic:blast_resistant_concrete", {
 	description = S("Blast-resistant Concrete Block"),
 	tiles = {"technic_blast_resistant_concrete_block.png"},
 	is_ground_content = false,
@@ -194,7 +194,7 @@ minetest.register_node(":technic:blast_resistant_concrete", {
 	sounds = technic.sounds.node_sound_stone_defaults(),
 	on_blast = function(pos, intensity)
 		if intensity > 9 then
-			minetest.remove_node(pos)
+			core.remove_node(pos)
 			return {"technic:blast_resistant_concrete"}
 		end
 	end

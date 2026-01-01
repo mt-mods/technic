@@ -1,10 +1,10 @@
 -- Code of rubber tree by PilzAdam
 
-local S = minetest.get_translator("technic_worldgen")
+local S = core.get_translator("technic_worldgen")
 
-local has_mcl = minetest.get_modpath("mcl_core")
+local has_mcl = core.get_modpath("mcl_core")
 
-minetest.register_node(":moretrees:rubber_tree_sapling", {
+core.register_node(":moretrees:rubber_tree_sapling", {
 	description = S("Rubber Tree Sapling"),
 	drawtype = "plantlike",
 	tiles = {"technic_rubber_sapling.png"},
@@ -16,13 +16,13 @@ minetest.register_node(":moretrees:rubber_tree_sapling", {
 	sounds = technic.sounds.node_sound_defaults(),
 })
 
-minetest.register_craft({
+core.register_craft({
 	type = "fuel",
 	recipe = "moretrees:rubber_tree_sapling",
 	burntime = 10
 })
 
-minetest.register_node(":moretrees:rubber_tree_trunk", {
+core.register_node(":moretrees:rubber_tree_trunk", {
 	description = S("Rubber Tree"),
 	tiles = {"default_tree_top.png", "default_tree_top.png",
 		"technic_rubber_tree_full.png"},
@@ -33,7 +33,7 @@ minetest.register_node(":moretrees:rubber_tree_trunk", {
 	sounds = technic.sounds.node_sound_wood_defaults(),
 })
 
-minetest.register_node(":moretrees:rubber_tree_trunk_empty", {
+core.register_node(":moretrees:rubber_tree_trunk_empty", {
 	description = S("Rubber Tree"),
 	tiles = {"default_tree_top.png", "default_tree_top.png",
 		"technic_rubber_tree_empty.png"},
@@ -61,7 +61,7 @@ if has_mcl then
   }
 end
 
-minetest.register_node(":moretrees:rubber_tree_leaves", {
+core.register_node(":moretrees:rubber_tree_leaves", {
 	drawtype = "allfaces_optional",
 	description = S("Rubber Tree Leaves"),
 	tiles = {"technic_rubber_leaves.png"},
@@ -87,19 +87,19 @@ technic.rubber_tree_model={
 	thin_branches = true
 }
 
-minetest.register_abm({
+core.register_abm({
 	nodenames = {"moretrees:rubber_tree_sapling"},
 	label = "Worldgen: grow rubber tree sapling",
 	interval = 60,
 	chance = 20,
 	action = function(pos, node)
-		minetest.remove_node(pos)
-		minetest.spawn_tree(pos, technic.rubber_tree_model)
+		core.remove_node(pos)
+		core.spawn_tree(pos, technic.rubber_tree_model)
 	end
 })
 
 if technic.config:get_bool("enable_rubber_tree_generation") then
-	minetest.register_on_generated(function(minp, maxp, blockseed)
+	core.register_on_generated(function(minp, maxp, blockseed)
 		if math.random(1, 100) > 5 then
 			return
 		end
@@ -107,10 +107,10 @@ if technic.config:get_bool("enable_rubber_tree_generation") then
 				x = (maxp.x - minp.x) / 2 + minp.x,
 				y = (maxp.y - minp.y) / 2 + minp.y,
 				z = (maxp.z - minp.z) / 2 + minp.z}
-		local pos = minetest.find_node_near(tmp, maxp.x - minp.x,
+		local pos = core.find_node_near(tmp, maxp.x - minp.x,
 				{has_mcl and "mcl_core:dirt_with_grass" or "default:dirt_with_grass"})
 		if pos ~= nil then
-			minetest.spawn_tree({x=pos.x, y=pos.y+1, z=pos.z}, technic.rubber_tree_model)
+			core.spawn_tree({x=pos.x, y=pos.y+1, z=pos.z}, technic.rubber_tree_model)
 		end
 	end)
 end

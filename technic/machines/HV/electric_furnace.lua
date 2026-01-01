@@ -6,7 +6,7 @@
 local S = technic.getter
 
 -- FIXME: kpoppel I'd like to introduce an induction heating element here also
-minetest.register_craft({
+core.register_craft({
 	output = 'technic:hv_electric_furnace',
 	recipe = {
 		{'technic:stainless_steel_ingot', 'technic:mv_electric_furnace', 'technic:stainless_steel_ingot'},

@@ -34,13 +34,13 @@ local recipes = {
 	{mat.obsidian,              mat.bucket_empty,        mat.bucket_lava, 1 },
 }
 
-if minetest.get_modpath("ethereal") then
+if core.get_modpath("ethereal") then
 	table.insert(recipes, {mat.clay, mat.dye_red,    "bakedclay:red"})
 	table.insert(recipes, {mat.clay, mat.dye_orange, "bakedclay:orange"})
 	table.insert(recipes, {mat.clay, mat.dye_grey,   "bakedclay:grey"})
 end
 
-if minetest.get_modpath("digilines") then
+if core.get_modpath("digilines") then
 	table.insert(recipes,
 		{"technic:lv_cable",         "digilines:wire_std_00000000 2", "technic:lv_digi_cable", 18})
 	table.insert(recipes,

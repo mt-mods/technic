@@ -1,5 +1,5 @@
 
-local S = minetest.get_translator(minetest.get_current_modname())
+local S = core.get_translator(core.get_current_modname())
 
 local function register_chests(data)
 	local name = data.description:lower()
@@ -20,9 +20,9 @@ end
 
 local function register_crafts(name, material, base_open, base_locked, base_protected)
 	name = name:lower()
-	if minetest.registered_items[material] then
-		if minetest.registered_items[base_open] then
-			minetest.register_craft({
+	if core.registered_items[material] then
+		if core.registered_items[base_open] then
+			core.register_craft({
 				output = "technic:"..name.."_chest",
 				recipe = {
 					{material, material, material},
@@ -31,8 +31,8 @@ local function register_crafts(name, material, base_open, base_locked, base_prot
 				}
 			})
 		end
-		if minetest.registered_items[base_locked] then
-			minetest.register_craft({
+		if core.registered_items[base_locked] then
+			core.register_craft({
 				output = "technic:"..name.."_locked_chest",
 				recipe = {
 					{material, material, material},
@@ -41,8 +41,8 @@ local function register_crafts(name, material, base_open, base_locked, base_prot
 				}
 			})
 		end
-		if minetest.registered_items[base_protected] then
-			minetest.register_craft({
+		if core.registered_items[base_protected] then
+			core.register_craft({
 				output = "technic:"..name.."_protected_chest",
 				recipe = {
 					{material, material, material},
@@ -52,22 +52,22 @@ local function register_crafts(name, material, base_open, base_locked, base_prot
 			})
 		end
 	end
-	minetest.register_craft({
+	core.register_craft({
 		output = "technic:"..name.."_locked_chest",
 		type = "shapeless",
 		recipe = {"basic_materials:padlock","technic:"..name.."_chest"}
 	})
-	minetest.register_craft({
+	core.register_craft({
 		output = "technic:"..name.."_protected_chest",
 		type = "shapeless",
 		recipe = {"default:copper_ingot", "technic:"..name.."_chest"}
 	})
-	minetest.register_craft({
+	core.register_craft({
 		output = "technic:"..name.."_chest",
 		type = "shapeless",
 		recipe = {"technic:"..name.."_locked_chest"}
 	})
-	minetest.register_craft({
+	core.register_craft({
 		output = "technic:"..name.."_chest",
 		type = "shapeless",
 		recipe = {"technic:"..name.."_protected_chest"}
@@ -84,7 +84,7 @@ register_chests({
 })
 register_crafts(
 	"Iron",
-	minetest.get_modpath("technic_worldgen") and "technic:cast_iron_ingot" or "default:steel_ingot",
+	core.get_modpath("technic_worldgen") and "technic:cast_iron_ingot" or "default:steel_ingot",
 	"default:chest",
 	"default:chest_locked",
 	"protector:chest"
@@ -139,9 +139,9 @@ register_chests({
 register_crafts(
 	"Gold",
 	"default:gold_ingot",
-	minetest.get_modpath("moreores") and "technic:silver_chest" or "technic:copper_chest",
-	minetest.get_modpath("moreores") and "technic:silver_locked_chest" or "technic:copper_locked_chest",
-	minetest.get_modpath("moreores") and "technic:silver_protected_chest" or "technic:copper_protected_chest"
+	core.get_modpath("moreores") and "technic:silver_chest" or "technic:copper_chest",
+	core.get_modpath("moreores") and "technic:silver_locked_chest" or "technic:copper_locked_chest",
+	core.get_modpath("moreores") and "technic:silver_protected_chest" or "technic:copper_protected_chest"
 )
 
 -- Mithril

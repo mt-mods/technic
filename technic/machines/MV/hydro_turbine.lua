@@ -5,9 +5,9 @@ local S = technic.getter
 
 local cable_entry = "^technic_cable_connection_overlay.png"
 
-minetest.register_alias("hydro_turbine", "technic:hydro_turbine")
+core.register_alias("hydro_turbine", "technic:hydro_turbine")
 
-minetest.register_craft({
+core.register_craft({
 	output = 'technic:hydro_turbine',
 	recipe = {
 		{'technic:stainless_steel_ingot', 'technic:water_mill', 'technic:stainless_steel_ingot'},
@@ -17,8 +17,8 @@ minetest.register_craft({
 })
 
 local function get_water_flow(pos)
-	local node = minetest.get_node(pos)
-	if minetest.get_item_group(node.name, "water") == 3 then
+	local node = core.get_node(pos)
+	if core.get_item_group(node.name, "water") == 3 then
 		return node.param2 -- returns approx. water flow, if any
 	end
 	return 0
@@ -28,17 +28,17 @@ end
 -- 10 times better than LV hydro because of 2 extra water mills and 4 stainless steel, a transformer and whatnot ;P.
 -- Man hydro turbines are tough and long lasting. So, give it some value :)
 local run = function(pos, node)
-	local meta             = minetest.get_meta(pos)
+	local meta             = core.get_meta(pos)
 	local water_flow       = 0
 	local production_level
 	local eu_supply
 	local max_output       = 40 * 45 -- Generates 1800EU/s
 
 	local positions = {
-		{x=pos.x+1, y=pos.y, z=pos.z},
-		{x=pos.x-1, y=pos.y, z=pos.z},
-		{x=pos.x,   y=pos.y, z=pos.z+1},
-		{x=pos.x,   y=pos.y, z=pos.z-1},
+		vector.offset(pos, 1, 0, 0),
+		vector.offset(pos, -1, 0, 0),
+		vector.offset(pos, 0, 0, 1),
+		vector.offset(pos, 0, 0, -1),
 	}
 
 	for _, p in pairs(positions) do
@@ -53,7 +53,7 @@ local run = function(pos, node)
 	meta:set_string("infotext", S("@1 (@2% Efficiency)",
 		S("Hydro @1 Generator", S("MV")), production_level))
 	if production_level > 0 and
-		minetest.get_node(pos).name == "technic:hydro_turbine" then
+		core.get_node(pos).name == "technic:hydro_turbine" then
 		technic.swap_node(pos, "technic:hydro_turbine_active")
 		meta:set_int("MV_EU_supply", 0)
 		return
@@ -63,7 +63,7 @@ local run = function(pos, node)
 	end
 end
 
-minetest.register_node("technic:hydro_turbine", {
+core.register_node("technic:hydro_turbine", {
 	description = S("Hydro @1 Generator", S("MV")),
 	tiles = {
 		"technic_hydro_turbine_top.png",
@@ -82,14 +82,14 @@ minetest.register_node("technic:hydro_turbine", {
 	legacy_facedir_simple = true,
 	sounds = technic.sounds.node_sound_wood_defaults(),
 	on_construct = function(pos)
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 		meta:set_string("infotext", S("Hydro @1 Generator", S("MV")))
 		meta:set_int("MV_EU_supply", 0)
 	end,
 	technic_run = run,
 })
 
-minetest.register_node("technic:hydro_turbine_active", {
+core.register_node("technic:hydro_turbine_active", {
 	description = S("Hydro @1 Generator", S("MV")),
 	tiles = {"technic_hydro_turbine_top_active.png", "technic_machine_bottom.png",
 			"technic_hydro_turbine_side.png", "technic_hydro_turbine_side.png",

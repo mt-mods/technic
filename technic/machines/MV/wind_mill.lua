@@ -1,7 +1,7 @@
 
 local S = technic.getter
 
-minetest.register_craft({
+core.register_craft({
 	output = 'technic:wind_mill_frame 5',
 	recipe = {
 		{'technic:carbon_steel_ingot', '',                           'technic:carbon_steel_ingot'},
@@ -10,7 +10,7 @@ minetest.register_craft({
 	}
 })
 
-minetest.register_craft({
+core.register_craft({
 	output = 'technic:wind_mill',
 	recipe = {
 		{'',                           'basic_materials:motor',              ''},
@@ -19,7 +19,7 @@ minetest.register_craft({
 	}
 })
 
-minetest.register_node("technic:wind_mill_frame", {
+core.register_node("technic:wind_mill_frame", {
 	description = S("Wind Mill Frame"),
 	drawtype = "glasslike_framed",
 	tiles = {"technic_carbon_steel_block.png", "default_glass.png"},
@@ -36,10 +36,10 @@ local function check_wind_mill(pos)
 	if pos.y < 30 then
 		return false
 	end
-	pos = {x=pos.x, y=pos.y, z=pos.z}
+	pos = vector.copy(pos)
 	for i = 1, 20 do
 		pos.y = pos.y - 1
-		local node = minetest.get_node_or_nil(pos)
+		local node = core.get_node_or_nil(pos)
 		if not node then
 			-- we reached CONTENT_IGNORE, we can assume, that nothing changed
 			-- as the user will have to load the block to change it
@@ -53,7 +53,7 @@ local function check_wind_mill(pos)
 end
 
 local run = function(pos, node)
-	local meta = minetest.get_meta(pos)
+	local meta = core.get_meta(pos)
 	local machine_name = S("Wind @1 Generator", S("MV"))
 
 	local check = check_wind_mill(pos)
@@ -69,7 +69,7 @@ local run = function(pos, node)
 	-- check == nil: assume nothing has changed
 end
 
-minetest.register_node("technic:wind_mill", {
+core.register_node("technic:wind_mill", {
 	description = S("Wind @1 Generator", S("MV")),
 	tiles = {"technic_carbon_steel_block.png"},
 	paramtype2 = "facedir",
@@ -91,7 +91,7 @@ minetest.register_node("technic:wind_mill", {
 		}
 	},
 	on_construct = function(pos)
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 		meta:set_string("infotext", S("Wind @1 Generator", S("MV")))
 		meta:set_int("MV_EU_supply", 0)
 	end,

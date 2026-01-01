@@ -5,7 +5,7 @@
 local S = technic.getter
 
 
-minetest.register_craft({
+core.register_craft({
 	output = 'technic:solar_panel',
 	recipe = {
 		{'technic:doped_silicon_wafer', 'technic:doped_silicon_wafer', 'technic:doped_silicon_wafer'},
@@ -22,12 +22,12 @@ local run = function(pos, node)
 	-- As there is no way to determine if light is sunlight that is just a shame.
 	-- To take care of some of it solar panels do not work outside daylight hours or if
 	-- built below 0m
-	local pos1 = {x=pos.x, y=pos.y+1, z=pos.z}
+	local pos1 = vector.offset(pos, 0, 1, 0)
 	local machine_name = S("Small Solar @1 Generator", S("LV"))
 
-	local light = minetest.get_node_light(pos1, nil)
-	local time_of_day = minetest.get_timeofday()
-	local meta = minetest.get_meta(pos)
+	local light = core.get_node_light(pos1, nil)
+	local time_of_day = core.get_timeofday()
+	local meta = core.get_meta(pos)
 	if light == nil then light = 0 end
 	-- turn on panel only during day time and if sufficient light
         -- I know this is counter intuitive when cheating by using other light sources underground.
@@ -44,7 +44,7 @@ local run = function(pos, node)
 	end
 end
 
-minetest.register_node("technic:solar_panel", {
+core.register_node("technic:solar_panel", {
 	tiles = {"technic_solar_panel_top.png",  "technic_solar_panel_bottom.png", "technic_solar_panel_side.png",
 	         "technic_solar_panel_side.png", "technic_solar_panel_side.png",   "technic_solar_panel_side.png"},
 	groups = {snappy=2, choppy=2, oddly_breakable_by_hand=2,
@@ -63,7 +63,7 @@ minetest.register_node("technic:solar_panel", {
 		fixed = {-0.5, -0.5, -0.5, 0.5, 0, 0.5},
 	},
 	on_construct = function(pos)
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 		meta:set_int("LV_EU_supply", 0)
 		meta:set_string("infotext", S("Small Solar @1 Generator", S("LV")))
 	end,

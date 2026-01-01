@@ -31,29 +31,29 @@ describe("CNC API", function()
 		end)
 
 		it("configures new program", function()
-			local meta = minetest.get_meta(pos)
+			local meta = core.get_meta(pos)
 			assert.is_true(technic_cnc.set_program(meta, program, size))
 		end)
 
 		it("fails configuring invalid program", function()
-			local meta = minetest.get_meta(pos)
+			local meta = core.get_meta(pos)
 			assert.is_false(technic_cnc.set_program(meta, "program_that_does_not_exist", size))
 		end)
 
 		it("machine is enabled by default", function()
-			local meta = minetest.get_meta(pos)
+			local meta = core.get_meta(pos)
 			assert.is_true(technic_cnc.is_enabled(meta))
 		end)
 
 		it("disables machine", function()
-			local meta = minetest.get_meta(pos)
+			local meta = core.get_meta(pos)
 			technic_cnc.disable(meta)
 			-- Verify new state
 			assert.is_false(technic_cnc.is_enabled(meta))
 		end)
 
 		it("enables machine", function()
-			local meta = minetest.get_meta(pos)
+			local meta = core.get_meta(pos)
 			technic_cnc.enable(meta)
 			-- Verify new state
 			assert.is_true(technic_cnc.is_enabled(meta))
@@ -61,7 +61,7 @@ describe("CNC API", function()
 
 		it("manufactures products", function()
 			-- Prepare variables and fill src inventory
-			local meta = minetest.get_meta(pos)
+			local meta = core.get_meta(pos)
 			local inventory = meta:get_inventory()
 			inventory:set_stack("src", 1, "default:stone 42")
 			inventory:set_stack("dst", 1, ItemStack(nil))
@@ -79,7 +79,7 @@ describe("CNC API", function()
 
 		it("fails manufacturing products", function()
 			-- Prepare variables and fill src inventory
-			local meta = minetest.get_meta(pos)
+			local meta = core.get_meta(pos)
 			local inventory = meta:get_inventory()
 			inventory:set_stack("src", 1, "default:badstone 42")
 			inventory:set_stack("dst", 1, ItemStack(nil))
@@ -157,7 +157,7 @@ describe("CNC API", function()
 			})
 
 			-- Verify node registration
-			assert.is_table(minetest.registered_nodes["my_mod_name:my_cnc_machine"])
+			assert.is_table(core.registered_nodes["my_mod_name:my_cnc_machine"])
 
 			-- Try to place it
 			world.place_node({x=-99,y=-999,z=-9999}, {name = "my_mod_name:my_cnc_machine", param2 = 0}, Sam)

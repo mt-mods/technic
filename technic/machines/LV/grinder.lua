@@ -1,8 +1,8 @@
 local S = technic.getter
 local mat = technic.materials
 
-minetest.register_alias("grinder", "technic:lv_grinder")
-minetest.register_craft({
+core.register_alias("grinder", "technic:lv_grinder")
+core.register_craft({
 	output = 'technic:lv_grinder',
 	recipe = {
 		{mat.desert_stone, mat.diamond, mat.desert_stone},

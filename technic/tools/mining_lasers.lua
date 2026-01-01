@@ -11,7 +11,7 @@ local allow_entire_discharging = true
 
 local S = technic.getter
 
-minetest.register_craft({
+core.register_craft({
 	output = "technic:laser_mk1",
 	recipe = {
 		{mat.diamond, "basic_materials:brass_ingot",        mat.obsidian_glass},
@@ -19,7 +19,7 @@ minetest.register_craft({
 		{"",                "",                           mat.copper_ingot},
 	}
 })
-minetest.register_craft({
+core.register_craft({
 	output = "technic:laser_mk2",
 	recipe = {
 		{mat.diamond, "technic:carbon_steel_ingot", "technic:laser_mk1"},
@@ -27,7 +27,7 @@ minetest.register_craft({
 		{"",                "",                           mat.copper_ingot},
 	}
 })
-minetest.register_craft({
+core.register_craft({
 	output = "technic:laser_mk3",
 	recipe = {
 		{mat.diamond, "technic:carbon_steel_ingot", "technic:laser_mk2"},
@@ -37,10 +37,10 @@ minetest.register_craft({
 })
 
 local function laser_node(pos, node, player)
-	local def = minetest.registered_nodes[node.name]
+	local def = core.registered_nodes[node.name]
 	if def.liquidtype ~= "none" and def.buildable_to then
-		minetest.remove_node(pos)
-		minetest.add_particle({
+		core.remove_node(pos)
+		core.add_particle({
 			pos = pos,
 			velocity = {x = 0, y = 1.5 + math.random(), z = 0},
 			acceleration = {x = 0, y = -1, z = 0},
@@ -57,7 +57,7 @@ local function can_keep_node(name)
 	if keep_node[name] ~= nil then
 		return keep_node[name]
 	end
-	keep_node[name] = minetest.get_item_group(name, "hot") ~= 0
+	keep_node[name] = core.get_item_group(name, "hot") ~= 0
 	return keep_node[name]
 end
 
@@ -69,7 +69,7 @@ local function laser_shoot(player, range, particle_texture, sound)
 	local start_pos = vector.new(player_pos)
 	-- Adjust to head height
 	start_pos.y = start_pos.y + (player:get_properties().eye_height or 1.625)
-	minetest.add_particle({
+	core.add_particle({
 		pos = start_pos,
 		velocity = dir,
 		acceleration = vector.multiply(dir, 50),
@@ -77,15 +77,15 @@ local function laser_shoot(player, range, particle_texture, sound)
 		size = 1,
 		texture = particle_texture .. "^[transform" .. math.random(0, 7),
 	})
-	minetest.sound_play(sound, {pos = player_pos, max_hear_distance = range}, true)
+	core.sound_play(sound, {pos = player_pos, max_hear_distance = range}, true)
 	for pos in technic.trace_node_ray_fat(start_pos, dir, range) do
-		if minetest.is_protected(pos, player_name) then
-			minetest.record_protection_violation(pos, player_name)
+		if core.is_protected(pos, player_name) then
+			core.record_protection_violation(pos, player_name)
 			break
 		end
-		local node = minetest.get_node(pos)
+		local node = core.get_node(pos)
 		if node.name == "ignore"
-				or not minetest.registered_nodes[node.name] then
+				or not core.registered_nodes[node.name] then
 			break
 		end
 		if not can_keep_node(node.name) then

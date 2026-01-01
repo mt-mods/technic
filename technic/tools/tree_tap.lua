@@ -1,17 +1,17 @@
 
 local S = technic.getter
 local mat = technic.materials
-local mesecons_materials = minetest.get_modpath("mesecons_materials")
+local mesecons_materials = core.get_modpath("mesecons_materials")
 
 local function drop_raw_latex(pointed_thing, user)
-	if minetest.get_modpath("mcl_core") then
-		minetest.add_item(user:get_pos(), "technic:raw_latex")
+	if core.get_modpath("mcl_core") then
+		core.add_item(user:get_pos(), "technic:raw_latex")
 	else
-		minetest.handle_node_drops(pointed_thing.above, {"technic:raw_latex"}, user)
+		core.handle_node_drops(pointed_thing.above, {"technic:raw_latex"}, user)
 	end
 end
 
-minetest.register_tool("technic:treetap", {
+core.register_tool("technic:treetap", {
 	description = S("Tree Tap"),
 	inventory_image = "technic_tree_tap.png",
 	on_use = function(itemstack, user, pointed_thing)
@@ -19,17 +19,17 @@ minetest.register_tool("technic:treetap", {
 			return
 		end
 		local pos = pointed_thing.under
-		if minetest.is_protected(pos, user:get_player_name()) then
-			minetest.record_protection_violation(pos, user:get_player_name())
+		if core.is_protected(pos, user:get_player_name()) then
+			core.record_protection_violation(pos, user:get_player_name())
 			return
 		end
-		local node = minetest.get_node(pos)
+		local node = core.get_node(pos)
 		local node_name = node.name
 		if node_name ~= "moretrees:rubber_tree_trunk" then
 			return
 		end
 		node.name = "moretrees:rubber_tree_trunk_empty"
-		minetest.swap_node(pos, node)
+		core.swap_node(pos, node)
 		drop_raw_latex(pointed_thing, user)
 		if not technic.creative_mode then
 			local item_wear = tonumber(itemstack:get_wear())
@@ -44,7 +44,7 @@ minetest.register_tool("technic:treetap", {
 	end,
 })
 
-minetest.register_craft({
+core.register_craft({
 	output = "technic:treetap",
 	recipe = {
 		{"pipeworks:tube_1", "group:wood",    mat.stick},
@@ -52,35 +52,35 @@ minetest.register_craft({
 	},
 })
 
-minetest.register_craftitem("technic:raw_latex", {
+core.register_craftitem("technic:raw_latex", {
 	description = S("Raw Latex"),
 	inventory_image = "technic_raw_latex.png",
 })
 
 if mesecons_materials then
-	minetest.register_craft({
+	core.register_craft({
 		type = "cooking",
 		recipe = "technic:raw_latex",
 		output = "mesecons_materials:glue",
 	})
 end
 
-minetest.register_craftitem("technic:rubber", {
+core.register_craftitem("technic:rubber", {
 	description = S("Rubber Fiber"),
 	inventory_image = "technic_rubber.png",
 })
 
-minetest.register_abm({
+core.register_abm({
 	label = "Tools: tree tap",
 	nodenames = {"moretrees:rubber_tree_trunk_empty"},
 	interval = 60,
 	chance = 15,
 	action = function(pos, node)
 		local radius = (moretrees and moretrees.leafdecay_radius) or 5
-		local nodes = minetest.find_node_near(pos, radius, {"moretrees:rubber_tree_leaves"})
+		local nodes = core.find_node_near(pos, radius, {"moretrees:rubber_tree_leaves"})
 		if nodes then
 			node.name = "moretrees:rubber_tree_trunk"
-			minetest.swap_node(pos, node)
+			core.swap_node(pos, node)
 		end
 	end
 })

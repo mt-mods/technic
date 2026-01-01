@@ -46,7 +46,7 @@ dofile(path.."/other/init.lua")
 
 
 -- Metadata cleanup LBM, removes old metadata values from nodes
-minetest.register_lbm({
+core.register_lbm({
 	name = "technic:metadata_cleanup",
 	nodenames = {
 		"group:technic_machine",
@@ -62,7 +62,7 @@ minetest.register_lbm({
 			"active_pos", "supply", "demand",
 			"battery_count", "battery_charge", "battery_charge_max",
 		}
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 		for _,key in ipairs(keys) do
 			-- Value of `""` will delete the key.
 			meta:set_string(key, "")
@@ -71,7 +71,7 @@ minetest.register_lbm({
 			meta:set_string("active", "")
 
 			-- start nodetimer if not already started
-			local timer = minetest.get_node_timer(pos)
+			local timer = core.get_node_timer(pos)
 			if not timer:is_started() then
 				timer:start(1.0)
 			end

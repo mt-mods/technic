@@ -1,9 +1,9 @@
 
-local S = minetest.get_translator(minetest.get_current_modname())
+local S = core.get_translator(core.get_current_modname())
 
-local has_pipeworks = minetest.get_modpath("pipeworks")
-local has_digilines = minetest.get_modpath("digilines")
-local has_protector = minetest.get_modpath("protector")
+local has_pipeworks = core.get_modpath("pipeworks")
+local has_digilines = core.get_modpath("digilines")
+local has_protector = core.get_modpath("protector")
 
 local tube_entry = has_pipeworks and "^pipeworks_tube_connection_metallic.png" or ""
 local protector_overlay = has_protector and "^protector_logo.png" or "^technic_protector_overlay.png"
@@ -68,7 +68,7 @@ function technic.chests.register_chest(nodename, data)
 		sounds = default.node_sound_wood_defaults(),
 		drop = nodename,
 		after_place_node = function(pos, placer)
-			local meta = minetest.get_meta(pos)
+			local meta = core.get_meta(pos)
 			if data.locked then
 				local owner = placer:get_player_name() or ""
 				meta:set_string("owner", owner)
@@ -87,7 +87,7 @@ function technic.chests.register_chest(nodename, data)
 		end,
 		tube = {
 			insert_object = function(pos, node, stack)
-				local meta = minetest.get_meta(pos)
+				local meta = core.get_meta(pos)
 				if data.digilines and meta:get_int("send_inject") == 1 then
 					technic.chests.send_digiline_message(pos, "inject", nil, {stack:to_table()})
 				end
@@ -95,7 +95,7 @@ function technic.chests.register_chest(nodename, data)
 				return meta:get_inventory():add_item("main", stack)
 			end,
 			can_insert = function(pos, node, stack)
-				local meta = minetest.get_meta(pos)
+				local meta = core.get_meta(pos)
 				if meta:get_int("splitstacks") == 1 then
 					stack = stack:peek_item(1)
 				end
@@ -106,7 +106,7 @@ function technic.chests.register_chest(nodename, data)
 				return can_insert
 			end,
 			remove_items = function(pos, node, stack, dir, count, list, index)
-				local meta = minetest.get_meta(pos)
+				local meta = core.get_meta(pos)
 				local item = stack:take_item(count)
 				meta:get_inventory():set_stack(list, index, stack)
 				if data.digilines and meta:get_int("send_pull") == 1 then
@@ -119,7 +119,7 @@ function technic.chests.register_chest(nodename, data)
 			connect_sides = {left=1, right=1, front=1, back=1, top=1, bottom=1},
 		},
 		on_construct = function(pos)
-			local inv = minetest.get_meta(pos):get_inventory()
+			local inv = core.get_meta(pos):get_inventory()
 			inv:set_size("main", data.width * data.height)
 			if data.quickmove then
 				inv:set_size("quickmove", 1)
@@ -130,14 +130,14 @@ function technic.chests.register_chest(nodename, data)
 			if not technic.chests.change_allowed(pos, player, data.locked, data.protected) then
 				return false
 			end
-			return minetest.get_meta(pos):get_inventory():is_empty("main")
+			return core.get_meta(pos):get_inventory():is_empty("main")
 		end,
 		allow_metadata_inventory_move = function(pos, from_list, from_index, to_list, to_index, count, player)
 			if not technic.chests.change_allowed(pos, player, data.locked, data.protected) then
 				return 0
 			end
 			if data.quickmove and to_list == "quickmove" then
-				local meta = minetest.get_meta(pos)
+				local meta = core.get_meta(pos)
 				local inv = meta:get_inventory()
 				local stack = inv:get_stack("main", from_index)
 				local moved_items = technic.chests.move_inv(inv, player:get_inventory(), stack:get_name())
@@ -154,7 +154,7 @@ function technic.chests.register_chest(nodename, data)
 				return 0
 			end
 			if data.quickmove and listname == "quickmove" then
-				local meta = minetest.get_meta(pos)
+				local meta = core.get_meta(pos)
 				local inv = meta:get_inventory()
 				local moved_items = technic.chests.move_inv(player:get_inventory(), inv, stack:get_name())
 				if data.digilines and meta:get_int("send_put") == 1 then
@@ -175,13 +175,13 @@ function technic.chests.register_chest(nodename, data)
 			technic.chests.log_inv_change(pos, player:get_player_name(), "move", "stuff")
 		end,
 		on_metadata_inventory_put = function(pos, listname, index, stack, player)
-			if data.digilines and minetest.get_meta(pos):get_int("send_put") == 1 then
+			if data.digilines and core.get_meta(pos):get_int("send_put") == 1 then
 				technic.chests.send_digiline_message(pos, "put", player, {stack:to_table()})
 			end
 			technic.chests.log_inv_change(pos, player:get_player_name(), "put", stack:get_name())
 		end,
 		on_metadata_inventory_take = function(pos, listname, index, stack, player)
-			if data.digilines and minetest.get_meta(pos):get_int("send_take") == 1 then
+			if data.digilines and core.get_meta(pos):get_int("send_take") == 1 then
 				technic.chests.send_digiline_message(pos, "take", player, {stack:to_table()})
 			end
 			technic.chests.log_inv_change(pos, player:get_player_name(), "take", stack:get_name())
@@ -193,7 +193,7 @@ function technic.chests.register_chest(nodename, data)
 			local drops = {}
 			default.get_inventory_drops(pos, "main", drops)
 			drops[#drops+1] = nodename
-			minetest.remove_node(pos)
+			core.remove_node(pos)
 			return drops
 		end,
 		on_receive_fields = technic.chests.get_receive_fields(nodename, data),
@@ -201,12 +201,12 @@ function technic.chests.register_chest(nodename, data)
 	if data.locked then
 		def.on_skeleton_key_use = function(pos, player, newsecret)
 			-- Copied from default chests.lua
-			local meta = minetest.get_meta(pos)
+			local meta = core.get_meta(pos)
 			local owner = meta:get_string("owner")
 			local player_name = player:get_player_name()
 			if owner ~= player_name then
-				minetest.record_protection_violation(pos, player_name)
-				minetest.chat_send_player(player_name, "You do not own this chest.")
+				core.record_protection_violation(pos, player_name)
+				core.chat_send_player(player_name, "You do not own this chest.")
 				return nil
 			end
 			local secret = meta:get_string("key_lock_secret")
@@ -225,7 +225,7 @@ function technic.chests.register_chest(nodename, data)
 			},
 		}
 	end
-	minetest.register_node(colon..nodename, def)
+	core.register_node(colon..nodename, def)
 	if data.color then
 		for i = 1, 15 do
 			local colordef = {}
@@ -234,7 +234,7 @@ function technic.chests.register_chest(nodename, data)
 			end
 			colordef.groups = node_groups_no_inv
 			colordef.tiles = get_tiles(data, i)
-			minetest.register_node(colon..nodename.."_"..technic.chests.colors[i][1], colordef)
+			core.register_node(colon..nodename.."_"..technic.chests.colors[i][1], colordef)
 		end
 	end
 end

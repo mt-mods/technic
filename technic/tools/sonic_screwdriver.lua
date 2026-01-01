@@ -23,13 +23,13 @@ local function screwdriver_handler(itemstack, user, pointed_thing, mode)
 
 	local pos = pointed_thing.under
 
-	if minetest.is_protected(pos, user:get_player_name()) then
-		minetest.record_protection_violation(pos, user:get_player_name())
+	if core.is_protected(pos, user:get_player_name()) then
+		core.record_protection_violation(pos, user:get_player_name())
 		return
 	end
 
-	local node = minetest.get_node(pos)
-	local ndef = minetest.registered_nodes[node.name]
+	local node = core.get_node(pos)
+	local ndef = core.registered_nodes[node.name]
 	if not ndef or ndef.paramtype2 ~= "facedir" or
 			(ndef.drawtype == "nodebox" and
 			ndef.node_box.type ~= "fixed") or
@@ -44,7 +44,7 @@ local function screwdriver_handler(itemstack, user, pointed_thing, mode)
 		return
 	end
 
-	minetest.sound_play("technic_sonic_screwdriver", {pos = pos, gain = 0.5, max_hear_distance = 10}, true)
+	core.sound_play("technic_sonic_screwdriver", {pos = pos, gain = 0.5, max_hear_distance = 10}, true)
 
 	-- Set param2
 	local rotationPart = node.param2 % 32 -- get first 4 bits
@@ -59,7 +59,7 @@ local function screwdriver_handler(itemstack, user, pointed_thing, mode)
 	end
 
 	node.param2 = preservePart + rotationPart
-	minetest.swap_node(pos, node)
+	core.swap_node(pos, node)
 
 	return itemstack
 end
@@ -76,7 +76,7 @@ technic.register_power_tool("technic:sonic_screwdriver", {
 	end,
 })
 
-minetest.register_craft({
+core.register_craft({
 	output = "technic:sonic_screwdriver",
 	recipe = {
 		{"",                         mat.diamond,        ""},

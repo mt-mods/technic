@@ -1,7 +1,7 @@
 
-local S = minetest.get_translator(minetest.get_current_modname())
+local S = core.get_translator(core.get_current_modname())
 
-local has_pipeworks = minetest.get_modpath("pipeworks")
+local has_pipeworks = core.get_modpath("pipeworks")
 
 local function get_pipeworks_fs(x, y, meta)
 	-- Use a container to reposition the pipeworks button.
@@ -44,7 +44,7 @@ local function get_quickmove_fs(x, y)
 end
 
 local function get_digilines_fs(x, y, meta)
-	local channel = minetest.formspec_escape(meta:get_string("channel"))
+	local channel = core.formspec_escape(meta:get_string("channel"))
 	local put = meta:get_int("send_put") == 1 and "true" or "false"
 	local take = meta:get_int("send_take") == 1 and "true" or "false"
 	local inject = meta:get_int("send_inject") == 1 and "true" or "false"
@@ -60,7 +60,7 @@ local function get_digilines_fs(x, y, meta)
 end
 
 local function get_infotext_fs(editing, meta)
-	local infotext = minetest.formspec_escape(meta:get_string("infotext"))
+	local infotext = core.formspec_escape(meta:get_string("infotext"))
 	if editing then
 		return "image_button[0,0.1;0.8,0.8;technic_checkmark_icon.png;save_infotext;]"..
 			"field[1,0.3;4,1;infotext;;"..infotext.."]"
@@ -129,7 +129,7 @@ end
 
 function technic.chests.update_formspec(pos, data, edit_infotext)
 	local formspec = data.formspec.base
-	local meta = minetest.get_meta(pos)
+	local meta = core.get_meta(pos)
 	if data.infotext then
 		formspec = formspec..get_infotext_fs(edit_infotext, meta)
 	end
@@ -159,7 +159,7 @@ function technic.chests.get_receive_fields(nodename, data)
 		if not fields or not player then
 			return
 		end
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 		local chest_inv = meta:get_inventory()
 		local player_inv = player:get_inventory()
 		if fields.quit then
@@ -218,13 +218,13 @@ function technic.chests.get_receive_fields(nodename, data)
 		if data.color then
 			for i = 1, 16 do
 				if fields["color_button"..i] then
-					local node = minetest.get_node(pos)
+					local node = core.get_node(pos)
 					if technic.chests.colors[i] then
 						node.name = nodename.."_"..technic.chests.colors[i][1]
 					else
 						node.name = nodename
 					end
-					minetest.swap_node(pos, node)
+					core.swap_node(pos, node)
 					meta:set_int("color", i)
 					break
 				end

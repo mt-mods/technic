@@ -1,6 +1,6 @@
 -- LV Battery box
 
-minetest.register_craft({
+core.register_craft({
 	output = 'technic:lv_battery_box0',
 	recipe = {
 		{'group:wood',      'group:wood',             'group:wood'},

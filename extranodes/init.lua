@@ -1,8 +1,8 @@
 -- Minetest 0.4.6 mod: extranodes
 -- namespace: technic
-local S = minetest.get_translator(minetest.get_current_modname())
+local S = core.get_translator(core.get_current_modname())
 
-if minetest.get_modpath("moreblocks") then
+if core.get_modpath("moreblocks") then
 
 	-- register stairsplus/circular_saw nodes
 	-- we skip blast resistant concrete and uranium intentionally
@@ -68,63 +68,63 @@ if minetest.get_modpath("moreblocks") then
 		groups = {cracky = 1, level = 3, concrete = 1},
 		on_blast = function(pos, intensity)
 			if intensity > 3 then
-				minetest.remove_node(pos)
-				minetest.add_item(pos, "technic:blast_resistant_concrete")
+				core.remove_node(pos)
+				core.add_item(pos, "technic:blast_resistant_concrete")
 			end
 		end
 	})
 
 	-- FIXME: Clean this function up somehow
 	local function register_technic_stairs_alias(modname, origname, newmod, newname)
-		minetest.register_alias(modname .. ":slab_" .. origname, newmod..":slab_" .. newname)
-		minetest.register_alias(modname .. ":slab_" .. origname ..
+		core.register_alias(modname .. ":slab_" .. origname, newmod..":slab_" .. newname)
+		core.register_alias(modname .. ":slab_" .. origname ..
 								"_inverted", newmod..":slab_" .. newname .. "_inverted")
-		minetest.register_alias(modname .. ":slab_" .. origname .. "_wall", newmod..":slab_" .. newname .. "_wall")
-		minetest.register_alias(modname .. ":slab_" .. origname ..
+		core.register_alias(modname .. ":slab_" .. origname .. "_wall", newmod..":slab_" .. newname .. "_wall")
+		core.register_alias(modname .. ":slab_" .. origname ..
 								"_quarter", newmod..":slab_" .. newname .. "_quarter")
-		minetest.register_alias(modname .. ":slab_" .. origname ..
+		core.register_alias(modname .. ":slab_" .. origname ..
 								"_quarter_inverted", newmod..":slab_" .. newname .. "_quarter_inverted")
-		minetest.register_alias(modname .. ":slab_" .. origname ..
+		core.register_alias(modname .. ":slab_" .. origname ..
 								"_quarter_wall", newmod..":slab_" .. newname .. "_quarter_wall")
-		minetest.register_alias(modname .. ":slab_" .. origname ..
+		core.register_alias(modname .. ":slab_" .. origname ..
 								"_three_quarter", newmod..":slab_" .. newname .. "_three_quarter")
-		minetest.register_alias(modname .. ":slab_" .. origname ..
+		core.register_alias(modname .. ":slab_" .. origname ..
 								"_three_quarter_inverted", newmod..":slab_" .. newname .. "_three_quarter_inverted")
-		minetest.register_alias(modname .. ":slab_" .. origname ..
+		core.register_alias(modname .. ":slab_" .. origname ..
 								"_three_quarter_wall", newmod..":slab_" .. newname .. "_three_quarter_wall")
-		minetest.register_alias(modname .. ":stair_" .. origname, newmod..":stair_" .. newname)
-		minetest.register_alias(modname .. ":stair_" .. origname ..
+		core.register_alias(modname .. ":stair_" .. origname, newmod..":stair_" .. newname)
+		core.register_alias(modname .. ":stair_" .. origname ..
 								"_inverted", newmod..":stair_" .. newname .. "_inverted")
-		minetest.register_alias(modname .. ":stair_" .. origname .. "_wall", newmod..":stair_" .. newname .. "_wall")
-		minetest.register_alias(modname .. ":stair_" .. origname ..
+		core.register_alias(modname .. ":stair_" .. origname .. "_wall", newmod..":stair_" .. newname .. "_wall")
+		core.register_alias(modname .. ":stair_" .. origname ..
 								"_wall_half", newmod..":stair_" .. newname .. "_wall_half")
-		minetest.register_alias(modname .. ":stair_" .. origname ..
+		core.register_alias(modname .. ":stair_" .. origname ..
 								"_wall_half_inverted", newmod..":stair_" .. newname .. "_wall_half_inverted")
-		minetest.register_alias(modname .. ":stair_" .. origname .. "_half", newmod..":stair_" .. newname .. "_half")
-		minetest.register_alias(modname .. ":stair_" .. origname ..
+		core.register_alias(modname .. ":stair_" .. origname .. "_half", newmod..":stair_" .. newname .. "_half")
+		core.register_alias(modname .. ":stair_" .. origname ..
 								"_half_inverted", newmod..":stair_" .. newname .. "_half_inverted")
-		minetest.register_alias(modname .. ":stair_" .. origname ..
+		core.register_alias(modname .. ":stair_" .. origname ..
 								"_right_half", newmod..":stair_" .. newname .. "_right_half")
-		minetest.register_alias(modname .. ":stair_" .. origname ..
+		core.register_alias(modname .. ":stair_" .. origname ..
 								"_right_half_inverted", newmod..":stair_" .. newname .. "_right_half_inverted")
-		minetest.register_alias(modname .. ":stair_" .. origname ..
+		core.register_alias(modname .. ":stair_" .. origname ..
 								"_wall_half", newmod..":stair_" .. newname .. "_wall_half")
-		minetest.register_alias(modname .. ":stair_" .. origname ..
+		core.register_alias(modname .. ":stair_" .. origname ..
 								"_wall_half_inverted", newmod..":stair_" .. newname .. "_wall_half_inverted")
-		minetest.register_alias(modname .. ":stair_" .. origname .. "_inner", newmod..":stair_" .. newname .. "_inner")
-		minetest.register_alias(modname .. ":stair_" .. origname ..
+		core.register_alias(modname .. ":stair_" .. origname .. "_inner", newmod..":stair_" .. newname .. "_inner")
+		core.register_alias(modname .. ":stair_" .. origname ..
 								"_inner_inverted", newmod..":stair_" .. newname .. "_inner_inverted")
-		minetest.register_alias(modname .. ":stair_" .. origname .. "_outer", newmod..":stair_" .. newname .. "_outer")
-		minetest.register_alias(modname .. ":stair_" .. origname ..
+		core.register_alias(modname .. ":stair_" .. origname .. "_outer", newmod..":stair_" .. newname .. "_outer")
+		core.register_alias(modname .. ":stair_" .. origname ..
 								"_outer_inverted", newmod..":stair_" .. newname .. "_outer_inverted")
-		minetest.register_alias(modname .. ":panel_" .. origname ..
+		core.register_alias(modname .. ":panel_" .. origname ..
 								"_bottom", newmod..":panel_" .. newname .. "_bottom")
-		minetest.register_alias(modname .. ":panel_" .. origname .. "_top", newmod..":panel_" .. newname .. "_top")
-		minetest.register_alias(modname .. ":panel_" .. origname ..
+		core.register_alias(modname .. ":panel_" .. origname .. "_top", newmod..":panel_" .. newname .. "_top")
+		core.register_alias(modname .. ":panel_" .. origname ..
 								"_vertical", newmod..":panel_" .. newname .. "_vertical")
-		minetest.register_alias(modname .. ":micro_" .. origname ..
+		core.register_alias(modname .. ":micro_" .. origname ..
 								"_bottom", newmod..":micro_" .. newname .. "_bottom")
-		minetest.register_alias(modname .. ":micro_" .. origname .. "_top", newmod..":micro_" .. newname .. "_top")
+		core.register_alias(modname .. ":micro_" .. origname .. "_top", newmod..":micro_" .. newname .. "_top")
 	end
 
 	register_technic_stairs_alias("stairsplus", "concrete", "technic", "concrete")
@@ -185,7 +185,7 @@ local sclip_tex = {
 	{ name = "strut.png", color = "white" }
 }
 
-local streetsmod = minetest.get_modpath("streets") or minetest.get_modpath ("steelsupport")
+local streetsmod = core.get_modpath("streets") or core.get_modpath ("steelsupport")
 -- cheapie's fork breaks it into several individual mods, with differernt names for the same content.
 
 if streetsmod then
@@ -209,7 +209,7 @@ local sclip_def = {
 	backface_culling = false
 }
 
-if minetest.get_modpath("unifieddyes") then
+if core.get_modpath("unifieddyes") then
 	iclip_def.paramtype2 = "colorwallmounted"
 	iclip_def.palette = "unifieddyes_palette_colorwallmounted.png"
 	iclip_def.after_place_node = function(pos, placer, itemstack, pointed_thing)
@@ -233,10 +233,10 @@ if minetest.get_modpath("unifieddyes") then
 	sclip_def.groups = {choppy=1, cracky=1, ud_param2_colorable = 1}
 end
 
-minetest.register_node(":technic:insulator_clip", iclip_def)
-minetest.register_node(":technic:insulator_clip_fencepost", iclipfence_def)
+core.register_node(":technic:insulator_clip", iclip_def)
+core.register_node(":technic:insulator_clip_fencepost", iclipfence_def)
 
-minetest.register_craft({
+core.register_craft({
 	output = "technic:insulator_clip",
 	recipe = {
 		{ "", "dye:white", ""},
@@ -245,7 +245,7 @@ minetest.register_craft({
 	}
 })
 
-minetest.register_craft({
+core.register_craft({
 	output = "technic:insulator_clip_fencepost 2",
 	recipe = {
 		{ "", "dye:white", ""},
@@ -254,13 +254,13 @@ minetest.register_craft({
 	}
 })
 
-local steelmod = minetest.get_modpath("steel")
+local steelmod = core.get_modpath("steel")
 
 if streetsmod or steelmod then
-	minetest.register_node(":technic:steel_strut_with_insulator_clip", sclip_def)
+	core.register_node(":technic:steel_strut_with_insulator_clip", sclip_def)
 
 	if steelmod then
-		minetest.register_craft({
+		core.register_craft({
 			output = "technic:steel_strut_with_insulator_clip",
 			recipe = {
 				{"technic:insulator_clip_fencepost"},
@@ -268,7 +268,7 @@ if streetsmod or steelmod then
 			}
 		})
 
-		minetest.register_craft({
+		core.register_craft({
 			output = "technic:steel_strut_with_insulator_clip",
 			recipe = {
 				{"technic:insulator_clip_fencepost", ""                    },
@@ -277,7 +277,7 @@ if streetsmod or steelmod then
 		})
 
 	elseif streetsmod then
-		minetest.register_craft({
+		core.register_craft({
 			output = "technic:steel_strut_with_insulator_clip",
 			recipe = {
 				{"technic:insulator_clip_fencepost", ""                   },
@@ -287,7 +287,7 @@ if streetsmod or steelmod then
 	end
 end
 
-if minetest.get_modpath("unifieddyes") then
+if core.get_modpath("unifieddyes") then
 
 	unifieddyes.register_color_craft({
 		output = "technic:insulator_clip_fencepost",
@@ -348,22 +348,22 @@ if minetest.get_modpath("unifieddyes") then
 end
 
 for i = 0, 31 do
-	minetest.register_alias("technic:concrete_post"..i,
+	core.register_alias("technic:concrete_post"..i,
 			"technic:concrete_post")
 end
 for i = 32, 63 do
-	minetest.register_alias("technic:concrete_post"..i,
+	core.register_alias("technic:concrete_post"..i,
 			"technic:concrete_post_with_platform")
 end
 
-minetest.register_craft({
+core.register_craft({
 	output = 'technic:concrete_post_platform 6',
 	recipe = {
 		{'basic_materials:concrete_block','technic:concrete_post','basic_materials:concrete_block'},
 	}
 })
 
-minetest.register_craft({
+core.register_craft({
 	output = 'technic:concrete_post 12',
 	recipe = {
 		{'basic_materials:concrete_block','basic_materials:steel_bar','basic_materials:concrete_block'},
@@ -379,7 +379,7 @@ local box_back     = {-0.1,  -0.3, 0,     0.1,  0.3, 0.5}
 local box_left     = {-0.5,  -0.3, -0.1,  0,    0.3, 0.1}
 local box_right    = {0,     -0.3, -0.1,  0.5,  0.3, 0.1}
 
-minetest.register_node(":technic:concrete_post_platform", {
+core.register_node(":technic:concrete_post_platform", {
 	description = S("Concrete Post Platform"),
 	tiles = {"basic_materials_concrete_block.png",},
 	groups={cracky=1, level=2},
@@ -392,11 +392,11 @@ minetest.register_node(":technic:concrete_post_platform", {
 		fixed = {box_platform}
 	},
 	on_place = function (itemstack, placer, pointed_thing)
-		local node = minetest.get_node(pointed_thing.under)
+		local node = core.get_node(pointed_thing.under)
 		if node.name ~= "technic:concrete_post" then
-			return minetest.item_place_node(itemstack, placer, pointed_thing)
+			return core.item_place_node(itemstack, placer, pointed_thing)
 		end
-		minetest.set_node(pointed_thing.under, {name="technic:concrete_post_with_platform"})
+		core.set_node(pointed_thing.under, {name="technic:concrete_post_with_platform"})
 		itemstack:take_item()
 		placer:set_wielded_item(itemstack)
 		return itemstack
@@ -408,11 +408,11 @@ for platform = 0, 1 do
 	if platform == 1 then
 		after_dig_node = function(pos, old_node)
 			old_node.name = "technic:concrete_post"
-			minetest.set_node(pos, old_node)
+			core.set_node(pos, old_node)
 		end
 	end
 
-	minetest.register_node(":technic:concrete_post"..(platform == 1 and "_with_platform" or ""), {
+	core.register_node(":technic:concrete_post"..(platform == 1 and "_with_platform" or ""), {
 		description = S("Concrete Post"),
 		tiles = {"basic_materials_concrete_block.png"},
 		groups = {cracky=1, level=2, concrete_post=1, not_in_creative_inventory=platform},

@@ -1,15 +1,15 @@
 local S = technic.getter
-local moretrees = minetest.get_modpath("moretrees")
-local dye = minetest.get_modpath("dye")
+local moretrees = core.get_modpath("moretrees")
+local dye = core.get_modpath("dye")
 local mat = technic.materials
 
 -- sawdust, the finest wood/tree grinding
 local sawdust = "technic:sawdust"
-minetest.register_craftitem(sawdust, {
+core.register_craftitem(sawdust, {
 	description = S("Sawdust"),
 	inventory_image = "technic_sawdust.png",
 })
-minetest.register_craft({ type = "fuel", recipe = sawdust, burntime = 6 })
+core.register_craft({ type = "fuel", recipe = sawdust, burntime = 6 })
 technic.register_compressor_recipe({ input = {sawdust .. " 4"}, output = mat.wood })
 
 -- tree/wood grindings
@@ -17,16 +17,16 @@ local function register_tree_grinding(name, tree, wood, extract, grinding_color)
 	local lname = string.lower(name)
 	lname = string.gsub(lname, ' ', '_')
 	local grindings_name = "technic:"..lname.."_grindings"
-	if not minetest.registered_craftitems[grindings_name] then
+	if not core.registered_craftitems[grindings_name] then
 		local inventory_image = "technic_"..lname.."_grindings.png"
 		if grinding_color then
 			inventory_image = inventory_image .. "^[colorize:" .. grinding_color
 		end
-		minetest.register_craftitem(grindings_name, {
+		core.register_craftitem(grindings_name, {
 			description = S("@1 Grinding", S(name)),
 			inventory_image = inventory_image,
 		})
-		minetest.register_craft({
+		core.register_craft({
 			type = "fuel",
 			recipe = grindings_name,
 			burntime = 8,

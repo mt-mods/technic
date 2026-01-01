@@ -1,10 +1,10 @@
 local S = technic.getter
 
-minetest.register_alias("extractor", "technic:lv_extractor")
+core.register_alias("extractor", "technic:lv_extractor")
 
 if technic.config:get_bool("enable_tree_tap") then
 
-	minetest.register_craft({
+	core.register_craft({
 		output = 'technic:lv_extractor',
 		recipe = {
 			{'technic:treetap', 'basic_materials:motor',          'technic:treetap'},
@@ -15,7 +15,7 @@ if technic.config:get_bool("enable_tree_tap") then
 
 else
 
-	minetest.register_craft({
+	core.register_craft({
 		output = 'technic:lv_extractor',
 		recipe = {
 			{'basic_materials:motor', 'pipeworks:tube_1', 'basic_materials:motor'},

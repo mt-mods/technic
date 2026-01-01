@@ -225,13 +225,13 @@ function technic.trace_node_ray_fat(pos, dir, range)
 		-- Normalized axis deltas
 		local dxn, dyn, dzn = dx / dlen, dy / dlen, dz / dlen
 		if not sx and dxn > 0.5 then
-			next_poses[1] = vector.new(p.x + x_step, p.y, p.z)
+			next_poses[1] = vector.offset(p, x_step, 0, 0)
 		end
 		if not sy and dyn > 0.5 then
-			next_poses[2] = vector.new(p.x, p.y + y_step, p.z)
+			next_poses[2] = vector.offset(p, 0, y_step, 0)
 		end
 		if not sz and dzn > 0.5 then
-			next_poses[3] = vector.new(p.x, p.y, p.z + z_step)
+			next_poses[3] = vector.offset(p, 0, 0, z_step)
 		end
 
 		return p

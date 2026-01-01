@@ -1,7 +1,7 @@
 -- HV compressor
 local S = technic.getter
 
-minetest.register_craft({
+core.register_craft({
 	output = 'technic:hv_compressor',
 	recipe = {
 		{'technic:carbon_plate',          'technic:mv_compressor',   'technic:composite_plate'},

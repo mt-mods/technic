@@ -12,14 +12,14 @@ local optional_mods = {
 }
 
 for _, mod in pairs(optional_mods) do
-	if minetest.get_modpath(mod) then
+	if core.get_modpath(mod) then
 		dofile(path .. mod .. ".lua")
 	end
 end
 
 local function alias(old, new)
 	for _,shape in pairs(technic_cnc.programs) do
-		minetest.register_alias(old .. "_" .. shape.suffix, new .. "_" .. shape.suffix)
+		core.register_alias(old .. "_" .. shape.suffix, new .. "_" .. shape.suffix)
 	end
 end
 

@@ -3,12 +3,12 @@
 -- The machine is only producing LV EUs and can thus not drive more advanced equipment
 -- The output is a little more than the coal burning generator (max 300EUs)
 
-minetest.register_alias("geothermal", "technic:geothermal")
+core.register_alias("geothermal", "technic:geothermal")
 
 local S = technic.getter
 local mat = technic.materials
 
-minetest.register_craft({
+core.register_craft({
 	output = 'technic:geothermal',
 	recipe = {
 		{'technic:granite',          mat.diamond,        'technic:granite'},
@@ -21,19 +21,22 @@ minetest.register_craft({
 	},
 })
 
-minetest.register_craftitem("technic:geothermal", {
+core.register_craftitem("technic:geothermal", {
 	description = S("Geothermal @1 Generator", S("LV")),
 })
 
+local is_water = 1
+local is_lava = 2
+
 local check_node_around = function(pos)
-	local node = minetest.get_node(pos)
+	local node = core.get_node(pos)
 	if node.name == mat.water_source or node.name == mat.water_flowing then return 1 end
 	if node.name == mat.lava_source or node.name == mat.lava_flowing then return 2 end
 	return 0
 end
 
 local run = function(pos, node)
-	local meta             = minetest.get_meta(pos)
+	local meta             = core.get_meta(pos)
 	local water_nodes      = 0
 	local lava_nodes       = 0
 	local production_level = 0
@@ -46,19 +49,19 @@ local run = function(pos, node)
 	--    W|L
 
 	local positions = {
-		{x=pos.x+1, y=pos.y,   z=pos.z},
-		{x=pos.x+1, y=pos.y-1, z=pos.z},
-		{x=pos.x-1, y=pos.y,   z=pos.z},
-		{x=pos.x-1, y=pos.y-1, z=pos.z},
-		{x=pos.x,   y=pos.y,   z=pos.z+1},
-		{x=pos.x,   y=pos.y-1, z=pos.z+1},
-		{x=pos.x,   y=pos.y,   z=pos.z-1},
-		{x=pos.x,   y=pos.y-1, z=pos.z-1},
+		vector.offset(pos,  1, 0, 0),
+		vector.offset(pos,  1, -1, 0),
+		vector.offset(pos, -1, 0, 0),
+		vector.offset(pos, -1, -1, 0),
+		vector.offset(pos,  0, 0, 1),
+		vector.offset(pos,  0, -1, 1),
+		vector.offset(pos,  0, 0, -1),
+		vector.offset(pos,  0, -1, -1),
 	}
-	for _, p in pairs(positions) do
+	for _, p in ipairs(positions) do
 		local check = check_node_around(p)
-		if check == 1 then water_nodes = water_nodes + 1 end
-		if check == 2 then lava_nodes  = lava_nodes  + 1 end
+		if check == is_water then water_nodes = water_nodes + 1 end
+		if check == is_lava then lava_nodes  = lava_nodes  + 1 end
 	end
 
 	if water_nodes == 1 and lava_nodes == 1 then production_level =  25; eu_supply = 50 end
@@ -73,7 +76,7 @@ local run = function(pos, node)
 	meta:set_string("infotext", S("@1 (@2% Efficiency)",
 		S("Geothermal @1 Generator", S("LV")), production_level))
 
-	if production_level > 0 and minetest.get_node(pos).name == "technic:geothermal" then
+	if production_level > 0 and core.get_node(pos).name == "technic:geothermal" then
 		technic.swap_node (pos, "technic:geothermal_active")
 		return
 	end
@@ -83,7 +86,7 @@ local run = function(pos, node)
 	end
 end
 
-minetest.register_node("technic:geothermal", {
+core.register_node("technic:geothermal", {
 	description = S("Geothermal @1 Generator", S("LV")),
 	tiles = {"technic_geothermal_top.png", "technic_machine_bottom.png", "technic_geothermal_side.png",
 	         "technic_geothermal_side.png", "technic_geothermal_side.png", "technic_geothermal_side.png"},
@@ -96,14 +99,14 @@ minetest.register_node("technic:geothermal", {
 	legacy_facedir_simple = true,
 	sounds = technic.sounds.node_sound_wood_defaults(),
 	on_construct = function(pos)
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 		meta:set_string("infotext", S("Geothermal @1 Generator", S("LV")))
 		meta:set_int("LV_EU_supply", 0)
 	end,
 	technic_run = run,
 })
 
-minetest.register_node("technic:geothermal_active", {
+core.register_node("technic:geothermal_active", {
 	description = S("Geothermal @1 Generator", S("LV")),
 	tiles = {"technic_geothermal_top_active.png", "technic_machine_bottom.png", "technic_geothermal_side.png",
 	         "technic_geothermal_side.png", "technic_geothermal_side.png", "technic_geothermal_side.png"},

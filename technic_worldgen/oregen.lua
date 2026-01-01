@@ -1,5 +1,5 @@
 
-local has_mcl = minetest.get_modpath("mcl_core")
+local has_mcl = core.get_modpath("mcl_core")
 local stones = {"default:stone", "mcl_core:stone", "mcl_deepslate:deepslate"}
 
 local uranium_params = {
@@ -42,7 +42,7 @@ local lead_params = {
 }
 local lead_threshold = 0.3
 
-minetest.register_ore({
+core.register_ore({
 	ore_type = "scatter",
 	ore = "technic:mineral_uranium",
 	wherein = stones,
@@ -55,7 +55,7 @@ minetest.register_ore({
 	noise_threshold = uranium_threshold,
 })
 
-minetest.register_ore({
+core.register_ore({
 	ore_type = "scatter",
 	ore = "technic:mineral_chromium",
 	wherein = stones,
@@ -68,7 +68,7 @@ minetest.register_ore({
 	noise_threshold = chromium_threshold,
 })
 
-minetest.register_ore({
+core.register_ore({
 	ore_type = "scatter",
 	ore = "technic:mineral_chromium",
 	wherein = stones,
@@ -82,7 +82,7 @@ minetest.register_ore({
 	noise_threshold = chromium_threshold,
 })
 
-minetest.register_ore({
+core.register_ore({
 	ore_type = "scatter",
 	ore = "technic:mineral_zinc",
 	wherein = stones,
@@ -95,7 +95,7 @@ minetest.register_ore({
 	noise_threshold = zinc_threshold,
 })
 
-minetest.register_ore({
+core.register_ore({
 	ore_type = "scatter",
 	ore = "technic:mineral_zinc",
 	wherein = stones,
@@ -109,7 +109,7 @@ minetest.register_ore({
 	noise_threshold = zinc_threshold,
 })
 
-minetest.register_ore({
+core.register_ore({
 	ore_type = "scatter",
 	ore = "technic:mineral_lead",
 	wherein = stones,
@@ -122,7 +122,7 @@ minetest.register_ore({
 	noise_threshold = lead_threshold,
 })
 
-minetest.register_ore({
+core.register_ore({
 	ore_type = "scatter",
 	ore = "technic:mineral_lead",
 	wherein = stones,
@@ -135,7 +135,7 @@ minetest.register_ore({
 	noise_threshold = lead_threshold,
 })
 
-minetest.register_ore({
+core.register_ore({
 	ore_type = "scatter",
 	ore = "technic:mineral_lead",
 	wherein = stones,
@@ -153,20 +153,20 @@ minetest.register_ore({
 local sulfur_buf = {}
 local sulfur_noise
 
-minetest.register_on_generated(function(minp, maxp)
-	local vm, emin, emax = minetest.get_mapgen_object("voxelmanip")
+core.register_on_generated(function(minp, maxp)
+	local vm, emin, emax = core.get_mapgen_object("voxelmanip")
 	local a = VoxelArea:new({MinEdge=emin, MaxEdge=emax})
 	vm:get_data(sulfur_buf)
 	local pr = PseudoRandom(17 * minp.x + 42 * minp.y + 101 * minp.z)
-	sulfur_noise = sulfur_noise or minetest.get_perlin(9876, 3, 0.5, 100)
+	sulfur_noise = sulfur_noise or core.get_perlin(9876, 3, 0.5, 100)
 
 	local lava = has_mcl and "mcl_core:lava_source" or "default:lava_source"
 	local lava_flowing = has_mcl and "mcl_core:lava_flowing" or "default:lava_flowing"
 	local stone = has_mcl and "mcl_core:stone" or "default:stone"
-	local c_lava = minetest.get_content_id(lava)
-	local c_lava_flowing = minetest.get_content_id(lava_flowing)
-	local c_stone = minetest.get_content_id(stone)
-	local c_sulfur = minetest.get_content_id("technic:mineral_sulfur")
+	local c_lava = core.get_content_id(lava)
+	local c_lava_flowing = core.get_content_id(lava_flowing)
+	local c_stone = core.get_content_id(stone)
+	local c_sulfur = core.get_content_id("technic:mineral_sulfur")
 
 	local grid_size = 5
 	for x = minp.x + math.floor(grid_size / 2), maxp.x, grid_size do
@@ -198,7 +198,7 @@ end)
 
 -- in MCL sulfur is generated in the nether
 if has_mcl then
-	minetest.register_ore({
+	core.register_ore({
 		ore_type = "scatter",
 		ore = "technic:mineral_sulfur",
 		wherein = {"mcl_nether:netherrack", "mcl_blackstone:blackstone"},
@@ -211,8 +211,8 @@ if has_mcl then
 end
 
 if technic.config:get_bool("enable_marble_generation")
-	and not minetest.get_modpath("underch") then
-	minetest.register_ore({
+	and not core.get_modpath("underch") then
+	core.register_ore({
 		ore_type = "sheet",
 		ore = "technic:marble",
 		wherein = stones,
@@ -230,7 +230,7 @@ if technic.config:get_bool("enable_marble_generation")
 end
 
 if technic.config:get_bool("enable_granite_generation") and not has_mcl then
-	minetest.register_ore({
+	core.register_ore({
 		ore_type = "sheet",
 		ore = "technic:granite",
 		wherein = stones,

@@ -13,7 +13,7 @@ local function deploy_node(inv, slot_name, pos, node, machine_node)
 		   node.name == "default:water_flowing" then
 			return
 		end
-		local drops = minetest.get_node_drops(node.name, "")
+		local drops = core.get_node_drops(node.name, "")
 		local remove_to = false
 		for i, item in ipairs(drops) do
 			if not inv:room_for_item(slot_name, item) then
@@ -27,7 +27,7 @@ local function deploy_node(inv, slot_name, pos, node, machine_node)
 				inv:remove_item(slot_name, drops[i])
 			end
 		else
-			minetest.remove_node(pos)
+			core.remove_node(pos)
 		end
 		return
 	end
@@ -35,7 +35,7 @@ local function deploy_node(inv, slot_name, pos, node, machine_node)
 		local stack = inv:get_list(slot_name)[1]
 		local def = stack:get_definition()
 		if def.type == "node" then
-			minetest.set_node(pos, {
+			core.set_node(pos, {
 				name = stack:get_name(),
 				param2 = machine_node.param2
 			})
@@ -49,14 +49,14 @@ local function deploy_node(inv, slot_name, pos, node, machine_node)
 					-- Fake pointed_thing
 					type = "node",
 					above = pos,
-					under = {x=pos.x, y=pos.y-1, z=pos.z},
+					under = vector.offset(pos, 0, -1, 0),
 				})
 				if ok then
 					inv:set_stack(slot_name, 1, stk or stack)
 					return
 				end
 			end
-			minetest.item_place_object(stack, nil, {
+			core.item_place_object(stack, nil, {
 				-- Fake pointed_thing
 				type = "node",
 				above = pos,
@@ -67,20 +67,20 @@ local function deploy_node(inv, slot_name, pos, node, machine_node)
 	end
 end
 
-minetest.register_craft({
+core.register_craft({
 	type = "shapeless",
 	output = 'technic:constructor_mk1_off 1',
 	recipe = {'technic:nodebreaker_off', 'technic:deployer_off'},
 
 })
-minetest.register_craft({
+core.register_craft({
 	type = "shapeless",
 	output = 'technic:constructor_mk2_off 1',
 	recipe = {'technic:constructor_mk1_off', 'technic:constructor_mk1_off'},
 
 })
 
-minetest.register_craft({
+core.register_craft({
 	type = "shapeless",
 	output = 'technic:constructor_mk3_off 1',
 	recipe = {'technic:constructor_mk2_off', 'technic:constructor_mk2_off'},
@@ -89,7 +89,7 @@ minetest.register_craft({
 
 local function make_on(mark, length)
 	return function(pos, node)
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 		local owner = meta:get_string("owner")
 		local inv = meta:get_inventory()
 		local dir = vector.new()
@@ -102,13 +102,13 @@ local function make_on(mark, length)
 
 		if node.name == "technic:constructor_mk"..mark.."_off" then
 			technic.swap_node(pos, "technic:constructor_mk"..mark.."_on")
-			minetest.check_for_falling(pos)
+			core.check_for_falling(pos)
 			for i = 1, length do
 				place_pos = vector.add(place_pos, dir)
-				if owner ~= "" and minetest.is_protected(place_pos, owner) then
+				if owner ~= "" and core.is_protected(place_pos, owner) then
 					return
 				end
-				local place_node = minetest.get_node(place_pos)
+				local place_node = core.get_node(place_pos)
 				deploy_node(inv, "slot"..i, place_pos, place_node, node)
 			end
 		end
@@ -119,20 +119,20 @@ local function make_off(mark)
 	return function(pos, node)
 		if node.name == "technic:constructor_mk"..mark.."_on" then
 			technic.swap_node(pos,"technic:constructor_mk"..mark.."_off")
-			minetest.check_for_falling(pos)
+			core.check_for_falling(pos)
 		end
 	end
 end
 
 local function allow_inventory_put(pos, listname, index, stack, player)
-	if stack and minetest.get_item_group(stack:get_name(), "technic_constructor") == 1 then
+	if stack and core.get_item_group(stack:get_name(), "technic_constructor") == 1 then
 		return 0
 	end
 	return technic.machine_inventory_put(pos, listname, index, stack, player)
 end
 
 local function make_constructor(mark, length)
-	minetest.register_node("technic:constructor_mk"..mark.."_off", {
+	core.register_node("technic:constructor_mk"..mark.."_off", {
 		description = S("Constructor Mk@1", mark),
 		tiles = {"technic_constructor_mk"..mark.."_top_off.png",
 			"technic_constructor_mk"..mark.."_bottom_off.png",
@@ -149,8 +149,8 @@ local function make_constructor(mark, length)
 		mesecons = {effector = {action_on = make_on(mark, length)}},
 		sounds = technic.sounds.node_sound_stone_defaults(),
 		on_construct = function(pos)
-			local meta = minetest.get_meta(pos)
-			local size = minetest.get_modpath("mcl_formspec") and "size[9,9]" or "size[8,9]"
+			local meta = core.get_meta(pos)
+			local size = core.get_modpath("mcl_formspec") and "size[9,9]" or "size[8,9]"
 			local formspec = size..
 				"label[0,0;"..S("Constructor Mk@1", mark).."]"
 			for i = 1, length do
@@ -158,7 +158,7 @@ local function make_constructor(mark, length)
 					"label[5,"..(i - 1)..";"..S("Slot @1", i).."]"..
 					"list[context;slot"..i..";6,"..(i - 1)..";1,1;]"
 			end
-			if minetest.get_modpath("mcl_formspec") then
+			if core.get_modpath("mcl_formspec") then
 				for i = 1, length do
 					formspec = formspec..
 					mcl_formspec.get_itemslot_bg(6,i-1,1,1)
@@ -189,11 +189,11 @@ local function make_constructor(mark, length)
 			meta:set_string("owner", "?")
 		end,
 		after_place_node = function(pos, placer)
-			local meta = minetest.get_meta(pos)
+			local meta = core.get_meta(pos)
 			meta:set_string("owner", (placer and placer:get_player_name() or "?"))
 		end,
 		can_dig = function(pos, player)
-			local meta = minetest.get_meta(pos)
+			local meta = core.get_meta(pos)
 			local inv = meta:get_inventory()
 			for i = 1, length do
 				if not inv:is_empty("slot"..i) then
@@ -215,7 +215,7 @@ local function make_constructor(mark, length)
 		end,
 	})
 
-	minetest.register_node("technic:constructor_mk"..mark.."_on", {
+	core.register_node("technic:constructor_mk"..mark.."_on", {
 		tiles = {"technic_constructor_mk"..mark.."_top_on.png",
 			"technic_constructor_mk"..mark.."_bottom_on.png",
 			"technic_constructor_mk"..mark.."_side2_on.png",

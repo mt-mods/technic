@@ -29,7 +29,7 @@ describe("Technic CNC", function()
 
 	-- Helper function to place itemstack into machine inventory
 	local function place_itemstack(pos, itemstack, listname)
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 		local inv = meta:get_inventory()
 		if not inv:room_for_item(listname or "src", itemstack) then
 			inv:set_stack(listname or "src", 1, ItemStack(nil))
@@ -39,13 +39,13 @@ describe("Technic CNC", function()
 
 	-- Get itemstack in inventory for inspection without removing it
 	local function get_itemstack(pos, listname, index)
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 		local inv = meta:get_inventory()
 		return inv:get_stack(listname or "dst", index or 1)
 	end
 
 	local function clear_itemstack(pos, listname)
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 		local inv = meta:get_inventory()
 		for index=1, inv:get_size(listname or "dst") do
 			inv:set_stack(listname or "dst", index, ItemStack(nil))
@@ -54,7 +54,7 @@ describe("Technic CNC", function()
 
 	-- Execute on mods loaded callbacks to finish loading.
 	mineunit:mods_loaded()
-	-- Tell mods that 1 minute passed already to execute all weird minetest.after hacks.
+	-- Tell mods that 1 minute passed already to execute all weird core.after hacks.
 	mineunit:execute_globalstep(60)
 
 	local cnc_pos = {x=0,y=1,z=0}
@@ -81,7 +81,7 @@ describe("Technic CNC", function()
 			assert.not_nil(net)
 
 			-- Fill input inventory and select program
-			local on_receive_fields = minetest.registered_nodes["technic:cnc"].on_receive_fields
+			local on_receive_fields = core.registered_nodes["technic:cnc"].on_receive_fields
 			assert.equals("function", type(on_receive_fields))
 			place_itemstack(cnc_pos, "default:wood 99")
 			on_receive_fields(cnc_pos, nil, {[program] = true}, player)
@@ -131,7 +131,7 @@ describe("Technic CNC", function()
 			assert.not_nil(net)
 
 			-- Fill input inventory and select program
-			local on_receive_fields = minetest.registered_nodes["technic:cnc_mk2"].on_receive_fields
+			local on_receive_fields = core.registered_nodes["technic:cnc_mk2"].on_receive_fields
 			assert.equals("function", type(on_receive_fields))
 			place_itemstack(cnc_pos, "default:wood 99")
 			on_receive_fields(cnc_pos, nil, {[program] = true}, player)
@@ -162,13 +162,13 @@ describe("Technic CNC", function()
 			assert.not_nil(net)
 
 			-- Fill input inventory and select program
-			local on_receive_fields = minetest.registered_nodes["technic:cnc_mk2"].on_receive_fields
+			local on_receive_fields = core.registered_nodes["technic:cnc_mk2"].on_receive_fields
 			assert.equals("function", type(on_receive_fields))
 			place_itemstack(cnc_pos, "default:wood 99")
 			on_receive_fields(cnc_pos, nil, {[program] = true}, player)
 
 			-- Clear and disable machine
-			local meta = minetest.get_meta(cnc_pos)
+			local meta = core.get_meta(cnc_pos)
 			technic_cnc.disable(meta)
 
 			-- Run network and check results

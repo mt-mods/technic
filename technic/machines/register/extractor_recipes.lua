@@ -11,9 +11,9 @@ function technic.register_extractor_recipe(data)
 	technic.register_recipe("extracting", data)
 end
 
-if minetest.get_modpath("dye") then
+if core.get_modpath("dye") then
 	-- check if we are using dye or unifieddyes
-	local unifieddyes = minetest.get_modpath("unifieddyes")
+	local unifieddyes = core.get_modpath("unifieddyes")
 
 	-- register recipes with the same crafting ratios as `dye` provides
 	local dye_recipes = {
@@ -41,11 +41,11 @@ if minetest.get_modpath("dye") then
 		{"bushes:blueberry",                  unifieddyes and "unifieddyes:magenta_s50 4" or "dye:magenta 4"},
 	}
 
-	if minetest.get_modpath("hunger") and minetest.get_modpath("ethereal") then
+	if core.get_modpath("hunger") and core.get_modpath("ethereal") then
 		table.insert(dye_recipes, {"ethereal:willow_twig 12", "technic:aspirin_pill"})
 	end
 
-	if minetest.get_modpath("farming") then
+	if core.get_modpath("farming") then
 		-- Dyes ---
 		-- better recipes for farming's crafting methods (twice the output)
 		table.insert(dye_recipes, {"farming:chili_pepper", "dye:red 4"})
@@ -64,7 +64,7 @@ if minetest.get_modpath("dye") then
 		table.insert(dye_recipes, {"farming:garlic", "dye:white 2"})
 	end
 
-	if minetest.get_modpath("ethereal") then
+	if core.get_modpath("ethereal") then
 		table.insert(dye_recipes, {"ethereal:seaweed", "dye:dark_green 6"})
 		table.insert(dye_recipes, {"ethereal:coral2", "dye:cyan 6"})
 		table.insert(dye_recipes, {"ethereal:coral3", "dye:orange 6"})
@@ -75,7 +75,7 @@ if minetest.get_modpath("dye") then
 		table.insert(dye_recipes, {"ethereal:crystalgrass", "dye:blue 4"})
 	end
 
-	if minetest.get_modpath("bakedclay") then
+	if core.get_modpath("bakedclay") then
 		table.insert(dye_recipes, {"bakedclay:delphinium", "dye:cyan 8"})
 		table.insert(dye_recipes, {"bakedclay:thistle", "dye:magenta 8"})
 		table.insert(dye_recipes, {"bakedclay:lazarus", "dye:pink 8"})
@@ -83,7 +83,7 @@ if minetest.get_modpath("dye") then
 	end
 
 
-	if minetest.get_modpath("bonemeal") then
+	if core.get_modpath("bonemeal") then
 		table.insert(dye_recipes, {"bonemeal:bone", "dye:white 8"})
 		table.insert(dye_recipes, {"bonemeal:bonemeal", "dye:white 4"})
 	end
@@ -95,12 +95,12 @@ if minetest.get_modpath("dye") then
 	-- overwrite the existing crafting recipes
 	local dyes = {"white", "red", "yellow", "blue", "violet", "orange"}
 	for _, color in ipairs(dyes) do
-		minetest.clear_craft({
+		core.clear_craft({
 			recipe = {
 				{"group:flower,color_"..color}
 			},
 		})
-		minetest.register_craft({
+		core.register_craft({
 			output = "dye:"..color.." 1",
 			recipe = {
 				{"group:flower,color_"..color}
@@ -108,12 +108,12 @@ if minetest.get_modpath("dye") then
 		})
 	end
 
-	minetest.clear_craft({
+	core.clear_craft({
 		recipe = {
 			{"group:coal"}
 		},
 	})
-	minetest.register_craft({
+	core.register_craft({
 		output = "dye:black 1",
 		recipe = {
 			{"group:coal"}
@@ -121,12 +121,12 @@ if minetest.get_modpath("dye") then
 	})
 
 	if unifieddyes then
-		minetest.clear_craft({
+		core.clear_craft({
 			recipe = {
 				{"default:cactus"}
 			},
 		})
-		minetest.register_craft({
+		core.register_craft({
 			output = "dye:green 1",
 			recipe = {
 				{"default:cactus"}

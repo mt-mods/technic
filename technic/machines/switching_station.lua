@@ -1,7 +1,7 @@
 -- See also technic/doc/api.md
 
-local mesecons_path = minetest.get_modpath("mesecons")
-local digilines_path = minetest.get_modpath("digilines")
+local mesecons_path = core.get_modpath("mesecons")
+local digilines_path = core.get_modpath("digilines")
 
 local S = technic.getter
 local mat = technic.materials
@@ -9,7 +9,7 @@ local mat = technic.materials
 local cable_entry = "^technic_cable_connection_overlay.png"
 local no_network_infotext = S("@1 Has No Network", S("Switching Station"))
 
-minetest.register_craft({
+core.register_craft({
 	output = "technic:switching_station",
 	recipe = {
 		{"",                     "technic:lv_transformer", ""},
@@ -21,7 +21,7 @@ minetest.register_craft({
 local function start_network(pos)
 	local tier = technic.sw_pos2tier(pos)
 	if not tier then
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 		meta:set_string("infotext", no_network_infotext)
 	else
 		local network_id = technic.sw_pos2network(pos) or technic.create_network(pos)
@@ -39,7 +39,7 @@ if mesecons_path then
 	}}
 end
 
-minetest.register_node("technic:switching_station",{
+core.register_node("technic:switching_station",{
 	description = S("Switching Station"),
 	tiles  = {
 		"technic_water_mill_top_active.png",
@@ -55,13 +55,13 @@ minetest.register_node("technic:switching_station",{
 	connect_sides = {"bottom"},
 	sounds = technic.sounds.node_sound_wood_defaults(),
 	on_construct = function(pos)
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 		meta:set_string("infotext", S("Switching Station"))
 		meta:set_string("formspec", "field[channel;"..S("Digiline Channel")..";${channel}]")
 		start_network(pos)
 
 		-- start nodetimer
-		minetest.get_node_timer(pos):start(1.0)
+		core.get_node_timer(pos):start(1.0)
 	end,
 	on_destruct = function(pos)
 		-- Remove network when last switching stations is removed
@@ -76,11 +76,11 @@ minetest.register_node("technic:switching_station",{
 			return
 		end
 		local plname = sender:get_player_name()
-		if minetest.is_protected(pos, plname) then
-			minetest.record_protection_violation(pos, plname)
+		if core.is_protected(pos, plname) then
+			core.record_protection_violation(pos, plname)
 			return
 		end
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 		meta:set_string("channel", fields.channel)
 	end,
 
@@ -90,7 +90,7 @@ minetest.register_node("technic:switching_station",{
 		-- Check if network is overloaded / conflicts with another network
 		if network_id then
 			local infotext
-			local meta = minetest.get_meta(pos)
+			local meta = core.get_meta(pos)
 			if technic.is_overloaded(network_id) then
 				local remaining = technic.reset_overloaded(network_id)
 				if remaining > 0 then
@@ -142,7 +142,7 @@ minetest.register_node("technic:switching_station",{
 				if msg ~= "GET" and msg ~= "get" then
 					return
 				end
-				local meta = minetest.get_meta(pos)
+				local meta = core.get_meta(pos)
 				if channel ~= meta:get_string("channel") then
 					return
 				end
@@ -171,7 +171,7 @@ minetest.register_node("technic:switching_station",{
 -- Timeout ABM
 -- Timeout for a node in case it was disconnected from the network
 -- A node must be touched by the station continuously in order to function
-minetest.register_abm({
+core.register_abm({
 	label = "Machines: timeout check",
 	nodenames = {"group:technic_machine"},
 	interval   = 1,

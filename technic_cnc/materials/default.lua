@@ -239,7 +239,7 @@ technic_cnc.register_all(
 	S("Gold")
 )
 
-if minetest.get_modpath("technic_worldgen") then
+if core.get_modpath("technic_worldgen") then
 	technic_cnc.register_all(
 		"default:steelblock",
 		{cracky = 1, level = 2, not_in_creative_inventory = 1},

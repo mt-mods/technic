@@ -28,7 +28,7 @@ local function tap_batteries(battery_positions, target, test)
 			break
 		end
 		node_inventory_table.pos = location.pos
-		local inv = minetest.get_inventory(node_inventory_table)
+		local inv = core.get_inventory(node_inventory_table)
 		local invlist = inv:get_list("batteries")
 
 		if (invlist == nil) then -- This check shouldn't be needed, it's yet another guard against https://github.com/minetest/minetest/issues/8067
@@ -62,17 +62,17 @@ local function tap_batteries(battery_positions, target, test)
 end
 
 local function power_connector_compat()
-	local digtron_technic_run = minetest.registered_nodes["digtron:power_connector"].technic_run
-	minetest.override_item("digtron:power_connector",{
+	local digtron_technic_run = core.registered_nodes["digtron:power_connector"].technic_run
+	core.override_item("digtron:power_connector",{
 		technic_run = function(pos, node)
 			local network_id = technic.pos2network(pos)
 			local sw_pos = network_id and technic.network2sw_pos(network_id)
-			local meta = minetest.get_meta(pos)
-			meta:set_string("HV_network", sw_pos and minetest.pos_to_string(sw_pos) or "")
+			local meta = core.get_meta(pos)
+			meta:set_string("HV_network", sw_pos and core.pos_to_string(sw_pos) or "")
 			return digtron_technic_run(pos, node)
 		end,
 		technic_on_disable = function(pos, node)
-			local meta = minetest.get_meta(pos)
+			local meta = core.get_meta(pos)
 			meta:set_string("HV_network", "")
 			meta:set_string("HV_EU_input", "")
 		end,
@@ -81,15 +81,15 @@ end
 
 local function battery_holder_compat()
 	-- Override battery holder
-	local tube = minetest.registered_nodes["digtron:battery_holder"].tube
+	local tube = core.registered_nodes["digtron:battery_holder"].tube
 	tube.can_insert = function(pos, node, stack, direction)
 		if technic.get_charge(stack) > 0 then
-			local inv = minetest.get_meta(pos):get_inventory()
+			local inv = core.get_meta(pos):get_inventory()
 			return inv:room_for_item("batteries", stack)
 		end
 		return false
 	end
-	minetest.override_item("digtron:battery_holder",{
+	core.override_item("digtron:battery_holder",{
 		allow_metadata_inventory_put = function(pos, listname, index, stack, player)
 			return (listname == "batteries" and technic.get_charge(stack) > 0) and stack:get_count() or 0
 		end,
@@ -99,11 +99,11 @@ local function battery_holder_compat()
 	digtron.tap_batteries = tap_batteries
 end
 
-minetest.register_on_mods_loaded(function()
-	if minetest.registered_nodes["digtron:power_connector"] then
+core.register_on_mods_loaded(function()
+	if core.registered_nodes["digtron:power_connector"] then
 		power_connector_compat()
 	end
-	if minetest.registered_nodes["digtron:battery_holder"] then
+	if core.registered_nodes["digtron:battery_holder"] then
 		battery_holder_compat()
 	end
 end)

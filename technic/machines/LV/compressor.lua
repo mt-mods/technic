@@ -2,9 +2,9 @@
 local S = technic.getter
 local mat = technic.materials
 
-minetest.register_alias("compressor", "technic:lv_compressor")
+core.register_alias("compressor", "technic:lv_compressor")
 
-minetest.register_craft({
+core.register_craft({
 	output = 'technic:lv_compressor',
 	recipe = {
 		{mat.stone,            'basic_materials:motor',          mat.stone},

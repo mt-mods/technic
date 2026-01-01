@@ -14,17 +14,17 @@ technic.register_power_tool("technic:vacuum", {
 		if original_charge < vacuum_charge_per_object then
 			return
 		end
-		minetest.sound_play("vacuumcleaner", {to_player = user:get_player_name(), gain = 0.4}, true)
+		core.sound_play("vacuumcleaner", {to_player = user:get_player_name(), gain = 0.4}, true)
 		local pos = user:get_pos()
 		local inv = user:get_inventory()
 		local charge = original_charge
-		for _, object in ipairs(minetest.get_objects_inside_radius(pos, vacuum_range)) do
+		for _, object in ipairs(core.get_objects_inside_radius(pos, vacuum_range)) do
 			local entity = object:get_luaentity()
 			if not object:is_player() and entity and entity.name == "__builtin:item" and entity.itemstring ~= "" then
 				if inv and inv:room_for_item("main", ItemStack(entity.itemstring)) then
 					charge = charge - vacuum_charge_per_object
 					inv:add_item("main", ItemStack(entity.itemstring))
-					minetest.sound_play("item_drop_pickup", {to_player = user:get_player_name(), gain = 0.4}, true)
+					core.sound_play("item_drop_pickup", {to_player = user:get_player_name(), gain = 0.4}, true)
 					entity.itemstring = ""
 					object:remove()
 					if charge < vacuum_charge_per_object then
@@ -40,7 +40,7 @@ technic.register_power_tool("technic:vacuum", {
 	end,
 })
 
-minetest.register_craft({
+core.register_craft({
 	output = 'technic:vacuum',
 	recipe = {
 		{'pipeworks:tube_1',              'pipeworks:filter', 'technic:battery'},

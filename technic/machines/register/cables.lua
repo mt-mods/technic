@@ -22,7 +22,7 @@ local function item_place_override_node(itemstack, placer, pointed, node)
 	temp_itemstack:set_name(node.name)
 	local original_count = temp_itemstack:get_count()
 	temp_itemstack =
-		minetest.item_place(temp_itemstack, placer, pointed, node.param2) or
+		core.item_place(temp_itemstack, placer, pointed, node.param2) or
 		temp_itemstack
 	-- Remove the same number of items from the real itemstack
 	itemstack:take_item(original_count - temp_itemstack:get_count())
@@ -108,7 +108,7 @@ function technic.register_cable_plate(nodename, data)
 				local num = index < 0 and -index + 3 or index
 				local crtl = placer:get_player_control()
 				if (crtl.aux1 or crtl.sneak) and not (crtl.aux1 and crtl.sneak) and index ~= 0 then
-					local fine_pointed = minetest.pointed_thing_to_face_pos(placer, pointed_thing)
+					local fine_pointed = core.pointed_thing_to_face_pos(placer, pointed_thing)
 					fine_pointed = vector.direction(pointed_thing.above,fine_pointed)
 					fine_pointed[xyz[index < 0 and -index or index]] = nil
 					local key_a, a = next(fine_pointed)
@@ -141,9 +141,9 @@ function technic.register_cable_plate(nodename, data)
 			-- mode 1 is left-click, mode 2 is right-click
 			local dir = mode == 1 and 1 or (mode == 2 and -1 or 0)
 			local num = tonumber(node.name:sub(-1)) + dir - 1
-			minetest.swap_node(pos, {name = nodename.."_"..(num % 6 + 1)})
+			core.swap_node(pos, {name = nodename.."_"..(num % 6 + 1)})
 		end
-		minetest.register_node(nodename.."_"..i, def)
+		core.register_node(nodename.."_"..i, def)
 		cable_tier[nodename.."_"..i] = def.tier
 	end
 end
@@ -157,6 +157,6 @@ function technic.register_cable(nodename, data)
 	def.wield_image = def.wield_image or def.wield_image ~= false and texture_basename.."_wield.png" or nil
 	def._mcl_blast_resistance = 1
 	def._mcl_hardness = 0.8
-	minetest.register_node(nodename, def)
+	core.register_node(nodename, def)
 	cable_tier[nodename] = def.tier
 end

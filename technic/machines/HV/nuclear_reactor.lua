@@ -13,8 +13,8 @@ local burn_ticks = 7 * 24 * 60 * 60  -- Seconds
 local power_supply = 100000  -- EUs
 local fuel_type = "technic:uranium_fuel"  -- The reactor burns this
 local digiline_meltdown = technic.config:get_bool("enable_nuclear_reactor_digiline_selfdestruct")
-local has_digilines = minetest.get_modpath("digilines")
-local has_mcl = minetest.get_modpath("mcl_core")
+local has_digilines = core.get_modpath("digilines")
+local has_mcl = core.get_modpath("mcl_core")
 local mat = technic.materials
 
 local S = technic.getter
@@ -23,7 +23,7 @@ local reactor_desc = S("@1 Nuclear Reactor Core", S("HV"))
 local cable_entry = "^technic_cable_connection_overlay.png"
 
 -- FIXME: Recipe should make more sense like a rod recepticle, steam chamber, HV generator?
-minetest.register_craft({
+core.register_craft({
 	output = 'technic:hv_nuclear_reactor_core',
 	recipe = {
 		{'technic:carbon_plate',          mat.obsidian_glass, 'technic:carbon_plate'},
@@ -32,7 +32,7 @@ minetest.register_craft({
 	}
 })
 
-local size = minetest.get_modpath("mcl_formspec") and "size[9,9]" or "size[8,9]"
+local size = core.get_modpath("mcl_formspec") and "size[9,9]" or "size[8,9]"
 local function make_reactor_formspec(meta)
 	local f = size..
 		"label[0,0;"..S("Nuclear Reactor Rod Compartment").."]"..
@@ -73,7 +73,7 @@ local SS_CLEAR = 2
 
 local reactor_siren = {}
 local function siren_set_state(pos, state)
-	local hpos = minetest.hash_node_position(pos)
+	local hpos = core.hash_node_position(pos)
 	local siren = reactor_siren[hpos]
 	if not siren then
 		if state == SS_OFF then return end
@@ -81,25 +81,25 @@ local function siren_set_state(pos, state)
 		reactor_siren[hpos] = siren
 	end
 	if state == SS_DANGER and siren.state ~= SS_DANGER then
-		if siren.handle then minetest.sound_stop(siren.handle) end
-		siren.handle = minetest.sound_play("technic_hv_nuclear_reactor_siren_danger_loop",
+		if siren.handle then core.sound_stop(siren.handle) end
+		siren.handle = core.sound_play("technic_hv_nuclear_reactor_siren_danger_loop",
 				{pos=pos, gain=1.5, loop=true, max_hear_distance=48})
 		siren.state = SS_DANGER
 	elseif state == SS_CLEAR then
-		if siren.handle then minetest.sound_stop(siren.handle) end
-		local clear_handle = minetest.sound_play("technic_hv_nuclear_reactor_siren_clear",
+		if siren.handle then core.sound_stop(siren.handle) end
+		local clear_handle = core.sound_play("technic_hv_nuclear_reactor_siren_clear",
 				{pos=pos, gain=1.5, loop=false, max_hear_distance=48})
 		siren.handle = clear_handle
 		siren.state = SS_CLEAR
-		minetest.after(10, function()
+		core.after(10, function()
 			if siren.handle ~= clear_handle then return end
-			minetest.sound_stop(clear_handle)
+			core.sound_stop(clear_handle)
 			if reactor_siren[hpos] == siren then
 				reactor_siren[hpos] = nil
 			end
 		end)
 	elseif state == SS_OFF and siren.state ~= SS_OFF then
-		if siren.handle then minetest.sound_stop(siren.handle) end
+		if siren.handle then core.sound_stop(siren.handle) end
 		reactor_siren[hpos] = nil
 	end
 end
@@ -162,11 +162,11 @@ local function reactor_structure_badness(pos)
 	local data = vm:get_data()
 	local area = VoxelArea:new({MinEdge=MinEdge, MaxEdge=MaxEdge})
 
-	local c_blast_concrete = minetest.get_content_id("technic:blast_resistant_concrete")
-	local c_lead = minetest.get_content_id("technic:lead_block")
-	local c_steel = minetest.get_content_id("technic:stainless_steel_block")
-	local c_water_source = minetest.get_content_id(mat.water_source)
-	local c_water_flowing = minetest.get_content_id(mat.water_flowing)
+	local c_blast_concrete = core.get_content_id("technic:blast_resistant_concrete")
+	local c_lead = core.get_content_id("technic:lead_block")
+	local c_steel = core.get_content_id("technic:stainless_steel_block")
+	local c_water_source = core.get_content_id(mat.water_source)
+	local c_water_flowing = core.get_content_id(mat.water_flowing)
 
 	local blast_layer, steel_layer, lead_layer, water_layer = 0, 0, 0, 0
 
@@ -236,16 +236,16 @@ local mcl_expl_info = {
 }
 
 local function melt_down_reactor(pos)
-	minetest.log("action", "A reactor melted down at "..minetest.pos_to_string(pos))
-	if minetest.get_modpath("mcl_explosions") then
+	core.log("action", "A reactor melted down at "..core.pos_to_string(pos))
+	if core.get_modpath("mcl_explosions") then
 		mcl_explosions.explode(pos, 30, mcl_expl_info)
 	end
-	minetest.set_node(pos, {name = "technic:corium_source"})
+	core.set_node(pos, {name = "technic:corium_source"})
 end
 
 
 local function start_reactor(pos, meta)
-	if minetest.get_node(pos).name ~= "technic:hv_nuclear_reactor_core" then
+	if core.get_node(pos).name ~= "technic:hv_nuclear_reactor_core" then
 		return false
 	end
 	local inv = meta:get_inventory()
@@ -274,13 +274,13 @@ local function start_reactor(pos, meta)
 end
 
 
-minetest.register_abm({
+core.register_abm({
 	label = "Machines: reactor melt-down check",
 	nodenames = {"technic:hv_nuclear_reactor_core_active"},
 	interval = 4,
 	chance = 1,
 	action = function (pos, node)
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 		local badness = reactor_structure_badness(pos)
 		local accum_badness = meta:get_int("structure_accumulated_badness")
 		if badness == 0 then
@@ -301,7 +301,7 @@ minetest.register_abm({
 })
 
 local function run(pos, node)
-	local meta = minetest.get_meta(pos)
+	local meta = core.get_meta(pos)
 	local burn_time = meta:get_int("burn_time") or 0
 	if burn_time >= burn_ticks or burn_time == 0 then
 		if has_digilines and meta:get_int("HV_EU_supply") == power_supply then
@@ -336,12 +336,12 @@ end
 
 local nuclear_reactor_receive_fields = function(pos, formname, fields, sender)
 	local player_name = sender:get_player_name()
-	if minetest.is_protected(pos, player_name) then
-		minetest.chat_send_player(player_name, S("You are not allowed to edit this!"))
-		minetest.record_protection_violation(pos, player_name)
+	if core.is_protected(pos, player_name) then
+		core.chat_send_player(player_name, S("You are not allowed to edit this!"))
+		core.record_protection_violation(pos, player_name)
 		return
 	end
-	local meta = minetest.get_meta(pos)
+	local meta = core.get_meta(pos)
 	local update_formspec = false
 	if fields.channel or fields.remote_channel then
 		-- TODO: Remove "remote_channel" and use de facto standard "channel"
@@ -351,9 +351,9 @@ local nuclear_reactor_receive_fields = function(pos, formname, fields, sender)
 	if fields.start then
 		local b = start_reactor(pos, meta)
 		if b then
-			minetest.chat_send_player(player_name, S("Start successful"))
+			core.chat_send_player(player_name, S("Start successful"))
 		else
-			minetest.chat_send_player(player_name, S("Error"))
+			core.chat_send_player(player_name, S("Error"))
 		end
 	end
 	if fields.autostart then
@@ -370,7 +370,7 @@ local nuclear_reactor_receive_fields = function(pos, formname, fields, sender)
 end
 
 local digiline_def = function(pos, _, channel, msg)
-	local meta = minetest.get_meta(pos)
+	local meta = core.get_meta(pos)
 	if meta:get_string("enable_digiline") ~= "true" or
 			-- TODO: Remove "remote_channel" and use de facto standard "channel"
 			channel ~= (meta:get("channel") or meta:get_string("remote_channel")) then
@@ -414,10 +414,10 @@ local digiline_def = function(pos, _, channel, msg)
 			rods = invtable
 		})
 	elseif digiline_meltdown and msg.command == "self_destruct" and
-			minetest.get_node(pos).name == "technic:hv_nuclear_reactor_core_active" then
+			core.get_node(pos).name == "technic:hv_nuclear_reactor_core_active" then
 		if msg.timer ~= 0 and type(msg.timer) == "number" then
 			siren_danger(pos, meta)
-			minetest.after(msg.timer, melt_down_reactor, pos)
+			core.after(msg.timer, melt_down_reactor, pos)
 		else
 			melt_down_reactor(pos)
 		end
@@ -437,7 +437,7 @@ local digiline_def = function(pos, _, channel, msg)
 	end
 end
 
-minetest.register_node("technic:hv_nuclear_reactor_core", {
+core.register_node("technic:hv_nuclear_reactor_core", {
 	description = reactor_desc,
 	tiles = {
 		"technic_hv_nuclear_reactor_core.png",
@@ -456,7 +456,7 @@ minetest.register_node("technic:hv_nuclear_reactor_core", {
 	stack_max = 1,
 	on_receive_fields = nuclear_reactor_receive_fields,
 	on_construct = function(pos)
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 		meta:set_string("infotext", reactor_desc)
 		meta:set_string("formspec", make_reactor_formspec(meta))
 		local inv = meta:get_inventory()
@@ -486,7 +486,7 @@ minetest.register_node("technic:hv_nuclear_reactor_core", {
 	technic_run = run,
 })
 
-minetest.register_node("technic:hv_nuclear_reactor_core_active", {
+core.register_node("technic:hv_nuclear_reactor_core_active", {
 	tiles = {
 		"technic_hv_nuclear_reactor_core.png",
 		"technic_hv_nuclear_reactor_core.png"..cable_entry
@@ -529,14 +529,14 @@ minetest.register_node("technic:hv_nuclear_reactor_core_active", {
 	on_metadata_inventory_take = technic.machine_on_inventory_take,
 	technic_run = run,
 	technic_on_disable = function(pos, node)
-		local timer = minetest.get_node_timer(pos)
+		local timer = core.get_node_timer(pos)
 		timer:start(1)
         end,
 	on_timer = function(pos, node)
 		-- Connected back?
 		if technic.get_timeout("HV", pos) > 0 then return false end
 
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 		local burn_time = meta:get_int("burn_time") or 0
 
 		if burn_time >= burn_ticks or burn_time == 0 then

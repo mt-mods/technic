@@ -1,8 +1,8 @@
 
-local have_ui = minetest.get_modpath("unified_inventory")
-local have_cg = minetest.get_modpath("craftguide")
-local have_mcl_cg = minetest.get_modpath("mcl_craftguide")
-local have_i3 = minetest.get_modpath("i3")
+local have_ui = core.get_modpath("unified_inventory")
+local have_cg = core.get_modpath("craftguide")
+local have_mcl_cg = core.get_modpath("mcl_craftguide")
+local have_i3 = core.get_modpath("i3")
 
 technic.recipes = {
 	cooking = {input_size = 1, output_size = 1, recipes = {}},
@@ -127,7 +127,7 @@ end
 local function get_items_in_group(group)
 	local items = {}
 	local groups = group:split(",")
-	for name, def in pairs(minetest.registered_items) do
+	for name, def in pairs(core.registered_items) do
 		local match = true
 		for _,g in pairs(groups) do
 			if not def.groups[g] then
@@ -224,11 +224,11 @@ end
 
 local function cache_all_recipes()
 	-- Cache built in cooking recipes
-	for item in pairs(minetest.registered_items) do
-		local recipes = minetest.get_all_craft_recipes(item)
+	for item in pairs(core.registered_items) do
+		local recipes = core.get_all_craft_recipes(item)
 		for _,recipe in ipairs(recipes or {}) do
 			if recipe.method == "cooking" then
-				local result, new_input = minetest.get_craft_result(recipe)
+				local result, new_input = core.get_craft_result(recipe)
 				if result and result.time > 0 then
 					local data = {
 						method = "cooking",
@@ -256,8 +256,8 @@ local function cache_all_recipes()
 end
 
 -- Slightly hacky way to be the first function called
-table.insert(minetest.registered_on_mods_loaded, 1, cache_all_recipes)
-minetest.callback_origins[cache_all_recipes] = {
+table.insert(core.registered_on_mods_loaded, 1, cache_all_recipes)
+core.callback_origins[cache_all_recipes] = {
 	mod = "technic",
 	name = "register_on_mods_loaded",
 }

@@ -1,7 +1,7 @@
 
 local S = technic.getter
 local mat = technic.materials
-local has_mcl = minetest.get_modpath("mcl_core")
+local has_mcl = core.get_modpath("mcl_core")
 
 technic.register_recipe_type("compressing", {
 	description = S("Compressing"),
@@ -27,7 +27,7 @@ local recipes = {
 	{"technic:graphite 25",        mat.diamond}
 }
 
-if minetest.get_modpath("ethereal") then
+if core.get_modpath("ethereal") then
 	-- the density of charcoal is ~1/10 of coal, otherwise it's pure carbon
 	table.insert(recipes, {"ethereal:charcoal_lump 10", mat.coal_lump.." 1"})
 end
@@ -35,19 +35,19 @@ end
 
 -- defuse the default sandstone recipe, since we have the compressor to take over in a more realistic manner
 if not has_mcl then
-	minetest.clear_craft({
+	core.clear_craft({
 		recipe = {
 			{"default:sand", "default:sand"},
 			{"default:sand", "default:sand"},
 		},
 	})
-	minetest.clear_craft({
+	core.clear_craft({
 		recipe = {
 			{"default:desert_sand", "default:desert_sand"},
 			{"default:desert_sand", "default:desert_sand"},
 		},
 	})
-	minetest.clear_craft({
+	core.clear_craft({
 		recipe = {
 			{"default:silver_sand", "default:silver_sand"},
 			{"default:silver_sand", "default:silver_sand"},

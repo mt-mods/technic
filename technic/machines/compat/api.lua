@@ -12,7 +12,7 @@ local function shallow_copy(t)
 end
 
 function technic.register_compat_v1_to_v2(name, data, default_name)
-	local modname = minetest.get_current_modname()
+	local modname = core.get_current_modname()
 	local colon, def
 	if type(name) == "table" then
 		-- Log old API usage, swap name to def and set name from def table
@@ -22,7 +22,7 @@ function technic.register_compat_v1_to_v2(name, data, default_name)
 		def.machine_name = nil
 		def.description = def.machine_desc
 		def.machine_desc = nil
-		minetest.log("warning", msg:format(tostring(name), tostring(modname)))
+		core.log("warning", msg:format(tostring(name), tostring(modname)))
 	else
 		def = shallow_copy(data)
 	end
@@ -33,7 +33,7 @@ function technic.register_compat_v1_to_v2(name, data, default_name)
 		-- Make sure that all fields are set, can be empty but pattern matcher must succeed.
 		assert(colon and modname and name)
 	elseif def.modname then
-		minetest.log("warning", ("Definition contains modname for %s"):format(name))
+		core.log("warning", ("Definition contains modname for %s"):format(name))
 		colon = ":"
 		modname = def.modname
 	end

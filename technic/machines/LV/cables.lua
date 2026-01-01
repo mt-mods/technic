@@ -1,9 +1,9 @@
 local S = technic.getter
 local mat = technic.materials
 
-minetest.register_alias("lv_cable", "technic:lv_cable")
+core.register_alias("lv_cable", "technic:lv_cable")
 
-minetest.register_craft({
+core.register_craft({
 	output = 'technic:lv_cable 6',
 	recipe = {
 		{mat.paper,        mat.paper,        mat.paper},
@@ -12,7 +12,7 @@ minetest.register_craft({
 	}
 })
 
-minetest.register_craft({
+core.register_craft({
 	output = "technic:lv_cable_plate_1 5",
 	recipe = {
 		{""                , ""                , "technic:lv_cable"},
@@ -21,7 +21,7 @@ minetest.register_craft({
 	}
 })
 
-minetest.register_craft({
+core.register_craft({
 	output = "technic:lv_cable",
 	recipe = {{"technic:lv_cable_plate_1"}}
 })
@@ -40,7 +40,7 @@ technic.register_cable_plate("technic:lv_cable_plate", {
 	tiles = {"technic_lv_cable.png"},
 })
 
-if minetest.get_modpath("digilines") then
+if core.get_modpath("digilines") then
 	technic.register_cable("technic:lv_digi_cable", {
 		tier = "LV",
 		size = 2/16,

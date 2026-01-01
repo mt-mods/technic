@@ -24,7 +24,7 @@ local btn_width = (form_width - ((btn_count + 1) * btn_spacing)) / btn_count
 
 local open_formspecs = {}
 
-local formspec_escape = minetest.formspec_escape
+local formspec_escape = core.formspec_escape
 local function fmtf(n) return type(n) == "number" and ("%0.3f"):format(n) or n end
 local function fs_x_pos(i) return (btn_spacing * i) + (btn_width * (i - 1)) end
 local function create_button(index, y, h, name, label, exit, modifier)
@@ -53,7 +53,7 @@ local formspec_format_string = "formspec_version[3]" ..
 	"tablecolumns[indent,width=0.2;text,width=13;text,width=13;text,align=center]" ..
 	("table[0.1,3.4;%s,%s;items;1,Property,Value,Unit%%s]"):format(fmtf(form_width - 0.2), fmtf(form_height - 4.4))
 
-minetest.register_craft({
+core.register_craft({
 	output = 'technic:multimeter',
 	recipe = {
 		{'basic_materials:copper_strip',  'technic:rubber',     'basic_materials:copper_strip'},
@@ -110,7 +110,7 @@ local function base36(num)
 	return result
 end
 
--- Clean version of minetest.pos_to_string
+-- Clean version of core.pos_to_string
 local function v2s(v) return ("%s,%s,%s"):format(v.x,v.y,v.z) end
 -- Size of hash table
 local function count(t)
@@ -124,7 +124,7 @@ local function percent(val, max)
     return p > 99.99 and "100" or ("%0.2f"):format(p)
 end
 -- Get network TTL
-local function net_ttl(net) return type(net.timeout) == "number" and (net.timeout - minetest.get_us_time()) end
+local function net_ttl(net) return type(net.timeout) == "number" and (net.timeout - core.get_us_time()) end
 -- Microseconds to milliseconds
 local function us2ms(val) return type(val) == "number" and (val / 1000) or 0 end
 -- Microseconds to seconds
@@ -196,11 +196,11 @@ local function multimeter_inspect(itemstack, player, pos, fault)
 		end
 	end
 	open_formspecs[name] = { pos = pos, itemstack = itemstack }
-	minetest.show_formspec(name, "technic:multimeter", formspec(data))
+	core.show_formspec(name, "technic:multimeter", formspec(data))
 end
 
 local function remote_start_net(player, pos)
-	local sw_pos = {x=pos.x,y=pos.y+1,z=pos.z}
+	local sw_pos = vector.offset(pos, 0, 1, 0)
 	-- Try to load switch network node
 	local sw_node = technic.get_or_load_node(sw_pos)
 	if sw_node.name ~= "technic:switching_station" then return "switchload" end
@@ -208,7 +208,7 @@ local function remote_start_net(player, pos)
 	local tier = technic.sw_pos2tier(sw_pos, true)
 	if not tier then return "cableload" end
 	-- Check protections
-	if minetest.is_protected(pos, player:get_player_name()) then return "protected" end
+	if core.is_protected(pos, player:get_player_name()) then return "protected" end
 	-- All checks passed, start network
 	local network_id = technic.sw_pos2network(sw_pos) or technic.create_network(sw_pos)
 	technic.activate_network(network_id, remote_start_ttl)
@@ -226,7 +226,7 @@ local function async_itemstack_use_charge(itemstack, player, multiplier)
 	return invstack, fault
 end
 
-minetest.register_on_player_receive_fields(function(player, formname, fields)
+core.register_on_player_receive_fields(function(player, formname, fields)
 	if formname ~= "technic:multimeter" then
 		-- Not our formspec, tell engine to continue with other registered handlers
 		return
@@ -252,7 +252,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 					number = 0xE0B020,
 					world_pos = net_pos
 				})
-				minetest.after(90, function() if player then player:hud_remove(id) end end)
+				core.after(90, function() if player then player:hud_remove(id) end end)
 			end
 		elseif fields.rs and fields.net and fields.net ~= "" then
 			-- Use charge first before even attempting remote start
@@ -278,7 +278,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 end)
 
 local function check_node(pos)
-	local name = minetest.get_node(pos).name
+	local name = core.get_node(pos).name
 	if technic.machine_tiers[name] or technic.get_cable_tier(name) or name == "technic:switching_station" then
 		return name
 	end
@@ -291,7 +291,7 @@ technic.register_power_tool("technic:multimeter", {
 	liquids_pointable = false,
 	max_charge = max_charge,
 	on_use = function(itemstack, player, pointed_thing)
-		local pos = minetest.get_pointed_thing_position(pointed_thing, false)
+		local pos = core.get_pointed_thing_position(pointed_thing, false)
 		if pos and pointed_thing.type == "node" then
 			local name = check_node(pos)
 			if name then

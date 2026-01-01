@@ -1,7 +1,7 @@
 -- MV alloy furnace
 local S = technic.getter
 
-minetest.register_craft({
+core.register_craft({
 	output = 'technic:mv_alloy_furnace',
 	recipe = {
 		{'technic:stainless_steel_ingot', 'technic:lv_alloy_furnace', 'technic:stainless_steel_ingot'},

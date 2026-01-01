@@ -5,9 +5,9 @@
 
 local mat = technic.materials
 
-minetest.register_alias("lv_generator", "technic:lv_generator")
+core.register_alias("lv_generator", "technic:lv_generator")
 
-minetest.register_craft({
+core.register_craft({
 	output = 'technic:lv_generator',
 	recipe = {
 		{mat.stone, mat.furnace,        mat.stone},

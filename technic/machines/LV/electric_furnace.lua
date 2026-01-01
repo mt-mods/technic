@@ -4,7 +4,7 @@ local S = technic.getter
 local mat = technic.materials
 
 -- FIXME: kpoppel I'd like to introduce an induction heating element here also
-minetest.register_craft({
+core.register_craft({
 	output = 'technic:lv_electric_furnace',
 	recipe = {
 		{mat.cobble, mat.cobble,         mat.cobble},

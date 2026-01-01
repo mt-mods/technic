@@ -1,7 +1,7 @@
 -- MV freezer
 local S = technic.getter
 
-minetest.register_craft({
+core.register_craft({
 	output = 'technic:mv_freezer',
 	recipe = {
 		{'technic:stainless_steel_ingot', 'basic_materials:motor',          'technic:stainless_steel_ingot'},

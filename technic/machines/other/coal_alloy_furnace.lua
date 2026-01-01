@@ -4,7 +4,7 @@
 local S = technic.getter
 local mat = technic.materials
 
-minetest.register_craft({
+core.register_craft({
 	output = 'technic:coal_alloy_furnace',
 	recipe = {
 		{mat.brick, mat.brick, mat.brick},
@@ -14,7 +14,7 @@ minetest.register_craft({
 })
 
 local machine_name = S("Fuel-Fired Alloy Furnace")
-local size = minetest.get_modpath("mcl_formspec") and "size[9,9]" or "size[8,9]"
+local size = core.get_modpath("mcl_formspec") and "size[9,9]" or "size[8,9]"
 local formspec =
 	size..
 	"label[0,0;"..machine_name.."]"..
@@ -23,7 +23,7 @@ local formspec =
 	"list[context;src;2,1;2,1;]"..
 	"list[context;dst;5,1;2,2;]"
 
-if minetest.get_modpath("mcl_formspec") then
+if core.get_modpath("mcl_formspec") then
 	formspec = formspec..
 	mcl_formspec.get_itemslot_bg(2,3,1,1)..
 	mcl_formspec.get_itemslot_bg(2,1,2,1)..
@@ -47,7 +47,7 @@ formspec = formspec..
 	"listring[context;fuel]"..
 	"listring[current_player;main]"
 
-minetest.register_node("technic:coal_alloy_furnace", {
+core.register_node("technic:coal_alloy_furnace", {
 	description = machine_name,
 	tiles = {"technic_coal_alloy_furnace_top.png",  "technic_coal_alloy_furnace_bottom.png",
 	         "technic_coal_alloy_furnace_side.png", "technic_coal_alloy_furnace_side.png",
@@ -60,7 +60,7 @@ minetest.register_node("technic:coal_alloy_furnace", {
 	legacy_facedir_simple = true,
 	sounds = technic.sounds.node_sound_stone_defaults(),
 	on_construct = function(pos)
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 		meta:set_string("formspec", formspec)
 		meta:set_string("infotext", machine_name)
 		local inv = meta:get_inventory()
@@ -77,7 +77,7 @@ minetest.register_node("technic:coal_alloy_furnace", {
 	on_metadata_inventory_take = technic.machine_on_inventory_take,
 })
 
-minetest.register_node("technic:coal_alloy_furnace_active", {
+core.register_node("technic:coal_alloy_furnace_active", {
 	description = machine_name,
 	tiles = {"technic_coal_alloy_furnace_top.png",  "technic_coal_alloy_furnace_bottom.png",
 	         "technic_coal_alloy_furnace_side.png", "technic_coal_alloy_furnace_side.png",
@@ -100,13 +100,13 @@ minetest.register_node("technic:coal_alloy_furnace_active", {
 	on_metadata_inventory_take = technic.machine_on_inventory_take,
 })
 
-minetest.register_abm({
+core.register_abm({
 	label = "Machines: run coal alloy furnace",
 	nodenames = {"technic:coal_alloy_furnace", "technic:coal_alloy_furnace_active"},
 	interval = 1,
 	chance = 1,
 	action = function(pos, node, active_object_count, active_object_count_wider)
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 		local inv = meta:get_inventory()
 		local src_list = inv:get_list("src")
 		if not src_list then
@@ -156,7 +156,7 @@ minetest.register_abm({
 				"list[context;src;2,1;2,1;]"..
 				"list[context;dst;5,1;2,2;]"..
 
-				(minetest.get_modpath("mcl_formspec") and
+				(core.get_modpath("mcl_formspec") and
 					mcl_formspec.get_itemslot_bg(2,3,1,1)..
 					mcl_formspec.get_itemslot_bg(2,1,2,1)..
 					mcl_formspec.get_itemslot_bg(5,1,2,2)..
@@ -188,7 +188,7 @@ minetest.register_abm({
 
 		-- Next take a hard look at the fuel situation
 		local fuellist = inv:get_list("fuel")
-		local fuel, afterfuel = minetest.get_craft_result({method = "fuel", width = 1, items = fuellist})
+		local fuel, afterfuel = core.get_craft_result({method = "fuel", width = 1, items = fuellist})
 
 		if fuel.time <= 0 then
 			meta:set_string("infotext", S("@1 Out Of Fuel", machine_name))
