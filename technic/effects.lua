@@ -1,7 +1,7 @@
 
-local maxvel = vector.new(0.8, 0.8, 0.8)
-local minvel = -maxvel
-local acceleration = vector.zero()
+local maxvel = vector.new( 0.8, 0.8, 0.8)
+local minvel = vector.new(-0.8,-0.8,-0.8)
+local acceleration = vector.new(0, 0, 0)
 
 core.register_abm({
   nodenames = {"technic:hv_nuclear_reactor_core_active"},
