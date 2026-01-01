@@ -1,13 +1,13 @@
 
 local multiplier = technic.config:get_int("max_lag_reduction_multiplier")
 
-local last_step = minetest.get_us_time()
+local last_step = core.get_us_time()
 
 local max_lag = 0
 
-minetest.register_globalstep(function()
+core.register_globalstep(function()
 	-- Calculate own dtime as a workaround to 2 second limit
-	local now = minetest.get_us_time()
+	local now = core.get_us_time()
 	local dtime = now - last_step
 	last_step = now
 
