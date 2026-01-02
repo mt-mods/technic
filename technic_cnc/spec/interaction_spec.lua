@@ -25,17 +25,17 @@ describe("CNC formspec interaction", function()
 	local protectedpos = {x=2,y=2,z=2}
 	mineunit:protect(protectedpos, SX)
 
-	local nodedef = minetest.registered_nodes["technic:cnc_mk2"]
+	local nodedef = core.registered_nodes["technic:cnc_mk2"]
 
 	do -- prepare machines for simple upgrade check
 		world.place_node({x=98,y=98,z=98}, {name = "technic:cnc", param2 = 0}, Sam)
-		local meta = minetest.get_meta({x=98,y=98,z=98})
+		local meta = core.get_meta({x=98,y=98,z=98})
 		meta:set_string("cnc_product", "default:stone_technic_cnc_element_t")
 		meta:set_float("cnc_multiplier", 4.2)
 	end
 	do -- prepare machines for simple upgrade check
 		world.place_node({x=99,y=99,z=99}, {name = "technic:cnc_mk2", param2 = 0}, Sam)
-		local meta = minetest.get_meta({x=99,y=99,z=99})
+		local meta = core.get_meta({x=99,y=99,z=99})
 		meta:set_string("cnc_product", "default:stone_technic_cnc_element_t_double")
 		meta:set_float("cnc_multiplier", 4.2)
 	end
@@ -46,7 +46,7 @@ describe("CNC formspec interaction", function()
 		Sam:do_metadata_inventory_put(pos, "src", 1, ItemStack("default:stone 42"))
 
 		-- Check metadata values
-		local stack = minetest.get_meta(pos):get_inventory():get_stack("src", 1)
+		local stack = core.get_meta(pos):get_inventory():get_stack("src", 1)
 		assert.equals("default:stone", stack:get_name())
 		assert.equals(42, stack:get_count())
 	end)
@@ -56,7 +56,7 @@ describe("CNC formspec interaction", function()
 		SX:do_metadata_inventory_put(protectedpos, "src", 1, ItemStack("default:stone 42"))
 
 		-- Check metadata values
-		local stack = minetest.get_meta(protectedpos):get_inventory():get_stack("src", 1)
+		local stack = core.get_meta(protectedpos):get_inventory():get_stack("src", 1)
 		assert.equals("default:stone", stack:get_name())
 		assert.equals(42, stack:get_count())
 	end)
@@ -66,7 +66,7 @@ describe("CNC formspec interaction", function()
 		Sam:do_metadata_inventory_put(protectedpos, "src", 1, ItemStack("default:stone 42"))
 
 		-- Check metadata values
-		local stack = minetest.get_meta(protectedpos):get_inventory():get_stack("src", 1)
+		local stack = core.get_meta(protectedpos):get_inventory():get_stack("src", 1)
 		assert.equals("", stack:get_name())
 		assert.equals(0, stack:get_count())
 	end)
@@ -76,8 +76,8 @@ describe("CNC formspec interaction", function()
 		spy.on(minetest, "is_protected")
 		-- Submit formspec without any meaningful action
 		nodedef.on_receive_fields(pos, "", { quit = true }, Sam)
-		-- Check that minetest.is_protected was not called
-		assert.spy(minetest.is_protected).was_not.called()
+		-- Check that core.is_protected was not called
+		assert.spy(core.is_protected).was_not.called()
 	end)
 
 	it("checks protection for programming", function()
@@ -85,8 +85,8 @@ describe("CNC formspec interaction", function()
 		spy.on(minetest, "is_protected")
 		-- Submit formspec without any meaningful action
 		nodedef.on_receive_fields(pos, "", { half = true }, Sam)
-		-- Check that minetest.is_protected was not called
-		assert.spy(minetest.is_protected).was.called()
+		-- Check that core.is_protected was not called
+		assert.spy(core.is_protected).was.called()
 	end)
 
 	it("sets metadata on form submit", function()
@@ -96,7 +96,7 @@ describe("CNC formspec interaction", function()
 		nodedef.on_receive_fields(pos, "", { setchannel = true, channel = "Sam" }, Sam)
 
 		-- Check metadata values
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 		assert.equals(1, meta:get_int("size"))
 		assert.equals("Sam", meta:get("channel"))
 	end)
@@ -109,7 +109,7 @@ describe("CNC formspec interaction", function()
 		nodedef.on_receive_fields(pos, "", { stick = true }, Sam)
 
 		-- Check metadata values
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 		assert.equals("stick", meta:get("program"))
 
 		-- Check output inventory for correct products
@@ -124,12 +124,12 @@ describe("CNC formspec interaction", function()
 
 	it("updates old machines", function()
 		do -- Verify starting point and set meta value that is used to look for old machine
-			local meta = minetest.get_meta({x=98,y=98,z=98})
+			local meta = core.get_meta({x=98,y=98,z=98})
 			assert.equals("default:stone_technic_cnc_element_t", meta:get("cnc_product"))
 			meta:set_float("technic_power_machine", 1)
 		end
 		do -- Verify starting point and set meta value that is used to look for old machine
-			local meta = minetest.get_meta({x=99,y=99,z=99})
+			local meta = core.get_meta({x=99,y=99,z=99})
 			assert.equals("default:stone_technic_cnc_element_t_double", meta:get("cnc_product"))
 			meta:set_float("technic_power_machine", 1)
 		end
@@ -138,14 +138,14 @@ describe("CNC formspec interaction", function()
 		nodedef.on_receive_fields({x=99,y=99,z=99}, "", { quit = true, channel = "Sam" }, Sam)
 
 		do -- Check metadata values
-			local meta = minetest.get_meta({x=98,y=98,z=98})
+			local meta = core.get_meta({x=98,y=98,z=98})
 			assert.is_nil(meta:get("cnc_product"))
 			assert.is_nil(meta:get("cnc_multiplier"))
 			assert.equals("element_t", meta:get("program"))
 			assert.equals(2, meta:get_int("size"))
 		end
 		do -- Check metadata values
-			local meta = minetest.get_meta({x=99,y=99,z=99})
+			local meta = core.get_meta({x=99,y=99,z=99})
 			assert.is_nil(meta:get("cnc_product"))
 			assert.is_nil(meta:get("cnc_multiplier"))
 			assert.equals("element_t", meta:get("program"))

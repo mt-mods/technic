@@ -1,5 +1,5 @@
 
-local digilines_path = minetest.get_modpath("digilines")
+local digilines_path = core.get_modpath("digilines")
 
 local S = technic.getter
 local tube_entry = "^pipeworks_tube_connection_metallic.png"
@@ -8,7 +8,7 @@ local mat = technic.materials
 
 -- Battery recipes:
 -- Tin-copper recipe:
-minetest.register_craft({
+core.register_craft({
 	output = "technic:battery",
 	recipe = {
 		{"group:wood", mat.copper_ingot, "group:wood"},
@@ -19,7 +19,7 @@ minetest.register_craft({
 -- Sulfur-lead-water recipes:
 -- With sulfur lumps:
 -- With water:
-minetest.register_craft({
+core.register_craft({
 	output = "technic:battery",
 	recipe = {
 		{"group:wood",         "technic:sulfur_lump", "group:wood"},
@@ -31,7 +31,7 @@ minetest.register_craft({
 	}
 })
 -- With oil extract:
-minetest.register_craft({
+core.register_craft({
 	output = "technic:battery",
 	recipe = {
 		{"group:wood",         "technic:sulfur_lump",   "group:wood"},
@@ -41,7 +41,7 @@ minetest.register_craft({
 })
 -- With sulfur dust:
 -- With water:
-minetest.register_craft({
+core.register_craft({
 	output = "technic:battery",
 	recipe = {
 		{"group:wood",         "technic:sulfur_dust", "group:wood"},
@@ -53,7 +53,7 @@ minetest.register_craft({
 	}
 })
 -- With oil extract:
-minetest.register_craft({
+core.register_craft({
 	output = "technic:battery",
 	recipe = {
 		{"group:wood",         "technic:sulfur_dust",   "group:wood"},
@@ -82,7 +82,7 @@ local tube = {
 			or (direction.y == 0 and dirtab[direction.x+2+(direction.z+2)*2] == node.param2) then
 			return stack
 		end
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 		local inv = meta:get_inventory()
 		if direction.y == 0 then
 			return inv:add_item("src", stack)
@@ -95,7 +95,7 @@ local tube = {
 			or (direction.y == 0 and dirtab[direction.x+2+(direction.z+2)*2] == node.param2) then
 			return false
 		end
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 		local inv = meta:get_inventory()
 		if direction.y == 0 then
 			return inv:room_for_item("src", stack)
@@ -114,7 +114,7 @@ function technic.register_battery_box(nodename, data)
 	local tier = def.tier
 	local ltier = string.lower(tier)
 
-	local size = minetest.get_modpath("mcl_formspec") and "size[9,9]" or "size[8,9]"
+	local size = core.get_modpath("mcl_formspec") and "size[9,9]" or "size[8,9]"
 	local formspec =
 		size..
 		"image[1,1;1,2;technic_power_meter_bg.png]"..
@@ -131,7 +131,7 @@ function technic.register_battery_box(nodename, data)
 			"label[3.5,4;"..S("Upgrade Slots").."]"
 			or "")
 
-	if minetest.get_modpath("mcl_formspec") then
+	if core.get_modpath("mcl_formspec") then
 		formspec = formspec..
 			mcl_formspec.get_itemslot_bg(3,1,1,1)..
 			mcl_formspec.get_itemslot_bg(5,1,1,1)..
@@ -182,7 +182,7 @@ function technic.register_battery_box(nodename, data)
 	--
 	local function update_node(pos, update_formspec)
 		-- Read metadata and calculate actual values based on upgrades
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 		local current_charge = meta:get_int("internal_EU_charge")
 		local EU_upgrade = 0
 		if def.upgrade then
@@ -276,7 +276,7 @@ function technic.register_battery_box(nodename, data)
 	end
 
 	local function run(pos, node, run_state, network)
-		local meta  = minetest.get_meta(pos)
+		local meta  = core.get_meta(pos)
 
 		local eu_input       = meta:get_int(tier.."_EU_input")
 		local current_charge = meta:get_int("internal_EU_charge")
@@ -319,7 +319,7 @@ function technic.register_battery_box(nodename, data)
 		meta:set_int("internal_EU_charge", current_charge)
 		meta:set_int("internal_EU_charge_max", max_charge)
 
-		local timer = minetest.get_node_timer(pos)
+		local timer = core.get_node_timer(pos)
 		if not timer:is_started() then
 			timer:start(2)
 		end
@@ -353,7 +353,7 @@ function technic.register_battery_box(nodename, data)
 			side_tex = texture_prefix.."_side.png^technic_power_meter"..i..".png"
 		end
 
-		minetest.register_node(colon..nodename..i, {
+		core.register_node(colon..nodename..i, {
 			description = S("@1 Battery Box", S(tier)),
 			tiles = {
 				top_tex,
@@ -372,7 +372,7 @@ function technic.register_battery_box(nodename, data)
 			sounds = technic.sounds.node_sound_wood_defaults(),
 			drop = "technic:"..ltier.."_battery_box0",
 			on_construct = function(pos)
-				local meta = minetest.get_meta(pos)
+				local meta = core.get_meta(pos)
 				meta:set_string("infotext", S("@1 Battery Box", S(tier)))
 				meta:set_int(tier.."_EU_demand", 0)
 				meta:set_int(tier.."_EU_supply", 0)
@@ -407,11 +407,11 @@ function technic.register_battery_box(nodename, data)
 					return
 				end
 				local playername = player:get_player_name()
-				if minetest.is_protected(pos, playername) then
-					minetest.record_protection_violation(pos, playername)
+				if core.is_protected(pos, playername) then
+					core.record_protection_violation(pos, playername)
 					return
 				elseif fields.setchannel then
-					local meta = minetest.get_meta(pos)
+					local meta = core.get_meta(pos)
 					meta:set_string("channel", fields.channel or "")
 					update_node(pos, true)
 				end
@@ -427,7 +427,7 @@ function technic.register_battery_box(nodename, data)
 						if msg ~= "GET" and msg ~= "get" then
 							return
 						end
-						local meta = minetest.get_meta(pos)
+						local meta = core.get_meta(pos)
 						if channel ~= meta:get_string("channel") then
 							return
 						end

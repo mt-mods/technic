@@ -6,7 +6,7 @@
 
 -- How expensive is the generator?
 -- Leaves room for upgrades lowering the power drain?
-local digilines_path = minetest.get_modpath("digilines")
+local digilines_path = core.get_modpath("digilines")
 
 local forcefield_power_drain   = 10
 
@@ -16,7 +16,7 @@ local cable_entry = "^technic_cable_connection_overlay.png"
 
 local mat = technic.materials
 
-minetest.register_craft({
+core.register_craft({
 	output = "technic:forcefield_emitter_off",
 	recipe = {
 		{mat.mese,         "basic_materials:motor",          mat.mese        },
@@ -28,10 +28,10 @@ minetest.register_craft({
 
 local replaceable_cids = {}
 
-minetest.after(0, function()
-	for name, ndef in pairs(minetest.registered_nodes) do
+core.after(0, function()
+	for name, ndef in pairs(core.registered_nodes) do
 		if ndef.buildable_to == true and name ~= "ignore" then
-			replaceable_cids[minetest.get_content_id(name)] = true
+			replaceable_cids[core.get_content_id(name)] = true
 		end
 	end
 end)
@@ -61,8 +61,8 @@ local function update_forcefield(pos, meta, active)
 	local area = VoxelArea:new({MinEdge = MinEdge, MaxEdge = MaxEdge})
 	local data = vm:get_data()
 
-	local c_air = minetest.get_content_id("air")
-	local c_field = minetest.get_content_id("technic:forcefield")
+	local c_air = core.get_content_id("air")
+	local c_field = core.get_content_id("technic:forcefield")
 
 	for z = -range, range do
 	for y = -range, range do
@@ -134,12 +134,12 @@ end
 
 local forcefield_receive_fields = function(pos, formname, fields, sender)
 	local player_name = sender:get_player_name()
-	if minetest.is_protected(pos, player_name) then
-		minetest.chat_send_player(player_name, S("You are not allowed to edit this!"))
-		minetest.record_protection_violation(pos, player_name)
+	if core.is_protected(pos, player_name) then
+		core.chat_send_player(player_name, S("You are not allowed to edit this!"))
+		core.record_protection_violation(pos, player_name)
 		return
 	end
-	local meta = minetest.get_meta(pos)
+	local meta = core.get_meta(pos)
 	local range = nil
 	if fields.range then
 		range = tonumber(fields.range) or 0
@@ -167,10 +167,10 @@ end
 local mesecons = {
 	effector = {
 		action_on = function(pos, node)
-			minetest.get_meta(pos):set_int("mesecon_effect", 1)
+			core.get_meta(pos):set_int("mesecon_effect", 1)
 		end,
 		action_off = function(pos, node)
-			minetest.get_meta(pos):set_int("mesecon_effect", 0)
+			core.get_meta(pos):set_int("mesecon_effect", 0)
 		end
 	}
 }
@@ -183,7 +183,7 @@ local digiline_def = {
 	effector = {
 		rules = technic.digilines.rules,
 		action = function(pos, node, channel, msg)
-			local meta = minetest.get_meta(pos)
+			local meta = core.get_meta(pos)
 			if channel ~= meta:get_string("channel") then
 				return
 			end
@@ -258,7 +258,7 @@ local digiline_def = {
 }
 
 local function run(pos, node)
-	local meta = minetest.get_meta(pos)
+	local meta = core.get_meta(pos)
 	local eu_input   = meta:get_int("HV_EU_input")
 	local enabled = meta:get_int("enabled") ~= 0 and
 		(meta:get_int("mesecon_mode") == 0 or meta:get_int("mesecon_effect") ~= 0)
@@ -299,7 +299,7 @@ local function run(pos, node)
 	end
 end
 
-minetest.register_node("technic:forcefield_emitter_off", {
+core.register_node("technic:forcefield_emitter_off", {
 	description = S("@1 Forcefield Emitter", S("HV")),
 	tiles = {
 		"technic_forcefield_emitter_off.png",
@@ -315,7 +315,7 @@ minetest.register_node("technic:forcefield_emitter_off", {
 	_mcl_hardness = 0.8,
 	on_receive_fields = forcefield_receive_fields,
 	on_construct = function(pos)
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 		meta:set_int("HV_EU_input", 0)
 		meta:set_int("HV_EU_demand", 0)
 		meta:set_int("range", 10)
@@ -323,7 +323,7 @@ minetest.register_node("technic:forcefield_emitter_off", {
 		meta:set_int("mesecon_mode", 0)
 		meta:set_int("mesecon_effect", 0)
 		if digilines_path then
-			meta:set_string("channel", "forcefield"..minetest.pos_to_string(pos))
+			meta:set_string("channel", "forcefield"..core.pos_to_string(pos))
 		end
 		meta:set_string("infotext", S("@1 Forcefield Emitter", S("HV")))
 		set_forcefield_formspec(meta)
@@ -333,7 +333,7 @@ minetest.register_node("technic:forcefield_emitter_off", {
 	technic_run = run,
 })
 
-minetest.register_node("technic:forcefield_emitter_on", {
+core.register_node("technic:forcefield_emitter_on", {
 	description = S("@1 Forcefield Emitter", S("HV")),
 	tiles = {
 		"technic_forcefield_emitter_on.png",
@@ -351,31 +351,31 @@ minetest.register_node("technic:forcefield_emitter_on", {
 	drop = "technic:forcefield_emitter_off",
 	on_receive_fields = forcefield_receive_fields,
 	on_destruct = function(pos)
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 		update_forcefield(pos, meta, false)
 	end,
 	mesecons = mesecons,
 	digiline = digiline_def,
 	technic_run = run,
 	technic_on_disable = function (pos, node)
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 		update_forcefield(pos, meta, false)
 		technic.swap_node(pos, "technic:forcefield_emitter_off")
 	end,
 	on_blast = function(pos, intensity)
-		minetest.dig_node(pos)
+		core.dig_node(pos)
 		return {"technic:forcefield_emitter_off"}
 	end,
 })
 
-minetest.register_node("technic:forcefield", {
+core.register_node("technic:forcefield", {
 	description = S("@1 Forcefield", S("HV")),
 	sunlight_propagates = true,
 	drawtype = "glasslike",
 	groups = {not_in_creative_inventory=1},
 	is_ground_content = false,
 	paramtype = "light",
-	light_source = minetest.LIGHT_MAX,
+	light_source = core.LIGHT_MAX,
 	diggable = false,
 	drop = '',
 	tiles = {{
@@ -392,7 +392,7 @@ minetest.register_node("technic:forcefield", {
 })
 
 
-if minetest.get_modpath("mesecons_mvps") then
+if core.get_modpath("mesecons_mvps") then
 	mesecon.register_mvps_stopper("technic:forcefield")
 end
 

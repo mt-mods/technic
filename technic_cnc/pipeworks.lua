@@ -1,5 +1,5 @@
 
-local S = minetest.get_translator("pipeworks")
+local S = core.get_translator("pipeworks")
 local tube_entry = "^pipeworks_tube_connection_metallic.png"
 local button_base = "image_button[%0.1f,%0.1f;1,0.6"
 local button_label = "label[%0.1f,%0.1f;" .. S("Allow splitting incoming stacks from tubes") .. "]"
@@ -10,12 +10,12 @@ local pipeworks_on_receive_fields = pipeworks.fs_helpers.on_receive_fields
 local function new_tube()
 	return {
 		insert_object = function(pos, node, stack, direction)
-			local meta = minetest.get_meta(pos)
+			local meta = core.get_meta(pos)
 			local inv = meta:get_inventory()
 			return inv:add_item("src", stack)
 		end,
 		can_insert = technic_cnc.use_technic and technic.default_can_insert or function(pos, node, stack, direction)
-			local meta = minetest.get_meta(pos)
+			local meta = core.get_meta(pos)
 			local inv = meta:get_inventory()
 			return inv:room_for_item("src", stack)
 		end,

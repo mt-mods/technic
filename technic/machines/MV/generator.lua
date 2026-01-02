@@ -1,4 +1,4 @@
-minetest.register_craft({
+core.register_craft({
 	output = 'technic:mv_generator',
 	recipe = {
 		{'technic:stainless_steel_ingot', 'technic:lv_generator',   'technic:stainless_steel_ingot'},

@@ -2,7 +2,7 @@
 -- Again code is adapted from the NonCubic Blocks MOD v1.4 by yves_de_beck
 
 local S = technic_cnc.getter
-local ALPHA_CLIP = minetest.features.use_texture_alpha_string_modes and "clip" or true
+local ALPHA_CLIP = core.features.use_texture_alpha_string_modes and "clip" or true
 
 -- Generic function for registering all the different node types
 function technic_cnc.register_program(recipeitem, suffix, model, groups, images, description, cbox, sbox)
@@ -24,7 +24,7 @@ function technic_cnc.register_program(recipeitem, suffix, model, groups, images,
 
 	if cbox and not sbox then sbox = cbox end
 
-	minetest.register_node(":"..recipeitem.."_"..suffix, {
+	core.register_node(":"..recipeitem.."_"..suffix, {
 		description   = description,
 		drawtype      = dtype,
 		node_box      = nodeboxdef,
@@ -116,7 +116,7 @@ function technic_cnc.get_product(program, material, size)
 		local twosize = technic_cnc.twosize_products[program]
 		local double = size == 1 and twosize and "_double" or ""
 		local product = ("%s_technic_cnc_%s%s"):format(material, program, double)
-		if minetest.registered_nodes[product] then
+		if core.registered_nodes[product] then
 			return ("%s %d"):format(product, multiplier * (twosize and size or 1))
 		end
 	end
@@ -196,7 +196,7 @@ function technic_cnc.register_cnc_machine(nodename, def)
 
 	-- Register recipe if recipe given
 	if def.recipe then
-		minetest.register_craft({
+		core.register_craft({
 			output = nodename,
 			recipe = def.recipe,
 		})
@@ -264,7 +264,7 @@ function technic_cnc.register_cnc_machine(nodename, def)
 
 		-- Technic action code performing the transformation, use form handler for when not using technic
 		technic_run = function(pos, node)
-			local meta = minetest.get_meta(pos)
+			local meta = core.get_meta(pos)
 			upgrade_machine(meta)
 
 			local demand = def.demand
@@ -322,31 +322,31 @@ function technic_cnc.register_cnc_machine(nodename, def)
 		after_dig_node = def.upgrade and technic.machine_after_dig_node or nil
 	else
 		allow_metadata_inventory_put = function(pos, listname, index, stack, player)
-			if minetest.is_protected(pos, player:get_player_name()) then
+			if core.is_protected(pos, player:get_player_name()) then
 				return 0
 			end
 			return stack:get_count()
 		end
 
 		allow_metadata_inventory_take = function(pos, listname, index, stack, player)
-			if minetest.is_protected(pos, player:get_player_name()) then
+			if core.is_protected(pos, player:get_player_name()) then
 				return 0
 			end
 			return stack:get_count()
 		end
 
 		allow_metadata_inventory_move = function(pos, from_list, from_index, to_list, to_index, count, player)
-			if minetest.is_protected(pos, player:get_player_name()) then
+			if core.is_protected(pos, player:get_player_name()) then
 				return 0
 			end
 			return count
 		end
 
 		can_dig = function(pos, player)
-			if player and minetest.is_protected(pos, player:get_player_name()) then
+			if player and core.is_protected(pos, player:get_player_name()) then
 				return false
 			end
-			local meta = minetest.get_meta(pos)
+			local meta = core.get_meta(pos)
 			local inv = meta:get_inventory()
 			return inv:is_empty("dst") and inv:is_empty("src") and default.can_interact_with_node(player, pos)
 		end
@@ -361,7 +361,7 @@ function technic_cnc.register_cnc_machine(nodename, def)
 		if technic_cnc.pipeworks and def.tube then
 			local pipeworks_on_receive_fields = technic_cnc.pipeworks.on_receive_fields
 			on_receive_fields = function(pos, formname, fields, sender)
-				local meta = minetest.get_meta(pos)
+				local meta = core.get_meta(pos)
 				if not wrapped_on_receive_fields(pos, meta, fields, sender, update_formspec) and not fields.quit then
 					-- Custom pipeworks form handler to skip unnecessary protection messages
 					pipeworks_on_receive_fields(pos, meta, fields, sender, update_formspec)
@@ -370,7 +370,7 @@ function technic_cnc.register_cnc_machine(nodename, def)
 			end
 		else
 			on_receive_fields = function(pos, formname, fields, sender)
-				local meta = minetest.get_meta(pos)
+				local meta = core.get_meta(pos)
 				wrapped_on_receive_fields(pos, meta, fields, sender, update_formspec)
 				upgrade_machine(meta)
 			end
@@ -389,7 +389,7 @@ function technic_cnc.register_cnc_machine(nodename, def)
 	local on_metadata_inventory_take = technic_cnc.use_technic and technic.machine_on_inventory_take or nil
 
 	-- Inactive state CNC machine
-	minetest.register_node(":" .. nodename, {
+	core.register_node(":" .. nodename, {
 		description = def.description,
 		tiles = def.tiles,
 		groups = groups,
@@ -398,7 +398,7 @@ function technic_cnc.register_cnc_machine(nodename, def)
 		legacy_facedir_simple = true,
 		is_ground_content = false,
 		on_construct = function(pos)
-			local meta = minetest.get_meta(pos)
+			local meta = core.get_meta(pos)
 			meta:set_string("infotext", def.description)
 			meta:set_string("formspec", get_formspec(nodename, def, meta))
 			local inv = meta:get_inventory()
@@ -428,7 +428,7 @@ function technic_cnc.register_cnc_machine(nodename, def)
 	if technic_cnc.use_technic then
 		local groups_active = table.copy(groups)
 		groups_active.not_in_creative_inventory = 1
-		minetest.register_node(":" .. nodename_active, {
+		core.register_node(":" .. nodename_active, {
 			description = def.description,
 			tiles = def.tiles_active,
 			groups = groups_active,
@@ -454,6 +454,6 @@ function technic_cnc.register_cnc_machine(nodename, def)
 		technic.register_machine("LV", nodename, technic.receiver)
 		technic.register_machine("LV", nodename_active, technic.receiver)
 	else
-		minetest.register_alias(nodename_active, nodename)
+		core.register_alias(nodename_active, nodename)
 	end
 end

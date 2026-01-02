@@ -67,7 +67,7 @@ function technic.send_items(pos, x_velocity, z_velocity, output_name)
 		output_name = "dst"
 	end
 
-	local meta = minetest.get_meta(pos)
+	local meta = core.get_meta(pos)
 	local inv = meta:get_inventory()
 	local i = 0
 	for _, stack in ipairs(inv:get_list(output_name)) do
@@ -90,8 +90,8 @@ function technic.handle_machine_pipeworks(pos, tube_upgrade, send_function)
 		send_function = technic.send_items
 	end
 
-	local node = minetest.get_node(pos)
-	local meta = minetest.get_meta(pos)
+	local node = core.get_node(pos)
+	local meta = core.get_meta(pos)
 	local pos1 = vector.new(pos)
 	local x_velocity = 0
 	local z_velocity = 0
@@ -103,8 +103,8 @@ function technic.handle_machine_pipeworks(pos, tube_upgrade, send_function)
 	if node.param2 == 0 then pos1.x = pos1.x + 1  x_velocity =  1 end
 
 	local output_tube_connected = false
-	local node1 = minetest.get_node(pos1)
-	if minetest.get_item_group(node1.name, "tubedevice") > 0 then
+	local node1 = core.get_node(pos1)
+	if core.get_item_group(node1.name, "tubedevice") > 0 then
 		output_tube_connected = true
 	end
 	local tube_time = meta:get_int("tube_time") + tube_upgrade
@@ -118,11 +118,11 @@ function technic.handle_machine_pipeworks(pos, tube_upgrade, send_function)
 end
 
 function technic.machine_can_dig(pos, player)
-	local meta = minetest.get_meta(pos)
+	local meta = core.get_meta(pos)
 	local inv = meta:get_inventory()
 	if not inv:is_empty("src") or not inv:is_empty("dst") or not inv:is_empty("fuel") then
 		if player then
-			minetest.chat_send_player(player:get_player_name(),
+			core.chat_send_player(player:get_player_name(),
 				S("Machine cannot be removed because it is not empty"))
 		end
 		return false
@@ -136,31 +136,31 @@ function technic.machine_after_dig_node(pos, oldnode, oldmetadata, player)
 		if oldmetadata.inventory.upgrade1 and oldmetadata.inventory.upgrade1[1] then
 			local stack = ItemStack(oldmetadata.inventory.upgrade1[1])
 			if not stack:is_empty() then
-				minetest.add_item(pos, stack)
+				core.add_item(pos, stack)
 			end
 		end
 		if oldmetadata.inventory.upgrade2 and oldmetadata.inventory.upgrade2[1] then
 			local stack = ItemStack(oldmetadata.inventory.upgrade2[1])
 			if not stack:is_empty() then
-				minetest.add_item(pos, stack)
+				core.add_item(pos, stack)
 			end
 		end
 	end
 
-	if minetest.registered_nodes[oldnode.name].tube then
+	if core.registered_nodes[oldnode.name].tube then
 		pipeworks.after_dig(pos, oldnode, oldmetadata, player)
 	end
 end
 
 local function inv_change(pos, player, count, from_list, to_list, stack)
 	local playername = player:get_player_name()
-	local meta = minetest.get_meta(pos);
+	local meta = core.get_meta(pos);
 	local public = (meta:get_int("public") == 1)
 	local to_upgrade = to_list == "upgrade1" or to_list == "upgrade2"
 	local from_upgrade = from_list == "upgrade1" or from_list == "upgrade2"
 
-	if (not public or to_upgrade or from_upgrade) and minetest.is_protected(pos, playername) then
-		minetest.chat_send_player(playername, S("Inventory move disallowed due to protection"))
+	if (not public or to_upgrade or from_upgrade) and core.is_protected(pos, playername) then
+		core.chat_send_player(playername, S("Inventory move disallowed due to protection"))
 		return 0
 	end
 	if to_upgrade then
@@ -187,34 +187,34 @@ end
 
 function technic.machine_inventory_move(pos, from_list, from_index,
 		to_list, to_index, count, player)
-	local stack = minetest.get_meta(pos):get_inventory():get_stack(from_list, from_index)
+	local stack = core.get_meta(pos):get_inventory():get_stack(from_list, from_index)
 	return inv_change(pos, player, count, from_list, to_list, stack)
 end
 
 function technic.machine_on_inventory_put(pos, listname, index, stack, player)
-	minetest.log("action", string.format("%s puts %s into %s at %s",
+	core.log("action", string.format("%s puts %s into %s at %s",
 		player:get_player_name(),
 		stack:to_string(),
-		minetest.get_node(pos).name,
-		minetest.pos_to_string(pos)
+		core.get_node(pos).name,
+		core.pos_to_string(pos)
 	))
 end
 
 function technic.machine_on_inventory_take(pos, listname, index, stack, player)
-	minetest.log("action", string.format("%s takes %s from %s at %s",
+	core.log("action", string.format("%s takes %s from %s at %s",
 		player:get_player_name(),
 		stack:to_string(),
-		minetest.get_node(pos).name,
-		minetest.pos_to_string(pos)
+		core.get_node(pos).name,
+		core.pos_to_string(pos)
 	))
 end
 
 function technic.machine_on_inventory_move(pos, from_list, from_index, to_list, to_index, count, player)
-	local stack = minetest.get_meta(pos):get_inventory():get_stack(to_list, to_index)
-	minetest.log("action", string.format("%s moves %s in %s at %s",
+	local stack = core.get_meta(pos):get_inventory():get_stack(to_list, to_index)
+	core.log("action", string.format("%s moves %s in %s at %s",
 		player:get_player_name(),
 		stack:to_string(),
-		minetest.get_node(pos).name,
-		minetest.pos_to_string(pos)
+		core.get_node(pos).name,
+		core.pos_to_string(pos)
 	))
 end

@@ -1,11 +1,11 @@
 
 local S = technic.getter
 
-local has_digilines = minetest.get_modpath("digilines")
-local has_mesecons = minetest.get_modpath("mesecons")
-local has_vizlib = minetest.get_modpath("vizlib")
-local has_jumpdrive = minetest.get_modpath("jumpdrive")
-local has_mcl = minetest.get_modpath("mcl_formspec")
+local has_digilines = core.get_modpath("digilines")
+local has_mesecons = core.get_modpath("mesecons")
+local has_vizlib = core.get_modpath("vizlib")
+local has_jumpdrive = core.get_modpath("jumpdrive")
+local has_mcl = core.get_modpath("mcl_formspec")
 
 local quarry_max_depth = technic.config:get_int("quarry_max_depth")
 local quarry_dig_particles = technic.config:get_bool("quarry_dig_particles")
@@ -44,7 +44,7 @@ do
 	local head = vector.new()
 	dig_pattern[0] = head
 	for i = 1, #dig_pattern do
-		head = vector.add(head, minetest.facedir_to_dir(dig_pattern[i]))
+		head = vector.add(head, core.facedir_to_dir(dig_pattern[i]))
 		dig_pattern[i] = {x = head.x, z = head.z}
 	end
 end
@@ -52,7 +52,7 @@ end
 -- Cache of pipeworks fake players
 local fake_players = {}
 
-minetest.register_on_leaveplayer(function(player)
+core.register_on_leaveplayer(function(player)
 	fake_players[player:get_player_name()] = nil
 end)
 
@@ -64,11 +64,11 @@ local function get_fake_player(name)
 end
 
 local function player_allowed(pos, name)
-	local owner = minetest.get_meta(pos):get_string("owner")
+	local owner = core.get_meta(pos):get_string("owner")
 	if owner == "" or owner == name then
 		return true
 	end
-	return not minetest.is_protected(pos, name)
+	return not core.is_protected(pos, name)
 end
 
 local function can_dig_node(pos, dig_pos, node_name, owner, digger)
@@ -78,14 +78,14 @@ local function can_dig_node(pos, dig_pos, node_name, owner, digger)
 	if vector.equals(pos, dig_pos) then
 		return false  -- Don't dig self
 	end
-	local def = minetest.registered_nodes[node_name]
+	local def = core.registered_nodes[node_name]
 	if not def or not def.diggable or (def.can_dig and not def.can_dig(dig_pos, digger)) then
 		return false
 	end
 	if def._mcl_hardness == -1 then
 		return false
 	end
-	return not minetest.is_protected(dig_pos, owner)
+	return not core.is_protected(dig_pos, owner)
 end
 
 local function do_purge(pos, meta)
@@ -103,11 +103,11 @@ local function do_purge(pos, meta)
 end
 
 local function spawn_dig_particles(pos, dig_pos, node)
-	local end_pos = vector.new(pos.x, pos.y - 0.5, pos.z)
+	local end_pos = vector.offset(pos, 0, -0.5, 0)
 	local dist = vector.distance(dig_pos, end_pos)
 	local t = math.sqrt((2 * dist) / 20)
 	local acc = vector.multiply(vector.subtract(end_pos, dig_pos), (1 / dist) * 20)
-	minetest.add_particlespawner({
+	core.add_particlespawner({
 		amount = 50,
 		time = 0.5,
 		minpos = vector.subtract(dig_pos, 0.4),
@@ -123,7 +123,7 @@ local function spawn_dig_particles(pos, dig_pos, node)
 end
 
 local function do_digging(pos, meta, net_time)
-	local us_start = minetest.get_us_time()
+	local us_start = core.get_us_time()
 	local step = tonumber(meta:get("step") or "")
 	if not step then
 		-- Missing metadata or not yet updated by conversion LBM, abort digging
@@ -145,18 +145,10 @@ local function do_digging(pos, meta, net_time)
 			meta:set_int("finished", 1)
 			return
 		end
-		local pos1 = {
-			x = pos.x + offset.x - radius,
-			y = pos.y - offset.y,
-			z = pos.z + offset.z - radius
-		}
-		local pos2 = {
-			x = pos.x + offset.x + radius,
-			y = pos.y - offset.y,
-			z = pos.z + offset.z + radius
-		}
-		minetest.load_area(pos1, pos2)
-		local nodes = minetest.find_nodes_in_area(pos1, pos2, {"air", "vacuum:vacuum"})
+		local pos1 = vector.offset(pos, offset.x - radius, -offset.y, offset.z - radius)
+		local pos2 = vector.offset(pos, offset.x + radius, -offset.y, offset.z + radius)
+		core.load_area(pos1, pos2)
+		local nodes = core.find_nodes_in_area(pos1, pos2, {"air", "vacuum:vacuum"})
 		if #nodes < num_steps then
 			-- There are nodes to dig, start digging at this layer
 			meta:set_int("dug", 0)
@@ -190,12 +182,12 @@ local function do_digging(pos, meta, net_time)
 		local node = technic.get_or_load_node(dig_pos)
 		if can_dig_node(pos, dig_pos, node.name, owner, digger) then
 			-- Found something to dig, dig it and stop
-			minetest.remove_node(dig_pos)
+			core.remove_node(dig_pos)
 			if quarry_dig_particles then
 				spawn_dig_particles(pos, dig_pos, node)
 			end
 			local inv = meta:get_inventory()
-			local drops = minetest.get_node_drops(node.name, "")
+			local drops = core.get_node_drops(node.name, "")
 			local full = false
 			for _, item in ipairs(drops) do
 				local left = inv:add_item("cache", item)
@@ -213,7 +205,7 @@ local function do_digging(pos, meta, net_time)
 			end
 			break
 		end
-		local us_used = minetest.get_us_time() - us_start
+		local us_used = core.get_us_time() - us_start
 		if us_used > quarry_time_limit or net_time + us_used > network_time_limit then
 			break
 		end
@@ -223,7 +215,7 @@ local function do_digging(pos, meta, net_time)
 end
 
 local function quarry_run(pos, _, _, network)
-	local meta = minetest.get_meta(pos)
+	local meta = core.get_meta(pos)
 	if meta:get_int("purge_on") == 1 then
 		-- Purging
 		meta:set_string("infotext", infotext.purge)
@@ -259,7 +251,7 @@ local function reset_quarry(meta)
 	meta:set_int("finished", 0)
 end
 
-local size = minetest.get_modpath("mcl_formspec") and "size[9,10]" or "size[8,9]"
+local size = core.get_modpath("mcl_formspec") and "size[9,10]" or "size[8,9]"
 local base_formspec = size..
 	"label[0,0;"..S("@1 Quarry", S("HV")).."]"..
 	"list[context;cache;0,0.7;4,3;]"..
@@ -340,10 +332,10 @@ end
 local function quarry_receive_fields(pos, _, fields, sender)
 	local player_name = sender:get_player_name()
 	if not player_allowed(pos, player_name) then
-		minetest.chat_send_player(player_name, S("You are not allowed to edit this!"))
+		core.chat_send_player(player_name, S("You are not allowed to edit this!"))
 		return
 	end
-	local meta = minetest.get_meta(pos)
+	local meta = core.get_meta(pos)
 	if fields.size then
 		meta:set_int("size", clamp(fields.size, 0, 8, 4))
 	end
@@ -383,7 +375,7 @@ local function show_working_area(pos, _, player)
 		-- Only spawn particles when using an empty hand
 		return
 	end
-	local meta = minetest.get_meta(pos)
+	local meta = core.get_meta(pos)
 	local radius = meta:get_int("size") + 0.5
 	local offset = vector.new(meta:get_int("offset_x"), meta:get_int("offset_y"), meta:get_int("offset_z"))
 	local depth = meta:get_int("max_depth") + 0.5
@@ -394,7 +386,7 @@ local function show_working_area(pos, _, player)
 end
 
 local function digiline_action(pos, _, channel, msg)
-	local meta = minetest.get_meta(pos)
+	local meta = core.get_meta(pos)
 	if channel ~= meta:get_string("channel") then
 		return
 	end
@@ -487,7 +479,7 @@ local function digiline_action(pos, _, channel, msg)
 	end
 end
 
-minetest.register_node("technic:quarry", {
+core.register_node("technic:quarry", {
 	description = S("@1 Quarry", S("HV")),
 	tiles = {
 		"technic_carbon_steel_block.png^pipeworks_tube_connection_metallic.png",
@@ -513,11 +505,11 @@ minetest.register_node("technic:quarry", {
 	},
 	on_punch = has_vizlib and show_working_area or nil,
 	on_rightclick = function(pos)
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 		update_formspec(meta)
 	end,
 	on_construct = function(pos)
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 		meta:set_int("size", 4)
 		meta:set_int("offset_x", 0)
 		meta:set_int("offset_y", 0)
@@ -530,17 +522,17 @@ minetest.register_node("technic:quarry", {
 		update_formspec(meta)
 	end,
 	on_movenode = has_jumpdrive and function(_, pos)
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 		if meta:get("reset_on_move") ~= "false" then
 			reset_quarry(meta)
 		end
 	end or nil,
 	after_place_node = function(pos, placer, itemstack)
-		minetest.get_meta(pos):set_string("owner", placer:get_player_name())
+		core.get_meta(pos):set_string("owner", placer:get_player_name())
 		pipeworks.scan_for_tube_objects(pos)
 	end,
 	can_dig = function(pos, player)
-		return minetest.get_meta(pos):get_inventory():is_empty("cache")
+		return core.get_meta(pos):get_inventory():is_empty("cache")
 	end,
 	after_dig_node = pipeworks.scan_for_tube_objects,
 	on_receive_fields = quarry_receive_fields,
@@ -560,13 +552,13 @@ minetest.register_node("technic:quarry", {
 	mesecons = {
 		effector = {
 			action_on = function(pos)
-				local meta = minetest.get_meta(pos)
+				local meta = core.get_meta(pos)
 				if meta:get("mesecons") ~= "false" then
 					meta:set_int("enabled", 1)
 				end
 			end,
 			action_off = function(pos)
-				local meta = minetest.get_meta(pos)
+				local meta = core.get_meta(pos)
 				if meta:get("mesecons") ~= "false" then
 					meta:set_int("enabled", 0)
 				end
@@ -584,7 +576,7 @@ minetest.register_node("technic:quarry", {
 	},
 })
 
-minetest.register_craft({
+core.register_craft({
 	output = "technic:quarry",
 	recipe = {
 		{"technic:carbon_plate", "pipeworks:filter", "technic:composite_plate"},
@@ -595,13 +587,13 @@ minetest.register_craft({
 
 technic.register_machine("HV", "technic:quarry", technic.receiver)
 
-minetest.register_lbm({
+core.register_lbm({
 	label = "Old quarry conversion",
 	name = "technic:old_quarry_conversion",
 	nodenames = {"technic:quarry"},
 	run_at_every_load = false,
 	action = function(pos, node)
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 		if meta:get("step") then
 			-- Quarry v3, don't do anything
 			-- This can happen when a quarry is moved with a jumpdrive
@@ -627,7 +619,7 @@ minetest.register_lbm({
 			-- Quarry v1, reset quarry
 			reset_quarry(meta)
 		end
-		local dir = minetest.facedir_to_dir(node.param2)
+		local dir = core.facedir_to_dir(node.param2)
 		local offset = vector.multiply(dir, meta:get_int("size") + 1)
 		meta:set_int("offset_x", offset.x)
 		meta:set_int("offset_y", 4)

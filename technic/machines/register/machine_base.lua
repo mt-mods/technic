@@ -5,7 +5,7 @@ local fs_helpers = pipeworks.fs_helpers
 local tube_entry = "^pipeworks_tube_connection_metallic.png"
 
 function technic.default_can_insert(pos, node, stack, direction)
-	local meta = minetest.get_meta(pos)
+	local meta = core.get_meta(pos)
 	local inv = meta:get_inventory()
 	if meta:get_int("splitstacks") == 1 then
 		stack = stack:peek_item(1)
@@ -16,7 +16,7 @@ end
 function technic.new_default_tube()
 	return {
 		insert_object = function(pos, node, stack, direction)
-			local meta = minetest.get_meta(pos)
+			local meta = core.get_meta(pos)
 			local inv = meta:get_inventory()
 			return inv:add_item("src", stack)
 		end,
@@ -48,7 +48,7 @@ function technic.register_base_machine(nodename, data)
 	local active_groups = table.copy(groups)
 	active_groups.not_in_creative_inventory = 1
 
-	local size = minetest.get_modpath("mcl_formspec") and "size[9,10]" or "size[8,9]"
+	local size = core.get_modpath("mcl_formspec") and "size[9,10]" or "size[8,9]"
 	local formspec =
 		size..
 		"list[context;src;"..(4-input_size)..",1;"..input_size..",1;]"..
@@ -61,7 +61,7 @@ function technic.register_base_machine(nodename, data)
 			"label[1,4;"..S("Upgrade Slots").."]"
 	end
 
-	if minetest.get_modpath("mcl_formspec") then
+	if core.get_modpath("mcl_formspec") then
 		formspec = formspec..
 			mcl_formspec.get_itemslot_bg(4-input_size,1,input_size,1)..
 			mcl_formspec.get_itemslot_bg(5,1,2,2)..
@@ -110,7 +110,7 @@ function technic.register_base_machine(nodename, data)
 	end
 
 	local run = function(pos, node)
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 		local eu_input = meta:get_int(tier.."_EU_input")
 		local machine_demand = def.demand
 
@@ -164,7 +164,7 @@ function technic.register_base_machine(nodename, data)
 		tentry = ""
 	end
 
-	minetest.register_node(colon..nodename, {
+	core.register_node(colon..nodename, {
 		description = def.description,
 		tiles = {
 			texture_prefix.."_top.png"..tentry,
@@ -184,8 +184,8 @@ function technic.register_base_machine(nodename, data)
 		legacy_facedir_simple = true,
 		sounds = technic.sounds.node_sound_wood_defaults(),
 		on_construct = function(pos)
-			local node = minetest.get_node(pos)
-			local meta = minetest.get_meta(pos)
+			local node = core.get_node(pos)
+			local meta = core.get_meta(pos)
 
 			local form_buttons = ""
 			if not string.find(node.name, ":lv_") then
@@ -223,8 +223,8 @@ function technic.register_base_machine(nodename, data)
 			if fields.quit then return end
 			if not pipeworks.may_configure(pos, sender) then return end
 			fs_helpers.on_receive_fields(pos, fields)
-			local node = minetest.get_node(pos)
-			local meta = minetest.get_meta(pos)
+			local node = core.get_node(pos)
+			local meta = core.get_meta(pos)
 			local form_buttons = ""
 			if not string.find(node.name, ":lv_") then
 				form_buttons = fs_helpers.cycling_button(
@@ -241,7 +241,7 @@ function technic.register_base_machine(nodename, data)
 		end,
 	})
 
-	minetest.register_node(colon..nodename.."_active",{
+	core.register_node(colon..nodename.."_active",{
 		description = def.description,
 		tiles = {
 			texture_prefix.."_top.png"..tentry,
@@ -274,8 +274,8 @@ function technic.register_base_machine(nodename, data)
 			if fields.quit then return end
 			if not pipeworks.may_configure(pos, sender) then return end
 			fs_helpers.on_receive_fields(pos, fields)
-			local node = minetest.get_node(pos)
-			local meta = minetest.get_meta(pos)
+			local node = core.get_node(pos)
+			local meta = core.get_meta(pos)
 			local form_buttons = ""
 			if not string.find(node.name, ":lv_") then
 				form_buttons = fs_helpers.cycling_button(

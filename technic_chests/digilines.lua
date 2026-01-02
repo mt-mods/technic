@@ -1,6 +1,6 @@
 
 function technic.chests.send_digiline_message(pos, event, player, items)
-	local set_channel = minetest.get_meta(pos):get_string("channel")
+	local set_channel = core.get_meta(pos):get_string("channel")
 	local player_name = player and player:get_player_name() or ""
 	digilines.receptor_send(pos, digilines.rules.default, set_channel, {
 		event = event,
@@ -15,7 +15,7 @@ local function item_matches(item, stack)
 	local name = stack:get_name()
 	local wear = stack:get_wear()
 	return (not item.name or name == item.name)
-			and (not item.group or (type(item.group) == "string" and minetest.get_item_group(name, item.group) ~= 0))
+			and (not item.group or (type(item.group) == "string" and core.get_item_group(name, item.group) ~= 0))
 			and (not item.wear or (type(item.wear) == "number" and wear == item.wear) or (type(item.wear) == "table"
 			and (not item.wear[1] or (type(item.wear[1]) == "number" and item.wear[1] <= wear))
 			and (not item.wear[2] or (type(item.wear[2]) == "number" and wear < item.wear[2]))))
@@ -23,7 +23,7 @@ local function item_matches(item, stack)
 end
 
 function technic.chests.digiline_effector(pos, _, channel, msg)
-	local meta = minetest.get_meta(pos)
+	local meta = core.get_meta(pos)
 	local set_channel = meta:get_string("channel")
 	if channel ~= set_channel then
 		return
@@ -59,7 +59,7 @@ function technic.chests.digiline_effector(pos, _, channel, msg)
 		local item = stack:to_table()
 		if item then
 			-- item available at that slot
-			local def = minetest.registered_items[stack:get_name()]
+			local def = core.registered_items[stack:get_name()]
 			item.groups = def and table.copy(def.groups) or {}
 			digilines.receptor_send(pos, digilines.rules.default, set_channel, item)
 		else

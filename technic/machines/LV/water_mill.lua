@@ -7,9 +7,9 @@ local mat = technic.materials
 
 local cable_entry = "^technic_cable_connection_overlay.png"
 
-minetest.register_alias("water_mill", "technic:water_mill")
+core.register_alias("water_mill", "technic:water_mill")
 
-minetest.register_craft({
+core.register_craft({
 	output = 'technic:water_mill',
 	recipe = {
 		{'technic:marble', mat.diamond,        'technic:marble'},
@@ -19,7 +19,7 @@ minetest.register_craft({
 })
 
 local function check_node_around_mill(pos)
-	local node = minetest.get_node(pos)
+	local node = core.get_node(pos)
 	if node.name == mat.water_flowing or node.name == mat.river_water_flowing then
 		return node.param2 -- returns approx. water flow, if any
 	end
@@ -27,17 +27,17 @@ local function check_node_around_mill(pos)
 end
 
 local run = function(pos, node)
-	local meta             = minetest.get_meta(pos)
+	local meta             = core.get_meta(pos)
 	local water_flow       = 0
 	local production_level
 	local eu_supply
 	local max_output       = 4 * 45 -- keeping it around 180, little more than previous 150 :)
 
 	local positions = {
-		{x=pos.x+1, y=pos.y, z=pos.z},
-		{x=pos.x-1, y=pos.y, z=pos.z},
-		{x=pos.x,   y=pos.y, z=pos.z+1},
-		{x=pos.x,   y=pos.y, z=pos.z-1},
+		vector.offset(pos, 1, 0, 0),
+		vector.offset(pos, -1, 0, 0),
+		vector.offset(pos, 0, 0, 1),
+		vector.offset(pos, 0, 0, -1),
 	}
 
 	for _, p in pairs(positions) do
@@ -56,7 +56,7 @@ local run = function(pos, node)
 		S("Hydro @1 Generator", S("LV")), production_level))
 
 	if production_level > 0 and
-	   minetest.get_node(pos).name == "technic:water_mill" then
+	   core.get_node(pos).name == "technic:water_mill" then
 		technic.swap_node (pos, "technic:water_mill_active")
 		meta:set_int("LV_EU_supply", 0)
 		return
@@ -66,7 +66,7 @@ local run = function(pos, node)
 	end
 end
 
-minetest.register_node("technic:water_mill", {
+core.register_node("technic:water_mill", {
 	description = S("Hydro @1 Generator", S("LV")),
 	tiles = {
 		"technic_water_mill_top.png",
@@ -85,14 +85,14 @@ minetest.register_node("technic:water_mill", {
 	legacy_facedir_simple = true,
 	sounds = technic.sounds.node_sound_wood_defaults(),
 	on_construct = function(pos)
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 		meta:set_string("infotext", S("Hydro @1 Generator", S("LV")))
 		meta:set_int("LV_EU_supply", 0)
 	end,
 	technic_run = run,
 })
 
-minetest.register_node("technic:water_mill_active", {
+core.register_node("technic:water_mill_active", {
 	description = S("Hydro @1 Generator", S("LV")),
 	tiles = {"technic_water_mill_top_active.png", "technic_machine_bottom.png",
 	         "technic_water_mill_side.png",       "technic_water_mill_side.png",

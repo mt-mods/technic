@@ -8,7 +8,7 @@ local itemtypes = {
 }
 
 -- Not so good compatibility workaround for older than 5.3 servers
-local get_translated_string = minetest.get_translated_string or function(_, name) return name end
+local get_translated_string = core.get_translated_string or function(_, name) return name end
 
 function technic.chests.sort_inv(inv, mode)
 	local list = inv:get_list("main")
@@ -22,7 +22,7 @@ function technic.chests.sort_inv(inv, mode)
 				local wear = stack:get_wear()
 				local meta = stack:get_meta():get_string("")
 				local count = stack:get_count()
-				local def = minetest.registered_items[name]
+				local def = core.registered_items[name]
 				local itemtype = (def and itemtypes[def.type]) and def.type or "none"
 				local key = string.format("%s %05d %s", name, wear, meta)
 				if not items[key] then
@@ -167,27 +167,27 @@ function technic.chests.move_inv(from_inv, to_inv, filter)
 end
 
 function technic.chests.log_inv_change(pos, name, change, items)
-	local spos = minetest.pos_to_string(pos)
+	local spos = core.pos_to_string(pos)
 	if change == "move" then
-		minetest.log("action", name.." moves "..items.." in chest at "..spos)
+		core.log("action", name.." moves "..items.." in chest at "..spos)
 	elseif change == "put" then
-		minetest.log("action", name.." puts "..items.." into chest at "..spos)
+		core.log("action", name.." puts "..items.." into chest at "..spos)
 	elseif change == "take" then
-		minetest.log("action", name.." takes "..items.." from chest at "..spos)
+		core.log("action", name.." takes "..items.." from chest at "..spos)
 	end
 end
 
 function technic.chests.log_fast_move(pos, name, change, items)
-	local spos = minetest.pos_to_string(pos)
+	local spos = core.pos_to_string(pos)
 	local itemlist = {}
 	for _, stack in ipairs(items) do
 		table.insert(itemlist, stack.name.." "..stack.count)
 	end
 	if change == "put" then
-		minetest.log("action", string.format("%s puts items into chest at %s: %s",
+		core.log("action", string.format("%s puts items into chest at %s: %s",
 			name, spos, table.concat(itemlist, ", ")))
 	elseif change == "take" then
-		minetest.log("action", string.format("%s takes items from chest at %s: %s",
+		core.log("action", string.format("%s takes items from chest at %s: %s",
 			name, spos, table.concat(itemlist, ", ")))
 	end
 end

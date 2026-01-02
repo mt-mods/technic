@@ -1,6 +1,6 @@
 -- HV battery box
 
-minetest.register_craft({
+core.register_craft({
 	output = 'technic:hv_battery_box0',
 	recipe = {
 		{'technic:mv_battery_box0', 'technic:mv_battery_box0', 'technic:mv_battery_box0'},

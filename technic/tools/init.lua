@@ -15,7 +15,7 @@ if enabled("prospector")        then dofile(path.."/prospector.lua") end
 if enabled("vacuum")            then dofile(path.."/vacuum.lua") end
 if enabled("multimeter")        then dofile(path.."/multimeter.lua") end
 
-if minetest.get_modpath("screwdriver") then
+if core.get_modpath("screwdriver") then
 	-- compatibility alias
-	minetest.register_alias("technic:screwdriver", "screwdriver:screwdriver")
+	core.register_alias("technic:screwdriver", "screwdriver:screwdriver")
 end

@@ -1,7 +1,7 @@
 -- MV compressor
 local S = technic.getter
 
-minetest.register_craft({
+core.register_craft({
 	output = 'technic:mv_compressor',
 	recipe = {
 		{'technic:stainless_steel_ingot', 'technic:lv_compressor',  'technic:stainless_steel_ingot'},

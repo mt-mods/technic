@@ -52,13 +52,13 @@ function technic.EU_string(num)
 	return technic.pretty_num(num) .. "EU"
 end
 
---- Same as minetest.swap_node, but only changes name
+--- Same as core.swap_node, but only changes name
 -- and doesn't re-set if already set.
 function technic.swap_node(pos, name)
-	local node = minetest.get_node(pos)
+	local node = core.get_node(pos)
 	if node.name ~= name then
 		node.name = name
-		minetest.swap_node(pos, node)
+		core.swap_node(pos, node)
 	end
 end
 
@@ -100,10 +100,10 @@ end
 
 -- If the node is loaded, returns it. If it isn't loaded, load it.
 function technic.get_or_load_node(pos)
-	local node = minetest.get_node_or_nil(pos)
+	local node = core.get_node_or_nil(pos)
 	if node then return node end
-	minetest.load_area(pos)
-	return minetest.get_node(pos)
+	core.load_area(pos)
+	return core.get_node(pos)
 end
 
 technic.tube_inject_item = pipeworks.tube_inject_item or function(pos, start_pos, velocity, item)
@@ -225,13 +225,13 @@ function technic.trace_node_ray_fat(pos, dir, range)
 		-- Normalized axis deltas
 		local dxn, dyn, dzn = dx / dlen, dy / dlen, dz / dlen
 		if not sx and dxn > 0.5 then
-			next_poses[1] = vector.new(p.x + x_step, p.y, p.z)
+			next_poses[1] = vector.offset(p, x_step, 0, 0)
 		end
 		if not sy and dyn > 0.5 then
-			next_poses[2] = vector.new(p.x, p.y + y_step, p.z)
+			next_poses[2] = vector.offset(p, 0, y_step, 0)
 		end
 		if not sz and dzn > 0.5 then
-			next_poses[3] = vector.new(p.x, p.y, p.z + z_step)
+			next_poses[3] = vector.offset(p, 0, 0, z_step)
 		end
 
 		return p
@@ -239,7 +239,7 @@ function technic.trace_node_ray_fat(pos, dir, range)
 end
 
 function technic.insert_object_unique_stack(pos, node, incoming_stack, direction)
-	local meta = minetest.get_meta(pos)
+	local meta = core.get_meta(pos)
 	local inv = meta:get_inventory()
 	local incoming_name = incoming_stack:get_name()
 	local stack_index = nil
@@ -259,7 +259,7 @@ function technic.insert_object_unique_stack(pos, node, incoming_stack, direction
 end
 
 function technic.can_insert_unique_stack(pos, node, incoming_stack, direction)
-	local meta = minetest.get_meta(pos)
+	local meta = core.get_meta(pos)
 	local inv = meta:get_inventory()
 	local incoming_name = incoming_stack:get_name()
 	if meta:get_int("splitstacks") == 0 then

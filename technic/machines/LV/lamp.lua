@@ -12,7 +12,7 @@ local unpowered_desc = S("@1 Unpowered", desc)
 local off_desc = S("@1 Off", desc)
 
 -- Invisible light source node used for illumination
-minetest.register_node("technic:dummy_light_source", {
+core.register_node("technic:dummy_light_source", {
 	description = S("Dummy light source node"),
 	inventory_image = "technic_dummy_light_source.png",
 	wield_image = "technic_dummy_light_source.png",
@@ -28,14 +28,14 @@ minetest.register_node("technic:dummy_light_source", {
 	groups = {not_in_creative_inventory = 1}
 })
 
-local cid_light = minetest.get_content_id("technic:dummy_light_source")
-local cid_air = minetest.CONTENT_AIR
+local cid_light = core.get_content_id("technic:dummy_light_source")
+local cid_air = core.CONTENT_AIR
 
 local function illuminate(pos, active)
-	local pos1 = {x = pos.x - 3, y = pos.y - 3, z = pos.z - 3}
-	local pos2 = {x = pos.x + 3, y = pos.y - 1, z = pos.z + 3}
+	local pos1 = vector.offset(pos, -3, -3, -3)
+	local pos2 = vector.offset(pos, 3, -1, 3)
 
-	local vm = minetest.get_voxel_manip()
+	local vm = core.get_voxel_manip()
 	local emin, emax = vm:read_from_map(pos1, pos2)
 	local va = VoxelArea:new({MinEdge = emin, MaxEdge = emax})
 	local node_data = vm:get_data()
@@ -58,11 +58,11 @@ end
 
 local function set_random_timer(pos, mint, maxt)
 	local t = math.random(mint * 10, maxt * 10) * 0.1
-	minetest.get_node_timer(pos):start(t)
+	core.get_node_timer(pos):start(t)
 end
 
 local function lamp_run(pos, node)
-	local meta = minetest.get_meta(pos)
+	local meta = core.get_meta(pos)
 
 	if meta:get_int("LV_EU_demand") == 0 then
 		return  -- Lamp is turned off
@@ -86,10 +86,10 @@ local function lamp_run(pos, node)
 end
 
 local function lamp_toggle(pos, node, player)
-	if not player or minetest.is_protected(pos, player:get_player_name()) then
+	if not player or core.is_protected(pos, player:get_player_name()) then
 		return
 	end
-	local meta = minetest.get_meta(pos)
+	local meta = core.get_meta(pos)
 	if meta:get_int("LV_EU_demand") == 0 then
 		meta:set_string("infotext", active_desc)
 		meta:set_int("LV_EU_demand", demand)
@@ -101,7 +101,7 @@ local function lamp_toggle(pos, node, player)
 	end
 end
 
-minetest.register_node("technic:lv_lamp", {
+core.register_node("technic:lv_lamp", {
 	description = desc,
 	drawtype = "nodebox",
 	node_box = {
@@ -132,7 +132,7 @@ minetest.register_node("technic:lv_lamp", {
 	can_dig = technic.machine_can_dig,
 	technic_run = lamp_run,
 	on_construct = function(pos)
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 		meta:set_string("infotext", desc)
 		meta:set_int("LV_EU_demand", demand)
 	end,
@@ -144,7 +144,7 @@ minetest.register_node("technic:lv_lamp", {
 	end,
 })
 
-minetest.register_node("technic:lv_lamp_active", {
+core.register_node("technic:lv_lamp_active", {
 	description = active_desc,
 	drawtype = "nodebox",
 	node_box = {
@@ -194,7 +194,7 @@ minetest.register_node("technic:lv_lamp_active", {
 technic.register_machine("LV", "technic:lv_lamp", technic.receiver)
 technic.register_machine("LV", "technic:lv_lamp_active", technic.receiver)
 
-minetest.register_craft({
+core.register_craft({
 	output = "technic:lv_lamp",
 	recipe = {
 		{mat.glass, mat.glass, mat.glass},

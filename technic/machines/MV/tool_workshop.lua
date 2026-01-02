@@ -1,14 +1,14 @@
 -- Tool workshop
 -- This machine repairs tools.
 
-minetest.register_alias("tool_workshop", "technic:tool_workshop")
+core.register_alias("tool_workshop", "technic:tool_workshop")
 
 local S = technic.getter
 local mat = technic.materials
 
 local tube_entry = "^pipeworks_tube_connection_wooden.png"
 
-minetest.register_craft({
+core.register_craft({
 	output = 'technic:tool_workshop',
 	recipe = {
 		{'group:wood',                         mat.diamond,        'group:wood'},
@@ -19,7 +19,7 @@ minetest.register_craft({
 
 local workshop_demand = {5000, 3500, 2000}
 
-local size = minetest.get_modpath("mcl_formspec") and "size[9,9;]" or "size[8,9;]"
+local size = core.get_modpath("mcl_formspec") and "size[9,9;]" or "size[8,9;]"
 local workshop_formspec =
 	size..
 	"list[context;src;3,1;1,1;]"..
@@ -28,7 +28,7 @@ local workshop_formspec =
 	"list[context;upgrade2;2,3;1,1;]"..
 	"label[1,4;"..S("Upgrade Slots").."]"
 
-if minetest.get_modpath("mcl_formspec") then
+if core.get_modpath("mcl_formspec") then
 	workshop_formspec = workshop_formspec..
 	mcl_formspec.get_itemslot_bg(3,1,1,1)..
 	mcl_formspec.get_itemslot_bg(1,3,1,1)..
@@ -54,7 +54,7 @@ workshop_formspec = workshop_formspec..
 	"listring[current_player;main]"
 
 local run = function(pos, node)
-	local meta         = minetest.get_meta(pos)
+	local meta         = core.get_meta(pos)
 	local inv          = meta:get_inventory()
 	local eu_input     = meta:get_int("MV_EU_input")
 	local machine_name = S("@1 Tool Workshop", S("MV"))
@@ -71,7 +71,7 @@ local run = function(pos, node)
 	local repairable = false
 	local srcstack = inv:get_stack("src", 1)
 	if not srcstack:is_empty() then
-		local itemdef = minetest.registered_items[srcstack:get_name()]
+		local itemdef = core.registered_items[srcstack:get_name()]
 		if itemdef and
 				(not itemdef.wear_represents or
 				itemdef.wear_represents == "mechanical_wear") and
@@ -101,7 +101,7 @@ local run = function(pos, node)
 	meta:set_int("MV_EU_demand", workshop_demand[EU_upgrade+1])
 end
 
-minetest.register_node("technic:tool_workshop", {
+core.register_node("technic:tool_workshop", {
 	description = S("@1 Tool Workshop", S("MV")),
 	paramtype2 = "facedir",
 	tiles = {
@@ -120,7 +120,7 @@ minetest.register_node("technic:tool_workshop", {
 	connect_sides = {"bottom", "back", "left", "right"},
 	sounds = technic.sounds.node_sound_wood_defaults(),
 	on_construct = function(pos)
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 		meta:set_string("infotext", S("@1 Tool Workshop", S("MV")))
 		meta:set_string("formspec", workshop_formspec)
 		local inv = meta:get_inventory()
@@ -136,10 +136,10 @@ minetest.register_node("technic:tool_workshop", {
 	on_metadata_inventory_take = technic.machine_on_inventory_take,
 	tube = {
 		can_insert = function (pos, node, stack, direction)
-			return minetest.get_meta(pos):get_inventory():room_for_item("src", stack)
+			return core.get_meta(pos):get_inventory():room_for_item("src", stack)
 		end,
 		insert_object = function (pos, node, stack, direction)
-			return minetest.get_meta(pos):get_inventory():add_item("src", stack)
+			return core.get_meta(pos):get_inventory():add_item("src", stack)
 		end,
 		connect_sides = {left = 1, right = 1, back = 1, top = 1, bottom = 1},
 	},

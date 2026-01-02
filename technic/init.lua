@@ -4,18 +4,18 @@ technic = rawget(_G, "technic") or {}
 technic.plus = true
 technic.version = 1.2
 
-if minetest.get_modpath("mcl_sounds") then
+if core.get_modpath("mcl_sounds") then
 	technic.sounds = mcl_sounds
 else
 	technic.sounds = assert(default, "No suitable mod found for sounds")
 end
 
-technic.creative_mode = minetest.settings:get_bool("creative_mode")
+technic.creative_mode = core.settings:get_bool("creative_mode")
 
-local modpath = minetest.get_modpath("technic")
+local modpath = core.get_modpath("technic")
 technic.modpath = modpath
 
-local S = minetest.get_translator("technic")
+local S = core.get_translator("technic")
 technic.getter = S
 
 -- Read materials file
@@ -57,6 +57,6 @@ dofile(modpath.."/effects.lua")
 -- Chat commands
 dofile(modpath.."/chatcommands.lua")
 
-if minetest.get_modpath("mtt") and mtt.enabled then
+if core.get_modpath("mtt") and mtt.enabled then
 	dofile(modpath.."/mtt.lua")
 end

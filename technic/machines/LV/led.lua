@@ -11,7 +11,7 @@ local unpowered_desc = S("@1 Unpowered", desc)
 
 
 local function led_run(pos, node)
-	local meta = minetest.get_meta(pos)
+	local meta = core.get_meta(pos)
 	local eu_input = meta:get_int("LV_EU_input")
 
 	if eu_input < demand and node.name == "technic:lv_led_active" then
@@ -23,7 +23,7 @@ local function led_run(pos, node)
 	end
 end
 
-minetest.register_node("technic:lv_led", {
+core.register_node("technic:lv_led", {
 	description = desc,
 	drawtype = "nodebox",
 	node_box = {
@@ -49,13 +49,13 @@ minetest.register_node("technic:lv_led", {
 	can_dig = technic.machine_can_dig,
 	technic_run = led_run,
 	on_construct = function(pos)
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 		meta:set_string("infotext", desc)
 		meta:set_int("LV_EU_demand", demand)
 	end,
 })
 
-minetest.register_node("technic:lv_led_active", {
+core.register_node("technic:lv_led_active", {
 	description = active_desc,
 	drawtype = "nodebox",
 	node_box = {
@@ -91,7 +91,7 @@ minetest.register_node("technic:lv_led_active", {
 technic.register_machine("LV", "technic:lv_led", technic.receiver)
 technic.register_machine("LV", "technic:lv_led_active", technic.receiver)
 
-minetest.register_craft({
+core.register_craft({
 	output = "technic:lv_led 2",
 	recipe = {
 		{"", "basic_materials:plastic_sheet", ""},

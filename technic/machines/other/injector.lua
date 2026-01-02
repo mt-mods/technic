@@ -13,13 +13,13 @@ local param2_to_under = {
 	[4] = {x= 1,y= 0,z= 0}, [5] = {x= 0,y= 1,z= 0}
 }
 
-local size = minetest.get_modpath("mcl_formspec") and "size[9,10]" or "size[8,9]"
+local size = core.get_modpath("mcl_formspec") and "size[9,10]" or "size[8,9]"
 local base_formspec = size..
 	"label[0,0;"..S("Self-Contained Injector").."]"..
 	"list[context;main;0,2;8,2;]"..
 	"listring[context;main]"
 
-if minetest.get_modpath("mcl_formspec") then
+if core.get_modpath("mcl_formspec") then
 	base_formspec = base_formspec..
 	mcl_formspec.get_itemslot_bg(0,2,8,2)..
 	-- player inventory
@@ -35,7 +35,7 @@ else
 end
 
 local function set_injector_formspec(pos)
-	local meta = minetest.get_meta(pos)
+	local meta = core.get_meta(pos)
 	local formspec = base_formspec..
 		fs_helpers.cycling_button(
 			meta,
@@ -51,7 +51,7 @@ local function set_injector_formspec(pos)
 	else
 		formspec = formspec.."button[0,1;4,1;mode_stack;"..S("Itemwise").."]"
 	end
-	if minetest.get_node_timer(pos):is_started() then
+	if core.get_node_timer(pos):is_started() then
 		formspec = formspec.."button[4,1;4,1;disable;"..S("Enabled").."]"
 	else
 		formspec = formspec.."button[4,1;4,1;enable;"..S("Disabled").."]"
@@ -59,7 +59,7 @@ local function set_injector_formspec(pos)
 	meta:set_string("formspec", formspec)
 end
 
-minetest.register_node("technic:injector", {
+core.register_node("technic:injector", {
 	description = S("Self-Contained Injector"),
 	tiles = {
 		"technic_injector_top.png"..tube_entry,
@@ -76,52 +76,52 @@ minetest.register_node("technic:injector", {
 	_mcl_hardness = 0.8,
 	tube = {
 		can_insert = function(pos, node, stack, direction)
-			local meta = minetest.get_meta(pos)
+			local meta = core.get_meta(pos)
 			if meta:get_int("splitstacks") == 1 then
 				stack = stack:peek_item(1)
 			end
 			return meta:get_inventory():room_for_item("main", stack)
 		end,
 		insert_object = function(pos, node, stack, direction)
-			return minetest.get_meta(pos):get_inventory():add_item("main", stack)
+			return core.get_meta(pos):get_inventory():add_item("main", stack)
 		end,
 		connect_sides = {left=1, right=1, back=1, top=1, bottom=1},
 	},
 	sounds = technic.sounds.node_sound_wood_defaults(),
 	on_construct = function(pos)
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 		meta:set_string("infotext", S("Self-Contained Injector"))
 		meta:set_string("mode", "single items")
 		meta:get_inventory():set_size("main", 16)
-		minetest.get_node_timer(pos):start(1)
+		core.get_node_timer(pos):start(1)
 		set_injector_formspec(pos)
 	end,
 	can_dig = function(pos, player)
-		return minetest.get_meta(pos):get_inventory():is_empty("main")
+		return core.get_meta(pos):get_inventory():is_empty("main")
 	end,
 	on_receive_fields = function(pos, formanme, fields, sender)
 		if fields.quit or not pipeworks.may_configure(pos, sender) then
 			return
 		end
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 		if fields.mode_item then
 			meta:set_string("mode", "single items")
 		elseif fields.mode_stack then
 			meta:set_string("mode", "whole stacks")
 		elseif fields.disable then
-			minetest.get_node_timer(pos):stop()
+			core.get_node_timer(pos):stop()
 		elseif fields.enable then
-			minetest.get_node_timer(pos):start(1)
+			core.get_node_timer(pos):start(1)
 		end
 		fs_helpers.on_receive_fields(pos, fields)
 		set_injector_formspec(pos)
 	end,
 	on_timer = function(pos, elapsed)
-		local meta = minetest.get_meta(pos)
-		local node = minetest.get_node(pos)
+		local meta = core.get_meta(pos)
+		local node = core.get_node(pos)
 		local dir = param2_to_under[math.floor(node.param2 / 4)]
-		local node_under = minetest.get_node(vector.add(pos, dir))
-		if minetest.get_item_group(node_under.name, "tubedevice") > 0 then
+		local node_under = core.get_node(vector.add(pos, dir))
+		if core.get_item_group(node_under.name, "tubedevice") > 0 then
 			local inv = meta:get_inventory()
 			local list = inv:get_list("main")
 			if not list then
@@ -145,7 +145,7 @@ minetest.register_node("technic:injector", {
 	end,
 	on_rotate = function(pos, node, user, mode, new_param2)
 		node.param2 = new_param2
-		minetest.swap_node(pos, node)
+		core.swap_node(pos, node)
 		pipeworks.scan_for_tube_objects(pos)
 		return true
 	end,
@@ -159,7 +159,7 @@ minetest.register_node("technic:injector", {
 	after_dig_node = pipeworks.after_dig
 })
 
-minetest.register_craft({
+core.register_craft({
 	output = "technic:injector 1",
 	recipe = {
 		{"", "technic:control_logic_unit",""},
@@ -168,13 +168,13 @@ minetest.register_craft({
 	}
 })
 
-minetest.register_lbm({
+core.register_lbm({
 	label = "Old injector conversion",
 	name = "technic:old_injector_conversion",
 	nodenames = {"technic:injector"},
 	run_at_every_load = false,
 	action = function(pos, node)
-		minetest.get_node_timer(pos):start(1)
+		core.get_node_timer(pos):start(1)
 		set_injector_formspec(pos)
 	end
 })

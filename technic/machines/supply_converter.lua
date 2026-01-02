@@ -7,7 +7,7 @@
 --   Once the receiver side is powered it will deliver power to the other side.
 --   Unused power is wasted just like any other producer!
 
-local digilines_path = minetest.get_modpath("digilines")
+local digilines_path = core.get_modpath("digilines")
 
 local S = technic.getter
 
@@ -38,10 +38,10 @@ local function set_supply_converter_formspec(meta)
 end
 
 local supply_converter_receive_fields = function(pos, formname, fields, sender)
-	if not sender or minetest.is_protected(pos, sender:get_player_name()) then
+	if not sender or core.is_protected(pos, sender:get_player_name()) then
 		return
 	end
-	local meta = minetest.get_meta(pos)
+	local meta = core.get_meta(pos)
 	local power = nil
 	if fields.power then
 		power = tonumber(fields.power) or 0
@@ -62,10 +62,10 @@ end
 local mesecons = {
 	effector = {
 		action_on = function(pos, node)
-			minetest.get_meta(pos):set_int("mesecon_effect", 1)
+			core.get_meta(pos):set_int("mesecon_effect", 1)
 		end,
 		action_off = function(pos, node)
-			minetest.get_meta(pos):set_int("mesecon_effect", 0)
+			core.get_meta(pos):set_int("mesecon_effect", 0)
 		end
 	}
 }
@@ -82,7 +82,7 @@ local digiline_def = {
 			if type(msg) ~= "string" then
 				return
 			end
-			local meta = minetest.get_meta(pos)
+			local meta = core.get_meta(pos)
 			if channel ~= meta:get_string("channel") then
 				return
 			end
@@ -130,16 +130,16 @@ local run = function(pos, node, run_stage)
 	local remain = 0.9
 	-- Machine information
 	local machine_name  = S("Supply Converter")
-	local meta          = minetest.get_meta(pos)
+	local meta          = core.get_meta(pos)
 	local enabled       = meta:get_int("enabled") == 1 and
 		(meta:get_int("mesecon_mode") == 0 or meta:get_int("mesecon_effect") ~= 0)
 
 	local demand = enabled and meta:get_int("power") or 0
 
-	local pos_up        = {x=pos.x, y=pos.y+1, z=pos.z}
-	local pos_down      = {x=pos.x, y=pos.y-1, z=pos.z}
-	local name_up       = minetest.get_node(pos_up).name
-	local name_down     = minetest.get_node(pos_down).name
+	local pos_up        = vector.offset(pos, 0, 1, 0)
+	local pos_down      = vector.offset(pos, 0, -1, 0)
+	local name_up       = core.get_node(pos_up).name
+	local name_down     = core.get_node(pos_down).name
 
 	local from = technic.get_cable_tier(name_up)
 	local to   = technic.get_cable_tier(name_down)
@@ -170,7 +170,7 @@ local run = function(pos, node, run_stage)
 
 end
 
-minetest.register_node("technic:supply_converter", {
+core.register_node("technic:supply_converter", {
 	description = S("Supply Converter"),
 	tiles  = {
 		"technic_supply_converter_tb.png"..cable_entry,
@@ -189,7 +189,7 @@ minetest.register_node("technic:supply_converter", {
 	sounds = technic.sounds.node_sound_wood_defaults(),
 	on_receive_fields = supply_converter_receive_fields,
 	on_construct = function(pos)
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 		meta:set_string("infotext", S("Supply Converter"))
 		meta:set_int("power", 10000)
 		meta:set_int("enabled", 1)
@@ -203,7 +203,7 @@ minetest.register_node("technic:supply_converter", {
 	technic_on_disable = run,
 })
 
-minetest.register_craft({
+core.register_craft({
 	output = 'technic:supply_converter 1',
 	recipe = {
 		{'basic_materials:gold_wire', 'technic:rubber',         'technic:doped_silicon_wafer'},

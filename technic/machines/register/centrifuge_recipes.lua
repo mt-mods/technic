@@ -27,14 +27,14 @@ for p = 1, 34 do
 	table.insert(recipes, { uranium_dust(p).." 2", uranium_dust(p-1), uranium_dust(p+1) })
 end
 
-if minetest.get_modpath("bushes_classic") then
+if core.get_modpath("bushes_classic") then
 	for _, berry in ipairs({ "blackberry", "blueberry", "gooseberry", "raspberry", "strawberry" }) do
 		table.insert(recipes, { "bushes:"..berry.."_bush", mat.stick.." 20", "bushes:"..berry.." 4" })
 	end
 end
 
-if minetest.get_modpath("farming") or minetest.get_modpath("mcl_farming") then
-	if minetest.get_modpath("cottages") then
+if core.get_modpath("farming") or core.get_modpath("mcl_farming") then
+	if core.get_modpath("cottages") then
 		-- work as a mechanized threshing floor
 		table.insert(recipes, { "farming:wheat", "farming:seed_wheat", "cottages:straw_mat" })
 		table.insert(recipes, { "farming:barley", "farming:seed_barley", "cottages:straw_mat" })

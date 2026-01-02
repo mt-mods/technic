@@ -1,7 +1,7 @@
 -- MV extractor
 local S = technic.getter
 
-minetest.register_craft({
+core.register_craft({
 	output = 'technic:mv_extractor',
 	recipe = {
 		{'technic:stainless_steel_ingot', 'technic:lv_extractor',   'technic:stainless_steel_ingot'},

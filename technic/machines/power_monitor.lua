@@ -9,24 +9,24 @@ local cable_entry = "^technic_cable_connection_overlay.png"
 
 -- Get registered cable or nil, returns nil if area is not loaded
 local function get_cable(pos)
-	local node = minetest.get_node_or_nil(pos)
+	local node = core.get_node_or_nil(pos)
 	return (node and technic.get_cable_tier(node.name)) and node
 end
 
 -- return the position of connected cable or nil
 -- TODO: Make it support every possible orientation
 local function get_connected_cable_network(pos)
-	local param2 = minetest.get_node(pos).param2
+	local param2 = core.get_node(pos).param2
 	-- should probably also work sideways or upside down but for now it wont
 	if param2 > 3 then return end
 	-- Below?
-	local checkpos = {x=pos.x,y=pos.y-1,z=pos.z}
+	local checkpos = vector.offset(pos, 0, -1, 0)
 	local network_id = get_cable(checkpos) and technic.pos2network(checkpos)
 	if network_id then
 		return network_id
 	end
 	-- Behind?
-	checkpos = vector.add(minetest.facedir_to_dir(param2),pos)
+	checkpos = vector.add(core.facedir_to_dir(param2),pos)
 	network_id = get_cable(checkpos) and technic.pos2network(checkpos)
 	return network_id
 end
@@ -36,11 +36,11 @@ local function get_network(pos)
 	local network_id = get_connected_cable_network(pos)
 	local network = network_id and technic.networks[network_id]
 	local swpos = network and technic.network2sw_pos(network_id)
-	local is_powermonitor = swpos and minetest.get_node(swpos).name == "technic:switching_station"
+	local is_powermonitor = swpos and core.get_node(swpos).name == "technic:switching_station"
 	return (is_powermonitor and network.all_nodes[network_id]) and network
 end
 
-minetest.register_craft({
+core.register_craft({
 	output = "technic:power_monitor",
 	recipe = {
 		{"",                 "",                       ""},
@@ -49,7 +49,7 @@ minetest.register_craft({
 	}
 })
 
-minetest.register_node("technic:power_monitor",{
+core.register_node("technic:power_monitor",{
 	description = S("Power Monitor"),
 	tiles  = {
 		"technic_power_monitor_sides.png",
@@ -67,7 +67,7 @@ minetest.register_node("technic:power_monitor",{
 	connect_sides = {"bottom", "back"},
 	sounds = technic.sounds.node_sound_wood_defaults(),
 	on_construct = function(pos)
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 		meta:set_string("infotext", S("Power Monitor"))
 		meta:set_string("formspec", "field[channel;"..S("Digiline Channel")..";${channel}]")
 	end,
@@ -76,11 +76,11 @@ minetest.register_node("technic:power_monitor",{
 			return
 		end
 		local plname = sender:get_player_name()
-    if minetest.is_protected(pos, plname) and not minetest.check_player_privs(sender, "protection_bypass") then
-			minetest.record_protection_violation(pos, plname)
+    if core.is_protected(pos, plname) and not core.check_player_privs(sender, "protection_bypass") then
+			core.record_protection_violation(pos, plname)
 			return
 		end
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 		meta:set_string("channel", fields.channel)
 	end,
 	digiline = {
@@ -94,7 +94,7 @@ minetest.register_node("technic:power_monitor",{
 				if msg ~= "GET" and msg ~= "get" then
 					return
 				end
-				local meta = minetest.get_meta(pos)
+				local meta = core.get_meta(pos)
 				if channel ~= meta:get_string("channel") then
 					return
 				end
@@ -115,13 +115,13 @@ minetest.register_node("technic:power_monitor",{
 	},
 })
 
-minetest.register_abm({
+core.register_abm({
 	nodenames = {"technic:power_monitor"},
 	label = "Machines: run power monitor",
 	interval   = 1,
 	chance     = 1,
 	action = function(pos, node, active_object_count, active_object_count_wider)
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 		local network = get_network(pos)
 		if network then
 			meta:set_string("infotext", S("Power Monitor. Supply: @1 Demand: @2",

@@ -19,9 +19,9 @@ describe("CNC digiline API", function()
 	local pos = {x=3,y=2,z=1}
 	local node = {name = "technic:cnc_mk2", param2 = 0}
 	world.place_node(pos, table.copy(node), Sam)
-	minetest.get_meta(pos):set_string("channel", "ch1")
+	core.get_meta(pos):set_string("channel", "ch1")
 
-	local action = minetest.registered_nodes["technic:cnc_mk2"].digilines.effector.action
+	local action = core.registered_nodes["technic:cnc_mk2"].digilines.effector.action
 	local program = "stick"
 	local size = 1
 
@@ -50,41 +50,41 @@ describe("CNC digiline API", function()
 			program = "cylinder",
 			size = 1
 		})
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 		assert.equals("cylinder", meta:get("program"))
 		assert.equals(1, meta:get_int("size"))
 	end)
 
 	it("sets size", function()
 		action(pos, table.copy(node), "ch1", { size = 2 })
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 		assert.equals("cylinder", meta:get("program"))
 		assert.equals(2, meta:get_int("size"))
 	end)
 
 	it("table disables machine", function()
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 		assert.is_true(technic_cnc.is_enabled(meta))
 		action(pos, table.copy(node), "ch1", { enabled = false })
 		assert.is_false(technic_cnc.is_enabled(meta))
 	end)
 
 	it("table enables machine", function()
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 		assert.is_false(technic_cnc.is_enabled(meta))
 		action(pos, table.copy(node), "ch1", { enabled = true })
 		assert.is_true(technic_cnc.is_enabled(meta))
 	end)
 
 	it("string disables machine", function()
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 		assert.is_true(technic_cnc.is_enabled(meta))
 		action(pos, table.copy(node), "ch1", "disable")
 		assert.is_false(technic_cnc.is_enabled(meta))
 	end)
 
 	it("string enables machine", function()
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 		assert.is_false(technic_cnc.is_enabled(meta))
 		action(pos, table.copy(node), "ch1", "enable")
 		assert.is_true(technic_cnc.is_enabled(meta))

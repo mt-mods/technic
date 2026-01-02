@@ -5,12 +5,12 @@ local tube_entry = "^pipeworks_tube_connection_metallic.png"
 
 local tube = {
 	insert_object = function(pos, node, stack, direction)
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 		local inv = meta:get_inventory()
 		return inv:add_item("src", stack)
 	end,
 	can_insert = function(pos, node, stack, direction)
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 		local inv = meta:get_inventory()
 		if meta:get_int("splitstacks") == 1 then
 			stack = stack:peek_item(1)
@@ -20,7 +20,7 @@ local tube = {
 	connect_sides = {left=1, right=1, back=1, top=1, bottom=1},
 }
 
-local size = minetest.get_modpath("mcl_formspec") and "size[9,10]" or "size[8,9]"
+local size = core.get_modpath("mcl_formspec") and "size[9,10]" or "size[8,9]"
 
 local function update_generator_formspec(meta, desc, percent, form_buttons)
 	local generator_formspec = size..
@@ -31,7 +31,7 @@ local function update_generator_formspec(meta, desc, percent, form_buttons)
 		(percent)..":default_furnace_fire_fg.png]"..
 		form_buttons
 
-	if minetest.get_modpath("mcl_formspec") then
+	if core.get_modpath("mcl_formspec") then
 		generator_formspec = generator_formspec..
 			mcl_formspec.get_itemslot_bg(3,1,1,1)..
 			-- player inventory
@@ -65,7 +65,7 @@ function technic.register_generator(data)
 	local desc = S("Fuel-Fired @1 Generator", S(tier))
 
 	local run = function(pos, node)
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 		local burn_time = meta:get_int("burn_time")
 		local burn_totaltime = meta:get_int("burn_totaltime")
 		-- If more to burn and the energy produced was used: produce some more
@@ -81,7 +81,7 @@ function technic.register_generator(data)
 				local fuellist = inv:get_list("src")
 				local fuel
 				local afterfuel
-				fuel, afterfuel = minetest.get_craft_result(
+				fuel, afterfuel = core.get_craft_result(
 						{method = "fuel", width = 1,
 						items = fuellist})
 				if not fuel or fuel.time == 0 then
@@ -122,7 +122,7 @@ function technic.register_generator(data)
 	local tentry = tube_entry
 	if ltier == "lv" then tentry = "" end
 
-	minetest.register_node("technic:"..ltier.."_generator", {
+	core.register_node("technic:"..ltier.."_generator", {
 		description = desc,
 		tiles = {
 				"technic_"..ltier.."_generator_top.png"..tentry,
@@ -142,8 +142,8 @@ function technic.register_generator(data)
 		sounds = technic.sounds.node_sound_wood_defaults(),
 		tube = data.tube and tube or nil,
 		on_construct = function(pos)
-			local meta = minetest.get_meta(pos)
-			local node = minetest.get_node(pos)
+			local meta = core.get_meta(pos)
+			local node = core.get_node(pos)
 			meta:set_string("infotext", desc)
 			meta:set_int(data.tier.."_EU_supply", 0)
 			meta:set_int("burn_time", 0)
@@ -174,8 +174,8 @@ function technic.register_generator(data)
 		on_receive_fields = function(pos, formname, fields, sender)
 			if not pipeworks.may_configure(pos, sender) then return end
 			fs_helpers.on_receive_fields(pos, fields)
-			local meta = minetest.get_meta(pos)
-			local node = minetest.get_node(pos)
+			local meta = core.get_meta(pos)
+			local node = core.get_node(pos)
 			local form_buttons = ""
 			if not string.find(node.name, ":lv_") then
 				form_buttons = fs_helpers.cycling_button(
@@ -195,7 +195,7 @@ function technic.register_generator(data)
 		end,
 	})
 
-	minetest.register_node("technic:"..ltier.."_generator_active", {
+	core.register_node("technic:"..ltier.."_generator_active", {
 		description = desc,
 		tiles = {
 			"technic_"..ltier.."_generator_top.png"..tube_entry,
@@ -222,15 +222,15 @@ function technic.register_generator(data)
 		allow_metadata_inventory_move = technic.machine_inventory_move,
 		technic_run = run,
 		technic_on_disable = function(pos, node)
-			local timer = minetest.get_node_timer(pos)
+			local timer = core.get_node_timer(pos)
 			timer:start(1)
 		end,
 		on_timer = function(pos)
 			-- Connected back?
 			if technic.get_timeout(tier, pos) > 0 then return false end
 
-			local meta = minetest.get_meta(pos)
-			local node = minetest.get_node(pos)
+			local meta = core.get_meta(pos)
+			local node = core.get_node(pos)
 
 			local burn_time = meta:get_int("burn_time") or 0
 
@@ -265,8 +265,8 @@ function technic.register_generator(data)
 		on_receive_fields = function(pos, formname, fields, sender)
 			if not pipeworks.may_configure(pos, sender) then return end
 			fs_helpers.on_receive_fields(pos, fields)
-			local meta = minetest.get_meta(pos)
-			local node = minetest.get_node(pos)
+			local meta = core.get_meta(pos)
+			local node = core.get_node(pos)
 			local form_buttons = ""
 			if not string.find(node.name, ":lv_") then
 				form_buttons = fs_helpers.cycling_button(

@@ -1,5 +1,5 @@
 
-minetest.register_craft({
+core.register_craft({
 	output = 'technic:mv_solar_array 1',
 	recipe = {
 		{'technic:lv_solar_array',     'technic:lv_solar_array', 'technic:lv_solar_array'},
@@ -14,5 +14,5 @@ technic.register_solar_array("technic:mv_solar_array", {
 })
 
 -- compatibility alias for upgrading from old versions of technic
-minetest.register_alias("technic:solar_panel_mv", "technic:mv_solar_array")
-minetest.register_alias("technic:solar_array_mv", "technic:mv_solar_array")
+core.register_alias("technic:solar_panel_mv", "technic:mv_solar_array")
+core.register_alias("technic:solar_array_mv", "technic:mv_solar_array")

@@ -1,6 +1,6 @@
 local S = technic.getter
 
-minetest.register_craft({
+core.register_craft({
 	output = 'technic:hv_cable 3',
 	recipe = {
 		{'homedecor:plastic_sheeting', 'homedecor:plastic_sheeting', 'homedecor:plastic_sheeting'},
@@ -9,7 +9,7 @@ minetest.register_craft({
 	}
 })
 
-minetest.register_craft({
+core.register_craft({
 	output = "technic:hv_cable_plate_1 5",
 	recipe = {
 		{""                , ""                , "technic:hv_cable"},
@@ -18,7 +18,7 @@ minetest.register_craft({
 	}
 })
 
-minetest.register_craft({
+core.register_craft({
 	output = "technic:hv_cable",
 	recipe = {{"technic:hv_cable_plate_1"}}
 })
@@ -37,7 +37,7 @@ technic.register_cable_plate("technic:hv_cable_plate", {
 	tiles = {"technic_hv_cable.png"},
 })
 
-if minetest.get_modpath("digilines") then
+if core.get_modpath("digilines") then
 	technic.register_cable("technic:hv_digi_cable", {
 		tier = "HV",
 		size = 3/16,

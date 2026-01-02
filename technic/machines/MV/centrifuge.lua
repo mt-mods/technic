@@ -1,6 +1,6 @@
 local S = technic.getter
 
-minetest.register_craft({
+core.register_craft({
 	output = "technic:mv_centrifuge",
 	recipe = {
 		{"basic_materials:motor",          "technic:copper_plate",   "technic:diamond_drill_head"},

@@ -4,7 +4,7 @@ local power_usage_per_node = {200, 500, 600}
 local S = technic.getter
 local mat = technic.materials
 
-minetest.register_craft({
+core.register_craft({
 	output = 'technic:mining_drill',
 	recipe = {
 		{mat.tin_ingot,             'technic:diamond_drill_head', mat.tin_ingot},
@@ -12,7 +12,7 @@ minetest.register_craft({
 		{'',                              'technic:red_energy_crystal', mat.copper_ingot},
 	}
 })
-minetest.register_craft({
+core.register_craft({
 	output = 'technic:mining_drill_mk2',
 	recipe = {
 		{'technic:diamond_drill_head',    'technic:diamond_drill_head',   'technic:diamond_drill_head'},
@@ -20,7 +20,7 @@ minetest.register_craft({
 		{'',                              'technic:green_energy_crystal', ''},
 	}
 })
-minetest.register_craft({
+core.register_craft({
 	output = 'technic:mining_drill_mk3',
 	recipe = {
 		{'technic:diamond_drill_head',    'technic:diamond_drill_head',  'technic:diamond_drill_head'},
@@ -29,7 +29,7 @@ minetest.register_craft({
 	}
 })
 for i = 1, 4 do
-	minetest.register_craft({
+	core.register_craft({
 		output = 'technic:mining_drill_mk3',
 		recipe = {
 			{'technic:diamond_drill_head',    'technic:diamond_drill_head',   'technic:diamond_drill_head'},
@@ -53,17 +53,17 @@ local function get_description(mk, mode)
 end
 
 local function drill_dig_it0 (pos,player)
-	if minetest.is_protected(pos, player:get_player_name()) then
-		minetest.record_protection_violation(pos, player:get_player_name())
+	if core.is_protected(pos, player:get_player_name()) then
+		core.record_protection_violation(pos, player:get_player_name())
 		return
 	end
-	local node = minetest.get_node(pos)
+	local node = core.get_node(pos)
 	if node.name == "air" or node.name == "ignore" then return end
 	if node.name == mat.lava_source then return end
 	if node.name == mat.lava_flowing then return end
-	if node.name == mat.water_source then minetest.remove_node(pos) return end
-	if node.name == mat.water_flowing then minetest.remove_node(pos) return end
-	local def = minetest.registered_nodes[node.name]
+	if node.name == mat.water_source then core.remove_node(pos) return end
+	if node.name == mat.water_flowing then core.remove_node(pos) return end
+	local def = core.registered_nodes[node.name]
 	if not def then return end
 	def.on_dig(pos, node, player)
 end
@@ -236,12 +236,12 @@ local function drill_dig_it(pos, player, mode)
 		end
 	end
 
-	minetest.sound_play("mining_drill", {pos = pos, gain = 1.0, max_hear_distance = 10}, true)
+	core.sound_play("mining_drill", {pos = pos, gain = 1.0, max_hear_distance = 10}, true)
 end
 
 local function pos_is_pointable(pos)
-	local node = minetest.get_node(pos)
-	local nodedef = minetest.registered_nodes[node.name]
+	local node = core.get_node(pos)
+	local nodedef = core.registered_nodes[node.name]
 	return nodedef and nodedef.pointable
 end
 
@@ -250,10 +250,10 @@ local function mining_drill_mk2_setmode(user,itemstack)
 	local meta = itemstack:get_meta()
 	local mode = meta:get_int("mode")
 	if mode == 0 then
-		minetest.chat_send_player(player_name, S("Use while sneaking to change Mining Drill Mk@1 modes.", 2))
+		core.chat_send_player(player_name, S("Use while sneaking to change Mining Drill Mk@1 modes.", 2))
 	end
 	mode = mode < 4 and mode + 1 or 1
-	minetest.chat_send_player(player_name, get_description(2, mode)..": "..mining_drill_mode_text[mode][1])
+	core.chat_send_player(player_name, get_description(2, mode)..": "..mining_drill_mode_text[mode][1])
     itemstack:set_name("technic:mining_drill_mk2_"..mode)
 	meta:set_int("mode", mode)
 	return itemstack
@@ -264,10 +264,10 @@ local function mining_drill_mk3_setmode(user,itemstack)
 	local meta = itemstack:get_meta()
 	local mode = meta:get_int("mode")
 	if mode == 0 then
-		minetest.chat_send_player(player_name, S("Use while sneaking to change Mining Drill Mk@1 modes.", 3))
+		core.chat_send_player(player_name, S("Use while sneaking to change Mining Drill Mk@1 modes.", 3))
 	end
 	mode = mode < 5 and mode + 1 or 1
-	minetest.chat_send_player(player_name, get_description(3, mode)..": "..mining_drill_mode_text[mode][1])
+	core.chat_send_player(player_name, get_description(3, mode)..": "..mining_drill_mode_text[mode][1])
     itemstack:set_name("technic:mining_drill_mk3_"..mode)
 	meta:set_int("mode", mode)
 	return itemstack
@@ -285,7 +285,7 @@ local function mining_drill_mk2_handler(itemstack, user, pointed_thing)
 	end
 	local charge_to_take = cost_to_use(2, mode)
 	if technic.use_charge(itemstack, charge_to_take) then
-		local pos = minetest.get_pointed_thing_position(pointed_thing, false)
+		local pos = core.get_pointed_thing_position(pointed_thing, false)
 		drill_dig_it(pos, user, mode)
 	end
 	return itemstack
@@ -303,7 +303,7 @@ local function mining_drill_mk3_handler(itemstack, user, pointed_thing)
 	end
 	local charge_to_take = cost_to_use(3, mode)
 	if technic.use_charge(itemstack, charge_to_take) then
-		local pos = minetest.get_pointed_thing_position(pointed_thing, false)
+		local pos = core.get_pointed_thing_position(pointed_thing, false)
 		drill_dig_it(pos, user, mode)
 	end
 	return itemstack
@@ -320,7 +320,7 @@ technic.register_power_tool("technic:mining_drill", {
 		end
 		local charge_to_take = cost_to_use(1, 1)
 		if technic.use_charge(itemstack, charge_to_take) then
-			local pos = minetest.get_pointed_thing_position(pointed_thing, false)
+			local pos = core.get_pointed_thing_position(pointed_thing, false)
 			drill_dig_it(pos, user, 1)
 		end
 		return itemstack

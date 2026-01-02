@@ -1,7 +1,7 @@
 -- MV grinder
 local S = technic.getter
 
-minetest.register_craft({
+core.register_craft({
 	output = 'technic:mv_grinder',
 	recipe = {
 		{'technic:stainless_steel_ingot', 'technic:lv_grinder',     'technic:stainless_steel_ingot'},

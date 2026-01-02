@@ -16,12 +16,12 @@ function technic.register_solar_array(nodename, data)
 		-- As there is no way to determine if light is sunlight that is just a shame.
 		-- To take care of some of it solar panels do not work outside daylight hours or if
 		-- built below 0m
-		local pos1 = { y = pos.y + 1, x = pos.x, z = pos.z }
+		local pos1 = vector.offset(pos, 0, 1, 0)
 
-		minetest.load_area(pos1)
-		local light = minetest.get_node_light(pos1, nil)
-		local time_of_day = minetest.get_timeofday()
-		local meta = minetest.get_meta(pos)
+		core.load_area(pos1)
+		local light = core.get_node_light(pos1, nil)
+		local time_of_day = core.get_timeofday()
+		local meta = core.get_meta(pos)
 		light = light or 0
 
 		-- turn on array only during day time and if sufficient light
@@ -62,11 +62,11 @@ function technic.register_solar_array(nodename, data)
 		fixed = {-0.5, -0.5, -0.5, 0.5, 0, 0.5},
 	}
 	def.on_construct = def.on_construct or function(pos)
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 		meta:set_int(tier.."_EU_supply", 0)
 	end
 	def.technic_run = def.technic_run or run
 
-	minetest.register_node(nodename, def)
+	core.register_node(nodename, def)
 	technic.register_machine(tier, nodename, technic.producer)
 end

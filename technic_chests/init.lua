@@ -1,7 +1,7 @@
 
-local S = minetest.get_translator(minetest.get_current_modname())
+local S = core.get_translator(core.get_current_modname())
 
-local modpath = minetest.get_modpath("technic_chests")
+local modpath = core.get_modpath("technic_chests")
 
 technic = rawget(_G, "technic") or {}
 technic.chests = {}
@@ -26,18 +26,18 @@ technic.chests.colors = {
 
 function technic.chests.change_allowed(pos, player, owned, protected)
 	if owned then
-		if minetest.is_player(player) and not default.can_interact_with_node(player, pos) then
+		if core.is_player(player) and not default.can_interact_with_node(player, pos) then
 			return false
 		end
 	elseif protected then
-		if minetest.is_protected(pos, player:get_player_name()) then
+		if core.is_protected(pos, player:get_player_name()) then
 			return false
 		end
 	end
 	return true
 end
 
-if minetest.get_modpath("digilines") then
+if core.get_modpath("digilines") then
 	dofile(modpath.."/digilines.lua")
 end
 
@@ -47,9 +47,9 @@ dofile(modpath.."/register.lua")
 dofile(modpath.."/chests.lua")
 
 -- Undo all of the locked wooden chest recipes, and just make them use a padlock.
-minetest.register_on_mods_loaded(function()
-	minetest.clear_craft({output = "default:chest_locked"})
-	minetest.register_craft({
+core.register_on_mods_loaded(function()
+	core.clear_craft({output = "default:chest_locked"})
+	core.register_craft({
 		output = "default:chest_locked",
 		recipe = {
 			{ "group:wood", "group:wood", "group:wood" },
@@ -57,7 +57,7 @@ minetest.register_on_mods_loaded(function()
 			{ "group:wood", "group:wood", "group:wood" }
 		}
 	})
-	minetest.register_craft({
+	core.register_craft({
 		output = "default:chest_locked",
 		type = "shapeless",
 		recipe = {
@@ -68,13 +68,13 @@ minetest.register_on_mods_loaded(function()
 end)
 
 -- Conversion for old chests
-minetest.register_lbm({
+core.register_lbm({
 	name = "technic_chests:old_chest_conversion",
 	nodenames = {"group:technic_chest"},
 	run_at_every_load = false,
 	action = function(pos, node)
 		-- Use `on_construct` function because that has data from register function
-		local def = minetest.registered_nodes[node.name]
+		local def = core.registered_nodes[node.name]
 		if def and def.on_construct then
 			def.on_construct(pos)
 		end

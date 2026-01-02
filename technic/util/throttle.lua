@@ -4,7 +4,7 @@ local function throttle(callspersecond, fn)
 	local count = 0
 
 	return function(...)
-		local now = minetest.get_us_time()
+		local now = core.get_us_time()
 		if (now - time) > 1000000 then
 			-- reset time
 			time = now

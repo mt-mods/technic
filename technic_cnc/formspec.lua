@@ -125,7 +125,7 @@ end
 local function on_receive_fields(pos, meta, fields, sender, update_formspec)
 	local name = sender:get_player_name()
 
-	if fields.quit or (meta:get_int("public") == 0 and minetest.is_protected(pos, name)) then
+	if fields.quit or (meta:get_int("public") == 0 and core.is_protected(pos, name)) then
 		return true
 	end
 
@@ -169,7 +169,7 @@ local function on_receive_fields(pos, meta, fields, sender, update_formspec)
 	end
 
 	local setchannel = fields.setchannel or (fields.key_enter and fields.key_enter_field == "channel")
-	if setchannel and not minetest.is_protected(pos, name) then
+	if setchannel and not core.is_protected(pos, name) then
 		meta:set_string("channel", fields.channel)
 		return true
 	end

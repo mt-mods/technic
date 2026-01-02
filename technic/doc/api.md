@@ -18,7 +18,7 @@ Helper functions
 	* Converts the number `num` to a human-readable string with SI prefixes
 * `technic.swap_node(pos, nodename)`
 	* Same as `mintest.swap_node` but it only changes the nodename.
-	* It uses `minetest.get_node` before swapping to ensure the new nodename
+	* It uses `core.get_node` before swapping to ensure the new nodename
 	  is not the same as the current one.
 * `technic.get_or_load_node(pos)`
 	* If the mapblock is loaded, it returns the node at pos,
@@ -53,7 +53,7 @@ Power tool API
 ----------------------
 
 * `technic.register_power_tool(itemname, definition)`
-	* Registers power tool adding required fields, otherwise same as `minetest.register_tool(itemname, definition)`.
+	* Registers power tool adding required fields, otherwise same as `core.register_tool(itemname, definition)`.
 	* For regular power tools you only want to change `max_charge` and leave other fields unset (defaults).
 	* Special fields for `definition`:
 		* `technic_max_charge` Number, maximum charge for tool. Defaults to `10000` which is same as RE battery.

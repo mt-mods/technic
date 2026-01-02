@@ -1,8 +1,8 @@
 local S = technic.getter
 
-minetest.register_alias("mv_cable", "technic:mv_cable")
+core.register_alias("mv_cable", "technic:mv_cable")
 
-minetest.register_craft({
+core.register_craft({
 	output = 'technic:mv_cable 3',
 	recipe ={
 		{'technic:rubber',   'technic:rubber',   'technic:rubber'},
@@ -11,7 +11,7 @@ minetest.register_craft({
 	}
 })
 
-minetest.register_craft({
+core.register_craft({
 	output = "technic:mv_cable_plate_1 5",
 	recipe = {
 		{""                , ""                , "technic:mv_cable"},
@@ -20,7 +20,7 @@ minetest.register_craft({
 	}
 })
 
-minetest.register_craft({
+core.register_craft({
 	output = "technic:mv_cable",
 	recipe = {{"technic:mv_cable_plate_1"}}
 })
@@ -39,7 +39,7 @@ technic.register_cable_plate("technic:mv_cable_plate", {
 	tiles = {"technic_mv_cable.png"},
 })
 
-if minetest.get_modpath("digilines") then
+if core.get_modpath("digilines") then
 	technic.register_cable("technic:mv_digi_cable", {
 		tier = "MV",
 		size = 2.5/16,

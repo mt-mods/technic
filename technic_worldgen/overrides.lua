@@ -1,7 +1,7 @@
 
-local S = minetest.get_translator("technic_worldgen")
+local S = core.get_translator("technic_worldgen")
 
-minetest.override_item("default:steel_ingot", {
+core.override_item("default:steel_ingot", {
 	description = S("Wrought Iron Ingot"),
 	-- Make the color of the ingot a bit darker to separate it better from tin
 	inventory_image = "technic_wrought_iron_ingot.png^[multiply:#bbbbbbff",
@@ -73,11 +73,11 @@ local function do_override(name, def)
 	if def.wield_image then
 		override.wield_image = replace_texture(def.wield_image)
 	end
-	minetest.override_item(name, override)
+	core.override_item(name, override)
 end
 
-minetest.register_on_mods_loaded(function()
-	for name, def in pairs(minetest.registered_items) do
+core.register_on_mods_loaded(function()
+	for name, def in pairs(core.registered_items) do
 		do_override(name, def)
 	end
 end)

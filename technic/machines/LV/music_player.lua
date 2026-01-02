@@ -4,8 +4,8 @@
 local S = technic.getter
 local mat = technic.materials
 
-minetest.register_alias("music_player", "technic:music_player")
-minetest.register_craft({
+core.register_alias("music_player", "technic:music_player")
+core.register_craft({
 	output = 'technic:music_player',
 	recipe = {
 		{'technic:chromium_ingot', mat.diamond, 'technic:chromium_ingot'},
@@ -17,18 +17,18 @@ minetest.register_craft({
 local music_handles = {}
 
 local function play_track(pos, track)
-	return minetest.sound_play("technic_track"..tostring(track),
+	return core.sound_play("technic_track"..tostring(track),
 			{pos = pos, gain = 1.0, loop = true, max_hear_distance = 72,})
 end
 
 local run = function(pos, node)
-	local meta         = minetest.get_meta(pos)
+	local meta         = core.get_meta(pos)
 	local eu_input     = meta:get_int("LV_EU_input")
 	local machine_name = S("@1 Music Player", S("LV"))
 	local demand       = 150
 
 	local current_track = meta:get_int("current_track")
-	local pos_hash      = minetest.hash_node_position(pos)
+	local pos_hash      = core.hash_node_position(pos)
 	local music_handle  = music_handles[pos_hash]
 
 	-- Setup meta data if it does not exist.
@@ -47,7 +47,7 @@ local run = function(pos, node)
 	if eu_input < demand then
 		meta:set_string("infotext", S("@1 Unpowered", machine_name))
 		if music_handle then
-			minetest.sound_stop(music_handle)
+			core.sound_stop(music_handle)
 			music_handle = nil
 		end
 	elseif eu_input >= demand then
@@ -62,10 +62,10 @@ local run = function(pos, node)
 end
 
 local function stop_player(pos, node)
-	local pos_hash = minetest.hash_node_position(pos)
+	local pos_hash = core.hash_node_position(pos)
 	local music_handle = music_handles[pos_hash]
 	if music_handle then
-		minetest.sound_stop(music_handle)
+		core.sound_stop(music_handle)
 		music_handles[pos_hash] = nil
 	end
 end
@@ -89,7 +89,7 @@ local function set_display(meta)
 					S("Current track: @1", meta:get_int("current_track"))).."]")
 end
 
-minetest.register_node("technic:music_player", {
+core.register_node("technic:music_player", {
 	description = S("@1 Music Player", S("LV")),
 	tiles = {"technic_music_player_top.png", "technic_machine_bottom.png", "technic_music_player_side.png",
 	         "technic_music_player_side.png", "technic_music_player_side.png", "technic_music_player_side.png"},
@@ -101,7 +101,7 @@ minetest.register_node("technic:music_player", {
 	connect_sides = {"bottom"},
 	sounds = technic.sounds.node_sound_wood_defaults(),
 	on_construct = function(pos)
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 		meta:set_string("infotext", S("@1 Music Player", S("LV")))
 		set_display(meta)
 	end,
@@ -119,7 +119,7 @@ minetest.register_node("technic:music_player", {
 		if fields.track9 then new_track = 9 end
 		if new_track then
 			stop_player(pos)
-			local meta = minetest.get_meta(pos)
+			local meta = core.get_meta(pos)
 			meta:set_int("active", new_track == 0 and 0 or 1)
 			meta:set_int("current_track", new_track)
 			set_display(meta)

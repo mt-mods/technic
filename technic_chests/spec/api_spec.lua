@@ -33,7 +33,7 @@ describe("Chests API", function()
 		for _,m in ipairs(materials) do
 			for _,t in ipairs(types) do
 				local name = "technic:"..m..t.."_chest"
-				if type(minetest.registered_nodes[name]) ~= "table" then
+				if type(core.registered_nodes[name]) ~= "table" then
 					table.insert(failed, name)
 				end
 			end
@@ -47,7 +47,7 @@ describe("Chests API", function()
 		local materials = {"iron", "copper", "silver", "gold", "mithril"}
 		local types = {"", "_locked", "_protected"}
 		local failed = {}
-		local S = minetest.get_translator("technic_chests")
+		local S = core.get_translator("technic_chests")
 		for _,m in ipairs(materials) do
 			for _,t in ipairs(types) do
 				local name = "technic:"..m..t.."_chest"
@@ -59,7 +59,7 @@ describe("Chests API", function()
 				else
 					description = S("@1 Chest", S(m:sub(1,1):upper() .. m:sub(2)))
 				end
-				assert.equals(description, minetest.registered_nodes[name].description)
+				assert.equals(description, core.registered_nodes[name].description)
 			end
 		end
 	end)
@@ -77,7 +77,7 @@ describe("Chests API", function()
 			digilines = true,
 		})
 		-- Verify node registration
-		assert.is_table(minetest.registered_nodes["my_mod_name:my_special"])
+		assert.is_table(core.registered_nodes["my_mod_name:my_special"])
 		-- Try to place it
 		world.place_node({x=-99,y=-999,z=-9999}, {name = "my_mod_name:my_special", param2 = 0}, Sam)
 	end)
@@ -96,7 +96,7 @@ describe("Chests API", function()
 			locked = true
 		})
 		-- Verify node registration
-		assert.is_table(minetest.registered_nodes["my_mod_name:my_locked_special"])
+		assert.is_table(core.registered_nodes["my_mod_name:my_locked_special"])
 		-- Try to place it
 		world.place_node({x=-99,y=-999,z=-9998}, {name = "my_mod_name:my_locked_special", param2 = 0}, Sam)
 	end)
@@ -115,7 +115,7 @@ describe("Chests API", function()
 			protected = true
 		})
 		-- Verify node registration
-		assert.is_table(minetest.registered_nodes["my_mod_name:my_protected_special"])
+		assert.is_table(core.registered_nodes["my_mod_name:my_protected_special"])
 		-- Try to place it
 		world.place_node({x=-99,y=-999,z=-9997}, {name = "my_mod_name:my_protected_special", param2 = 0}, Sam)
 	end)

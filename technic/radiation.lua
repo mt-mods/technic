@@ -28,11 +28,11 @@ or complex internal structure should show no radiation resistance.
 Fractional resistance values are permitted.
 --]]
 
-local MP = minetest.get_modpath("technic")
+local MP = core.get_modpath("technic")
 local throttle = dofile(MP .. "/util/throttle.lua")
 
 local S = technic.getter
-local has_mcl = minetest.get_modpath("mcl_core")
+local has_mcl = core.get_modpath("mcl_core")
 
 local rad_resistance_node = {
 	["default:brick"] = 13,
@@ -181,7 +181,7 @@ local function node_radiation_resistance(node_name)
 	if resistance then
 		return resistance
 	end
-	local def = minetest.registered_nodes[node_name]
+	local def = core.registered_nodes[node_name]
 	if not def then
 		cache_radiation_resistance[node_name] = 0
 		return 0
@@ -282,7 +282,7 @@ local function calculate_base_damage(node_pos, object_pos, strength)
 
 	for ray_pos in technic.trace_node_ray(node_pos,
 			vector.direction(node_pos, object_pos), dist) do
-		local shield_name = minetest.get_node(ray_pos).name
+		local shield_name = core.get_node(ray_pos).name
 		shielding = shielding + node_radiation_resistance(shield_name) * 0.025
 	end
 
@@ -355,7 +355,7 @@ local last_max_lag = 0
 if enable_radiation_throttling then
 	local function trackMaxLag()
 		last_max_lag = technic.get_max_lag()
-		minetest.after(5, trackMaxLag)
+		core.after(5, trackMaxLag)
 	end
 
 	-- kick off lag tracking function
@@ -369,9 +369,9 @@ local function dmg_abm(pos, node)
 		return
 	end
 
-	local strength = minetest.get_item_group(node.name, "radioactive")
+	local strength = core.get_item_group(node.name, "radioactive")
 	local max_dist = strength * rad_dmg_mult_sqrt
-	for _, o in pairs(minetest.get_objects_inside_radius(pos,
+	for _, o in pairs(core.get_objects_inside_radius(pos,
 			max_dist + abdomen_offset)) do
 		if (entity_damage or o:is_player()) and o:get_hp() > 0 then
 			dmg_object(pos, o, strength)
@@ -379,12 +379,12 @@ local function dmg_abm(pos, node)
 	end
 end
 
-if minetest.settings:get_bool("enable_damage") then
+if core.settings:get_bool("enable_damage") then
 	if enable_radiation_throttling then
 		dmg_abm = throttle(100, dmg_abm)
 	end
 
-	minetest.register_abm({
+	core.register_abm({
 		label = "Radiation damage",
 		nodenames = {"group:radioactive"},
 		interval = 1,
@@ -393,10 +393,10 @@ if minetest.settings:get_bool("enable_damage") then
 	})
 
 	if longterm_damage then
-		minetest.register_globalstep(function(dtime)
+		core.register_globalstep(function(dtime)
 			for pn, dmg in pairs(radiated_players) do
 				dmg = dmg - (dtime / 8)
-				local player = minetest.get_player_by_name(pn)
+				local player = core.get_player_by_name(pn)
 				local killed
 				if player and dmg > rad_dmg_cutoff then
 					killed = apply_fractional_damage(player, (dmg * dtime) / 8)
@@ -410,7 +410,7 @@ if minetest.settings:get_bool("enable_damage") then
 			end
 		end)
 
-		minetest.register_on_dieplayer(function(player)
+		core.register_on_dieplayer(function(player)
 			radiated_players[player:get_player_name()] = nil
 		end)
 	end
@@ -420,7 +420,7 @@ end
 local griefing = technic.config:get_bool("enable_corium_griefing")
 
 for _, state in pairs({"flowing", "source"}) do
-	minetest.register_node("technic:corium_"..state, {
+	core.register_node("technic:corium_"..state, {
 		description = state == "source" and S("Corium Source") or S("Flowing Corium"),
 		drawtype = (state == "source" and "liquid" or "flowingliquid"),
 		tiles = {{
@@ -491,7 +491,7 @@ if rawget(_G, "bucket") and bucket.register_liquid then
 	)
 end
 
-if minetest.get_modpath("mcl_buckets") then
+if core.get_modpath("mcl_buckets") then
 	mcl_buckets.register_liquid({
 		bucketname = "technic:bucket_corium",
 		source_place = "technic:corium_source",
@@ -505,7 +505,7 @@ if minetest.get_modpath("mcl_buckets") then
 	})
 end
 
-minetest.register_node("technic:chernobylite_block", {
+core.register_node("technic:chernobylite_block", {
 	description = S("Chernobylite Block"),
 	tiles = {"technic_chernobylite_block.png"},
 	is_ground_content = false,
@@ -516,40 +516,40 @@ minetest.register_node("technic:chernobylite_block", {
 	light_source = 2,
 })
 
-minetest.register_abm({
+core.register_abm({
 	label = "Corium: boil-off water (sources)",
 	nodenames = {"group:water"},
 	neighbors = {"technic:corium_source"},
 	interval = 1,
 	chance = 3,
 	action = function(pos, node)
-		minetest.remove_node(pos)
+		core.remove_node(pos)
 	end,
 })
 
-minetest.register_abm({
+core.register_abm({
 	label = "Corium: boil-off water (flowing)",
 	nodenames = {"technic:corium_flowing"},
 	neighbors = {"group:water"},
 	interval = 1,
 	chance = 3,
 	action = function(pos, node)
-		minetest.set_node(pos, {name="technic:chernobylite_block"})
+		core.set_node(pos, {name="technic:chernobylite_block"})
 	end,
 })
 
-minetest.register_abm({
+core.register_abm({
 	label = "Corium: become chernobylite",
 	nodenames = {"technic:corium_flowing"},
 	interval = 5,
 	chance = (griefing and 10 or 1),
 	action = function(pos, node)
-		minetest.set_node(pos, {name="technic:chernobylite_block"})
+		core.set_node(pos, {name="technic:chernobylite_block"})
 	end,
 })
 
 if griefing then
-	minetest.register_abm({
+	core.register_abm({
 		label = "Corium: griefing",
 		nodenames = {"technic:corium_source", "technic:corium_flowing"},
 		interval = 4,
@@ -564,9 +564,9 @@ if griefing then
 			}) do
 				if math.random(8) == 1 then
 					local vpos = vector.add(pos, offset)
-					local def = minetest.registered_nodes[minetest.get_node(vpos).name]
+					local def = core.registered_nodes[core.get_node(vpos).name]
 					if def and (not def._mcl_hardness or def._mcl_hardness > 0) then
-						minetest.dig_node(vpos)
+						core.dig_node(vpos)
 					end
 				end
 			end

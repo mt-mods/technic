@@ -1,12 +1,12 @@
 -- Original code comes from walkin_light mod by Echo
--- http://minetest.net/forum/viewtopic.php?id=2621
+-- http://core.net/forum/viewtopic.php?id=2621
 
 local flashlight_max_charge = 30000
 
 local S = technic.getter
 local mat = technic.materials
 
-minetest.register_alias("technic:light_off", "air")
+core.register_alias("technic:light_off", "air")
 
 technic.register_power_tool("technic:flashlight", {
 	description = S("Flashlight"),
@@ -14,7 +14,7 @@ technic.register_power_tool("technic:flashlight", {
 	max_charge = flashlight_max_charge,
 })
 
-minetest.register_craft({
+core.register_craft({
 	output = "technic:flashlight",
 	recipe = {
 		{"technic:rubber",                mat.glass,   "technic:rubber"},
@@ -42,7 +42,7 @@ local function check_for_flashlight(player)
 	return false
 end
 
-minetest.register_on_joinplayer(function(player)
+core.register_on_joinplayer(function(player)
 	local player_name = player:get_player_name()
 	local pos = player:get_pos()
 	local rounded_pos = vector.round(pos)
@@ -51,18 +51,18 @@ minetest.register_on_joinplayer(function(player)
 	was_wielding[player_name] = true
 end)
 
-minetest.register_on_leaveplayer(function(player)
+core.register_on_leaveplayer(function(player)
 	local player_name = player:get_player_name()
 	local pos = player_positions[player_name]
-	local nodename = minetest.get_node(pos).name
+	local nodename = core.get_node(pos).name
 	if nodename == "technic:light" then
-		minetest.remove_node(pos)
+		core.remove_node(pos)
 	end
 	player_positions[player_name] = nil
 end)
 
-minetest.register_globalstep(function(dtime)
-	for i, player in pairs(minetest.get_connected_players()) do
+core.register_globalstep(function(dtime)
+	for i, player in pairs(core.get_connected_players()) do
 		local player_name = player:get_player_name()
 		local flashlight_weared = check_for_flashlight(player)
 		local pos = player:get_pos()
@@ -78,18 +78,18 @@ minetest.register_globalstep(function(dtime)
 		-- Remove light, flashlight weared out or was removed from hotbar
 		if was_wielding[player_name] and not flashlight_weared then
 			was_wielding[player_name] = false
-			local node = minetest.get_node_or_nil(old_pos)
+			local node = core.get_node_or_nil(old_pos)
 			if node and node.name == "technic:light" then
-				minetest.remove_node(old_pos)
+				core.remove_node(old_pos)
 			end
 		elseif (player_moved or not was_wielding[player_name]) and flashlight_weared then
-			local node = minetest.get_node_or_nil(rounded_pos)
+			local node = core.get_node_or_nil(rounded_pos)
 			if node and node.name == "air" then
-				minetest.set_node(rounded_pos, {name="technic:light"})
+				core.set_node(rounded_pos, {name="technic:light"})
 			end
-			node = minetest.get_node_or_nil(old_pos)
+			node = core.get_node_or_nil(old_pos)
 			if node and node.name == "technic:light" then
-				minetest.remove_node(old_pos)
+				core.remove_node(old_pos)
 			end
 			player_positions[player_name] = rounded_pos
 			was_wielding[player_name] = true
@@ -97,10 +97,10 @@ minetest.register_globalstep(function(dtime)
 	end
 end)
 
-if minetest.get_modpath("mcl_core") then
-   minetest.register_alias("technic:light", "mcl_core:light_14")
+if core.get_modpath("mcl_core") then
+   core.register_alias("technic:light", "mcl_core:light_14")
 else
-   minetest.register_node("technic:light", {
+   core.register_node("technic:light", {
 	drawtype = "glasslike",
 	tiles = {"technic_light.png"},
 	paramtype = "light",
@@ -109,7 +109,7 @@ else
 	walkable = false,
 	buildable_to = true,
 	sunlight_propagates = true,
-	light_source = minetest.LIGHT_MAX,
+	light_source = core.LIGHT_MAX,
 	pointable = false,
    })
 end

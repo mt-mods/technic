@@ -12,11 +12,11 @@ function technic.overload_network(network_id)
 		network.supply = 0
 		network.battery_charge = 0
 	end
-	overloaded_networks[network_id] = minetest.get_us_time() + (overload_reset_time * 1000 * 1000)
+	overloaded_networks[network_id] = core.get_us_time() + (overload_reset_time * 1000 * 1000)
 end
 
 function technic.reset_overloaded(network_id)
-	local remaining = math.max(0, overloaded_networks[network_id] - minetest.get_us_time())
+	local remaining = math.max(0, overloaded_networks[network_id] - core.get_us_time())
 	if remaining == 0 then
 		-- Clear cache, remove overload and restart network
 		technic.remove_network(network_id)

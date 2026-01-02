@@ -5,7 +5,7 @@
 -- Solar arrays are not able to store large amounts of energy.
 -- The LV arrays are used to make medium voltage arrays.
 
-minetest.register_craft({
+core.register_craft({
 	output = 'technic:lv_solar_array 1',
 	recipe = {
 		{'technic:solar_panel',        'technic:solar_panel',    'technic:solar_panel'},
@@ -19,4 +19,4 @@ technic.register_solar_array("technic:lv_solar_array", {
 	power=10
 })
 
-minetest.register_alias("technic:solar_array_lv", "technic:lv_solar_array")
+core.register_alias("technic:solar_array_lv", "technic:lv_solar_array")

@@ -1,8 +1,8 @@
 
-local mesecons_materials = minetest.get_modpath("mesecons_materials")
-local has_mcl = minetest.get_modpath("mcl_core")
-local has_mcl_dye = minetest.get_modpath("mcl_dye")
-local has_moreores = minetest.get_modpath("moreores")
+local mesecons_materials = core.get_modpath("mesecons_materials")
+local has_mcl = core.get_modpath("mcl_core")
+local has_mcl_dye = core.get_modpath("mcl_dye")
+local has_moreores = core.get_modpath("moreores")
 
 technic.materials = {
 	stone = has_mcl and "mcl_core:stone" or "default:stone",

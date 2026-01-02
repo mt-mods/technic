@@ -40,11 +40,11 @@ describe("Nuclear reactor", function()
 	local function box(results, p, d, nodename)
 		results = results or {}
 		wall(results, p, "x", "z", d, d, nodename) -- floor
-		wall(results, {x=p.x,y=p.y+1,z=p.z}, "x", "y", d, d - 1, nodename) -- wall
-		wall(results, {x=p.x,y=p.y+1,z=p.z+d-1}, "x", "y", d, d - 1, nodename) -- wall
-		wall(results, {x=p.x,y=p.y+1,z=p.z+1}, "z", "y", d - 2, d - 1, nodename) -- wall
-		wall(results, {x=p.x+d-1,y=p.y+1,z=p.z+1}, "z", "y", d - 2, d - 1, nodename) -- wall
-		wall(results, {x=p.x+1,y=p.y+d-1,z=p.z+1}, "x", "z", d - 2, d - 2, nodename) -- ceiling
+		wall(results, vector.offset(p, 0, 1, 0), "x", "y", d, d - 1, nodename) -- wall
+		wall(results, vector.offset(p, 0, 1, d-1), "x", "y", d, d - 1, nodename) -- wall
+		wall(results, vector.offset(p, 0, 1, 1), "z", "y", d - 2, d - 1, nodename) -- wall
+		wall(results, vector.offset(p, d-1, 1, 1), "z", "y", d - 2, d - 1, nodename) -- wall
+		wall(results, vector.offset(p, 1, d-1, 1), "x", "z", d - 2, d - 2, nodename) -- ceiling
 		return results
 	end
 
