@@ -2,16 +2,16 @@ local S = technic.getter
 
 local desc = S("Administrative World Anchor")
 
-local function floor_to_nearest(n, precision)
-	return math.floor(n / precision) * precision
+local function floor_to_nearest(n)
+	return math.floor(n / core.MAP_BLOCKSIZE)
 end
 
 local function compute_forceload_positions(pos, meta)
 	local radius = meta:get_int("radius")
 	local minpos = vector.offset(pos, -radius, -radius, -radius)
 	local maxpos = vector.offset(pos, radius, radius, radius)
-	local minbpos = vector.apply(minpos, floor_to_nearest, 16)
-	local maxbpos = vector.apply(maxpos, floor_to_nearest, 16)
+	local minbpos = vector.apply(minpos, floor_to_nearest)
+	local maxbpos = vector.apply(maxpos, floor_to_nearest)
 	local flposes = {}
 	for x = minbpos.x, maxbpos.x, 16 do
 		for y = minbpos.y, maxbpos.y, 16 do
