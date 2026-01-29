@@ -68,7 +68,7 @@ technic.register_power_tool("technic:prospector", {
 			return
 		end
 		local meta = toolstack:get_meta()
-		local target = meta:get("target") or migrate_meta(meta)
+		local target = core.registered_nodes[meta:get("target") or migrate_meta(meta)]
 		local look_depth, look_radius = get_field(meta)
 		local pointed
 		if pointed_thing.type == "node" then
@@ -85,7 +85,7 @@ technic.register_power_tool("technic:prospector", {
 			"label[1,0;"..core.formspec_escape(toolstack:get_description()).."]"..
 			(target and
 				"label[0,1.5;"..S("Current target:").."]"..
-				"label[0,2;"..core.formspec_escape(core.registered_nodes[target].description).."]"..
+				"label[0,2;"..core.formspec_escape(target.description).."]"..
 				"item_image[0,2.5;1,1;"..target.."]" or
 				"label[0,1.5;"..S("No target set").."]")..
 			(pointed and
