@@ -69,6 +69,9 @@ technic.register_power_tool("technic:prospector", {
 		end
 		local meta = toolstack:get_meta()
 		local target = meta:get("target") or migrate_meta(meta)
+		if target and not core.registered_nodes[target] then
+			target = nil
+		end
 		local look_depth, look_radius = get_field(meta)
 		local pointed
 		if pointed_thing.type == "node" then
