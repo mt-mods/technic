@@ -1,5 +1,10 @@
 -- Minetest 0.4.6 mod: extranodes
 -- namespace: technic
+
+if unifieddyes and not unifieddyes.preserve_metadata then
+	error("Incompatible version of unifieddyes found. Please update it to the latest version.")
+end
+
 local S = core.get_translator(core.get_current_modname())
 
 if core.get_modpath("moreblocks") then
@@ -216,20 +221,20 @@ if core.get_modpath("unifieddyes") then
 		unifieddyes.fix_rotation(pos, placer, itemstack, pointed_thing)
 	end
 	iclip_def.groups = {choppy=1, snappy=1, oddly_breakable_by_hand=1, ud_param2_colorable = 1}
-	iclip_def.on_dig = unifieddyes.on_dig
+	iclip_def.preserve_metadata = unifieddyes.preserve_metadata
 
 	iclipfence_def.paramtype2 = "color"
 	iclipfence_def.palette = "unifieddyes_palette_extended.png"
 	iclipfence_def.on_construct = unifieddyes.on_construct
 	iclipfence_def.groups = {fence=1, choppy=1, snappy=1, oddly_breakable_by_hand=1, ud_param2_colorable = 1}
-	iclipfence_def.on_dig = unifieddyes.on_dig
+	iclipfence_def.preserve_metadata = unifieddyes.preserve_metadata
 
 	sclip_def.paramtype2 = "colorwallmounted"
 	sclip_def.palette = "unifieddyes_palette_colorwallmounted.png"
 	sclip_def.after_place_node = function(pos, placer, itemstack, pointed_thing)
 		unifieddyes.fix_rotation(pos, placer, itemstack, pointed_thing)
 	end
-	sclip_def.on_dig = unifieddyes.on_dig
+	sclip_def.preserve_metadata = unifieddyes.preserve_metadata
 	sclip_def.groups = {choppy=1, cracky=1, ud_param2_colorable = 1}
 end
 
