@@ -1,0 +1,62 @@
+# textdomain: technic_chests
+
+# technic_chests Russian translation
+# by ermprghxst
+
+@1 Chest=@1 Сундук
+@1 Locked Chest=@1 Заблокированный Сундук
+@1 Locked Chest (owned by @2)=@1 Заблокированный Сундук (Владелец: @2)
+Color Filter: @1=
+Edit chest description:=
+
+# Colors
+Black=Чёрный
+Blue=Синий
+Brown=Коричневый
+Cyan=Голубой
+Dark Green=Тёмно Зелённый
+Dark Grey=Тёмно Серый
+Green=Зелённый
+Grey=Серый
+Magenta=Пурпурный
+Orange=Ораньжевый
+Pink=Розовый
+Red=Красный
+Violet=Фиолетовый
+White=Белый
+Yellow=Жёлтый
+None=Ничего
+
+# Materials
+Copper=Медный
+Gold=Золотой
+Iron=Железный
+Mithril=Мифриловый
+Silver=Серебрянный
+Wooden=Деревянный
+
+# Sorting
+Sort=Сортировка
+Auto-sort is @1=Автоматическая сортировка: @1
+Off=Выкл.
+On=Вкл.
+@1 (owned by @2)=@1 (Владелец: @2)
+@1 Protected Chest=@1 Защищённый сундук
+Selected Color: @1=Выбранный цвет: @1
+Move existing to Chest=Переместить существующее в сундук
+Move specific=Переместить конкретное
+Drop to move=Бросьте для перемещения
+Move all to Chest=Переместить всё в сундук
+Move all to Inventory=Переместить всё в инвентарь
+Send player put messages=Отправлять сообщения о помещении предметов игроком
+Send player take messages=Отправлять сообщения о взятии предметов игроком
+Send tube inject messages=Отправлять сообщения о вводе из трубы
+Send tube pull messages=Отправлять сообщения о заборе трубой
+Send overflow messages=Отправлять сообщения о переполнении
+Auto-sort is On=Автосортировка включена
+Auto-sort is Off=Автосортировка выключена
+Sort by Quantity=Сортировать по количеству
+Sort by Type=Сортировать по типу
+Sort by Wear=Сортировать по износу
+Natural sort=Естественная сортировка
+Sort by Item=Сортировать по предметуы
