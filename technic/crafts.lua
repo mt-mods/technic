@@ -182,7 +182,7 @@ core.register_craft({
 	type = "shapeless",
 	replacements = {{mat.bucket_water,mat.bucket_empty}},
 	recipe = {
-		"technic:stone_dust",
+		"technic:silt",
 		"group:leaves",
 		mat.bucket_water,
 		"group:sand",

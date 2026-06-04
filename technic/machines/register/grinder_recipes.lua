@@ -25,10 +25,10 @@ local recipes = {
 	{"technic:zinc_lump",          "technic:zinc_dust 2"},
 	{"technic:lead_lump",          "technic:lead_dust 2"},
 	{"technic:sulfur_lump",        "technic:sulfur_dust 2"},
-	{mat.stone,              "technic:stone_dust"},
-	{mat.sand,               "technic:stone_dust"},
-	{mat.desert_sand,        "technic:stone_dust"},
-	{mat.silver_sand,        "technic:stone_dust"},
+	{mat.stone,              "technic:silt"},
+	{mat.sand,               "technic:silt"},
+	{mat.desert_sand,        "technic:silt"},
+	{mat.silver_sand,        "technic:silt"},
 
 	-- Other
 	{mat.cobble,           mat.gravel},

@@ -164,3 +164,10 @@ pip-log.txt
 #gedit backup files
 *~
 
+#################
+## IntelliJ Idea
+#################
+
+#Project files
+.idea
+
