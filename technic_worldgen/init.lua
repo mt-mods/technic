@@ -11,9 +11,6 @@ if core.get_modpath("mcl_sounds") then
 	technic.sounds = mcl_sounds
 end
 
--- Read materials file
-dofile(modpath.."/materials.lua")
-
 dofile(modpath.."/config.lua")
 dofile(modpath.."/nodes.lua")
 dofile(modpath.."/oregen.lua")

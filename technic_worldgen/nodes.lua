@@ -104,17 +104,20 @@ else
 	})
 end
 
-local sand_def = core.registered_items[technic.materials.sand]
-
 core.register_node(":technic:silt", {
 	description = S("Silt"),
-	groups = sand_def.groups,
+	groups = {
+		falling_node = 1, -- common
+		crumbly = 3, -- minetest game
+		handy = 1, shovely = 1, falling_node = 1, enderman_takable = 1, building_block = 1 -- mineclon*
+	},
 	is_ground_content = true,
-	_mcl_blast_resistance = sand_def._mcl_blast_resistance,
-	_mcl_hardness = sand_def._mcl_hardness,
+	_mcl_blast_resistance = 0.5,
+	_mcl_hardness = 0.5,
 	drawtype = "allfaces",
 	tiles = {"technic_silt.png"},
-	sounds = sand_def.sounds,
+	sounds = technic.sounds.node_sound_sand_defaults(),
+	_tnt_loss = 2,
 })
 
 core.register_alias("technic:stone_dust", "technic:silt")
