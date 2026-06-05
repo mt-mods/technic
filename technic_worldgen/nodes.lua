@@ -109,7 +109,7 @@ core.register_node(":technic:silt", {
 	groups = {
 		falling_node = 1, -- common
 		crumbly = 3, -- minetest game
-		handy = 1, shovely = 1, falling_node = 1, enderman_takable = 1, building_block = 1 -- mineclon*
+		handy = 1, shovely = 1, enderman_takable = 1, building_block = 1 -- mineclon*
 	},
 	is_ground_content = true,
 	_mcl_blast_resistance = 0.5,
