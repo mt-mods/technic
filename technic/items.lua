@@ -121,21 +121,6 @@ core.register_node("technic:machine_casing", {
 	sounds = technic.sounds.node_sound_stone_defaults(),
 })
 
-local sand_def = core.registered_items[technic.materials.sand]
-
-core.register_node("technic:silt", {
-	description = S("Silt"),
-	groups = sand_def.groups,
-	is_ground_content = true,
-	_mcl_blast_resistance = sand_def._mcl_blast_resistance,
-	_mcl_hardness = sand_def._mcl_hardness,
-	drawtype = "allfaces",
-	tiles = {"technic_silt.png"},
-	sounds = sand_def.sounds,
-})
-
-core.register_alias("technic:stone_dust", "technic:silt")
-
 for p = 0, 35 do
 	local nici = (p ~= 0 and p ~= 7 and p ~= 35) and 1 or nil
 	local psuffix = p == 7 and "" or p

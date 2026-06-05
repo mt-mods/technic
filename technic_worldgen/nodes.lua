@@ -104,6 +104,21 @@ else
 	})
 end
 
+local sand_def = core.registered_items[technic.materials.sand]
+
+core.register_node(":technic:silt", {
+	description = S("Silt"),
+	groups = sand_def.groups,
+	is_ground_content = true,
+	_mcl_blast_resistance = sand_def._mcl_blast_resistance,
+	_mcl_hardness = sand_def._mcl_hardness,
+	drawtype = "allfaces",
+	tiles = {"technic_silt.png"},
+	sounds = sand_def.sounds,
+})
+
+core.register_alias("technic:stone_dust", "technic:silt")
+
 core.register_node(":technic:uranium_block", {
 	description = S("Uranium Block"),
 	tiles = {"technic_uranium_block.png"},
