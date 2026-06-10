@@ -1,5 +1,5 @@
 
-local digilines_path = core.get_modpath("digilines")
+local has_digilines = core.global_exists("digilines")
 
 local S = technic.getter
 local tube_entry = "^pipeworks_tube_connection_metallic.png"
@@ -114,66 +114,135 @@ function technic.register_battery_box(nodename, data)
 	local tier = def.tier
 	local ltier = string.lower(tier)
 
-	local size = core.get_modpath("mcl_formspec") and "size[9,9]" or "size[8,9]"
-	local formspec =
-		size..
-		"image[1,1;1,2;technic_power_meter_bg.png]"..
-		"list[context;src;3,1;1,1;]"..
-		"image[4,1;1,1;technic_battery_reload.png]"..
-		"list[context;dst;5,1;1,1;]"..
-		"label[0,0;"..S("@1 Battery Box", S(tier)).."]"..
-		"label[3,0;"..S("Charge").."]"..
-		"label[5,0;"..S("Discharge").."]"..
-		"label[1,3;"..S("Power level").."]"..
-		(def.upgrade and
-			"list[context;upgrade1;3.5,3;1,1;]"..
-			"list[context;upgrade2;4.5,3;1,1;]"..
-			"label[3.5,4;"..S("Upgrade Slots").."]"
-			or "")
+	local has_mcl_formspec = core.global_exists("mcl_formspec")
+	local has_upgrades = def.upgrade
 
-	if core.get_modpath("mcl_formspec") then
-		formspec = formspec..
-			mcl_formspec.get_itemslot_bg(3,1,1,1)..
-			mcl_formspec.get_itemslot_bg(5,1,1,1)..
-			-- player inventory
-			"list[current_player;main;0,4.5;9,3;9]"..
-			mcl_formspec.get_itemslot_bg(0,4.5,9,3)..
-			"list[current_player;main;0,7.74;9,1;]"..
-			mcl_formspec.get_itemslot_bg(0,7.74,9,1)..
-			-- upgrade
-			(def.upgrade and
-				mcl_formspec.get_itemslot_bg(3.5,3,1,1)..
-				mcl_formspec.get_itemslot_bg(4.5,3,1,1)
-			or "")
-	else
-		formspec = formspec..
-		"list[current_player;main;0,5;8,4;]"
+	local slot_size, slot_spacing = 1, 0.25
+	local slot_interval = slot_size + slot_spacing
+	local margin_x, margin_y = 0.5, 0.5
+	local separation = 0.5
+	local machine_section_h = 5
+	local plrinv_w, plrinv_h = 8, 4
+	if has_mcl_formspec then
+		plrinv_w = 9
 	end
+	local body_width = plrinv_w * slot_interval - slot_spacing
+	local plrinv_y = machine_section_h + separation
+	local body_height = plrinv_y + plrinv_h * slot_interval - slot_spacing
 
+	local charge_arrow_length = 2
+	local charge_arrow_margin = 0.25
+	local charge_arrowhead_length = 0.25
+	local upgrades_x, upgrades_y = body_width - (slot_size + slot_spacing + slot_size), machine_section_h - slot_size
+	local energy_bar_w, energy_bar_h = 1, 2.5
+	local subject_w = energy_bar_w + charge_arrow_margin * 2 + charge_arrow_length + slot_size
+	local subject_h = energy_bar_h
+	local energy_bar_x, energy_bar_y = (body_width - subject_w)/2, 0.75
+	local label_offset = 0.2
+
+	local formspec_base = {}
+	table.insert(formspec_base, "formspec_version[4]")
+	table.insert(formspec_base, ("size[%.2f,%.2f]"):format(2 * margin_x + body_width, 2 * margin_y + body_height))
+	local _charge_arrow_begin = margin_x + energy_bar_x + energy_bar_w + charge_arrow_margin
+	local _charge_slot_x = margin_x + energy_bar_x + subject_w - slot_size
+	local _charge_begin_y = margin_y + energy_bar_y
+	local _arrow_thickness = charge_arrowhead_length
+	table.insert(formspec_base, ("list[context;src;%.2f,%.2f;1,1;]")
+		:format(_charge_slot_x, _charge_begin_y))
+	table.insert(formspec_base, ("list[context;dst;%.2f,%.2f;1,1;]")
+		:format(_charge_slot_x, _charge_begin_y + subject_h - slot_size))
+	table.insert(formspec_base, ("label[%.2f,%.2f;%s]")
+		:format(_charge_slot_x, _charge_begin_y + slot_size + label_offset, S("Charge")))
+	table.insert(formspec_base, ("label[%.2f,%.2f;%s]")
+		:format(_charge_slot_x, _charge_begin_y + subject_h + label_offset, S("Discharge")))
+	table.insert(formspec_base, ("image[%.2f,%.2f;%.2f,%.2f;%s]")
+		:format(
+			_charge_arrow_begin, _charge_begin_y + (slot_size - _arrow_thickness)/2,
+			charge_arrow_length - charge_arrowhead_length, _arrow_thickness,
+			"blank.png^[invert:ga"
+		))
+	table.insert(formspec_base, ("image[%.2f,%.2f;%.2f,%.2f;%s]")
+		:format(
+			_charge_arrow_begin + charge_arrow_length - charge_arrowhead_length,
+			_charge_begin_y + slot_size/2 - charge_arrowhead_length,
+			charge_arrowhead_length, charge_arrowhead_length * 2,
+			"technic_arrowhead.png^[invert:rb"
+		))
+	table.insert(formspec_base, ("image[%.2f,%.2f;%.2f,%.2f;%s]")
+		:format(
+			_charge_arrow_begin + charge_arrowhead_length,
+			_charge_begin_y + subject_h - (slot_size + _arrow_thickness)/2,
+			charge_arrow_length - charge_arrowhead_length, _arrow_thickness,
+			"blank.png^[invert:ra"
+		))
+	table.insert(formspec_base, ("image[%.2f,%.2f;%.2f,%.2f;%s]")
+		:format(
+			_charge_arrow_begin,
+			_charge_begin_y + subject_h - slot_size/2 - charge_arrowhead_length,
+			charge_arrowhead_length, charge_arrowhead_length * 2,
+			"technic_arrowhead.png^[transformFX^[invert:gb"
+		))
+	if has_upgrades then
+		table.insert(formspec_base, ("list[context;upgrade1;%.2f,%.2f;1,1;]")
+			:format(margin_x + upgrades_x, margin_y + upgrades_y))
+		table.insert(formspec_base, ("list[context;upgrade2;%.2f,%.2f;1,1;]")
+			:format(margin_x + upgrades_x + slot_interval, margin_y + upgrades_y))
+		table.insert(formspec_base, ("label[%.2f,%.2f;%s]")
+			:format(margin_x + upgrades_x, margin_y + upgrades_y + slot_size + label_offset, S("Upgrade Slots")))
+	end
 	-- listrings
-	formspec = formspec..
-	"listring[context;dst]"..
-	"listring[current_player;main]"..
-	"listring[context;src]"..
-	"listring[current_player;main]"..
-	(def.upgrade and
-	"listring[context;upgrade1]"..
-	"listring[current_player;main]"..
-	"listring[context;upgrade2]"..
-	"listring[current_player;main]"
-	or "")
+	table.insert(formspec_base, "listring[context;dst]")
+	table.insert(formspec_base, "listring[current_player;main]")
+	table.insert(formspec_base, "listring[context;src]")
+	table.insert(formspec_base, "listring[current_player;main]")
+	if has_upgrades then
+		table.insert(formspec_base, "listring[context;upgrade1]")
+		table.insert(formspec_base, "listring[current_player;main]")
+		table.insert(formspec_base, "listring[context;upgrade2]")
+		table.insert(formspec_base, "listring[current_player;main]")
+	end
+	-- player inventory
+	if has_mcl_formspec then
+		table.insert(formspec_base, mcl_formspec.get_itemslot_bg(3,1,1,1))
+		table.insert(formspec_base, mcl_formspec.get_itemslot_bg(5,1,1,1))
+		table.insert(formspec_base,"list[current_player;main;0,4.5;9,3;9]")
+		table.insert(formspec_base, mcl_formspec.get_itemslot_bg(0,4.5,9,3))
+		table.insert(formspec_base,"list[current_player;main;0,7.74;9,1;]")
+		table.insert(formspec_base, mcl_formspec.get_itemslot_bg(0,7.74,9,1))
+		if has_upgrades then
+			table.insert(formspec_base, mcl_formspec.get_itemslot_bg(3.5,3,1,1))
+			table.insert(formspec_base, mcl_formspec.get_itemslot_bg(4.5,3,1,1))
+		end
+	else
+		table.insert(formspec_base, ("list[current_player;main;%.2f,%.2f;%d,%d;]")
+			:format(margin_x, margin_y + plrinv_y, plrinv_w, plrinv_h))
+	end
+	table.insert(formspec_base, ("image[%.2f,%.2f;%.2f,%.2f;technic_power_meter_bg.png]")
+		:format(margin_x + energy_bar_x, margin_y + energy_bar_y, energy_bar_w, energy_bar_h))
+	table.insert(formspec_base, ("label[%.2f,%.2f;%s]")
+		:format(margin_x, margin_y, S("@1 Battery Box", S(tier))))
+	table.insert(formspec_base, ("label[%.2f,%.2f;%s]")
+		:format(margin_x + energy_bar_x, margin_y + energy_bar_y + energy_bar_h + label_offset,	S("Power level")))
 
-
+	formspec_base = table.concat(formspec_base)
 
 	--
 	-- Generate formspec with power meter
 	--
 	local function get_formspec(charge_ratio, channel)
-		return formspec .. "image[1,1;1,2;technic_power_meter_bg.png^[lowpart:" ..
-			math.floor(charge_ratio * 100) .. ":technic_power_meter_fg.png]" ..
-			(digilines_path and
-				("field[0.3,4;2.2,1;channel;"..S("Digiline Channel")..";${channel}]"..
-				"button[2,3.7;1,1;setchannel;"..S("Save").."]") or "")
+		local formspec = {formspec_base}
+		table.insert(formspec, ("image[%.2f,%.2f;%.2f,%.2f;technic_power_meter_bg.png^[lowpart:%d:technic_power_meter_fg.png]"):
+			format(margin_x + energy_bar_x, margin_y + energy_bar_y, energy_bar_w, energy_bar_h, charge_ratio * 100))
+		if has_digilines then
+			local channel_w, channel_h = 2.5, 0.8
+			local button_w, button_h = 1, channel_h
+			local channel_x, channel_y = 0, machine_section_h - channel_h
+			table.insert(formspec, ("field[%.2f,%.2f;%.2f,%.2f;channel;%s;${channel}]")
+				:format(margin_x + channel_x, margin_y + channel_y, channel_w, channel_h, S("Digiline Channel")))
+			table.insert(formspec, ("button[%.2f,%.2f;%.2f,%.2f;setchannel;%s]")
+				:format(margin_x + channel_x + channel_w, margin_y + channel_y, button_w, button_h, S("Save")))
+		end
+		return table.concat(formspec)
 
 	end
 
