@@ -229,10 +229,16 @@ function technic.register_battery_box(nodename, data)
 	--
 	-- Generate formspec with power meter
 	--
-	local function get_formspec(charge_ratio, channel)
+	local function get_formspec(charge_ratio, current_charge, max_charge)
 		local formspec = {formspec_base}
-		table.insert(formspec, ("image[%.2f,%.2f;%.2f,%.2f;technic_power_meter_bg.png^[lowpart:%d:technic_power_meter_fg.png]"):
-			format(margin_x + energy_bar_x, margin_y + energy_bar_y, energy_bar_w, energy_bar_h, charge_ratio * 100))
+		table.insert(formspec,
+			("image[%.2f,%.2f;%.2f,%.2f;technic_power_meter_bg.png^[lowpart:%d:technic_power_meter_fg.png]"):
+			format(margin_x + energy_bar_x, margin_y + energy_bar_y, energy_bar_w, energy_bar_h, charge_ratio * 100)
+		)
+		table.insert(formspec, ("tooltip[%.2f,%.2f;%.2f,%.2f;%s]"):format(
+			margin_x + energy_bar_x, margin_y + energy_bar_y, energy_bar_w, energy_bar_h,
+			("%s / %s"):format(technic.EU_string(current_charge), technic.EU_string(max_charge))
+		))
 		if has_digilines then
 			local channel_w, channel_h = 2.5, 0.8
 			local button_w, button_h = 1, channel_h
@@ -277,8 +283,7 @@ function technic.register_battery_box(nodename, data)
 		end
 		meta:set_string("infotext", infotext)
 		if update_formspec then
-			local channel = meta:get_string("channel")
-			meta:set_string("formspec", get_formspec(charge_ratio, channel))
+			meta:set_string("formspec", get_formspec(charge_ratio, current_charge, max_charge))
 		end
 	end
 
