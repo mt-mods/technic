@@ -22,7 +22,7 @@ local recipes = {
 	{"technic:carbon_steel_ingot 4",  "technic:chromium_ingot",     "technic:stainless_steel_ingot 5", 7.5},
 	{"technic:copper_dust 2",         "technic:zinc_dust",          "basic_materials:brass_ingot 3"},
 	{mat.copper_ingot.." 2",        "technic:zinc_ingot",         "basic_materials:brass_ingot 3"},
-	{mat.sand.." 2",                "technic:coal_dust 2",        "technic:silicon_wafer"},
+	{"group:sand 2",                "technic:coal_dust 2",        "technic:silicon_wafer"},
 	{"technic:silicon_wafer",         "technic:gold_dust",          "technic:doped_silicon_wafer"},
 	-- from https://en.wikipedia.org/wiki/Carbon_black
 	-- The highest volume use of carbon black is as a reinforcing filler in rubber products, especially tires.
