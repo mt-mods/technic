@@ -25,14 +25,14 @@ local recipes = {
 	{"technic:zinc_lump",          "technic:zinc_dust 2"},
 	{"technic:lead_lump",          "technic:lead_dust 2"},
 	{"technic:sulfur_lump",        "technic:sulfur_dust 2"},
-	{mat.stone,              "technic:stone_dust"},
-	{mat.sand,               "technic:stone_dust"},
-	{mat.desert_sand,        "technic:stone_dust"},
-	{mat.silver_sand,        "technic:stone_dust"},
 
 	-- Other
+	{mat.stone,            mat.cobble},
 	{mat.cobble,           mat.gravel},
 	{mat.gravel,           mat.sand},
+	{mat.sand,             "technic:silt"},
+	{mat.desert_sand,      "technic:silt"},
+	{mat.silver_sand,      "technic:silt"},
 	{mat.sandstone,        mat.sand.." 2"}, -- reverse recipe can be found in the compressor
 	{mat.desert_sandstone, mat.desert_sand.." 2"}, -- reverse recipe can be found in the compressor
 	{mat.silver_sandstone, mat.silver_sand.." 2"}, -- reverse recipe can be found in the compressor
@@ -119,7 +119,6 @@ register_dust("Gold",            mat.gold_ingot)
 register_dust("Mithril",         mat.mithril_ingot)
 register_dust("Silver",          mat.silver_ingot)
 register_dust("Stainless Steel", "technic:stainless_steel_ingot")
-register_dust("Stone",           mat.stone)
 register_dust("Sulfur",          nil)
 register_dust("Tin",             mat.tin_ingot)
 register_dust("Wrought Iron",    "technic:wrought_iron_ingot")

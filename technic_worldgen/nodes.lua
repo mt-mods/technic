@@ -104,6 +104,24 @@ else
 	})
 end
 
+core.register_node(":technic:silt", {
+	description = S("Silt"),
+	groups = {
+		falling_node = 1, -- common
+		crumbly = 3, -- minetest game
+		handy = 1, shovely = 1, enderman_takable = 1, building_block = 1 -- mineclon*
+	},
+	is_ground_content = true,
+	_mcl_blast_resistance = 0.5,
+	_mcl_hardness = 0.5,
+	drawtype = "allfaces",
+	tiles = {"technic_silt.png"},
+	sounds = technic.sounds.node_sound_sand_defaults(),
+	_tnt_loss = 2,
+})
+
+core.register_alias("technic:stone_dust", "technic:silt")
+
 core.register_node(":technic:uranium_block", {
 	description = S("Uranium Block"),
 	tiles = {"technic_uranium_block.png"},
