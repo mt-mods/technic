@@ -32,7 +32,14 @@ local recipes = {
 
 	-- Other
 	{mat.cobble,           mat.gravel},
+
+	-- Other
+	{mat.stone,            mat.cobble},
+	{mat.cobble,           mat.gravel},
 	{mat.gravel,           mat.sand},
+	{mat.sand,             "technic:silt"},
+	{mat.desert_sand,      "technic:silt"},
+	{mat.silver_sand,      "technic:silt"},
 	{mat.sandstone,        mat.sand.." 2"}, -- reverse recipe can be found in the compressor
 	{mat.desert_sandstone, mat.desert_sand.." 2"}, -- reverse recipe can be found in the compressor
 	{mat.silver_sandstone, mat.silver_sand.." 2"}, -- reverse recipe can be found in the compressor
