@@ -48,51 +48,95 @@ function technic.register_base_machine(nodename, data)
 	local active_groups = table.copy(groups)
 	active_groups.not_in_creative_inventory = 1
 
-	local size = core.get_modpath("mcl_formspec") and "size[9,10]" or "size[8,9]"
-	local formspec =
-		size..
-		"list[context;src;"..(4-input_size)..",1;"..input_size..",1;]"..
-		"list[context;dst;5,1;2,2;]"..
-		"label[0,0;"..def.description.."]"
-	if def.upgrade then
-		formspec = formspec..
-			"list[context;upgrade1;1,3;1,1;]"..
-			"list[context;upgrade2;2,3;1,1;]"..
-			"label[1,4;"..S("Upgrade Slots").."]"
+	local has_mcl_formspec = core.global_exists("mcl_formspec")
+	local has_upgrades = def.upgrade
+
+	local slot_size, slot_spacing = 1, 0.25
+	local slot_interval = slot_size + slot_spacing
+	local margin_x, margin_y = 0.5, 0.5
+	local separation = 0.5
+	local machine_section_h = 5
+	local plrinv_w, plrinv_h = 8, 4
+	if has_mcl_formspec then
+		plrinv_w = 9
+	end
+	local body_width = plrinv_w * slot_interval - slot_spacing
+	local plrinv_y = machine_section_h + separation
+	local body_height = plrinv_y + plrinv_h * slot_interval - slot_spacing
+
+	local arrow_length = 1
+	local arrow_margin = 0.25
+	local arrowhead_length = 0.25
+	local upgrades_x, upgrades_y = body_width - (slot_size + slot_spacing + slot_size), machine_section_h - slot_size
+	local dst_w = (slot_size + slot_spacing + slot_size)
+	local subject_w = slot_size + arrow_margin * 2 + arrow_length + dst_w
+	local src_x, src_y = (body_width - subject_w)/2, 1
+	local label_offset = 0.2
+
+	local formspec_base = {}
+	table.insert(formspec_base, "formspec_version[4]")
+	table.insert(formspec_base, ("size[%.2f,%.2f]"):format(2 * margin_x + body_width, 2 * margin_y + body_height))
+	table.insert(formspec_base, ("label[%.2f,%.2f;%s]")
+		:format(margin_x, margin_y, def.description))
+	local _arrow_begin = margin_x + src_x + slot_size + arrow_margin
+	local _dst_x = margin_x + src_x + subject_w - dst_w
+	local _begin_y = margin_y + src_y
+	local _arrow_thickness = arrowhead_length
+	table.insert(formspec_base, ("list[context;src;%.2f,%.2f;1,1;]")
+		:format(margin_x + src_x, _begin_y))
+	table.insert(formspec_base, ("list[context;dst;%.2f,%.2f;2,2;]")
+		:format(_dst_x, _begin_y))
+	table.insert(formspec_base, ("image[%.2f,%.2f;%.2f,%.2f;%s]")
+		:format(
+			_arrow_begin, _begin_y + (slot_size - _arrow_thickness)/2,
+			arrow_length - arrowhead_length, _arrow_thickness,
+			"blank.png^[invert:rgba"
+		))
+	table.insert(formspec_base, ("image[%.2f,%.2f;%.2f,%.2f;%s]")
+		:format(
+			_arrow_begin + arrow_length - arrowhead_length,
+			_begin_y + slot_size/2 - arrowhead_length,
+			arrowhead_length, arrowhead_length * 2,
+			"technic_arrowhead.png"
+		))
+	if has_upgrades then
+		table.insert(formspec_base, ("list[context;upgrade1;%.2f,%.2f;1,1;]")
+			:format(margin_x + upgrades_x, margin_y + upgrades_y))
+		table.insert(formspec_base, ("list[context;upgrade2;%.2f,%.2f;1,1;]")
+			:format(margin_x + upgrades_x + slot_interval, margin_y + upgrades_y))
+		table.insert(formspec_base, ("label[%.2f,%.2f;%s]")
+			:format(margin_x + upgrades_x, margin_y + upgrades_y + slot_size + label_offset, S("Upgrade Slots")))
+	end
+	-- listrings
+	table.insert(formspec_base, "listring[context;dst]")
+	table.insert(formspec_base, "listring[current_player;main]")
+	table.insert(formspec_base, "listring[context;src]")
+	table.insert(formspec_base, "listring[current_player;main]")
+	if has_upgrades then
+		table.insert(formspec_base, "listring[context;upgrade1]")
+		table.insert(formspec_base, "listring[current_player;main]")
+		table.insert(formspec_base, "listring[context;upgrade2]")
+		table.insert(formspec_base, "listring[current_player;main]")
 	end
 
-	if core.get_modpath("mcl_formspec") then
-		formspec = formspec..
-			mcl_formspec.get_itemslot_bg(4-input_size,1,input_size,1)..
-			mcl_formspec.get_itemslot_bg(5,1,2,2)..
-			-- player inventory
-			"list[current_player;main;0,5.5;9,3;9]"..
-			mcl_formspec.get_itemslot_bg(0,5.5,9,3)..
-			"list[current_player;main;0,8.74;9,1;]"..
-			mcl_formspec.get_itemslot_bg(0,8.74,9,1)
-		if def.upgrade then
-			formspec = formspec..
-			mcl_formspec.get_itemslot_bg(1,3,1,1)..
-			mcl_formspec.get_itemslot_bg(2,3,1,1)
+	-- player inventory
+	if has_mcl_formspec then
+		table.insert(formspec_base, mcl_formspec.get_itemslot_bg(3,1,1,1))
+		table.insert(formspec_base, mcl_formspec.get_itemslot_bg(5,1,1,1))
+		table.insert(formspec_base,"list[current_player;main;0,4.5;9,3;9]")
+		table.insert(formspec_base, mcl_formspec.get_itemslot_bg(0,4.5,9,3))
+		table.insert(formspec_base,"list[current_player;main;0,7.74;9,1;]")
+		table.insert(formspec_base, mcl_formspec.get_itemslot_bg(0,7.74,9,1))
+		if has_upgrades then
+			table.insert(formspec_base, mcl_formspec.get_itemslot_bg(3.5,3,1,1))
+			table.insert(formspec_base, mcl_formspec.get_itemslot_bg(4.5,3,1,1))
 		end
 	else
-		formspec = formspec..
-			"list[current_player;main;0,5;8,4;]"
+		table.insert(formspec_base, ("list[current_player;main;%.2f,%.2f;%d,%d;]")
+			:format(margin_x, margin_y + plrinv_y, plrinv_w, plrinv_h))
 	end
 
-	-- listrings
-	formspec = formspec..
-	"listring[context;dst]"..
-	"listring[current_player;main]"..
-	"listring[context;src]"..
-	"listring[current_player;main]"
-	if def.upgrade then
-		formspec = formspec..
-		"listring[context;upgrade1]"..
-		"listring[current_player;main]"..
-		"listring[context;upgrade2]"..
-		"listring[current_player;main]"
-	end
+	local formspec = table.concat(formspec_base)
 
 	local tube = technic.new_default_tube()
 	if def.can_insert then
@@ -164,6 +208,20 @@ function technic.register_base_machine(nodename, data)
 		tentry = ""
 	end
 
+	local presumed_form_buttons = function(meta)
+		return fs_helpers.cycling_button(
+			meta,
+			pipeworks.button_base:gsub("%[0%,4%.3%;1%,0%.6", ("[%.2f,%.2f;%.2f,%.2f")
+				:format(margin_x, margin_y + machine_section_h - 0.5 + 0.1, 1, 0.5)),
+			"splitstacks",
+			{
+				pipeworks.button_off,
+				pipeworks.button_on
+			}
+		)..pipeworks.button_label:gsub("%[0%.9%,4%.31", ("[%.2f,%.2f")
+			:format(margin_x + 1, margin_y + machine_section_h - 0.25 + 0.1))
+	end
+
 	core.register_node(colon..nodename, {
 		description = def.description,
 		tiles = {
@@ -189,15 +247,7 @@ function technic.register_base_machine(nodename, data)
 
 			local form_buttons = ""
 			if not string.find(node.name, ":lv_") then
-				form_buttons = fs_helpers.cycling_button(
-					meta,
-					pipeworks.button_base,
-					"splitstacks",
-					{
-						pipeworks.button_off,
-						pipeworks.button_on
-					}
-				)..pipeworks.button_label
+				form_buttons = presumed_form_buttons(meta)
 			end
 
 			meta:set_string("infotext", def.description)
@@ -227,15 +277,7 @@ function technic.register_base_machine(nodename, data)
 			local meta = core.get_meta(pos)
 			local form_buttons = ""
 			if not string.find(node.name, ":lv_") then
-				form_buttons = fs_helpers.cycling_button(
-					meta,
-					pipeworks.button_base,
-					"splitstacks",
-					{
-						pipeworks.button_off,
-						pipeworks.button_on
-					}
-				)..pipeworks.button_label
+				form_buttons = presumed_form_buttons(meta)
 			end
 			meta:set_string("formspec", formspec..form_buttons)
 		end,
@@ -278,15 +320,7 @@ function technic.register_base_machine(nodename, data)
 			local meta = core.get_meta(pos)
 			local form_buttons = ""
 			if not string.find(node.name, ":lv_") then
-				form_buttons = fs_helpers.cycling_button(
-					meta,
-					pipeworks.button_base,
-					"splitstacks",
-					{
-						pipeworks.button_off,
-						pipeworks.button_on
-					}
-				)..pipeworks.button_label
+				form_buttons = presumed_form_buttons(meta)
 			end
 			meta:set_string("formspec", formspec..form_buttons)
 		end,
