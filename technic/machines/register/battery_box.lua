@@ -6,7 +6,7 @@ local tube_entry = "^pipeworks_tube_connection_metallic.png"
 local cable_entry = "^technic_cable_connection_overlay.png"
 local mat = technic.materials
 
-local function get_itemslot_bg(x, y, w, h)
+local function get_itemslot_bg(x, y, w, h) -- mcl hasn't moved to real co-ordinates yet
 	local out = ""
 	for i = 0, w - 1, 1 do
 		for j = 0, h - 1, 1 do
