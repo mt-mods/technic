@@ -20,32 +20,70 @@ local tube = {
 	connect_sides = {left=1, right=1, back=1, top=1, bottom=1},
 }
 
-local size = core.get_modpath("mcl_formspec") and "size[9,10]" or "size[8,9]"
+local has_mcl_formspec = core.global_exists("mcl_formspec")
+
+local generator_formspec_base = {}
+local margin_x, margin_y = 0.5, 0.5
+local slot_size, slot_spacing = 1, 0.25
+local slot_interval = slot_size + slot_spacing
+local separation = 0.5
+local machine_section_h = 5
+local plrinv_w, plrinv_h = 8, 4
+if has_mcl_formspec then
+	plrinv_w = 9
+end
+local body_width = plrinv_w * slot_interval - slot_spacing
+local plrinv_y = machine_section_h + separation
+local body_height = plrinv_y + plrinv_h * slot_interval - slot_spacing
+
+local subject_w = slot_size
+local src_x, src_y = (body_width - subject_w)/2, 2
+
+table.insert(generator_formspec_base, "formspec_version[4]")
+table.insert(generator_formspec_base, ("size[%.2f,%.2f]"):format(2 * margin_x + body_width, 2 * margin_y + body_height))
+table.insert(generator_formspec_base, ("list[context;src;%.2f,%.2f;1,1;]")
+	:format(margin_x + src_x, margin_y + src_y))
+-- listrings
+table.insert(generator_formspec_base, "listring[context;src]")
+table.insert(generator_formspec_base, "listring[current_player;main]")
+-- player inventory
+if has_mcl_formspec then
+	table.insert(generator_formspec_base, mcl_formspec.get_itemslot_bg(3,1,1,1))
+	table.insert(generator_formspec_base, mcl_formspec.get_itemslot_bg(5,1,1,1))
+	table.insert(generator_formspec_base,"list[current_player;main;0,4.5;9,3;9]")
+	table.insert(generator_formspec_base, mcl_formspec.get_itemslot_bg(0,4.5,9,3))
+	table.insert(generator_formspec_base,"list[current_player;main;0,7.74;9,1;]")
+	table.insert(generator_formspec_base, mcl_formspec.get_itemslot_bg(0,7.74,9,1))
+else
+	table.insert(generator_formspec_base, ("list[current_player;main;%.2f,%.2f;%d,%d;]")
+		:format(margin_x, margin_y + plrinv_y, plrinv_w, plrinv_h))
+end
+
+generator_formspec_base = table.concat(generator_formspec_base)
+
+local presumed_form_buttons = function(meta)
+	return fs_helpers.cycling_button(
+		meta,
+		pipeworks.button_base:gsub("%[0%,4%.3%;1%,0%.6", ("[%.2f,%.2f;%.2f,%.2f")
+			:format(margin_x, margin_y + machine_section_h - 0.5 + 0.1, 1, 0.5)),
+		"splitstacks",
+		{
+			pipeworks.button_off,
+			pipeworks.button_on
+		}
+	)..pipeworks.button_label:gsub("%[0%.9%,4%.31", ("[%.2f,%.2f")
+		:format(margin_x + 1, margin_y + machine_section_h - 0.25 + 0.1))
+end
 
 local function update_generator_formspec(meta, desc, percent, form_buttons)
-	local generator_formspec = size..
-		"label[0, 0;"..desc.."]"..
-		"list[context;src;3,1;1,1;]"..
-		"listring[context;src]"..
-		"image[4,1;1,1;default_furnace_fire_bg.png^[lowpart:"..
-		(percent)..":default_furnace_fire_fg.png]"..
-		form_buttons
-
-	if core.get_modpath("mcl_formspec") then
-		generator_formspec = generator_formspec..
-			mcl_formspec.get_itemslot_bg(3,1,1,1)..
-			-- player inventory
-			"list[current_player;main;0,5.5;9,3;9]"..
-			mcl_formspec.get_itemslot_bg(0,5.5,9,3)..
-			"list[current_player;main;0,8.74;9,1;]"..
-			mcl_formspec.get_itemslot_bg(0,8.74,9,1)..
-			"listring[current_player;main]"
-	else
-		generator_formspec = generator_formspec..
-			"list[current_player;main;0, 5;8, 4;]"..
-			"listring[current_player;main]"
-	end
-	return meta:set_string("formspec", generator_formspec)
+	local generator_formspec = {generator_formspec_base, form_buttons}
+	table.insert(generator_formspec, ("label[%.2f,%.2f;%s]")
+		:format(margin_x, margin_y, desc))
+	table.insert(generator_formspec, ("image[%.2f,%.2f;1,1;%s]")
+		:format(margin_x + src_x, margin_y + src_y - slot_interval,
+			("default_furnace_fire_bg.png^[lowpart:%d:default_furnace_fire_fg.png]"):format(percent)
+		))
+	return meta:set_string("formspec", table.concat(generator_formspec))
 end
 
 function technic.register_generator(data)
@@ -106,15 +144,7 @@ function technic.register_generator(data)
 
 		local form_buttons = ""
 		if ltier ~= "lv" then
-			form_buttons = fs_helpers.cycling_button(
-				meta,
-				pipeworks.button_base,
-				"splitstacks",
-				{
-					pipeworks.button_off,
-					pipeworks.button_on
-				}
-			)..pipeworks.button_label
+			form_buttons = presumed_form_buttons(meta)
 		end
 		update_generator_formspec(meta, desc, percent, form_buttons)
 	end
@@ -150,15 +180,7 @@ function technic.register_generator(data)
 			meta:set_int("tube_time",  0)
 			local form_buttons = ""
 			if not string.find(node.name, ":lv_") then
-				form_buttons = fs_helpers.cycling_button(
-						meta,
-						pipeworks.button_base,
-						"splitstacks",
-						{
-							pipeworks.button_off,
-							pipeworks.button_on
-						}
-					)..pipeworks.button_label
+				form_buttons = presumed_form_buttons(meta)
 			end
 			update_generator_formspec(meta, desc, 0, form_buttons)
 			local inv = meta:get_inventory()
@@ -178,15 +200,7 @@ function technic.register_generator(data)
 			local node = core.get_node(pos)
 			local form_buttons = ""
 			if not string.find(node.name, ":lv_") then
-				form_buttons = fs_helpers.cycling_button(
-						meta,
-						pipeworks.button_base,
-						"splitstacks",
-						{
-							pipeworks.button_off,
-							pipeworks.button_on
-						}
-					)..pipeworks.button_label
+				form_buttons = presumed_form_buttons(meta)
 			end
 			local burn_totaltime = meta:get_int("burn_totaltime") or 0
 			local burn_time = meta:get_int("burn_time")
@@ -249,15 +263,7 @@ function technic.register_generator(data)
 
 			local form_buttons = ""
 			if not string.find(node.name, ":lv_") then
-				form_buttons = fs_helpers.cycling_button(
-					meta,
-					pipeworks.button_base,
-					"splitstacks",
-					{
-						pipeworks.button_off,
-						pipeworks.button_on
-					}
-				)..pipeworks.button_label
+				form_buttons = presumed_form_buttons(meta)
 			end
 			update_generator_formspec(meta, desc, percent, form_buttons)
 			return true
@@ -269,15 +275,7 @@ function technic.register_generator(data)
 			local node = core.get_node(pos)
 			local form_buttons = ""
 			if not string.find(node.name, ":lv_") then
-				form_buttons = fs_helpers.cycling_button(
-						meta,
-						pipeworks.button_base,
-						"splitstacks",
-						{
-							pipeworks.button_off,
-							pipeworks.button_on
-						}
-					)..pipeworks.button_label
+				form_buttons = presumed_form_buttons(meta)
 			end
 
 			local burn_totaltime = meta:get_int("burn_totaltime") or 0
