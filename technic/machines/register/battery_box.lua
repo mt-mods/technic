@@ -212,16 +212,16 @@ function technic.register_battery_box(nodename, data)
 		))
 	-- upgrades
 	if has_upgrades then
+		if has_mcl_formspec then
+			table.insert(formspec_base, get_itemslot_bg(margin_x + upgrades_x, margin_y + upgrades_y,1,1))
+			table.insert(formspec_base, get_itemslot_bg(margin_x + upgrades_x + slot_interval, margin_y + upgrades_y,1,1))
+		end
 		table.insert(formspec_base, ("list[context;upgrade1;%.2f,%.2f;1,1;]")
 			:format(margin_x + upgrades_x, margin_y + upgrades_y))
 		table.insert(formspec_base, ("list[context;upgrade2;%.2f,%.2f;1,1;]")
 			:format(margin_x + upgrades_x + slot_interval, margin_y + upgrades_y))
 		table.insert(formspec_base, ("label[%.2f,%.2f;%s]")
 			:format(margin_x + upgrades_x, margin_y + upgrades_y + slot_size + label_offset, S("Upgrade Slots")))
-		if has_mcl_formspec then
-			table.insert(formspec_base, get_itemslot_bg(margin_x + upgrades_x, margin_y + upgrades_y,1,1))
-			table.insert(formspec_base, get_itemslot_bg(margin_x + upgrades_x + slot_interval, margin_y + upgrades_y,1,1))
-		end
 	end
 	-- listrings
 	table.insert(formspec_base, "listring[context;dst]")
