@@ -3,6 +3,16 @@ local S = technic.getter
 local fs_helpers = pipeworks.fs_helpers
 local tube_entry = "^pipeworks_tube_connection_metallic.png"
 
+local function get_itemslot_bg(x, y, w, h) -- mcl hasn't moved to real co-ordinates yet
+	local out = ""
+	for i = 0, w - 1, 1 do
+		for j = 0, h - 1, 1 do
+			out = out .. "image[" .. x + i*1.25 .. "," .. y + j*1.25 .. ";1,1;mcl_formspec_itemslot.png]"
+		end
+	end
+	return out
+end
+
 local tube = {
 	insert_object = function(pos, node, stack, direction)
 		local meta = core.get_meta(pos)
@@ -31,6 +41,7 @@ local machine_section_h = 5
 local plrinv_w, plrinv_h = 8, 4
 if has_mcl_formspec then
 	plrinv_w = 9
+	plrinv_h = 4.5
 end
 local body_width = plrinv_w * slot_interval - slot_spacing
 local plrinv_y = machine_section_h + separation
@@ -41,23 +52,26 @@ local src_x, src_y = (body_width - subject_w)/2, 2
 
 table.insert(generator_formspec_base, "formspec_version[4]")
 table.insert(generator_formspec_base, ("size[%.2f,%.2f]"):format(2 * margin_x + body_width, 2 * margin_y + body_height))
+-- player inventory
+if has_mcl_formspec then
+	local top_inv_y = margin_y + plrinv_y
+	local hotbar_y = top_inv_y + 3 * slot_interval + slot_spacing
+	table.insert(generator_formspec_base, get_itemslot_bg(margin_x + src_x, margin_y + src_y, 1,1))
+	table.insert(generator_formspec_base, get_itemslot_bg(margin_x, top_inv_y, plrinv_w, 3))
+	table.insert(generator_formspec_base, get_itemslot_bg(margin_x, hotbar_y, plrinv_w,1))
+	table.insert(generator_formspec_base,("list[current_player;main;%.2f,%.2f;%d,3;9]")
+		:format(margin_x, top_inv_y, plrinv_w))
+	table.insert(generator_formspec_base,("list[current_player;main;%.2f,%.2f;%d,1;]")
+		:format(margin_x, hotbar_y, plrinv_w))
+else
+	table.insert(generator_formspec_base, ("list[current_player;main;%.2f,%.2f;%d,%d;]")
+		:format(margin_x, margin_y + plrinv_y, plrinv_w, plrinv_h))
+end
 table.insert(generator_formspec_base, ("list[context;src;%.2f,%.2f;1,1;]")
 	:format(margin_x + src_x, margin_y + src_y))
 -- listrings
 table.insert(generator_formspec_base, "listring[context;src]")
 table.insert(generator_formspec_base, "listring[current_player;main]")
--- player inventory
-if has_mcl_formspec then
-	table.insert(generator_formspec_base, mcl_formspec.get_itemslot_bg(3,1,1,1))
-	table.insert(generator_formspec_base, mcl_formspec.get_itemslot_bg(5,1,1,1))
-	table.insert(generator_formspec_base,"list[current_player;main;0,4.5;9,3;9]")
-	table.insert(generator_formspec_base, mcl_formspec.get_itemslot_bg(0,4.5,9,3))
-	table.insert(generator_formspec_base,"list[current_player;main;0,7.74;9,1;]")
-	table.insert(generator_formspec_base, mcl_formspec.get_itemslot_bg(0,7.74,9,1))
-else
-	table.insert(generator_formspec_base, ("list[current_player;main;%.2f,%.2f;%d,%d;]")
-		:format(margin_x, margin_y + plrinv_y, plrinv_w, plrinv_h))
-end
 
 generator_formspec_base = table.concat(generator_formspec_base)
 
