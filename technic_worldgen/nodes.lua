@@ -114,7 +114,6 @@ core.register_node(":technic:silt", {
 	is_ground_content = true,
 	_mcl_blast_resistance = 0.5,
 	_mcl_hardness = 0.5,
-	drawtype = "allfaces",
 	tiles = {"technic_silt.png"},
 	sounds = technic.sounds.node_sound_sand_defaults(),
 	_tnt_loss = 2,
