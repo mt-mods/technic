@@ -4,6 +4,16 @@ local S = technic.getter
 local fs_helpers = pipeworks.fs_helpers
 local tube_entry = "^pipeworks_tube_connection_metallic.png"
 
+local function get_itemslot_bg(x, y, w, h) -- mcl hasn't moved to real co-ordinates yet
+	local out = ""
+	for i = 0, w - 1, 1 do
+		for j = 0, h - 1, 1 do
+			out = out .. "image[" .. x + i*1.25 .. "," .. y + j*1.25 .. ";1,1;mcl_formspec_itemslot.png]"
+		end
+	end
+	return out
+end
+
 function technic.default_can_insert(pos, node, stack, direction)
 	local meta = core.get_meta(pos)
 	local inv = meta:get_inventory()
@@ -59,6 +69,7 @@ function technic.register_base_machine(nodename, data)
 	local plrinv_w, plrinv_h = 8, 4
 	if has_mcl_formspec then
 		plrinv_w = 9
+		plrinv_h = 4.25
 	end
 	local body_width = plrinv_w * slot_interval - slot_spacing
 	local plrinv_y = machine_section_h + separation
@@ -82,6 +93,22 @@ function technic.register_base_machine(nodename, data)
 	local _dst_x = margin_x + src_x + subject_w - dst_w
 	local _begin_y = margin_y + src_y
 	local _arrow_thickness = arrowhead_length
+	-- player inventory
+	if has_mcl_formspec then
+		local top_inv_y = margin_y + plrinv_y
+		local hotbar_y = top_inv_y + 3 * slot_interval + slot_spacing
+		table.insert(formspec_base, get_itemslot_bg(margin_x + src_x, _begin_y, 1,1))
+		table.insert(formspec_base, get_itemslot_bg(_dst_x, _begin_y, 2,2))
+		table.insert(formspec_base, get_itemslot_bg(margin_x, top_inv_y, plrinv_w, 3))
+		table.insert(formspec_base, get_itemslot_bg(margin_x, hotbar_y, plrinv_w,1))
+		table.insert(formspec_base,("list[current_player;main;%.2f,%.2f;%d,3;9]")
+				:format(margin_x, top_inv_y, plrinv_w))
+		table.insert(formspec_base,("list[current_player;main;%.2f,%.2f;%d,1;]")
+				:format(margin_x, hotbar_y, plrinv_w))
+	else
+		table.insert(formspec_base, ("list[current_player;main;%.2f,%.2f;%d,%d;]")
+				:format(margin_x, margin_y + plrinv_y, plrinv_w, plrinv_h))
+	end
 	table.insert(formspec_base, ("list[context;src;%.2f,%.2f;1,1;]")
 		:format(margin_x + src_x, _begin_y))
 	table.insert(formspec_base, ("list[context;dst;%.2f,%.2f;2,2;]")
@@ -99,7 +126,12 @@ function technic.register_base_machine(nodename, data)
 			arrowhead_length, arrowhead_length * 2,
 			"technic_arrowhead.png"
 		))
+	-- upgrades
 	if has_upgrades then
+		if has_mcl_formspec then
+			table.insert(formspec_base, get_itemslot_bg(margin_x + upgrades_x, margin_y + upgrades_y,1,1))
+			table.insert(formspec_base, get_itemslot_bg(margin_x + upgrades_x + slot_interval, margin_y + upgrades_y,1,1))
+		end
 		table.insert(formspec_base, ("list[context;upgrade1;%.2f,%.2f;1,1;]")
 			:format(margin_x + upgrades_x, margin_y + upgrades_y))
 		table.insert(formspec_base, ("list[context;upgrade2;%.2f,%.2f;1,1;]")
@@ -117,23 +149,6 @@ function technic.register_base_machine(nodename, data)
 		table.insert(formspec_base, "listring[current_player;main]")
 		table.insert(formspec_base, "listring[context;upgrade2]")
 		table.insert(formspec_base, "listring[current_player;main]")
-	end
-
-	-- player inventory
-	if has_mcl_formspec then
-		table.insert(formspec_base, mcl_formspec.get_itemslot_bg(3,1,1,1))
-		table.insert(formspec_base, mcl_formspec.get_itemslot_bg(5,1,1,1))
-		table.insert(formspec_base,"list[current_player;main;0,4.5;9,3;9]")
-		table.insert(formspec_base, mcl_formspec.get_itemslot_bg(0,4.5,9,3))
-		table.insert(formspec_base,"list[current_player;main;0,7.74;9,1;]")
-		table.insert(formspec_base, mcl_formspec.get_itemslot_bg(0,7.74,9,1))
-		if has_upgrades then
-			table.insert(formspec_base, mcl_formspec.get_itemslot_bg(3.5,3,1,1))
-			table.insert(formspec_base, mcl_formspec.get_itemslot_bg(4.5,3,1,1))
-		end
-	else
-		table.insert(formspec_base, ("list[current_player;main;%.2f,%.2f;%d,%d;]")
-			:format(margin_x, margin_y + plrinv_y, plrinv_w, plrinv_h))
 	end
 
 	local formspec = table.concat(formspec_base)
