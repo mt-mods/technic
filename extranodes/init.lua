@@ -1,7 +1,7 @@
 -- Minetest 0.4.6 mod: extranodes
 -- namespace: technic
 
-if unifieddyes and not unifieddyes.preserve_metadata then
+if core.get_modpath("unifieddyes") and not unifieddyes.preserve_metadata then
 	error("Incompatible version of unifieddyes found. Please update it to the latest version.")
 end
 
