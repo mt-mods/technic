@@ -19,7 +19,10 @@ local recipes = {
 	{mat.bucket_lava, { mat.obsidian, mat.bucket_empty } }
 }
 
+-- Workaround for freezer replacement bucket taking priority over bucket recipe in MCL games
+local hidden = core.get_modpath("mcl_core") and true or nil
+
 for _, data in pairs(recipes) do
-	technic.register_freezer_recipe({input = {data[1]}, output = data[2], hidden = true})
+	technic.register_freezer_recipe({input = {data[1]}, output = data[2], hidden = hidden})
 end
 
