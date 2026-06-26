@@ -13,50 +13,99 @@ local param2_to_under = {
 	[4] = {x= 1,y= 0,z= 0}, [5] = {x= 0,y= 1,z= 0}
 }
 
-local size = core.get_modpath("mcl_formspec") and "size[9,10]" or "size[8,9]"
-local base_formspec = size..
-	"label[0,0;"..S("Self-Contained Injector").."]"..
-	"list[context;main;0,2;8,2;]"..
-	"listring[context;main]"
+local function get_itemslot_bg(x, y, w, h) -- mcl hasn't moved to real co-ordinates yet
+	local out = ""
+	for i = 0, w - 1, 1 do
+		for j = 0, h - 1, 1 do
+			out = out .. "image[" .. x + i*1.25 .. "," .. y + j*1.25 .. ";1,1;mcl_formspec_itemslot.png]"
+		end
+	end
+	return out
+end
+local has_mcl_formspec = core.global_exists("mcl_formspec")
 
-if core.get_modpath("mcl_formspec") then
-	base_formspec = base_formspec..
-	mcl_formspec.get_itemslot_bg(0,2,8,2)..
-	-- player inventory
-	"list[current_player;main;0,5.5;9,3;9]"..
-	mcl_formspec.get_itemslot_bg(0,5.5,9,3)..
-	"list[current_player;main;0,8.74;9,1;]"..
-	mcl_formspec.get_itemslot_bg(0,8.74,9,1)..
-	"listring[current_player;main]"
+local margin_x, margin_y = 0.5, 0.5
+local slot_size, slot_spacing = 1, 0.25
+local slot_interval = slot_size + slot_spacing
+local separation = 0.5
+local machine_section_h = 4.5
+local plrinv_w, plrinv_h = 8, 4
+if has_mcl_formspec then
+	plrinv_w = 9
+	plrinv_h = 4.5
+end
+local body_width = plrinv_w * slot_interval - slot_spacing
+local plrinv_y = machine_section_h + separation
+local body_height = plrinv_y + plrinv_h * slot_interval - slot_spacing
+
+local subject_w = slot_interval * 8 - slot_spacing
+local subject_x, subject_y = (body_width - subject_w)/2, 0.5
+local src_x, src_y = subject_x, subject_y + slot_interval
+
+local base_formspec = {}
+
+table.insert(base_formspec, "formspec_version[4]")
+table.insert(base_formspec, ("size[%.2f,%.2f]"):format(2 * margin_x + body_width, 2 * margin_y + body_height))
+table.insert(base_formspec, ("label[%.2f,%.2f;%s]")
+	:format(margin_x, margin_y, S("Self-Contained Injector")))
+
+-- player inventory
+if has_mcl_formspec then
+	local top_inv_y = margin_y + plrinv_y
+	local hotbar_y = top_inv_y + 3 * slot_interval + slot_spacing
+	table.insert(base_formspec, get_itemslot_bg(margin_x + src_x, margin_y + src_y, 8,2))
+	table.insert(base_formspec, get_itemslot_bg(margin_x, top_inv_y, plrinv_w, 3))
+	table.insert(base_formspec, get_itemslot_bg(margin_x, hotbar_y, plrinv_w,1))
+	table.insert(base_formspec,("list[current_player;main;%.2f,%.2f;%d,3;9]")
+		:format(margin_x, top_inv_y, plrinv_w))
+	table.insert(base_formspec,("list[current_player;main;%.2f,%.2f;%d,1;]")
+		:format(margin_x, hotbar_y, plrinv_w))
 else
-	base_formspec = base_formspec..
-	"list[current_player;main;0,5;8,4;]"..
-	"listring[current_player;main]"
+	table.insert(base_formspec, ("list[current_player;main;%.2f,%.2f;%d,%d;]")
+		:format(margin_x, margin_y + plrinv_y, plrinv_w, plrinv_h))
+end
+
+table.insert(base_formspec, ("list[context;main;%.2f,%.2f;8,2;]")
+	:format(margin_x + src_x, margin_y + src_y))
+
+-- listrings
+table.insert(base_formspec, "listring[context;main]")
+table.insert(base_formspec, "listring[current_player;main]")
+
+base_formspec = table.concat(base_formspec)
+
+local form_buttons = function(meta)
+	return fs_helpers.cycling_button(
+		meta,
+		pipeworks.button_base:gsub("%[0%,4%.3%;1%,0%.6", ("[%.2f,%.2f;%.2f,%.2f")
+			:format(margin_x, margin_y + machine_section_h - 0.5 + 0.1, 1, 0.5)),
+		"splitstacks",
+		{
+			pipeworks.button_off,
+			pipeworks.button_on
+		}
+	)..pipeworks.button_label:gsub("%[0%.9%,4%.31", ("[%.2f,%.2f")
+		:format(margin_x + 1, margin_y + machine_section_h - 0.25 + 0.1))
 end
 
 local function set_injector_formspec(pos)
 	local meta = core.get_meta(pos)
-	local formspec = base_formspec..
-		fs_helpers.cycling_button(
-			meta,
-			pipeworks.button_base,
-			"splitstacks",
-			{
-				pipeworks.button_off,
-				pipeworks.button_on
-			}
-		)..pipeworks.button_label
-	if meta:get_string("mode") == "whole stacks" then
-		formspec = formspec.."button[0,1;4,1;mode_item;"..S("Stackwise").."]"
-	else
-		formspec = formspec.."button[0,1;4,1;mode_stack;"..S("Itemwise").."]"
-	end
-	if core.get_node_timer(pos):is_started() then
-		formspec = formspec.."button[4,1;4,1;disable;"..S("Enabled").."]"
-	else
-		formspec = formspec.."button[4,1;4,1;enable;"..S("Disabled").."]"
-	end
-	meta:set_string("formspec", formspec)
+	local formspec = {base_formspec, form_buttons(meta)}
+	local is_stackwise = meta:get_string("mode") == "whole stacks"
+	table.insert(formspec, ("button[%.2f,%.2f;%.2f,%.2f;%s;%s]")
+		:format(
+			margin_x + subject_x, margin_y + subject_y, slot_size * 4, slot_size,
+			is_stackwise and "mode_item" or "mode_stack",
+			is_stackwise and S("Stackwise") or S("Itemwise")
+		))
+	local is_enabled = core.get_node_timer(pos):is_started()
+	table.insert(formspec, ("button[%.2f,%.2f;%.2f,%.2f;%s;%s]")
+		:format(
+			margin_x + subject_x + subject_w - slot_size * 4, margin_y + subject_y, slot_size * 4, slot_size,
+			is_enabled and "disable" or "enable",
+			is_enabled and S("Enabled") or S("Disabled")
+		))
+	meta:set_string("formspec", table.concat(formspec))
 end
 
 core.register_node("technic:injector", {
