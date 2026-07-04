@@ -159,6 +159,9 @@ function technic.chests.get_receive_fields(nodename, data)
 		if not fields or not player then
 			return
 		end
+		if not technic.chests.change_allowed(pos, player, data.locked, data.protected) then
+			return
+		end
 		local meta = core.get_meta(pos)
 		local chest_inv = meta:get_inventory()
 		local player_inv = player:get_inventory()
@@ -166,11 +169,10 @@ function technic.chests.get_receive_fields(nodename, data)
 			if meta:get_int("autosort") == 1 then
 				technic.chests.sort_inv(chest_inv, meta:get_int("sort_mode"))
 			end
-			technic.chests.update_formspec(pos, data)
-			return
-		end
-		if not technic.chests.change_allowed(pos, player, data.locked, data.protected) then
-			return
+			if not fields.key_enter_field then
+				technic.chests.update_formspec(pos, data)  -- Removes edit infotext field
+				return
+			end
 		end
 		if data.sort and fields.sort then
 			technic.chests.sort_inv(chest_inv, meta:get_int("sort_mode"))
@@ -231,7 +233,7 @@ function technic.chests.get_receive_fields(nodename, data)
 			end
 		end
 		if data.digilines then
-			if fields.save_channel and fields.channel then
+			if fields.channel and (fields.save_channel or fields.key_enter_field == "channel") then
 				meta:set_string("channel", fields.channel)
 			end
 			for _,setting in pairs({"send_put", "send_take", "send_inject", "send_pull", "send_overflow"}) do
@@ -245,7 +247,7 @@ function technic.chests.get_receive_fields(nodename, data)
 			if fields.edit_infotext then
 				technic.chests.update_formspec(pos, data, true)
 				return
-			elseif fields.save_infotext and fields.infotext then
+			elseif fields.infotext and (fields.save_infotext or fields.key_enter_field == "infotext") then
 				meta:set_string("infotext", fields.infotext)
 			end
 		end
