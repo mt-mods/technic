@@ -159,9 +159,6 @@ function technic.chests.get_receive_fields(nodename, data)
 		if not fields or not player then
 			return
 		end
-		if not technic.chests.change_allowed(pos, player, data.locked, data.protected) then
-			return
-		end
 		local meta = core.get_meta(pos)
 		local chest_inv = meta:get_inventory()
 		local player_inv = player:get_inventory()
@@ -173,6 +170,9 @@ function technic.chests.get_receive_fields(nodename, data)
 				technic.chests.update_formspec(pos, data)  -- Removes edit infotext field
 				return
 			end
+		end
+		if not technic.chests.change_allowed(pos, player, data.locked, data.protected) then
+			return
 		end
 		if data.sort and fields.sort then
 			technic.chests.sort_inv(chest_inv, meta:get_int("sort_mode"))
