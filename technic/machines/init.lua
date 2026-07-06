@@ -41,6 +41,7 @@ dofile(path.."/switching_station_globalstep.lua")
 
 dofile(path.."/power_monitor.lua")
 dofile(path.."/supply_converter.lua")
+dofile(path.."/creative_generator.lua")
 
 dofile(path.."/other/init.lua")
 
