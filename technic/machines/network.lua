@@ -578,9 +578,23 @@ core.register_on_mods_loaded(function()
 				or  function(pos) remove_node(pos, tiers, name) end,
 		})
 	end
+	local verbose_technic_run = technic.config:get_bool("verbose_technic_run")
 	for name, _ in pairs(technic.machine_tiers) do
 		if type(core.registered_nodes[name].technic_run) == "function" then
-			node_technic_run[name] = core.registered_nodes[name].technic_run
+			local run_function = core.registered_nodes[name].technic_run
+			if verbose_technic_run then
+				-- Log how long it took to run machine cycle
+				node_technic_run[name] = function(pos, ...)
+					local t0 = core.get_us_time()
+					run_function(pos, ...)
+					local tdiff = core.get_us_time() - t0
+					core.log("info", "[technic] technic_run took " .. tdiff .. " us at "
+						.. core.pos_to_string(pos) .. " for " .. name)
+				end
+			else
+				-- Just run machines without verbose logging
+				node_technic_run[name] = run_function
+			end
 		end
 	end
 end)
