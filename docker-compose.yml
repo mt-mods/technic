@@ -1,0 +1,16 @@
+services:
+ mtt:
+  image: ghcr.io/buckaroobanzay/mtt:latest
+  volumes:
+   - "./:/github/workspace"
+  environment:
+   INPUT_MODNAME: "technic"
+   INPUT_TEST_MODE: "mod"
+   INPUT_MAPGEN: "v7"
+   INPUT_GIT_GAME_REPO: "https://github.com/minetest/minetest_game"
+   INPUT_GIT_DEPENDENCIES: |
+      https://github.com/mt-mods/basic_materials.git
+      https://github.com/mt-mods/pipeworks.git
+      https://github.com/OgelGames/fakelib.git
+      https://github.com/minetest-mods/moreores.git
+      https://github.com/mt-mods/xcompat.git
