@@ -58,5 +58,7 @@ dofile(modpath.."/effects.lua")
 dofile(modpath.."/chatcommands.lua")
 
 if core.get_modpath("mtt") and mtt.enabled then
-	dofile(modpath.."/mtt.lua")
+	dofile(modpath.."/mtt/smoketests.spec.lua")
+	dofile(modpath.."/mtt/max_lag.spec.lua")
+	dofile(modpath.."/mtt/switching_station.spec.lua")
 end
