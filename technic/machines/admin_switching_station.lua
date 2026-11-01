@@ -60,7 +60,7 @@ local function admin_switch_remove(pos, network)
 			-- Autorun has to be disabled so that timers maintaining TTL can be stopped and network forgotten.
 			-- If admin network had zerolag configured then also network.average_lag should be reset to sma.
 			admin_networks[index].autorun = nil
-			admin_networks[index] = nil
+			table.remove(admin_networks, index)
 			network.admin_network_config = nil
 		end
 		save_admin_networks(admin_networks)
