@@ -108,7 +108,7 @@ local function start_network(pos)
 				-- network.lag is based on average_lag(t) sma method, our version ignores input and returns zero
 				network.average_lag = function(_) return 0 end
 			end
-			-- Activate network and, if configured, set our own TTL. 
+			-- Activate network and, if configured, set our own TTL.
 			technic.activate_network(network_id, network.admin_network_config.ttl)
 			-- Activate globalstep TTL refresh
 			if network.admin_network_config.autorun then
