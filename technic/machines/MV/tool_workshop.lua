@@ -142,6 +142,7 @@ core.register_node("technic:tool_workshop", {
 			return core.get_meta(pos):get_inventory():add_item("src", stack)
 		end,
 		connect_sides = {left = 1, right = 1, back = 1, top = 1, bottom = 1},
+		input_inventory = "src",
 	},
 	technic_run = run,
 	after_place_node = pipeworks.after_place,
