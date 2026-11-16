@@ -22,6 +22,7 @@ function technic.new_default_tube()
 		end,
 		can_insert = technic.default_can_insert,
 		connect_sides = {left = 1, right = 1, back = 1, top = 1, bottom = 1},
+		input_inventory = "dst",  -- Reqired for pipeworks injectors
 	}
 end
 
